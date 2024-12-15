@@ -24,7 +24,7 @@ body {
 
 /* Header styles */
 .navbar {
-    background: linear-gradient(135deg, var(--st-jago-green), #004d00) !important;
+    background-color: var(--st-jago-green);
     border-bottom: 3px solid var(--st-jago-gold) !important;
 }
 
@@ -195,4 +195,9 @@ body {
     .table-responsive {
         margin-bottom: 15px;
     }
+}
+
+.bg-custom {
+    background-color: var(--st-jago-green);
+    color: var(--st-jago-gold);
 }
