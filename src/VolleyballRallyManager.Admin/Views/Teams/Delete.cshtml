@@ -1,0 +1,54 @@
+@model VolleyballRallyManager.Lib.Models.Team
+
+@{
+    ViewData["Title"] = "Delete Team";
+}
+
+<div class="container">
+    <h1>Delete Team</h1>
+
+    <div class="alert alert-danger">
+        <h4>Are you sure you want to delete this team?</h4>
+        <p>This action cannot be undone. Deleting a team will only be possible if it has no associated matches.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">@Model.Name</h5>
+                    <div class="team-color" style="width: 30px; height: 30px; border-radius: 50%; background-color: @Model.Color;"></div>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">School</dt>
+                        <dd class="col-sm-9">@Model.School</dd>
+
+                        <dt class="col-sm-3">Division</dt>
+                        <dd class="col-sm-9">@Model.Division</dd>
+
+                        @if (!string.IsNullOrEmpty(Model.LogoUrl))
+                        {
+                            <dt class="col-sm-3">Logo</dt>
+                            <dd class="col-sm-9">
+                                <img src="@Model.LogoUrl" alt="Team Logo" style="max-width: 100px;" />
+                            </dd>
+                        }
+
+                        <dt class="col-sm-3">Matches Played</dt>
+                        <dd class="col-sm-9">@Model.MatchesPlayed</dd>
+
+                        <dt class="col-sm-3">Total Points</dt>
+                        <dd class="col-sm-9">@Model.TotalPoints</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="btn btn-danger">Delete</button>
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </form>
+        </div>
+    </div>
+</div>

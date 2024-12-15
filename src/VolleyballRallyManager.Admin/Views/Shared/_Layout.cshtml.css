@@ -1,0 +1,123 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+/* Navbar styling */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--st-jago-gold) !important;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+    color: var(--st-jago-gold) !important;
+}
+
+/* Dropdown menu styling */
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.dropdown-item {
+    padding: 0.5rem 1rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.dropdown-item.text-danger:hover {
+    background-color: #fff5f5;
+}
+
+/* Footer styling */
+.footer {
+    background-color: var(--st-jago-green);
+    color: white;
+    padding: 1rem 0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px;
+    border-top: 3px solid var(--st-jago-gold);
+}
+
+.footer a {
+    color: var(--st-jago-gold);
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+
+.footer a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+/* Main content container */
+.container {
+    padding-bottom: 60px; /* Height of footer */
+}
+
+/* User profile icon */
+.user-profile-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--st-jago-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--st-jago-green);
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+
+    .footer {
+        line-height: 1.5;
+        padding: 1rem 0;
+    }
+}
+
+/* Active navigation item */
+.nav-item.active .nav-link {
+    color: var(--st-jago-gold) !important;
+    font-weight: bold;
+}
+
+/* Button hover effects */
+.btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Card hover effects */
+.card {
+    transition: all 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}

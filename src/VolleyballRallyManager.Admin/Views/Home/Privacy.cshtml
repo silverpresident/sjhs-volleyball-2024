@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = "Privacy Policy";
+}
+
+<div class="container">
+    <h1>@ViewData["Title"]</h1>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Data Collection and Usage</h5>
+            <p>
+                The ST JAGO VOLLEYBALL RALLY application collects and stores the following information:
+            </p>
+            <ul>
+                <li>Team information (name, school, division)</li>
+                <li>Match results and statistics</li>
+                <li>Tournament announcements</li>
+                <li>User account information for administrative access</li>
+            </ul>
+            <p>
+                This information is used solely for the purpose of managing and displaying tournament data.
+                No personal information is shared with third parties.
+            </p>
+
+            <h5 class="card-title mt-4">Data Security</h5>
+            <p>
+                We take the security of your data seriously:
+            </p>
+            <ul>
+                <li>All data is stored securely in Azure SQL Database</li>
+                <li>Access to administrative functions requires authentication</li>
+                <li>Regular backups are performed to prevent data loss</li>
+                <li>All communications are encrypted using HTTPS</li>
+            </ul>
+
+            <h5 class="card-title mt-4">Contact Information</h5>
+            <p>
+                For any privacy-related concerns or questions, please contact the tournament administrators.
+            </p>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Updates to Privacy Policy</h5>
+            <p>
+                This privacy policy may be updated periodically to reflect changes in our data practices.
+                Users will be notified of any significant changes.
+            </p>
+            <p class="text-muted mt-3">
+                Last updated: @DateTime.Now.ToString("MMMM yyyy")
+            </p>
+        </div>
+    </div>
+</div>

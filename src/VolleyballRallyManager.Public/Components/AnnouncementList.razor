@@ -1,0 +1,163 @@
+@inherits StateComponentBase
+
+<div class="announcement-list">
+    <h2>Announcements</h2>
+    @if (IsLoading)
+    {
+        <div class="loading">Loading announcements...</div>
+    }
+    else if (ErrorMessage != null)
+    {
+        <div class="error">@ErrorMessage</div>
+    }
+    else if (!AppState.Announcements.Any())
+    {
+        <div class="no-data">No announcements at this time.</div>
+    }
+    else
+    {
+        <div class="announcements">
+            @foreach (var announcement in AppState.Announcements.Where(a => a.IsVisible).OrderByDescending(a => a.CreatedAt))
+            {
+                <div class="announcement-card @GetPriorityClass(announcement)">
+                    <div class="announcement-header">
+                        <span class="priority-badge">@announcement.Priority</span>
+                        <span class="timestamp">@FormatDateTime(announcement.CreatedAt)</span>
+                    </div>
+                    <div class="announcement-body">
+                        @((MarkupString)FormatMessage(announcement.Message))
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private string GetPriorityClass(Announcement announcement)
+    {
+        return announcement.Priority.ToString().ToLower();
+    }
+
+    private string FormatMessage(string message)
+    {
+        // Basic markdown-like formatting
+        // Bold
+        message = System.Text.RegularExpressions.Regex.Replace(message, @"\*\*(.*?)\*\*", "<strong>$1</strong>");
+        // Italic
+        message = System.Text.RegularExpressions.Regex.Replace(message, @"\*(.*?)\*", "<em>$1</em>");
+        // Convert newlines to <br>
+        message = message.Replace("\n", "<br>");
+        return message;
+    }
+}
+
+<style>
+.announcement-list {
+    padding: 1rem;
+}
+
+.announcement-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+    padding: 1rem;
+    transition: transform 0.2s;
+}
+
+.announcement-card:hover {
+    transform: translateY(-2px);
+}
+
+.announcement-card.info {
+    border-left: 4px solid #3498db;
+}
+
+.announcement-card.warning {
+    border-left: 4px solid #f1c40f;
+}
+
+.announcement-card.danger {
+    border-left: 4px solid #e74c3c;
+}
+
+.announcement-card.primary {
+    border-left: 4px solid #2ecc71;
+}
+
+.announcement-card.secondary {
+    border-left: 4px solid #95a5a6;
+}
+
+.announcement-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.priority-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.info .priority-badge {
+    background: #3498db;
+    color: white;
+}
+
+.warning .priority-badge {
+    background: #f1c40f;
+    color: black;
+}
+
+.danger .priority-badge {
+    background: #e74c3c;
+    color: white;
+}
+
+.primary .priority-badge {
+    background: #2ecc71;
+    color: white;
+}
+
+.secondary .priority-badge {
+    background: #95a5a6;
+    color: white;
+}
+
+.timestamp {
+    color: #666;
+    font-size: 0.875rem;
+}
+
+.announcement-body {
+    color: #333;
+    line-height: 1.5;
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+
+.error {
+    color: #e74c3c;
+    padding: 1rem;
+    border: 1px solid #e74c3c;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+
+.no-data {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    font-style: italic;
+}
+</style>

@@ -1,0 +1,73 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h1 class="h4 mb-0">Error</h1>
+                </div>
+                <div class="card-body">
+                    @if (Model.ShowRequestId)
+                    {
+                        <div class="alert alert-info">
+                            <strong>Request ID:</strong> <code>@Model.RequestId</code>
+                        </div>
+                    }
+
+                    @if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+                    {
+                        <div class="alert alert-warning">
+                            <h4>Development Mode</h4>
+                            <p>
+                                Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
+                            </p>
+                        </div>
+                    }
+
+                    <h3>An error occurred while processing your request.</h3>
+                    <p>
+                        We apologize for the inconvenience. Our team has been notified and will look into this issue.
+                    </p>
+
+                    <div class="mt-4">
+                        <h4>What you can try:</h4>
+                        <ul>
+                            <li>Refresh the page</li>
+                            <li>Go back to the <a asp-controller="Home" asp-action="Index">homepage</a></li>
+                            <li>Try again later</li>
+                            <li>Contact the tournament administrators if the problem persists</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Return to Dashboard</a>
+                </div>
+            </div>
+
+            @if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+            {
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Development Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-sm-3">Environment</dt>
+                            <dd class="col-sm-9">@Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")</dd>
+
+                            <dt class="col-sm-3">Time</dt>
+                            <dd class="col-sm-9">@DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss UTC")</dd>
+
+                            <dt class="col-sm-3">Request ID</dt>
+                            <dd class="col-sm-9">@Model.RequestId</dd>
+                        </dl>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

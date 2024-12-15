@@ -1,0 +1,195 @@
+﻿@model VolleyballRallyManager.Admin.Models.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>ST JAGO VOLLEYBALL RALLY</h1>
+            <p class="lead">Tournament Management Dashboard</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Teams</h5>
+                    <h2 class="display-4">@Model.TotalTeams</h2>
+                    <div class="mt-3">
+                        @foreach (var division in Model.TeamsByDivision)
+                        {
+                            <div class="d-flex justify-content-between">
+                                <span>@division.Key</span>
+                                <span>@division.Value teams</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Matches</h5>
+                            <h2 class="display-4">@Model.TotalMatches</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">In Progress</h5>
+                            <h2 class="display-4">@Model.MatchesInProgress</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-secondary text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Finished</h5>
+                            <h2 class="display-4">@Model.MatchesFinished</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-warning">
+                        <div class="card-body">
+                            <h5 class="card-title">Disputed</h5>
+                            <h2 class="display-4">@Model.DisputedMatches</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Matches</h5>
+                    <a asp-controller="Matches" asp-action="Index" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentMatches.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Teams</th>
+                                        <th>Score</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var match in Model.RecentMatches)
+                                    {
+                                        <tr>
+                                            <td>@match.ScheduledTime.ToString("HH:mm")</td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="team-color me-2" style="width: 12px; height: 12px; border-radius: 50%; background-color: @match.HomeTeam.Color;"></span>
+                                                    @match.HomeTeam.Name
+                                                    <span class="mx-2">vs</span>
+                                                    <span class="team-color me-2" style="width: 12px; height: 12px; border-radius: 50%; background-color: @match.AwayTeam.Color;"></span>
+                                                    @match.AwayTeam.Name
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @if (match.IsFinished)
+                                                {
+                                                    <strong>@match.HomeTeamScore - @match.AwayTeamScore</strong>
+                                                }
+                                                else if (match.ActualStartTime.HasValue)
+                                                {
+                                                    @match.HomeTeamScore <text> - </text> @match.AwayTeamScore
+                                                }
+                                                else
+                                                {
+                                                    <text>vs</text>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (match.IsDisputed)
+                                                {
+                                                    <span class="badge bg-danger">Disputed</span>
+                                                }
+                                                else if (match.IsFinished)
+                                                {
+                                                    <span class="badge bg-success">Finished</span>
+                                                }
+                                                else if (match.ActualStartTime.HasValue)
+                                                {
+                                                    <span class="badge bg-primary">In Progress</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Scheduled</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No matches found.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Announcements</h5>
+                    <a asp-controller="Announcements" asp-action="Index" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentAnnouncements.Any())
+                    {
+                        foreach (var announcement in Model.RecentAnnouncements)
+                        {
+                            <div class="announcement-item mb-3 pb-3 border-bottom">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="badge bg-@announcement.Priority.ToString().ToLower()">@announcement.Priority</span>
+                                    <small class="text-muted">@announcement.CreatedAt.ToString("HH:mm")</small>
+                                </div>
+                                @if (announcement.UseMarkdown)
+                                {
+                                    <div class="markdown-content">@Html.Raw(announcement.RenderedContent)</div>
+                                }
+                                else
+                                {
+                                    <p class="mb-0">@announcement.Content</p>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">No announcements found.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-refresh the page every 2 minutes
+        setTimeout(function() {
+            location.reload();
+        }, 120000);
+    </script>
+}

@@ -1,0 +1,122 @@
+@model VolleyballRallyManager.Lib.Models.Announcement
+@using VolleyballRallyManager.Lib.Models
+
+@{
+    ViewData["Title"] = "Delete Announcement";
+}
+
+<div class="container">
+    <h1>Delete Announcement</h1>
+
+    <div class="alert alert-danger">
+        <h4>Are you sure you want to delete this announcement?</h4>
+        <p>This action cannot be undone.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-@(Model.Priority.ToString().ToLower())">@Model.Priority</span>
+                            @if (!Model.IsVisible)
+                            {
+                                <span class="badge bg-secondary ms-2">Hidden</span>
+                            }
+                        </div>
+                        <small class="text-muted">Created @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (Model.UseMarkdown)
+                    {
+                        <div class="markdown-content">@Html.Raw(Model.RenderedContent)</div>
+                    }
+                    else
+                    {
+                        <p class="card-text">@Model.Content</p>
+                    }
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col">
+                            <small class="text-muted">Created by: @Model.CreatedBy</small>
+                        </div>
+                        @if (Model.UpdatedAt.HasValue)
+                        {
+                            <div class="col text-end">
+                                <small class="text-muted">Last updated: @Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm") by @Model.UpdatedBy</small>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Settings</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">Priority</dt>
+                        <dd class="col-sm-9">@Model.Priority</dd>
+
+                        <dt class="col-sm-3">Visibility</dt>
+                        <dd class="col-sm-9">@(Model.IsVisible ? "Visible" : "Hidden")</dd>
+
+                        <dt class="col-sm-3">Markdown</dt>
+                        <dd class="col-sm-9">@(Model.UseMarkdown ? "Enabled" : "Disabled")</dd>
+
+                        <dt class="col-sm-3">Created</dt>
+                        <dd class="col-sm-9">
+                            @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                            <small class="text-muted">by @Model.CreatedBy</small>
+                        </dd>
+
+                        @if (Model.UpdatedAt.HasValue)
+                        {
+                            <dt class="col-sm-3">Last Updated</dt>
+                            <dd class="col-sm-9">
+                                @Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                                <small class="text-muted">by @Model.UpdatedBy</small>
+                            </dd>
+                        }
+                    </dl>
+                </div>
+            </div>
+
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="btn btn-danger">Delete</button>
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </form>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Warning</h5>
+                </div>
+                <div class="card-body">
+                    <p>Deleting this announcement will:</p>
+                    <ul>
+                        <li>Remove it from all displays immediately</li>
+                        <li>Remove it from the announcement history</li>
+                        <li>Cannot be recovered once deleted</li>
+                    </ul>
+                    <p class="mb-0">Consider hiding the announcement instead if you might need it later.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .markdown-content img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+}

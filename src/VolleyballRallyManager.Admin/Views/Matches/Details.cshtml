@@ -1,0 +1,144 @@
+@model VolleyballRallyManager.Lib.Models.Match
+@using VolleyballRallyManager.Lib.Models
+
+@{
+    ViewData["Title"] = "Match Details";
+}
+
+<div class="container">
+    <h1>Match Details</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Match #@Model.MatchNumber</h5>
+                        @if (Model.IsDisputed)
+                        {
+                            <span class="badge bg-danger">Disputed</span>
+                        }
+                        else if (Model.IsFinished)
+                        {
+                            <span class="badge bg-success">Finished</span>
+                        }
+                        else if (Model.ActualStartTime.HasValue)
+                        {
+                            <span class="badge bg-primary">In Progress</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Scheduled</span>
+                        }
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col">
+                            <h6>Round</h6>
+                            <p>@Model.Round.Name</p>
+                        </div>
+                        <div class="col">
+                            <h6>Court</h6>
+                            <p>@Model.CourtLocation</p>
+                        </div>
+                        <div class="col">
+                            <h6>Scheduled Time</h6>
+                            <p>@Model.ScheduledTime.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-5 text-center">
+                            <div class="team-box p-3 border rounded">
+                                <div class="team-color mb-2" style="width: 30px; height: 30px; border-radius: 50%; background-color: @Model.HomeTeam.Color; margin: 0 auto;"></div>
+                                <h5>@Model.HomeTeam.Name</h5>
+                                <small class="text-muted">@Model.HomeTeam.School</small>
+                                <h2 class="mt-3">@Model.HomeTeamScore</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-center justify-content-center">
+                            <h4>VS</h4>
+                        </div>
+                        <div class="col-md-5 text-center">
+                            <div class="team-box p-3 border rounded">
+                                <div class="team-color mb-2" style="width: 30px; height: 30px; border-radius: 50%; background-color: @Model.AwayTeam.Color; margin: 0 auto;"></div>
+                                <h5>@Model.AwayTeam.Name</h5>
+                                <small class="text-muted">@Model.AwayTeam.School</small>
+                                <h2 class="mt-3">@Model.AwayTeamScore</h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Referee</h6>
+                            <p>@(string.IsNullOrEmpty(Model.RefereeName) ? "Not assigned" : Model.RefereeName)</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Scorer</h6>
+                            <p>@(string.IsNullOrEmpty(Model.ScorerName) ? "Not assigned" : Model.ScorerName)</p>
+                        </div>
+                    </div>
+
+                    @if (Model.ActualStartTime.HasValue)
+                    {
+                        <div class="row">
+                            <div class="col">
+                                <h6>Started At</h6>
+                                <p>@Model.ActualStartTime.Value.ToString("dd/MM/yyyy HH:mm")</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div>
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Match Updates</h5>
+                </div>
+                <div class="card-body">
+                    <div class="updates-list" style="max-height: 500px; overflow-y: auto;">
+                        @if (Model.Updates.Any())
+                        {
+                            foreach (var update in Model.Updates.OrderByDescending(u => u.CreatedAt))
+                            {
+                                <div class="update-item mb-3 p-2 border-bottom">
+                                    <div class="d-flex justify-content-between">
+                                        <small class="text-muted">@update.CreatedAt.ToString("dd/MM HH:mm")</small>
+                                        <span class="badge @(update.UpdateType == UpdateType.ScoreUpdate ? "bg-primary" : 
+                                                           update.UpdateType == UpdateType.DisputeRaised ? "bg-danger" : 
+                                                           "bg-secondary")">
+                                            @update.UpdateType
+                                        </span>
+                                    </div>
+                                    <div class="mt-1">@update.UpdateText</div>
+                                    @if (!string.IsNullOrEmpty(update.PreviousValue) && !string.IsNullOrEmpty(update.NewValue))
+                                    {
+                                        <div class="mt-1">
+                                            <small class="text-muted">
+                                                Changed from @update.PreviousValue to @update.NewValue
+                                            </small>
+                                        </div>
+                                    }
+                                    <small class="text-muted">By @update.CreatedBy</small>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted">No updates for this match.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

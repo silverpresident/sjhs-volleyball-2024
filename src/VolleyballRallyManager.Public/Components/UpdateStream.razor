@@ -1,0 +1,150 @@
+@inherits StateComponentBase
+
+<div class="update-stream">
+    <h2>Live Updates</h2>
+    @if (IsLoading)
+    {
+        <div class="loading">Loading updates...</div>
+    }
+    else if (ErrorMessage != null)
+    {
+        <div class="error">@ErrorMessage</div>
+    }
+    else if (!AppState.MatchUpdates.Any())
+    {
+        <div class="no-data">No updates yet.</div>
+    }
+    else
+    {
+        <div class="updates">
+            @foreach (var update in AppState.MatchUpdates.OrderByDescending(u => u.CreatedAt).Take(50))
+            {
+                <div class="update-card">
+                    <div class="update-header">
+                        <span class="match-info">@GetMatchDescription(update.MatchId)</span>
+                        <span class="timestamp">@FormatDateTime(update.CreatedAt)</span>
+                    </div>
+                    <div class="update-body">
+                        @((MarkupString)FormatMessage(update.Message))
+                    </div>
+                    @if (update.Score != null)
+                    {
+                        <div class="score-update">
+                            New Score: @update.Score
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private string FormatMessage(string message)
+    {
+        // Basic markdown-like formatting
+        // Bold
+        message = System.Text.RegularExpressions.Regex.Replace(message, @"\*\*(.*?)\*\*", "<strong>$1</strong>");
+        // Italic
+        message = System.Text.RegularExpressions.Regex.Replace(message, @"\*(.*?)\*", "<em>$1</em>");
+        // Convert newlines to <br>
+        message = message.Replace("\n", "<br>");
+        return message;
+    }
+}
+
+<style>
+.update-stream {
+    padding: 1rem;
+}
+
+.updates {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.update-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+    padding: 1rem;
+    transition: transform 0.2s;
+    border-left: 4px solid #3498db;
+}
+
+.update-card:hover {
+    transform: translateY(-2px);
+}
+
+.update-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.match-info {
+    font-weight: bold;
+    color: #333;
+}
+
+.timestamp {
+    color: #666;
+    font-size: 0.875rem;
+}
+
+.update-body {
+    color: #333;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+}
+
+.score-update {
+    background: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-weight: bold;
+    color: #2ecc71;
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+
+.error {
+    color: #e74c3c;
+    padding: 1rem;
+    border: 1px solid #e74c3c;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+
+.no-data {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    font-style: italic;
+}
+
+/* Custom scrollbar for the updates container */
+.updates::-webkit-scrollbar {
+    width: 8px;
+}
+
+.updates::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.updates::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.updates::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+</style>

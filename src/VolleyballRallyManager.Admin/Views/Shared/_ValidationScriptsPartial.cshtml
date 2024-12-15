@@ -1,0 +1,66 @@
+﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    // Custom validation methods
+    $.validator.addMethod('requiredif', function (value, element, parameters) {
+        var id = '#' + parameters['dependentproperty'];
+        var targetValue = parameters['targetvalue'];
+        targetValue = (targetValue == null ? '' : targetValue).toString();
+        var actualValue = $(id).val();
+        actualValue = (actualValue == null ? '' : actualValue).toString();
+        var isRequired = targetValue === actualValue;
+        var isValid = !isRequired || (isRequired && value !== null && value.toString().trim() !== '');
+        return isValid;
+    });
+
+    $.validator.unobtrusive.adapters.add('requiredif', ['dependentproperty', 'targetvalue'], function (options) {
+        options.rules['requiredif'] = {
+            dependentproperty: options.params['dependentproperty'],
+            targetvalue: options.params['targetvalue']
+        };
+        options.messages['requiredif'] = options.message;
+    });
+
+    // Custom validation for time fields
+    $.validator.addMethod('timeformat', function (value, element) {
+        if (value === '') return true;
+        return /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(value);
+    }, 'Please enter a valid time in HH:mm format');
+
+    // Custom validation for scores
+    $.validator.addMethod('score', function (value, element) {
+        if (value === '') return true;
+        var score = parseInt(value);
+        return !isNaN(score) && score >= 0;
+    }, 'Please enter a valid score (non-negative number)');
+
+    // Custom validation for color codes
+    $.validator.addMethod('colorhex', function (value, element) {
+        if (value === '') return true;
+        return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value);
+    }, 'Please enter a valid hex color code (e.g., #FF0000)');
+
+    // Custom validation for URLs
+    $.validator.addMethod('urloptional', function (value, element) {
+        if (value === '') return true;
+        try {
+            new URL(value);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }, 'Please enter a valid URL');
+
+    // Show validation errors in a more user-friendly way
+    $(document).ready(function () {
+        $('form').on('invalid-form.validate', function () {
+            var firstError = $(this).find('.input-validation-error').first();
+            if (firstError.length > 0) {
+                $('html, body').animate({
+                    scrollTop: firstError.offset().top - 100
+                }, 500);
+                firstError.focus();
+            }
+        });
+    });
+</script>

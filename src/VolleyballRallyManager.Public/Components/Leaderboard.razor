@@ -1,0 +1,249 @@
+@inherits StateComponentBase
+
+<div class="leaderboard">
+    <h2>Tournament Standings</h2>
+    @if (IsLoading)
+    {
+        <div class="loading">Loading standings...</div>
+    }
+    else if (ErrorMessage != null)
+    {
+        <div class="error">@ErrorMessage</div>
+    }
+    else if (!AppState.Teams.Any())
+    {
+        <div class="no-data">No teams registered yet.</div>
+    }
+    else
+    {
+        <div class="standings">
+            <div class="division boys">
+                <h3>Boys Division</h3>
+                <div class="standings-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pos</th>
+                                <th>Team</th>
+                                <th>P</th>
+                                <th>W</th>
+                                <th>D</th>
+                                <th>L</th>
+                                <th>PF</th>
+                                <th>PA</th>
+                                <th>PD</th>
+                                <th>Pts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var boysTeams = GetStandings(Division.BOYS);
+                                for (int i = 0; i < boysTeams.Count; i++)
+                                {
+                                    var team = boysTeams[i];
+                                    <tr>
+                                        <td>@(i + 1)</td>
+                                        <td class="team-name">
+                                            <div class="team-info">
+                                                @if (!string.IsNullOrEmpty(team.LogoUrl))
+                                                {
+                                                    <img src="@team.LogoUrl" alt="@team.Name logo" class="team-logo" />
+                                                }
+                                                <span>@team.Name</span>
+                                            </div>
+                                        </td>
+                                        <td>@team.MatchesPlayed</td>
+                                        <td>@team.Wins</td>
+                                        <td>@team.Draws</td>
+                                        <td>@team.Losses</td>
+                                        <td>@team.PointsFor</td>
+                                        <td>@team.PointsAgainst</td>
+                                        <td>@team.PointDifference</td>
+                                        <td class="points">@team.TotalPoints</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="division girls">
+                <h3>Girls Division</h3>
+                <div class="standings-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pos</th>
+                                <th>Team</th>
+                                <th>P</th>
+                                <th>W</th>
+                                <th>D</th>
+                                <th>L</th>
+                                <th>PF</th>
+                                <th>PA</th>
+                                <th>PD</th>
+                                <th>Pts</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var girlsTeams = GetStandings(Division.GIRLS);
+                                for (int i = 0; i < girlsTeams.Count; i++)
+                                {
+                                    var team = girlsTeams[i];
+                                    <tr>
+                                        <td>@(i + 1)</td>
+                                        <td class="team-name">
+                                            <div class="team-info">
+                                                @if (!string.IsNullOrEmpty(team.LogoUrl))
+                                                {
+                                                    <img src="@team.LogoUrl" alt="@team.Name logo" class="team-logo" />
+                                                }
+                                                <span>@team.Name</span>
+                                            </div>
+                                        </td>
+                                        <td>@team.MatchesPlayed</td>
+                                        <td>@team.Wins</td>
+                                        <td>@team.Draws</td>
+                                        <td>@team.Losses</td>
+                                        <td>@team.PointsFor</td>
+                                        <td>@team.PointsAgainst</td>
+                                        <td>@team.PointDifference</td>
+                                        <td class="points">@team.TotalPoints</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<Team> GetStandings(Division division)
+    {
+        return AppState.Teams
+            .Where(t => t.Division == division)
+            .OrderByDescending(t => t.TotalPoints)
+            .ThenByDescending(t => t.PointDifference)
+            .ThenByDescending(t => t.PointsFor)
+            .ToList();
+    }
+}
+
+<style>
+.leaderboard {
+    padding: 1rem;
+}
+
+.standings {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.division {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1rem;
+}
+
+.division h3 {
+    color: #333;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #eee;
+}
+
+.standings-table {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 0.75rem;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background: #f8f9fa;
+    font-weight: bold;
+    color: #666;
+}
+
+.team-name {
+    text-align: left;
+}
+
+.team-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.team-logo {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.points {
+    font-weight: bold;
+    color: #2ecc71;
+}
+
+tr:hover {
+    background: #f8f9fa;
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+
+.error {
+    color: #e74c3c;
+    padding: 1rem;
+    border: 1px solid #e74c3c;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+
+.no-data {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    font-style: italic;
+}
+
+/* Legend for table headers */
+.standings-table::after {
+    content: "P: Played, W: Won, D: Drawn, L: Lost, PF: Points For, PA: Points Against, PD: Points Difference, Pts: Total Points";
+    display: block;
+    padding: 0.5rem;
+    color: #666;
+    font-size: 0.875rem;
+    text-align: right;
+}
+
+/* Responsive design */
+@@media (min-width: 1024px) {
+    .standings {
+        flex-direction: row;
+    }
+
+    .division {
+        flex: 1;
+    }
+}
+</style>

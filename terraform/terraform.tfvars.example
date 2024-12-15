@@ -1,0 +1,123 @@
+# Core Infrastructure Settings
+project_name = "stjago-vb"
+environment  = "dev"  # dev, staging, or prod
+location     = "eastus"
+
+# SQL Database Settings
+# DO NOT SET THESE VALUES HERE - Use environment variables:
+# export TF_VAR_sql_admin_login="your-admin-username"
+# export TF_VAR_sql_admin_password="your-secure-password"
+sql_database_sku         = "Basic"  # Basic, S0, S1, S2, S3
+sql_database_max_size_gb = 2        # 1-1024 GB
+
+# App Service Settings
+app_service_sku = "B1"  # F1 (Free), B1, B2, B3, S1, S2, S3
+
+# SignalR Settings
+signalr_sku = {
+  name     = "Free_F1"  # Free_F1, Standard_S1, Standard_S2, Standard_S3
+  capacity = 1
+}
+
+# Key Vault Settings
+key_vault_sku = "standard"  # standard or premium
+
+# Application Insights Settings
+enable_application_insights   = true
+app_insights_retention_days  = 90  # 30-730 days
+
+# Authentication Settings
+# DO NOT SET THESE VALUES HERE - Use environment variables or Key Vault
+# google_client_id        = ""
+# google_client_secret    = ""
+# microsoft_client_id     = ""
+# microsoft_client_secret = ""
+
+# Email Service Settings
+# DO NOT SET THIS VALUE HERE - Use environment variables or Key Vault
+# sendgrid_api_key = ""
+
+# Storage Settings
+# DO NOT SET THIS VALUE HERE - Use environment variables or Key Vault
+# storage_connection_string = ""
+
+# CORS Settings
+allowed_origins = [
+  "https://localhost:5001",
+  "https://localhost:5002",
+  "https://localhost:7001",
+  "https://localhost:7002"
+]
+
+# Tagging Settings
+tags = {
+  ManagedBy   = "Terraform"
+  Project     = "ST JAGO VOLLEYBALL RALLY"
+  Owner       = "IT Department"
+  Environment = "Development"
+  Purpose     = "Tournament Management"
+}
+
+# Backup Settings
+enable_backup         = true
+backup_retention_days = 30  # 7-35 days
+
+# Monitoring Settings
+enable_monitoring = true
+alert_email_addresses = [
+  # "admin@example.com",
+  # "it@example.com"
+]
+
+# Network Settings
+virtual_network_address_space = "10.0.0.0/16"
+subnet_address_prefixes = {
+  app_service = "10.0.1.0/24"
+  database    = "10.0.2.0/24"
+}
+
+# Security Settings
+# DO NOT SET THIS VALUE HERE - Use environment variables or Key Vault
+# certificate_password = ""
+
+enable_ddos_protection = false  # Set to true for production
+enable_waf            = true
+waf_mode             = "Prevention"  # Detection or Prevention
+
+blocked_ip_ranges = [
+  # "192.168.1.0/24",
+  # "10.0.0.0/8"
+]
+
+allowed_ip_ranges = [
+  # "203.0.113.0/24",  # Office network
+  # "198.51.100.0/24"  # VPN network
+]
+
+enable_ssl       = true
+min_tls_version  = "1.2"  # 1.0, 1.1, or 1.2
+enable_https_only = true
+
+# Instructions:
+# 1. Copy this file to terraform.tfvars
+# 2. Update the values according to your needs
+# 3. Set sensitive values using environment variables:
+#    export TF_VAR_sql_admin_login="your-admin-username"
+#    export TF_VAR_sql_admin_password="your-secure-password"
+#    export TF_VAR_google_client_id="your-google-client-id"
+#    export TF_VAR_google_client_secret="your-google-client-secret"
+#    export TF_VAR_microsoft_client_id="your-microsoft-client-id"
+#    export TF_VAR_microsoft_client_secret="your-microsoft-client-secret"
+#    export TF_VAR_sendgrid_api_key="your-sendgrid-api-key"
+#    export TF_VAR_storage_connection_string="your-storage-connection-string"
+#    export TF_VAR_certificate_password="your-certificate-password"
+
+# Security Recommendations:
+# 1. Enable DDoS protection in production
+# 2. Use WAF in Prevention mode in production
+# 3. Configure appropriate IP restrictions
+# 4. Use TLS 1.2 minimum
+# 5. Enable HTTPS only
+# 6. Set up proper monitoring and alerting
+# 7. Configure backup retention according to requirements
+# 8. Use proper authentication settings

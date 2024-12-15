@@ -1,0 +1,126 @@
+@model IEnumerable<VolleyballRallyManager.Lib.Models.Announcement>
+@using VolleyballRallyManager.Lib.Models
+
+@{
+    ViewData["Title"] = "Announcements";
+}
+
+<div class="container">
+    <h1>Announcements</h1>
+
+    <div class="row mb-3">
+        <div class="col">
+            <a asp-action="Create" class="btn btn-primary">Create New Announcement</a>
+        </div>
+        <div class="col-auto">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary active" data-visibility="all">All</button>
+                <button type="button" class="btn btn-outline-secondary" data-visibility="visible">Visible</button>
+                <button type="button" class="btn btn-outline-secondary" data-visibility="hidden">Hidden</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        @foreach (var item in Model.OrderByDescending(a => a.CreatedAt))
+        {
+            <div class="col-md-6 mb-4" data-visible="@item.IsVisible.ToString().ToLower()">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-@(item.Priority.ToString().ToLower())">@item.Priority</span>
+                            @if (!item.IsVisible)
+                            {
+                                <span class="badge bg-secondary ms-2">Hidden</span>
+                            }
+                        </div>
+                        <small class="text-muted">@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                    </div>
+                    <div class="card-body">
+                        @if (item.UseMarkdown)
+                        {
+                            <div class="markdown-content">@Html.Raw(item.RenderedContent)</div>
+                        }
+                        else
+                        {
+                            <p class="card-text">@item.Content</p>
+                        }
+                    </div>
+                    <div class="card-footer">
+                        <div class="btn-group" role="group">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">Details</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                            @if (item.IsVisible)
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-secondary toggle-visibility" 
+                                        data-id="@item.Id" data-visible="true">
+                                    Hide
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-success toggle-visibility" 
+                                        data-id="@item.Id" data-visible="false">
+                                    Show
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Filter buttons
+            $('.btn-group button').click(function() {
+                $('.btn-group button').removeClass('active');
+                $(this).addClass('active');
+                
+                var visibility = $(this).data('visibility');
+                if (visibility === 'all') {
+                    $('[data-visible]').parent().show();
+                } else if (visibility === 'visible') {
+                    $('[data-visible]').parent().hide();
+                    $('[data-visible="true"]').parent().show();
+                } else {
+                    $('[data-visible]').parent().hide();
+                    $('[data-visible="false"]').parent().show();
+                }
+            });
+
+            // Toggle visibility buttons
+            $('.toggle-visibility').click(function() {
+                var button = $(this);
+                var id = button.data('id');
+                var currentlyVisible = button.data('visible');
+
+                $.post('/Announcements/ToggleVisibility/' + id, function(result) {
+                    if (result.success) {
+                        var card = button.closest('.col-md-6');
+                        card.attr('data-visible', (!currentlyVisible).toString());
+                        
+                        if (currentlyVisible) {
+                            button.text('Show')
+                                .removeClass('btn-outline-secondary')
+                                .addClass('btn-outline-success');
+                            card.find('.badge.bg-secondary').remove();
+                            card.find('.card-header div').append('<span class="badge bg-secondary ms-2">Hidden</span>');
+                        } else {
+                            button.text('Hide')
+                                .removeClass('btn-outline-success')
+                                .addClass('btn-outline-secondary');
+                            card.find('.badge.bg-secondary').remove();
+                        }
+                        
+                        button.data('visible', !currentlyVisible);
+                    }
+                });
+            });
+        });
+    </script>
+}

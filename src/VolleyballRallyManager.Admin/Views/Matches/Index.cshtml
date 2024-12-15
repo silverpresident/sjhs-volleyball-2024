@@ -1,0 +1,130 @@
+@model IEnumerable<VolleyballRallyManager.Lib.Models.Match>
+
+@{
+    ViewData["Title"] = "Matches";
+}
+
+<div class="container">
+    <h1>Matches</h1>
+
+    <div class="row mb-3">
+        <div class="col">
+            <a asp-action="Create" class="btn btn-primary">Create New Match</a>
+        </div>
+        <div class="col-auto">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-secondary active" data-filter="all">All</button>
+                <button type="button" class="btn btn-outline-secondary" data-filter="scheduled">Scheduled</button>
+                <button type="button" class="btn btn-outline-secondary" data-filter="in-progress">In Progress</button>
+                <button type="button" class="btn btn-outline-secondary" data-filter="finished">Finished</button>
+                <button type="button" class="btn btn-outline-secondary" data-filter="disputed">Disputed</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.MatchNumber)</th>
+                    <th>Round</th>
+                    <th>Time</th>
+                    <th>Court</th>
+                    <th>Home Team</th>
+                    <th>Score</th>
+                    <th>Away Team</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderBy(m => m.ScheduledTime))
+                {
+                    var status = item.IsFinished ? "finished" : 
+                                item.IsDisputed ? "disputed" :
+                                item.ActualStartTime.HasValue ? "in-progress" : "scheduled";
+
+                    <tr data-status="@status">
+                        <td>@Html.DisplayFor(modelItem => item.MatchNumber)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Round.Name)</td>
+                        <td>
+                            @item.ScheduledTime.ToString("dd/MM HH:mm")
+                            @if (item.ActualStartTime.HasValue)
+                            {
+                                <br/>
+                                <small class="text-muted">Started: @item.ActualStartTime.Value.ToString("HH:mm")</small>
+                            }
+                        </td>
+                        <td>@Html.DisplayFor(modelItem => item.CourtLocation)</td>
+                        <td>
+                            <span class="team-color" style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: @item.HomeTeam.Color; margin-right: 5px;"></span>
+                            @Html.DisplayFor(modelItem => item.HomeTeam.Name)
+                        </td>
+                        <td>
+                            @if (item.IsFinished)
+                            {
+                                <strong>@item.HomeTeamScore - @item.AwayTeamScore</strong>
+                            }
+                            else if (item.ActualStartTime.HasValue)
+                            {
+                                @item.HomeTeamScore <text> - </text> @item.AwayTeamScore
+                            }
+                            else
+                            {
+                                <text>vs</text>
+                            }
+                        </td>
+                        <td>
+                            <span class="team-color" style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: @item.AwayTeam.Color; margin-right: 5px;"></span>
+                            @Html.DisplayFor(modelItem => item.AwayTeam.Name)
+                        </td>
+                        <td>
+                            @if (item.IsDisputed)
+                            {
+                                <span class="badge bg-danger">Disputed</span>
+                            }
+                            else if (item.IsFinished)
+                            {
+                                <span class="badge bg-success">Finished</span>
+                            }
+                            else if (item.ActualStartTime.HasValue)
+                            {
+                                <span class="badge bg-primary">In Progress</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Scheduled</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">Details</a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.btn-group button').click(function() {
+                $('.btn-group button').removeClass('active');
+                $(this).addClass('active');
+                
+                var filter = $(this).data('filter');
+                if (filter === 'all') {
+                    $('tbody tr').show();
+                } else {
+                    $('tbody tr').hide();
+                    $('tbody tr[data-status="' + filter + '"]').show();
+                }
+            });
+        });
+    </script>
+}
