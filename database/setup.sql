@@ -133,7 +133,6 @@ BEGIN
     CREATE TABLE vb.Announcements
     (
         Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-        Text NVARCHAR(MAX) NOT NULL,
         Content NVARCHAR(MAX) NOT NULL,
         RenderedContent NVARCHAR(MAX) NOT NULL,
         UseMarkdown BIT NOT NULL DEFAULT 0,

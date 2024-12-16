@@ -84,7 +84,7 @@ namespace VolleyballRallyManager.Lib.Configuration
             var announcement = new Announcement
             {
                 Id = Guid.NewGuid(),
-                Text = "Welcome to ST JAGO VOLLEYBALL RALLY!",
+                Content = "Welcome to ST JAGO VOLLEYBALL RALLY!",
                 Priority = AnnouncementPriority.Info,
                 IsVisible = true,
                 CreatedAt = DateTime.UtcNow

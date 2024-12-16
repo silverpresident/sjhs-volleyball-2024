@@ -72,7 +72,7 @@ namespace VolleyballRallyManager.Lib.Data
                 .IsRequired();
 
             builder.Entity<Announcement>()
-                .Property(a => a.Text)
+                .Property(a => a.Content)
                 .IsRequired();
 
             builder.Entity<MatchUpdate>()

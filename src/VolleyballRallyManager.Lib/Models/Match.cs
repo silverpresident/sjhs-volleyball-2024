@@ -2,7 +2,7 @@ namespace VolleyballRallyManager.Lib.Models;
 
 public class Match : BaseEntity
 {
-    public required int MatchNumber { get; set; }
+    public int MatchNumber { get; set; }
     public required Guid RoundId { get; set; }
     public required DateTime ScheduledTime { get; set; }
     public DateTime? ActualStartTime { get; set; }

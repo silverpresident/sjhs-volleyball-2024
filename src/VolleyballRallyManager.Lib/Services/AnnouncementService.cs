@@ -58,6 +58,10 @@ public class AnnouncementService : IAnnouncementService
         {
             announcement.RenderedContent = Markdown.ToHtml(announcement.Content, _markdownPipeline);
         }
+        else
+        {
+            announcement.RenderedContent = string.Empty;
+        }
 
         _context.Announcements.Add(announcement);
         await _context.SaveChangesAsync();
@@ -73,6 +77,10 @@ public class AnnouncementService : IAnnouncementService
         if (announcement.UseMarkdown)
         {
             announcement.RenderedContent = Markdown.ToHtml(announcement.Content, _markdownPipeline);
+        }
+        else
+        {
+            announcement.RenderedContent = string.Empty;
         }
 
         _context.Entry(existingAnnouncement).CurrentValues.SetValues(announcement);
