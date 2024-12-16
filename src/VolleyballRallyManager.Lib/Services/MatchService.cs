@@ -115,15 +115,13 @@ public class MatchService : IMatchService
         return true;
     }
 
-    public async Task<Match> UpdateScoreAsync(Guid id, int homeTeamScore, int awayTeamScore, bool isFinished, bool isDisputed, string? notes)
+    public async Task<Match> UpdateMatchScoreAsync(Guid id, int homeTeamScore, int awayTeamScore, string userId)
     {
         var match = await GetMatchAsync(id);
         if (match == null) throw new KeyNotFoundException("Match not found");
 
         match.HomeTeamScore = homeTeamScore;
         match.AwayTeamScore = awayTeamScore;
-        match.IsFinished = isFinished;
-        match.IsDisputed = isDisputed;
 
         var update = new MatchUpdate
         {
@@ -140,29 +138,43 @@ public class MatchService : IMatchService
         return match;
     }
 
-    public async Task<Match> StartMatchAsync(Guid id)
+    public async Task<Match> StartMatchAsync(Guid id, string userId)
     {
         var match = await GetMatchAsync(id);
         if (match == null) throw new KeyNotFoundException("Match not found");
 
         match.ActualStartTime = DateTime.UtcNow;
+        var update = new MatchUpdate
+        {
+            MatchId = id,
+            UpdateType = UpdateType.MatchStarted,
+            UpdateText = $"Match started by {userId}"
+        };
+        _context.MatchUpdates.Add(update);
         await _context.SaveChangesAsync();
         await _notificationService.NotifyMatchStartedAsync(match);
         return match;
     }
 
-    public async Task<Match> FinishMatchAsync(Guid id)
+    public async Task<Match> FinishMatchAsync(Guid id, string userId)
     {
         var match = await GetMatchAsync(id);
         if (match == null) throw new KeyNotFoundException("Match not found");
 
         match.IsFinished = true;
+         var update = new MatchUpdate
+        {
+            MatchId = id,
+            UpdateType = UpdateType.MatchFinished,
+            UpdateText = $"Match finished by {userId}"
+        };
+        _context.MatchUpdates.Add(update);
         await _context.SaveChangesAsync();
         await _notificationService.NotifyMatchFinishedAsync(match);
         return match;
     }
 
-    public async Task<Match> DisputeMatchAsync(Guid id, string reason)
+    public async Task<Match> RaiseDisputeAsync(Guid id, string userId)
     {
         var match = await GetMatchAsync(id);
         if (match == null) throw new KeyNotFoundException("Match not found");
@@ -172,7 +184,7 @@ public class MatchService : IMatchService
         {
             MatchId = id,
             UpdateType = UpdateType.DisputeRaised,
-            UpdateText = $"Match disputed: {reason}"
+            UpdateText = $"Match disputed by {userId}"
         };
 
         _context.MatchUpdates.Add(update);

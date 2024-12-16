@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using VolleyballRallyManager.Admin.Models;
+using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Hubs;
 using VolleyballRallyManager.Lib.Models;
 using VolleyballRallyManager.Lib.Services;
@@ -11,12 +12,17 @@ namespace VolleyballRallyManager.Admin.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class MatchUpdatesController : ControllerBase
+public class MatchUpdatesController : ApiControllerBase
 {
     private readonly IMatchService _matchService;
     private readonly IHubContext<MatchHub> _hubContext;
 
-    public MatchUpdatesController(IMatchService matchService, IHubContext<MatchHub> hubContext)
+    public MatchUpdatesController(
+        ApplicationDbContext context,
+        IHubContext<MatchHub> hubContext,
+        ILogger<MatchUpdatesController> logger,
+        IMatchService matchService)
+        : base(context, hubContext, logger)
     {
         _matchService = matchService;
         _hubContext = hubContext;
@@ -48,13 +54,11 @@ public class MatchUpdatesController : ControllerBase
     {
         try
         {
-            var match = await _matchService.UpdateScoreAsync(
+            var match = await _matchService.UpdateMatchScoreAsync(
                 model.MatchId,
                 model.HomeTeamScore,
                 model.AwayTeamScore,
-                model.IsFinished,
-                model.IsDisputed,
-                model.Notes
+                CurrentUserId
             );
 
             if (model.IsFinished)
@@ -79,7 +83,7 @@ public class MatchUpdatesController : ControllerBase
     {
         try
         {
-            var match = await _matchService.StartMatchAsync(id);
+            var match = await _matchService.StartMatchAsync(id, CurrentUserId);
             return Ok(match);
         }
         catch (KeyNotFoundException)
@@ -97,7 +101,7 @@ public class MatchUpdatesController : ControllerBase
     {
         try
         {
-            var match = await _matchService.FinishMatchAsync(id);
+            var match = await _matchService.FinishMatchAsync(id, CurrentUserId);
             await _matchService.UpdateTeamStatisticsAsync(id);
             return Ok(match);
         }
@@ -116,7 +120,7 @@ public class MatchUpdatesController : ControllerBase
     {
         try
         {
-            var match = await _matchService.DisputeMatchAsync(id, reason);
+            var match = await _matchService.RaiseDisputeAsync(id, CurrentUserId);
             return Ok(match);
         }
         catch (KeyNotFoundException)

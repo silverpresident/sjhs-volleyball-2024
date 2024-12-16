@@ -25,7 +25,7 @@
                         <span class="timestamp">@FormatDateTime(announcement.CreatedAt)</span>
                     </div>
                     <div class="announcement-body">
-                        @((MarkupString)FormatMessage(announcement.Message))
+                        @((MarkupString)FormatMessage(announcement.Text))
                     </div>
                 </div>
             }

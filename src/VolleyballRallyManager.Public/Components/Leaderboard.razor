@@ -37,7 +37,8 @@
                         </thead>
                         <tbody>
                             @{
-                                var boysTeams = GetStandings(Division.BOYS);
+                                var boysDivision = AppState.Divisions.FirstOrDefault(d => d.Name == "BOYS");
+                                var boysTeams = GetStandings(boysDivision?.Id);
                                 for (int i = 0; i < boysTeams.Count; i++)
                                 {
                                     var team = boysTeams[i];
@@ -88,7 +89,8 @@
                         </thead>
                         <tbody>
                             @{
-                                var girlsTeams = GetStandings(Division.GIRLS);
+                                var girlsDivision = AppState.Divisions.FirstOrDefault(d => d.Name == "GIRLS");
+                                var girlsTeams = GetStandings(girlsDivision?.Id);
                                 for (int i = 0; i < girlsTeams.Count; i++)
                                 {
                                     var team = girlsTeams[i];
@@ -123,10 +125,11 @@
 </div>
 
 @code {
-    private List<Team> GetStandings(Division division)
+    private List<Team> GetStandings(Guid? divisionId)
     {
+        if (divisionId == null) return new List<Team>();
         return AppState.Teams
-            .Where(t => t.Division == division)
+            .Where(t => t.Division.Id == divisionId)
             .OrderByDescending(t => t.TotalPoints)
             .ThenByDescending(t => t.PointDifference)
             .ThenByDescending(t => t.PointsFor)

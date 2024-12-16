@@ -14,10 +14,10 @@ public interface IMatchService
     Task<Match> CreateMatchAsync(Match match);
     Task<Match> UpdateMatchAsync(Match match);
     Task<bool> DeleteMatchAsync(Guid id);
-    Task<Match> UpdateScoreAsync(Guid id, int homeTeamScore, int awayTeamScore, bool isFinished, bool isDisputed, string? notes);
-    Task<Match> StartMatchAsync(Guid id);
-    Task<Match> FinishMatchAsync(Guid id);
-    Task<Match> DisputeMatchAsync(Guid id, string reason);
+    Task<Match> UpdateMatchScoreAsync(Guid id, int homeTeamScore, int awayTeamScore, string userId);
+    Task<Match> StartMatchAsync(Guid id, string userId);
+    Task<Match> FinishMatchAsync(Guid id, string userId);
+    Task<Match> RaiseDisputeAsync(Guid id, string userId);
     Task<Match> AssignRefereeAsync(Guid id, string refereeName);
     Task<Match> AssignScorerAsync(Guid id, string scorerName);
     Task<Match> UpdateLocationAsync(Guid id, string location);

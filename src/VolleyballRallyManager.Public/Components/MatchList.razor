@@ -18,7 +18,7 @@
                 <div class="match-card @GetMatchStatusClass(match)">
                     <div class="match-header">
                         <span class="match-number">Match #@match.MatchNumber</span>
-                        <span class="match-round">@match.Round.ToString().Replace("_", " ")</span>
+                        <span class="match-round">@match.Round?.ToString().Replace("_", " ")</span>
                     </div>
                     <div class="match-time">
                         <i class="fas fa-clock"></i>
