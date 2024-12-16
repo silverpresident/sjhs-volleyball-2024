@@ -25,14 +25,8 @@
                         <span class="timestamp">@FormatDateTime(update.CreatedAt)</span>
                     </div>
                     <div class="update-body">
-                        @((MarkupString)FormatMessage(update.Message))
+                        @((MarkupString)FormatMessage(update.UpdateText))
                     </div>
-                    @if (update.Score != null)
-                    {
-                        <div class="score-update">
-                            New Score: @update.Score
-                        </div>
-                    }
                 </div>
             }
         </div>

@@ -4,14 +4,6 @@ using VolleyballRallyManager.Lib.Models;
 
 namespace VolleyballRallyManager.Public.Services;
 
-public interface IApiService
-{
-    Task<List<Match>> GetMatchesAsync();
-    Task<List<Team>> GetTeamsAsync();
-    Task<List<Announcement>> GetAnnouncementsAsync();
-    Task<List<MatchUpdate>> GetMatchUpdatesAsync();
-}
-
 public class ApiService : IApiService
 {
     private readonly HttpClient _httpClient;
@@ -80,6 +72,20 @@ public class ApiService : IApiService
         {
             Console.Error.WriteLine($"Error fetching match updates: {ex.Message}");
             return new List<MatchUpdate>();
+        }
+    }
+
+    public async Task<List<Division>> GetDivisionsAsync()
+    {
+        try
+        {
+            var response = await _httpClient.GetFromJsonAsync<List<Division>>("api/divisions", _jsonOptions);
+            return response ?? new List<Division>();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error fetching divisions: {ex.Message}");
+            return new List<Division>();
         }
     }
 }

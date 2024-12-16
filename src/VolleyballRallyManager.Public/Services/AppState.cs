@@ -1,4 +1,4 @@
-using VolleyballRallyManager.Lib.Models;
+ using VolleyballRallyManager.Lib.Models;
 
 namespace VolleyballRallyManager.Public.Services;
 
@@ -11,6 +11,7 @@ public class AppState
     public List<Team> Teams { get; private set; } = new();
     public List<Announcement> Announcements { get; private set; } = new();
     public List<MatchUpdate> MatchUpdates { get; private set; } = new();
+    public List<Division> Divisions { get; private set; } = new();
 
     public event Action? OnChange;
 
@@ -39,13 +40,15 @@ public class AppState
         var teamsTask = _apiService.GetTeamsAsync();
         var announcementsTask = _apiService.GetAnnouncementsAsync();
         var matchUpdatesTask = _apiService.GetMatchUpdatesAsync();
+        var divisionsTask = _apiService.GetDivisionsAsync();
 
-        await Task.WhenAll(matchesTask, teamsTask, announcementsTask, matchUpdatesTask);
+        await Task.WhenAll(matchesTask, teamsTask, announcementsTask, matchUpdatesTask, divisionsTask);
 
         Matches = (await matchesTask).OrderBy(m => m.ScheduledTime).ToList();
         Teams = (await teamsTask).OrderBy(t => t.Name).ToList();
         Announcements = (await announcementsTask).OrderByDescending(a => a.CreatedAt).ToList();
         MatchUpdates = (await matchUpdatesTask).OrderByDescending(u => u.CreatedAt).ToList();
+        Divisions = (await divisionsTask).OrderBy(d => d.Name).ToList();
 
         NotifyStateChanged();
     }
