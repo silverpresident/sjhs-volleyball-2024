@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Services;
+using Microsoft.AspNetCore.Authentication;
 
 namespace VolleyballRallyManager.Lib.Configuration;
 
@@ -37,6 +38,13 @@ public static class ServiceCollectionExtensions
 
         // SignalR
         services.AddSignalR();
+
+        // Authentication
+        services.AddAuthentication("Identity.Application");
+        services.Configure<AuthenticationOptions>(options =>
+        {
+            options.DefaultChallengeScheme = "Identity.Application";
+        });
 
         return services;
     }
