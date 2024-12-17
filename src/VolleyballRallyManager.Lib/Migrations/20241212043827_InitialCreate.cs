@@ -265,7 +265,7 @@ namespace VolleyballRallyManager.Lib.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MatchId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UpdateText = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PreviousValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NewValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdateType = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),

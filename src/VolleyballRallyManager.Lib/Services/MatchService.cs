@@ -127,7 +127,7 @@ public class MatchService : IMatchService
         {
             MatchId = id,
             UpdateType = UpdateType.ScoreUpdate,
-            UpdateText = $"Score updated to {homeTeamScore}-{awayTeamScore}",
+            Content = $"Score updated to {homeTeamScore}-{awayTeamScore}",
             PreviousValue = $"{match.HomeTeamScore}-{match.AwayTeamScore}",
             NewValue = $"{homeTeamScore}-{awayTeamScore}"
         };
@@ -148,7 +148,7 @@ public class MatchService : IMatchService
         {
             MatchId = id,
             UpdateType = UpdateType.MatchStarted,
-            UpdateText = $"Match started by {userId}"
+            Content = $"Match started by {userId}"
         };
         _context.MatchUpdates.Add(update);
         await _context.SaveChangesAsync();
@@ -166,7 +166,7 @@ public class MatchService : IMatchService
         {
             MatchId = id,
             UpdateType = UpdateType.MatchFinished,
-            UpdateText = $"Match finished by {userId}"
+            Content = $"Match finished by {userId}"
         };
         _context.MatchUpdates.Add(update);
         await _context.SaveChangesAsync();
@@ -184,7 +184,7 @@ public class MatchService : IMatchService
         {
             MatchId = id,
             UpdateType = UpdateType.DisputeRaised,
-            UpdateText = $"Match disputed by {userId}"
+            Content = $"Match disputed by {userId}"
         };
 
         _context.MatchUpdates.Add(update);
@@ -203,7 +203,7 @@ public class MatchService : IMatchService
         {
             MatchId = id,
             UpdateType = UpdateType.RefereeAssigned,
-            UpdateText = $"Referee assigned: {refereeName}"
+            Content = $"Referee assigned: {refereeName}"
         };
 
         _context.MatchUpdates.Add(update);
@@ -222,7 +222,7 @@ public class MatchService : IMatchService
         {
             MatchId = id,
             UpdateType = UpdateType.ScorerAssigned,
-            UpdateText = $"Scorer assigned: {scorerName}"
+            Content = $"Scorer assigned: {scorerName}"
         };
 
         _context.MatchUpdates.Add(update);
@@ -242,7 +242,7 @@ public class MatchService : IMatchService
         {
             MatchId = id,
             UpdateType = UpdateType.LocationChanged,
-            UpdateText = $"Location changed from {oldLocation} to {location}",
+            Content = $"Location changed from {oldLocation} to {location}",
             PreviousValue = oldLocation,
             NewValue = location
         };
@@ -264,7 +264,7 @@ public class MatchService : IMatchService
         {
             MatchId = id,
             UpdateType = UpdateType.TimeChanged,
-            UpdateText = $"Time changed from {oldTime:g} to {scheduledTime:g}",
+            Content = $"Time changed from {oldTime:g} to {scheduledTime:g}",
             PreviousValue = oldTime.ToString("g"),
             NewValue = scheduledTime.ToString("g")
         };

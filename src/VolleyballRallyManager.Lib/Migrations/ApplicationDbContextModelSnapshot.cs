@@ -402,7 +402,7 @@ namespace VolleyballRallyManager.Lib.Migrations
                     b.Property<DateTime>("ProcessedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UpdateText")
+                    b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
