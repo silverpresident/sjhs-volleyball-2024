@@ -10,7 +10,7 @@
 
     <div class="row mb-3">
         <div class="col">
-            <a asp-action="Create" class="btn btn-primary">Create New Announcement</a>
+            <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Create New Announcement</a>
         </div>
         <div class="col-auto">
             <div class="btn-group" role="group">
@@ -27,6 +27,25 @@
             <div class="col-md-6 mb-4" data-visible="@item.IsVisible.ToString().ToLower()">
                 <div class="card h-100">
                     <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="btn-group" role="group">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Edit"><i class="bi bi-pencil"></i></a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Details"><i class="bi bi-info-circle"></i></a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></a>
+                            @if (item.IsVisible)
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-secondary toggle-visibility" 
+                                        data-id="@item.Id" data-visible="true" title="Hide">
+                                    <i class="bi bi-eye-slash"></i>
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn btn-sm btn-outline-success toggle-visibility" 
+                                        data-id="@item.Id" data-visible="false" title="Show">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            }
+                        </div>
                         <div>
                             <span class="badge bg-@(item.Priority.ToString().ToLower())">@item.Priority</span>
                             @if (!item.IsVisible)
@@ -45,27 +64,6 @@
                         {
                             <p class="card-text">@item.Content</p>
                         }
-                    </div>
-                    <div class="card-footer">
-                        <div class="btn-group" role="group">
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">Details</a>
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
-                            @if (item.IsVisible)
-                            {
-                                <button type="button" class="btn btn-sm btn-outline-secondary toggle-visibility" 
-                                        data-id="@item.Id" data-visible="true">
-                                    Hide
-                                </button>
-                            }
-                            else
-                            {
-                                <button type="button" class="btn btn-sm btn-outline-success toggle-visibility" 
-                                        data-id="@item.Id" data-visible="false">
-                                    Show
-                                </button>
-                            }
-                        </div>
                     </div>
                 </div>
             </div>
@@ -105,13 +103,13 @@
                         card.attr('data-visible', (!currentlyVisible).toString());
                         
                         if (currentlyVisible) {
-                            button.text('Show')
+                            button.html('<i class="bi bi-eye-slash"></i> Hide')
                                 .removeClass('btn-outline-secondary')
                                 .addClass('btn-outline-success');
                             card.find('.badge.bg-secondary').remove();
                             card.find('.card-header div').append('<span class="badge bg-secondary ms-2">Hidden</span>');
                         } else {
-                            button.text('Hide')
+                            button.html('<i class="bi bi-eye"></i> Show')
                                 .removeClass('btn-outline-success')
                                 .addClass('btn-outline-secondary');
                             card.find('.badge.bg-secondary').remove();

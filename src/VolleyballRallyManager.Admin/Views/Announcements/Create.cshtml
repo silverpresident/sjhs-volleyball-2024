@@ -6,84 +6,89 @@
 }
 
 <div class="container">
-    <h1>Create Announcement</h1>
+    <div class="card">
+        <div class="card-header">
+            <h1>Create Announcement</h1>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <div class="row">
-        <div class="col-md-8">
-            <form asp-action="Create">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Announcement Content</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="form-group mb-3">
-                            <label asp-for="Content" class="control-label"></label>
-                            <textarea asp-for="Content" class="form-control" rows="5" id="announcementContent"></textarea>
-                            <span asp-validation-for="Content" class="text-danger"></span>
-                        </div>
-
-                        <div class="form-check mb-3">
-                            <input asp-for="UseMarkdown" class="form-check-input" type="checkbox" id="useMarkdown" />
-                            <label asp-for="UseMarkdown" class="form-check-label">Use Markdown Formatting</label>
-                            <span asp-validation-for="UseMarkdown" class="text-danger"></span>
-                        </div>
-
-                        <div id="markdownPreview" class="card d-none">
+                        <div class="card mb-4">
                             <div class="card-header">
-                                Preview
+                                <h5 class="mb-0">Announcement Content</h5>
                             </div>
                             <div class="card-body">
-                                <div id="previewContent"></div>
+                                <div class="form-group mb-3">
+                                    <label asp-for="Content" class="control-label"></label>
+                                    <textarea asp-for="Content" class="form-control" rows="5" id="announcementContent"></textarea>
+                                    <span asp-validation-for="Content" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-check mb-3">
+                                    <input asp-for="UseMarkdown" class="form-check-input" type="checkbox" id="useMarkdown" />
+                                    <label asp-for="UseMarkdown" class="form-check-label">Use Markdown Formatting</label>
+                                    <span asp-validation-for="UseMarkdown" class="text-danger"></span>
+                                </div>
+
+                                <div id="markdownPreview" class="card d-none">
+                                    <div class="card-header">
+                                        Preview
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="previewContent"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0">Settings</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="form-group mb-3">
-                            <label asp-for="Priority" class="control-label"></label>
-                            <select asp-for="Priority" class="form-control" asp-items="Html.GetEnumSelectList<AnnouncementPriority>()">
-                                <option value="">-- Select Priority --</option>
-                            </select>
-                            <span asp-validation-for="Priority" class="text-danger"></span>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Settings</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Priority" class="control-label"></label>
+                                    <select asp-for="Priority" class="form-control" asp-items="Html.GetEnumSelectList<AnnouncementPriority>()">
+                                        <option value="">-- Select Priority --</option>
+                                    </select>
+                                    <span asp-validation-for="Priority" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-check mb-3">
+                                    <input asp-for="IsVisible" class="form-check-input" type="checkbox" checked />
+                                    <label asp-for="IsVisible" class="form-check-label">Make Announcement Visible</label>
+                                    <span asp-validation-for="IsVisible" class="text-danger"></span>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="form-check mb-3">
-                            <input asp-for="IsVisible" class="form-check-input" type="checkbox" checked />
-                            <label asp-for="IsVisible" class="form-check-label">Make Announcement Visible</label>
-                            <span asp-validation-for="IsVisible" class="text-danger"></span>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Create</button>
+                            <a asp-action="Index" class="btn btn-secondary"><i class="bi bi-arrow-left-circle"></i> Back to List</a>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Markdown Help</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6>Basic Syntax</h6>
+                            <ul class="list-unstyled">
+                                <li><code># Heading 1</code></li>
+                                <li><code>## Heading 2</code></li>
+                                <li><code>**bold**</code></li>
+                                <li><code>*italic*</code></li>
+                                <li><code>[link](url)</code></li>
+                                <li><code>- list item</code></li>
+                            </ul>
                         </div>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Create</button>
-                    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-                </div>
-            </form>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Markdown Help</h5>
-                </div>
-                <div class="card-body">
-                    <h6>Basic Syntax</h6>
-                    <ul class="list-unstyled">
-                        <li><code># Heading 1</code></li>
-                        <li><code>## Heading 2</code></li>
-                        <li><code>**bold**</code></li>
-                        <li><code>*italic*</code></li>
-                        <li><code>[link](url)</code></li>
-                        <li><code>- list item</code></li>
-                    </ul>
                 </div>
             </div>
         </div>

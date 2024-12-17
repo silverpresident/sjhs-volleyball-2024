@@ -9,7 +9,7 @@
 
     <div class="row mb-3">
         <div class="col">
-            <a asp-action="Create" class="btn btn-primary">Create New Match</a>
+            <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Create New Match</a>
         </div>
         <div class="col-auto">
             <div class="btn-group" role="group">
@@ -26,6 +26,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <th>Actions</th>
                     <th>@Html.DisplayNameFor(model => model.MatchNumber)</th>
                     <th>Round</th>
                     <th>Time</th>
@@ -34,7 +35,6 @@
                     <th>Score</th>
                     <th>Away Team</th>
                     <th>Status</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,6 +45,13 @@
                                 item.ActualStartTime.HasValue ? "in-progress" : "scheduled";
 
                     <tr data-status="@status">
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Edit"><i class="bi bi-pencil"></i></a>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Details"><i class="bi bi-info-circle"></i></a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></a>
+                            </div>
+                        </td>
                         <td>@Html.DisplayFor(modelItem => item.MatchNumber)</td>
                         <td>@Html.DisplayFor(modelItem => item.Round.Name)</td>
                         <td>
@@ -95,13 +102,6 @@
                             {
                                 <span class="badge bg-secondary">Scheduled</span>
                             }
-                        </td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">Details</a>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
-                            </div>
                         </td>
                     </tr>
                 }
