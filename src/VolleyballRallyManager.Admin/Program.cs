@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VolleyballRallyManager.Lib.Configuration;
@@ -29,12 +30,22 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Add external authentication providers
-builder.Services.AddAuthentication()
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultScheme = IdentityConstants.ApplicationScheme;
+    })
     .AddGoogle(options =>
     {
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? "";
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "";
+    })
+    .AddMicrosoftAccount(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"] ?? "";
+        options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"] ?? "";
     });
+
+builder.Services.AddAuthorization();
 
 // Add CORS for Blazor WebAssembly client
 builder.Services.AddCors(options =>

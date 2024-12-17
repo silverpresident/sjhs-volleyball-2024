@@ -13,11 +13,11 @@ public class Team : BaseEntity
     public int Wins { get; set; }
     public int Draws { get; set; }
     public int Losses { get; set; }
-    public int PointsScored { get; set; }
-    public int PointsConceded { get; set; }
+    public int TotalPoints { get; set; } = 0; // 3/1/0 added
+    public int PointsScored { get; set; } = 0;
+    public int PointsConceded { get; set; } = 0;
     public int PointDifference => PointsScored - PointsConceded;
-    public int TotalPoints { get; set; }
-
+   
     // Navigation properties
     public virtual ICollection<Match> HomeMatches { get; set; } = new List<Match>();
     public virtual ICollection<Match> AwayMatches { get; set; } = new List<Match>();
