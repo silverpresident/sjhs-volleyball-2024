@@ -39,13 +39,6 @@ public static class ServiceCollectionExtensions
         // SignalR
         services.AddSignalR();
 
-        // Authentication
-        services.AddAuthentication("Identity.Application");
-        services.Configure<AuthenticationOptions>(options =>
-        {
-            options.DefaultChallengeScheme = "Identity.Application";
-        });
-
         return services;
     }
 }

@@ -19,12 +19,9 @@ builder.Services.AddVolleyballRallyServices(builder.Configuration);
 builder.Services.AddVolleyballSignalR();
 
 // Add Identity
-builder.Services.AddVolleyBallRallyAuthentication(builder.Configuration);
+builder.Services.AddVolleyballRallyManagerAuthentication(builder.Configuration);
 
 builder.Services.AddAuthorization();
-
-// Add UserManager
-builder.Services.AddScoped<UserManager<ApplicationUser>>();
 
 // Add CORS for Blazor WebAssembly client
 builder.Services.AddCors(options =>
