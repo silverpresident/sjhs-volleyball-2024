@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace VolleyballRallyManager.Lib.Configuration
 {
@@ -16,8 +17,9 @@ namespace VolleyballRallyManager.Lib.Configuration
             await dbContext.Database.MigrateAsync();
 
             // Seed initial data if needed
-            if (!await dbContext.Teams.AnyAsync())
+            if (!await dbContext.Teams.AnyAsync() && await dbContext.Database.CanConnectAsync())
             {
+                await dbContext.Database.EnsureCreatedAsync();
                 await SeedInitialDataAsync(dbContext);
             }
         }
@@ -45,7 +47,16 @@ namespace VolleyballRallyManager.Lib.Configuration
                 new Round { Id = Guid.NewGuid(), Name = "Finals", Order = 6 }
             };
 
+            foreach (var division in divisions)
+            {
+                if (string.IsNullOrEmpty(division.Name))
+                {
+                    division.Name = "Unknown";
+                }
+            }
+
             await dbContext.Rounds.AddRangeAsync(rounds);
+            await dbContext.Divisions.AddRangeAsync(divisions);
             await dbContext.SaveChangesAsync();
 
             // Add sample teams

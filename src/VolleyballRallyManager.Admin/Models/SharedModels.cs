@@ -53,7 +53,7 @@ public class AnnouncementListItemViewModel
 public class MatchUpdateListItemViewModel
 {
     public Guid Id { get; set; }
-    public string UpdateText { get; set; } = string.Empty;
+    public string Content { get; set; } = string.Empty;
     public UpdateType UpdateType { get; set; }
     public string? PreviousValue { get; set; }
     public string? NewValue { get; set; }

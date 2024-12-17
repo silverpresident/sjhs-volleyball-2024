@@ -113,7 +113,7 @@ BEGIN
         Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
         MatchId UNIQUEIDENTIFIER NOT NULL,
         UpdateType NVARCHAR(50) NOT NULL,
-        UpdateText NVARCHAR(500) NOT NULL,
+        Content NVARCHAR(500) NOT NULL,
         PreviousValue NVARCHAR(100),
         NewValue NVARCHAR(100),
         IsProcessed BIT NOT NULL DEFAULT 0,
