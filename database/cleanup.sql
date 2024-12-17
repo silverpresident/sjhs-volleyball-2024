@@ -1,5 +1,5 @@
 -- Drop all tables
-USE VolleyballRally;
+USE stjago-volleyball-demo;
 GO
 
 IF OBJECT_ID('dbo.MatchUpdates', 'U') IS NOT NULL

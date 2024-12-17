@@ -42,6 +42,7 @@ BEGIN
         Color NVARCHAR(50) NOT NULL,
         DivisionId UNIQUEIDENTIFIER NOT NULL,
         LogoUrl NVARCHAR(500),
+        TotalPoints INT NOT NULL DEFAULT 0,
         PointsScored INT NOT NULL DEFAULT 0,
         PointsConceded INT NOT NULL DEFAULT 0,
         MatchesPlayed INT NOT NULL DEFAULT 0,
