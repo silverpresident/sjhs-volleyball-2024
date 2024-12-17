@@ -7,7 +7,6 @@ using VolleyballRallyManager.Admin.Models;
 
 namespace VolleyballRallyManager.Admin.Controllers;
 
-[Authorize]
 public class HomeController : Controller
 {
     private readonly ApplicationDbContext _context;

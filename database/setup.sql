@@ -9,17 +9,17 @@ USE VolleyballRally;
 GO
 
 -- Create Schema
-IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'vb')
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'dbo')
 BEGIN
-    EXEC('CREATE SCHEMA vb');
+    EXEC('CREATE SCHEMA dbo');
 END
 GO
 
 -- Create Tables
 -- Divisions
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Divisions' AND schema_id = SCHEMA_ID('vb'))
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Divisions' AND schema_id = SCHEMA_ID('dbo'))
 BEGIN
-    CREATE TABLE vb.Divisions
+    CREATE TABLE dbo.Divisions
     (
         Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
         Name NVARCHAR(50) NOT NULL,
@@ -32,9 +32,9 @@ END
 GO
 
 -- Teams
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Teams' AND schema_id = SCHEMA_ID('vb'))
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Teams' AND schema_id = SCHEMA_ID('dbo'))
 BEGIN
-    CREATE TABLE vb.Teams
+    CREATE TABLE dbo.Teams
     (
         Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
         Name NVARCHAR(100) NOT NULL,
@@ -53,15 +53,15 @@ BEGIN
         UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
         CreatedBy NVARCHAR(256),
         UpdatedBy NVARCHAR(256),
-        CONSTRAINT FK_Teams_Divisions FOREIGN KEY (DivisionId) REFERENCES vb.Divisions(Id)
+        CONSTRAINT FK_Teams_Divisions FOREIGN KEY (DivisionId) REFERENCES dbo.Divisions(Id)
     );
 END
 GO
 
 -- Rounds
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Rounds' AND schema_id = SCHEMA_ID('vb'))
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Rounds' AND schema_id = SCHEMA_ID('dbo'))
 BEGIN
-    CREATE TABLE vb.Rounds
+    CREATE TABLE dbo.Rounds
     (
         Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
         Name NVARCHAR(50) NOT NULL,
@@ -76,9 +76,9 @@ END
 GO
 
 -- Matches
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Matches' AND schema_id = SCHEMA_ID('vb'))
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Matches' AND schema_id = SCHEMA_ID('dbo'))
 BEGIN
-    CREATE TABLE vb.Matches
+    CREATE TABLE dbo.Matches
     (
         Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
         MatchNumber INT NOT NULL,
@@ -98,17 +98,17 @@ BEGIN
         UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
         CreatedBy NVARCHAR(256),
         UpdatedBy NVARCHAR(256),
-        CONSTRAINT FK_Matches_Rounds FOREIGN KEY (RoundId) REFERENCES vb.Rounds(Id),
-        CONSTRAINT FK_Matches_HomeTeam FOREIGN KEY (HomeTeamId) REFERENCES vb.Teams(Id),
-        CONSTRAINT FK_Matches_AwayTeam FOREIGN KEY (AwayTeamId) REFERENCES vb.Teams(Id)
+        CONSTRAINT FK_Matches_Rounds FOREIGN KEY (RoundId) REFERENCES dbo.Rounds(Id),
+        CONSTRAINT FK_Matches_HomeTeam FOREIGN KEY (HomeTeamId) REFERENCES dbo.Teams(Id),
+        CONSTRAINT FK_Matches_AwayTeam FOREIGN KEY (AwayTeamId) REFERENCES dbo.Teams(Id)
     );
 END
 GO
 
 -- Match Updates
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'MatchUpdates' AND schema_id = SCHEMA_ID('vb'))
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'MatchUpdates' AND schema_id = SCHEMA_ID('dbo'))
 BEGIN
-    CREATE TABLE vb.MatchUpdates
+    CREATE TABLE dbo.MatchUpdates
     (
         Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
         MatchId UNIQUEIDENTIFIER NOT NULL,
@@ -122,15 +122,15 @@ BEGIN
         UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
         CreatedBy NVARCHAR(256),
         UpdatedBy NVARCHAR(256),
-        CONSTRAINT FK_MatchUpdates_Matches FOREIGN KEY (MatchId) REFERENCES vb.Matches(Id)
+        CONSTRAINT FK_MatchUpdates_Matches FOREIGN KEY (MatchId) REFERENCES dbo.Matches(Id)
     );
 END
 GO
 
 -- Announcements
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Announcements' AND schema_id = SCHEMA_ID('vb'))
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Announcements' AND schema_id = SCHEMA_ID('dbo'))
 BEGIN
-    CREATE TABLE vb.Announcements
+    CREATE TABLE dbo.Announcements
     (
         Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
         Content NVARCHAR(MAX) NOT NULL,
@@ -148,18 +148,18 @@ GO
 
 -- Insert Initial Data
 -- Insert Divisions
-IF NOT EXISTS (SELECT * FROM vb.Divisions)
+IF NOT EXISTS (SELECT * FROM dbo.Divisions)
 BEGIN
-    INSERT INTO vb.Divisions (Id, Name) VALUES
+    INSERT INTO dbo.Divisions (Id, Name) VALUES
     (NEWID(), 'BOYS'),
     (NEWID(), 'GIRLS');
 END
 GO
 
 -- Insert Rounds
-IF NOT EXISTS (SELECT * FROM vb.Rounds)
+IF NOT EXISTS (SELECT * FROM dbo.Rounds)
 BEGIN
-    INSERT INTO vb.Rounds (Id, Name, Sequence) VALUES
+    INSERT INTO dbo.Rounds (Id, Name, Sequence) VALUES
     (NEWID(), 'Round 1', 1),
     (NEWID(), 'Round 2', 2),
     (NEWID(), 'Round 3', 3),
@@ -170,46 +170,46 @@ END
 GO
 
 -- Create Indexes
-CREATE NONCLUSTERED INDEX IX_Teams_Division ON vb.Teams(DivisionId);
-CREATE NONCLUSTERED INDEX IX_Matches_Round ON vb.Matches(RoundId);
-CREATE NONCLUSTERED INDEX IX_Matches_Teams ON vb.Matches(HomeTeamId, AwayTeamId);
-CREATE NONCLUSTERED INDEX IX_MatchUpdates_Match ON vb.MatchUpdates(MatchId);
-CREATE NONCLUSTERED INDEX IX_Announcements_Priority ON vb.Announcements(Priority);
+CREATE NONCLUSTERED INDEX IX_Teams_Division ON dbo.Teams(DivisionId);
+CREATE NONCLUSTERED INDEX IX_Matches_Round ON dbo.Matches(RoundId);
+CREATE NONCLUSTERED INDEX IX_Matches_Teams ON dbo.Matches(HomeTeamId, AwayTeamId);
+CREATE NONCLUSTERED INDEX IX_MatchUpdates_Match ON dbo.MatchUpdates(MatchId);
+CREATE NONCLUSTERED INDEX IX_Announcements_Priority ON dbo.Announcements(Priority);
 GO
 
 -- Create Triggers for UpdatedAt
-CREATE TRIGGER vb.TR_Teams_UpdatedAt ON vb.Teams AFTER UPDATE AS
+CREATE TRIGGER dbo.TR_Teams_UpdatedAt ON dbo.Teams AFTER UPDATE AS
 BEGIN
-    UPDATE vb.Teams
+    UPDATE dbo.Teams
     SET UpdatedAt = GETUTCDATE()
-    FROM vb.Teams t
+    FROM dbo.Teams t
     INNER JOIN inserted i ON t.Id = i.Id;
 END
 GO
 
-CREATE TRIGGER vb.TR_Matches_UpdatedAt ON vb.Matches AFTER UPDATE AS
+CREATE TRIGGER dbo.TR_Matches_UpdatedAt ON dbo.Matches AFTER UPDATE AS
 BEGIN
-    UPDATE vb.Matches
+    UPDATE dbo.Matches
     SET UpdatedAt = GETUTCDATE()
-    FROM vb.Matches m
+    FROM dbo.Matches m
     INNER JOIN inserted i ON m.Id = i.Id;
 END
 GO
 
-CREATE TRIGGER vb.TR_MatchUpdates_UpdatedAt ON vb.MatchUpdates AFTER UPDATE AS
+CREATE TRIGGER dbo.TR_MatchUpdates_UpdatedAt ON dbo.MatchUpdates AFTER UPDATE AS
 BEGIN
-    UPDATE vb.MatchUpdates
+    UPDATE dbo.MatchUpdates
     SET UpdatedAt = GETUTCDATE()
-    FROM vb.MatchUpdates mu
+    FROM dbo.MatchUpdates mu
     INNER JOIN inserted i ON mu.Id = i.Id;
 END
 GO
 
-CREATE TRIGGER vb.TR_Announcements_UpdatedAt ON vb.Announcements AFTER UPDATE AS
+CREATE TRIGGER dbo.TR_Announcements_UpdatedAt ON dbo.Announcements AFTER UPDATE AS
 BEGIN
-    UPDATE vb.Announcements
+    UPDATE dbo.Announcements
     SET UpdatedAt = GETUTCDATE()
-    FROM vb.Announcements a
+    FROM dbo.Announcements a
     INNER JOIN inserted i ON a.Id = i.Id;
 END
 GO
