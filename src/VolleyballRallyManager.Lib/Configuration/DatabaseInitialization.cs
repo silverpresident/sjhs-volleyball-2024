@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Logging;
 
 namespace VolleyballRallyManager.Lib.Configuration
 {
@@ -13,29 +14,29 @@ namespace VolleyballRallyManager.Lib.Configuration
             using var scope = serviceProvider.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
+            // Ensure database is created
+            await dbContext.Database.EnsureCreatedAsync();
+
             // Apply migrations
             await dbContext.Database.MigrateAsync();
 
             // Seed initial data if needed
             if (!await dbContext.Teams.AnyAsync() && await dbContext.Database.CanConnectAsync())
             {
-                await dbContext.Database.EnsureCreatedAsync();
-                await SeedInitialDataAsync(dbContext);
+                try
+                {
+                    await SeedInitialDataAsync(dbContext);
+                }
+                catch (Exception ex)
+                {
+                    var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
+                    logger.LogError(ex, "An error occurred while seeding the database.");
+                }
             }
         }
 
         private static async Task SeedInitialDataAsync(ApplicationDbContext dbContext)
         {
-            // Add sample divisions first
-            var divisions = new[]
-            {
-                new Division { Id = Guid.NewGuid(), Name = "BOYS"},
-                new Division { Id = Guid.NewGuid(), Name = "GIRLS"}
-            };
-
-            await dbContext.Divisions.AddRangeAsync(divisions);
-            await dbContext.SaveChangesAsync();
-
             // Add sample rounds
             var rounds = new[]
             {
@@ -45,6 +46,12 @@ namespace VolleyballRallyManager.Lib.Configuration
                 new Round { Id = Guid.NewGuid(), Name = "Quarter Finals", Order = 4 },
                 new Round { Id = Guid.NewGuid(), Name = "Semi Finals", Order = 5 },
                 new Round { Id = Guid.NewGuid(), Name = "Finals", Order = 6 }
+            };
+            // Add sample divisions
+            var divisions = new[]
+            {
+                new Division { Id = Guid.NewGuid(), Name = "BOYS"},
+                new Division { Id = Guid.NewGuid(), Name = "GIRLS"}
             };
 
             foreach (var division in divisions)

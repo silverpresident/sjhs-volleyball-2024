@@ -150,22 +150,22 @@ GO
 -- Insert Divisions
 IF NOT EXISTS (SELECT * FROM dbo.Divisions)
 BEGIN
-    INSERT INTO dbo.Divisions (Id, Name) VALUES
-    (NEWID(), 'BOYS'),
-    (NEWID(), 'GIRLS');
+    INSERT INTO dbo.Divisions (Id, Name, CreatedBy, UpdatedBy) VALUES
+    (NEWID(), 'BOYS', 'system', 'system'),
+    (NEWID(), 'GIRLS', 'system', 'system');
 END
 GO
 
 -- Insert Rounds
 IF NOT EXISTS (SELECT * FROM dbo.Rounds)
 BEGIN
-    INSERT INTO dbo.Rounds (Id, Name, Sequence) VALUES
-    (NEWID(), 'Round 1', 1),
-    (NEWID(), 'Round 2', 2),
-    (NEWID(), 'Round 3', 3),
-    (NEWID(), 'Quarter Finals', 4),
-    (NEWID(), 'Semi Finals', 5),
-    (NEWID(), 'Finals', 6);
+    INSERT INTO dbo.Rounds (Id, Name, Sequence, CreatedBy, UpdatedBy) VALUES
+    (NEWID(), 'Round 1', 1, 'system', 'system'),
+    (NEWID(), 'Round 2', 2, 'system', 'system'),
+    (NEWID(), 'Round 3', 3, 'system', 'system'),
+    (NEWID(), 'Quarter Finals', 4, 'system', 'system'),
+    (NEWID(), 'Semi Finals', 5, 'system', 'system'),
+    (NEWID(), 'Finals', 6, 'system', 'system');
 END
 GO
 
