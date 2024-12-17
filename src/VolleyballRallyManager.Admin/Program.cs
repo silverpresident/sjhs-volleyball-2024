@@ -1,9 +1,9 @@
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VolleyballRallyManager.Lib.Configuration;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
+using VolleyballRallyManager.Lib.Extensions;
 using VolleyballRallyManager.Lib.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,15 +19,7 @@ builder.Services.AddVolleyballRallyServices(builder.Configuration);
 builder.Services.AddVolleyballSignalR();
 
 // Add Identity
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
-    options.SignIn.RequireConfirmedAccount = false;
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequiredLength = 8;
-})
-.AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddVolleyBallRallyAuthentication(builder.Configuration); 
 
 // Add external authentication providers
 builder.Services.AddAuthentication(options =>
@@ -46,6 +38,9 @@ builder.Services.AddAuthentication(options =>
     });
 
 builder.Services.AddAuthorization();
+
+// Add UserManager
+builder.Services.AddScoped<UserManager<ApplicationUser>>();
 
 // Add CORS for Blazor WebAssembly client
 builder.Services.AddCors(options =>
