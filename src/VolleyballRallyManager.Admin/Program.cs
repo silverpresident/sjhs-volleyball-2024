@@ -19,23 +19,7 @@ builder.Services.AddVolleyballRallyServices(builder.Configuration);
 builder.Services.AddVolleyballSignalR();
 
 // Add Identity
-builder.Services.AddVolleyBallRallyAuthentication(builder.Configuration); 
-
-// Add external authentication providers
-builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultScheme = IdentityConstants.ApplicationScheme;
-    })
-    .AddGoogle(options =>
-    {
-        options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? "";
-        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "";
-    })
-    .AddMicrosoftAccount(options =>
-    {
-        options.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"] ?? "";
-        options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"] ?? "";
-    });
+builder.Services.AddVolleyBallRallyAuthentication(builder.Configuration);
 
 builder.Services.AddAuthorization();
 
@@ -89,8 +73,7 @@ using (var scope = app.Services.CreateScope())
         var context = services.GetRequiredService<ApplicationDbContext>();
         await context.Database.MigrateAsync();
         await DatabaseInitialization.InitializeDatabaseAsync(services);
-    }
-    catch (Exception ex)
+    } catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "An error occurred while initializing the database.");

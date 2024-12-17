@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
-using Microsoft.AspNetCore.Identity.UI;
+
 
 namespace VolleyballRallyManager.Lib.Extensions
 {
@@ -98,7 +101,13 @@ namespace VolleyballRallyManager.Lib.Extensions
 
                     return Task.CompletedTask;
                 };
-            });
+            })/*
+                .AddMicrosoftAccount(options =>
+                {
+                    options.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"] ?? "";
+                    options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"] ?? "";
+                });*/;
+             
 
             // Configure authorization <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.0" />
             services.AddAuthorization(options =>
