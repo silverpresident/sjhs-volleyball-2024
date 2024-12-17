@@ -4,3 +4,5 @@ Please run the project and fix any errors.
 
 
 All CRUD views should be nicely contained in a bootstrap card.
+
+Check the DB models and uses for correctness

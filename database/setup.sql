@@ -1,11 +1,11 @@
 -- Create Database
-IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'VolleyballRally')
+IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'stjago-volleyball-demo')
 BEGIN
-    CREATE DATABASE VolleyballRally;
+    CREATE DATABASE stjago-volleyball-demo;
 END
 GO
 
-USE VolleyballRally;
+USE stjago-volleyball-demo;
 GO
 
 -- Create Schema
@@ -36,10 +36,10 @@ IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Teams' AND schema_id = SCH
 BEGIN
     CREATE TABLE dbo.Teams
     (
-        Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+        Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
         Name NVARCHAR(100) NOT NULL,
         School NVARCHAR(100) NOT NULL,
-        Color NVARCHAR(7) NOT NULL,
+        Color NVARCHAR(50) NOT NULL,
         DivisionId UNIQUEIDENTIFIER NOT NULL,
         LogoUrl NVARCHAR(500),
         PointsScored INT NOT NULL DEFAULT 0,
@@ -62,7 +62,7 @@ IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Rounds' AND schema_id = SC
 BEGIN
     CREATE TABLE dbo.Rounds
     (
-        Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+        Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
         Name NVARCHAR(50) NOT NULL,
         Sequence INT NOT NULL,
         IsComplete BIT NOT NULL DEFAULT 0,
@@ -79,7 +79,7 @@ IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Matches' AND schema_id = S
 BEGIN
     CREATE TABLE dbo.Matches
     (
-        Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+        Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
         MatchNumber INT NOT NULL,
         RoundId UNIQUEIDENTIFIER NOT NULL,
         HomeTeamId UNIQUEIDENTIFIER NOT NULL,
@@ -111,7 +111,7 @@ IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'MatchUpdates' AND schema_i
 BEGIN
     CREATE TABLE dbo.MatchUpdates
     (
-        Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+        Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
         MatchId UNIQUEIDENTIFIER NOT NULL,
         UpdateType NVARCHAR(50) NOT NULL,
         Content NVARCHAR(500) NOT NULL,
@@ -133,7 +133,7 @@ IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Announcements' AND schema_
 BEGIN
     CREATE TABLE dbo.Announcements
     (
-        Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+        Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
         Content NVARCHAR(MAX) NOT NULL,
         RenderedContent NVARCHAR(MAX) NOT NULL,
         UseMarkdown BIT NOT NULL DEFAULT 0,
