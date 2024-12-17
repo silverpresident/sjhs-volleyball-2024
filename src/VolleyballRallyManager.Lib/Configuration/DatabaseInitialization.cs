@@ -24,6 +24,16 @@ namespace VolleyballRallyManager.Lib.Configuration
 
         private static async Task SeedInitialDataAsync(ApplicationDbContext dbContext)
         {
+            // Add sample divisions first
+            var divisions = new[]
+            {
+                new Division { Id = Guid.NewGuid(), Name = "BOYS"},
+                new Division { Id = Guid.NewGuid(), Name = "GIRLS"}
+            };
+
+            await dbContext.Divisions.AddRangeAsync(divisions);
+            await dbContext.SaveChangesAsync();
+
             // Add sample rounds
             var rounds = new[]
             {
@@ -33,12 +43,6 @@ namespace VolleyballRallyManager.Lib.Configuration
                 new Round { Id = Guid.NewGuid(), Name = "Quarter Finals", Order = 4 },
                 new Round { Id = Guid.NewGuid(), Name = "Semi Finals", Order = 5 },
                 new Round { Id = Guid.NewGuid(), Name = "Finals", Order = 6 }
-            };
-            // Add sample divisions
-            var divisions = new[]
-            {
-                new Division { Id = Guid.NewGuid(), Name = "BOYS"},
-                new Division { Id = Guid.NewGuid(), Name = "GIRLS"}
             };
 
             await dbContext.Rounds.AddRangeAsync(rounds);
