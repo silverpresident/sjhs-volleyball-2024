@@ -17,8 +17,6 @@ public class Match : BaseEntity
     public bool IsFinished { get; set; }
     public bool IsDisputed { get; set; }
     
-    public string? RefereeId { get; set; }
-    public string? ScorerId { get; set; }
     public string? RefereeName { get; set; }
     public string? ScorerName { get; set; }
 

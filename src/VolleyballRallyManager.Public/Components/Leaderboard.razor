@@ -57,8 +57,8 @@
                                         <td>@team.Wins</td>
                                         <td>@team.Draws</td>
                                         <td>@team.Losses</td>
-                                        <td>@team.PointsFor</td>
-                                        <td>@team.PointsAgainst</td>
+                                        <td>@team.PointsScored</td>
+                                        <td>@team.PointsConceded</td>
                                         <td>@team.PointDifference</td>
                                         <td class="points">@team.TotalPoints</td>
                                     </tr>
@@ -109,8 +109,8 @@
                                         <td>@team.Wins</td>
                                         <td>@team.Draws</td>
                                         <td>@team.Losses</td>
-                                        <td>@team.PointsFor</td>
-                                        <td>@team.PointsAgainst</td>
+                                        <td>@team.PointsScored</td>
+                                        <td>@team.PointsConceded</td>
                                         <td>@team.PointDifference</td>
                                         <td class="points">@team.TotalPoints</td>
                                     </tr>
@@ -132,7 +132,7 @@
             .Where(t => t.Division.Id == divisionId)
             .OrderByDescending(t => t.TotalPoints)
             .ThenByDescending(t => t.PointDifference)
-            .ThenByDescending(t => t.PointsFor)
+            .ThenByDescending(t => t.PointsScored)
             .ToList();
     }
 }

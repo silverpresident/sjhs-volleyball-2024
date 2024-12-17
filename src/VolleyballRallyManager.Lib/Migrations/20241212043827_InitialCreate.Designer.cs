@@ -336,8 +336,6 @@ namespace VolleyballRallyManager.Lib.Migrations
                     b.Property<int>("MatchNumber")
                         .HasColumnType("int");
 
-                    b.Property<string>("RefereeId")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RefereeName")
                         .IsRequired()
@@ -350,8 +348,6 @@ namespace VolleyballRallyManager.Lib.Migrations
                     b.Property<DateTime>("ScheduledTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ScorerId")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ScorerName")
                         .IsRequired()

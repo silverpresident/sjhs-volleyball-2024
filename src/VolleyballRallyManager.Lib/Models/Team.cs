@@ -17,8 +17,6 @@ public class Team : BaseEntity
     public int PointsConceded { get; set; }
     public int PointDifference => PointsScored - PointsConceded;
     public int TotalPoints { get; set; }
-    public int PointsFor => PointsScored;
-    public int PointsAgainst => PointsConceded;
 
     // Navigation properties
     public virtual ICollection<Match> HomeMatches { get; set; } = new List<Match>();
