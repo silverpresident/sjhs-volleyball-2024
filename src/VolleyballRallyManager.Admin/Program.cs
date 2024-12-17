@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
 // Add Volleyball Rally Manager services
 builder.Services.AddVolleyballRallyServices(builder.Configuration);
@@ -16,25 +17,24 @@ builder.Services.AddVolleyballRallyServices(builder.Configuration);
 // Add SignalR with custom configuration
 builder.Services.AddVolleyballSignalR();
 
-// Add authentication and authorization
-builder.Services.AddAuthentication(options => 
-{
-    options.DefaultScheme = "Cookies";
-    options.DefaultChallengeScheme = "Google";
+// Add Identity
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => {
+    options.SignIn.RequireConfirmedAccount = false;
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequiredLength = 8;
 })
-.AddCookie("Cookies")
-.AddGoogle(options =>
-{
-    options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? "";
-    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "";
-})
-.AddMicrosoftAccount(options =>
-{
-    options.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"] ?? "";
-    options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"] ?? "";
-});
+.AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddAuthorization();
+// Add external authentication providers
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? "";
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "";
+    });
 
 // Add CORS for Blazor WebAssembly client
 builder.Services.AddCors(options =>
@@ -69,6 +69,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapRazorPages();
 
 // Configure SignalR with custom configuration
 app.UseVolleyballSignalR();
