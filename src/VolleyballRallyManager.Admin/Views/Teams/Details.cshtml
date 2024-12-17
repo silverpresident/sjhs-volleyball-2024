@@ -5,118 +5,112 @@
 }
 
 <div class="container">
-    <h1>Team Details</h1>
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">@Model.Name</h5>
+            <div class="team-color" style="width: 30px; height: 30px; border-radius: 50%; background-color: @Model.Color;"></div>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">School</dt>
+                <dd class="col-sm-9">@Model.School</dd>
 
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">@Model.Name</h5>
-                    <div class="team-color" style="width: 30px; height: 30px; border-radius: 50%; background-color: @Model.Color;"></div>
-                </div>
-                <div class="card-body">
+                <dt class="col-sm-3">Division</dt>
+                <dd class="col-sm-9">@Model.Division</dd>
+
+                @if (!string.IsNullOrEmpty(Model.LogoUrl))
+                {
+                    <dt class="col-sm-3">Logo</dt>
+                    <dd class="col-sm-9">
+                        <img src="@Model.LogoUrl" alt="Team Logo" style="max-width: 100px;" />
+                    </dd>
+                }
+            </dl>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Statistics</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
                     <dl class="row">
-                        <dt class="col-sm-3">School</dt>
-                        <dd class="col-sm-9">@Model.School</dd>
+                        <dt class="col-sm-6">Matches Played</dt>
+                        <dd class="col-sm-6">@Model.MatchesPlayed</dd>
 
-                        <dt class="col-sm-3">Division</dt>
-                        <dd class="col-sm-9">@Model.Division</dd>
+                        <dt class="col-sm-6">Wins</dt>
+                        <dd class="col-sm-6">@Model.Wins</dd>
 
-                        @if (!string.IsNullOrEmpty(Model.LogoUrl))
-                        {
-                            <dt class="col-sm-3">Logo</dt>
-                            <dd class="col-sm-9">
-                                <img src="@Model.LogoUrl" alt="Team Logo" style="max-width: 100px;" />
-                            </dd>
-                        }
+                        <dt class="col-sm-6">Draws</dt>
+                        <dd class="col-sm-6">@Model.Draws</dd>
+
+                        <dt class="col-sm-6">Losses</dt>
+                        <dd class="col-sm-6">@Model.Losses</dd>
+                    </dl>
+                </div>
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-6">Points Scored</dt>
+                        <dd class="col-sm-6">@Model.PointsScored</dd>
+
+                        <dt class="col-sm-6">Points Conceded</dt>
+                        <dd class="col-sm-6">@Model.PointsConceded</dd>
+
+                        <dt class="col-sm-6">Point Difference</dt>
+                        <dd class="col-sm-6">@Model.PointDifference</dd>
+
+                        <dt class="col-sm-6">Total Points</dt>
+                        <dd class="col-sm-6">@Model.TotalPoints</dd>
                     </dl>
                 </div>
             </div>
-
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">Statistics</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <dl class="row">
-                                <dt class="col-sm-6">Matches Played</dt>
-                                <dd class="col-sm-6">@Model.MatchesPlayed</dd>
-
-                                <dt class="col-sm-6">Wins</dt>
-                                <dd class="col-sm-6">@Model.Wins</dd>
-
-                                <dt class="col-sm-6">Draws</dt>
-                                <dd class="col-sm-6">@Model.Draws</dd>
-
-                                <dt class="col-sm-6">Losses</dt>
-                                <dd class="col-sm-6">@Model.Losses</dd>
-                            </dl>
-                        </div>
-                        <div class="col-md-6">
-                            <dl class="row">
-                                <dt class="col-sm-6">Points Scored</dt>
-                                <dd class="col-sm-6">@Model.PointsScored</dd>
-
-                                <dt class="col-sm-6">Points Conceded</dt>
-                                <dd class="col-sm-6">@Model.PointsConceded</dd>
-
-                                <dt class="col-sm-6">Point Difference</dt>
-                                <dd class="col-sm-6">@Model.PointDifference</dd>
-
-                                <dt class="col-sm-6">Total Points</dt>
-                                <dd class="col-sm-6">@Model.TotalPoints</dd>
-                            </dl>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">Recent Matches</h5>
-                </div>
-                <div class="card-body">
-                    @if (Model.HomeMatches.Any() || Model.AwayMatches.Any())
-                    {
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Home Team</th>
-                                        <th>Score</th>
-                                        <th>Away Team</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var match in Model.HomeMatches.Union(Model.AwayMatches).OrderByDescending(m => m.ScheduledTime))
-                                    {
-                                        <tr>
-                                            <td>@match.ScheduledTime.ToString("dd/MM/yyyy HH:mm")</td>
-                                            <td>@match.HomeTeam.Name</td>
-                                            <td>@match.HomeTeamScore - @match.AwayTeamScore</td>
-                                            <td>@match.AwayTeam.Name</td>
-                                            <td>@(match.IsFinished ? "Finished" : "Scheduled")</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                    else
-                    {
-                        <p class="text-muted">No matches found for this team.</p>
-                    }
-                </div>
-            </div>
-
-            <div>
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary"><i class="bi bi-pencil"></i> Edit</a>
-                <a asp-action="Index" class="btn btn-secondary"><i class="bi bi-arrow-left-circle"></i> Back to List</a>
-            </div>
         </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Recent Matches</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.HomeMatches.Any() || Model.AwayMatches.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Home Team</th>
+                                <th>Score</th>
+                                <th>Away Team</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var match in Model.HomeMatches.Union(Model.AwayMatches).OrderByDescending(m => m.ScheduledTime))
+                            {
+                                <tr>
+                                    <td>@match.ScheduledTime.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@match.HomeTeam.Name</td>
+                                    <td>@match.HomeTeamScore - @match.AwayTeamScore</td>
+                                    <td>@match.AwayTeam.Name</td>
+                                    <td>@(match.IsFinished ? "Finished" : "Scheduled")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No matches found for this team.</p>
+            }
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary"><i class="bi bi-pencil"></i> Edit</a>
+        <a asp-action="Index" class="btn btn-secondary"><i class="bi bi-arrow-left-circle"></i> Back to List</a>
     </div>
 </div>
