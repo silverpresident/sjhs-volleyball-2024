@@ -16,6 +16,26 @@ builder.Services.AddVolleyballRallyServices(builder.Configuration);
 // Add SignalR with custom configuration
 builder.Services.AddVolleyballSignalR();
 
+// Add authentication and authorization
+builder.Services.AddAuthentication(options => 
+{
+    options.DefaultScheme = "Cookies";
+    options.DefaultChallengeScheme = "Google";
+})
+.AddCookie("Cookies")
+.AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? "";
+    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "";
+})
+.AddMicrosoftAccount(options =>
+{
+    options.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"] ?? "";
+    options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"] ?? "";
+});
+
+builder.Services.AddAuthorization();
+
 // Add CORS for Blazor WebAssembly client
 builder.Services.AddCors(options =>
 {
@@ -43,8 +63,8 @@ app.UseCors("BlazorPolicy");
 
 app.UseRouting();
 
-//app.UseAuthentication();
-//app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
