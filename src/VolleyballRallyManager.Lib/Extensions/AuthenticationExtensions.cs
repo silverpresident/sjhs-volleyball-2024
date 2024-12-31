@@ -20,12 +20,11 @@ namespace VolleyballRallyManager.Lib.Extensions
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     configuration.GetConnectionString("DefaultConnection"),
-                    b => b.MigrationsAssembly("VolleyBallRallyManager.Web")
+                    b => b.MigrationsAssembly("VolleyballRallyManager.Admin")
                 )
             );
 
             // Add Identity services
-            //services.AddDefaultIdentity<ApplicationUser>();
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
                 // Password settings
@@ -42,7 +41,7 @@ namespace VolleyballRallyManager.Lib.Extensions
 
                 // User settings
                 options.User.RequireUniqueEmail = true;
-                options.SignIn.RequireConfirmedEmail = true;
+                options.SignIn.RequireConfirmedEmail = false; // Disabled for development
             })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders()

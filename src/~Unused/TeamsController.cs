@@ -23,7 +23,7 @@ public class TeamsController : ApiControllerBase
         _teamService = teamService;
     }
 
-    [HttpGet]
+    [HttpGet("")]
     [AllowAnonymous]
     public async Task<ActionResult<IEnumerable<Team>>> GetTeams()
     {
