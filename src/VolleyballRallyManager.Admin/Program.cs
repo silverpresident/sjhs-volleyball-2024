@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using VolleyballRallyManager.Lib.Configuration;
 using VolleyballRallyManager.Lib.Data;
@@ -19,9 +21,12 @@ builder.Services.AddVolleyballRallyServices(builder.Configuration);
 builder.Services.AddVolleyballSignalR();
 
 // Add Identity
-builder.Services.AddVolleyballRallyManagerAuthentication(builder.Configuration);
+builder.Services.AddVolleyBallRallyAuthentication(builder.Configuration);
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminArea", policy => policy.RequireAuthenticatedUser());
+});
 
 // Add CORS for Blazor WebAssembly client
 builder.Services.AddCors(options =>
@@ -52,7 +57,15 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+/*
+app.MapAreaControllerRoute(
+    name: "admin",
+    areaName: "Admin",
+    pattern: "Admin/{controller=Home}/{action=Index}/{id?}");
+*/
+        app.MapControllerRoute(
+            name: "areas",
+              pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
