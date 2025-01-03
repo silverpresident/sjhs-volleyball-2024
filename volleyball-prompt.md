@@ -2,6 +2,7 @@ Volleyball Rally Manager
 The following is a description of a c# .Net Solution. Check the current solution to ensure it meets the requirements.
 
 Volleyball Rally Manager Description
+
 Build a C# dot net MVC app project using the latest LTS version of dot net. The app must use entityframe work identity to allow user authentication and authorization. Once logged in users should be able access administative funciton.  The name of the project is "Volleyball Rally Manager". The project will be backed by an SQL Server database hosted on azure
 
 The theme colour of the project should be a green and gold.
@@ -11,12 +12,14 @@ Use bootstrap, jquery and other relevant frameworks and libraries to improve the
 My Environment uses powershell.
 
 STRUCTURE
+
 Create 3 projects. Do not use top level statements.
 A lib project that handles business logic including the entities, models, database contexts, services and migrations.
 A app project that handles the ui and admin
 A blazor SPA web app project that hadles the ui descripted inteh section labeles public ui
 
 PUBLIC UI
+
 On the main page without a logged in user you should be able to see a schedule of matches showing match number, round, time, court location, players, score, and whether or  not the match is finished. On this same home page there should be a partial view section for announcements. The page should automatically reload every 2 minutes.
 On this same page there should be a partial view showing a leader board showing the list of teams and total points.
 On this same page there should be a partial view showing a update stream.

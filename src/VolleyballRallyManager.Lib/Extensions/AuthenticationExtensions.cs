@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -7,11 +8,18 @@ using Microsoft.Extensions.DependencyInjection;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
 
-
 namespace VolleyballRallyManager.Lib.Extensions
 {
     public static class AuthenticationExtensions
     {
+        public static AuthorizationBuilder AddVolleyballRallyAuthorization(this IServiceCollection services)
+        {
+            return services.AddAuthorizationBuilder()
+                .AddPolicy("RequireAdministrator", policy => policy.RequireRole("Administrator"))
+                .AddPolicy("RequireJudge", policy => policy.RequireRole("Administrator", "Judge"))
+                .AddPolicy("RequireScorekeeper", policy => policy.RequireRole("Administrator", "Judge", "Scorekeeper"));
+        }
+
         public static IServiceCollection AddVolleyBallRallyAuthentication(
             this IServiceCollection services,
             IConfiguration configuration)
@@ -64,11 +72,11 @@ namespace VolleyballRallyManager.Lib.Extensions
             .AddGoogle(options =>
             {
                 var googleAuth = configuration.GetSection("Authentication:Google");
-                options.ClientId = googleAuth["ClientId"] ?? 
+                options.ClientId = googleAuth["ClientId"] ??
                     throw new InvalidOperationException("Google ClientId not configured");
-                options.ClientSecret = googleAuth["ClientSecret"] ?? 
+                options.ClientSecret = googleAuth["ClientSecret"] ??
                     throw new InvalidOperationException("Google ClientSecret not configured");
-                
+
                 options.SaveTokens = true;
                 options.Events.OnCreatingTicket = context =>
                 {
@@ -106,20 +114,9 @@ namespace VolleyballRallyManager.Lib.Extensions
                     options.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"] ?? "";
                     options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"] ?? "";
                 });*/;
-             
 
-            // Configure authorization <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.0" />
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("RequireAdministrator", policy =>
-                    policy.RequireRole("Administrator"));
-
-                options.AddPolicy("RequireJudge", policy =>
-                    policy.RequireRole("Administrator", "Judge"));
-
-                options.AddPolicy("RequireScorekeeper", policy =>
-                    policy.RequireRole("Administrator", "Judge", "Scorekeeper"));
-            });
+            // Configure authorization
+            services.AddVolleyballRallyAuthorization();
 
             return services;
         }

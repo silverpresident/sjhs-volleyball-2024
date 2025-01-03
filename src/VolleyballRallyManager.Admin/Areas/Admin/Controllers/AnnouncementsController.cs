@@ -25,15 +25,15 @@ namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
         }
 
         // GET: Admin/Announcements/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)
+            if (!id.HasValue)
             {
                 return NotFound();
             }
 
             var announcement = await _context.Announcements
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id.Value);
             if (announcement == null)
             {
                 return NotFound();
@@ -65,14 +65,14 @@ namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
         }
 
         // GET: Admin/Announcements/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null)
+            if (!id.HasValue)
             {
                 return NotFound();
             }
 
-            var announcement = await _context.Announcements.FindAsync(id);
+            var announcement = await _context.Announcements.FindAsync(id.Value);
             if (announcement == null)
             {
                 return NotFound();
@@ -85,7 +85,7 @@ namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Content,Priority,CreatedDate")] Announcement announcement)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Title,Content,Priority,CreatedDate")] Announcement announcement)
         {
             if (id != announcement.Id)
             {
@@ -116,15 +116,15 @@ namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
         }
 
         // GET: Admin/Announcements/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null)
+            if (!id.HasValue)
             {
                 return NotFound();
             }
 
             var announcement = await _context.Announcements
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id.Value);
             if (announcement == null)
             {
                 return NotFound();
@@ -136,7 +136,7 @@ namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
         // POST: Admin/Announcements/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var announcement = await _context.Announcements.FindAsync(id);
             if (announcement != null)
@@ -148,7 +148,7 @@ namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AnnouncementExists(int id)
+        private bool AnnouncementExists(Guid id)
         {
             return _context.Announcements.Any(e => e.Id == id);
         }
