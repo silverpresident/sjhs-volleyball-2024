@@ -42,7 +42,7 @@ public class HomeController : Controller
                 .Include(m => m.HomeTeam)
                 .Include(m => m.AwayTeam)
                 .Include(m => m.Round)
-                .OrderByDescending(m => m.UpdatedAt)
+                .OrderByDescending(m => m.ScheduledTime)
                 .Take(5)
                 .ToListAsync(),
 

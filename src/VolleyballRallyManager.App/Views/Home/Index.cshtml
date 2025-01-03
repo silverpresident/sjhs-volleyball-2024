@@ -1,4 +1,4 @@
-﻿@model VolleyballRallyManager.App.Models.DashboardViewModel
+﻿﻿﻿﻿﻿﻿@model VolleyballRallyManager.App.Models.DashboardViewModel
 
 @{
     ViewData["Title"] = "Dashboard";
@@ -95,10 +95,10 @@
                                             <td>@match.ScheduledTime.ToString("HH:mm")</td>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <span class="team-color me-2" style="width: 12px; height: 12px; border-radius: 50%; background-color: @match.HomeTeam.Color;"></span>
+                                                    <span class="team-color me-2" style="background-color: @match.HomeTeam.Color;"></span>
                                                     @match.HomeTeam.Name
                                                     <span class="mx-2">vs</span>
-                                                    <span class="team-color me-2" style="width: 12px; height: 12px; border-radius: 50%; background-color: @match.AwayTeam.Color;"></span>
+                                                    <span class="team-color me-2" style="background-color: @match.AwayTeam.Color;"></span>
                                                     @match.AwayTeam.Name
                                                 </div>
                                             </td>

@@ -1,60 +1,56 @@
 @model VolleyballRallyManager.Lib.Models.Match
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Match Details";
 }
 
-<h1>Details</h1>
+<div class="container">
+    <h1>Match Details</h1>
+    <div class="card">
+        <div class="card-body">
+            <h4>@Model.Team1Id vs @Model.Team2Id</h4>
+            <hr />
+            <dl class="row">
+                <dt class="col-sm-2">Division</dt>
+                <dd class="col-sm-10">@Model.DivisionId</dd>
+                <dt class="col-sm-2">Group</dt>
+                <dd class="col-sm-10">@Model.GroupId</dd>
+                <dt class="col-sm-2">Round</dt>
+                <dd class="col-sm-10">@Model.RoundId</dd>
+                <dt class="col-sm-2">Score</dt>
+                <dd class="col-sm-10">@Model.Team1Score - @Model.Team2Score</dd>
+            </dl>
+        </div>
+    </div>
 
-<div>
-    <h4>Match</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HomeTeam)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HomeTeam.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AwayTeam)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AwayTeam.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MatchDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MatchDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Location)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Location)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HomeScore)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HomeScore)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AwayScore)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AwayScore)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Notes)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Notes)
-        </dd>
-    </dl>
+    <div class="card mt-3">
+        <div class="card-header">
+            Match Updates
+        </div>
+        <div class="card-body">
+            <ul id="updates-list"></ul>
+        </div>
+    </div>
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/matchhub")
+            .build();
+
+        connection.on("ReceiveUpdate", (user, message) => {
+            const msg = message.replace(/&/g, "&").replace(/</g, "<").replace(/>/g, ">");
+            const encodedMsg = user + ": " + msg;
+            const li = document.createElement("li");
+            li.textContent = encodedMsg;
+            document.getElementById("updates-list").appendChild(li);
+        });
+
+        connection.start().catch(err => console.error(err.toString()));
+    </script>
+}

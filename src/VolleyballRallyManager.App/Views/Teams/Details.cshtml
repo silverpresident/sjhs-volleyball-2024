@@ -1,48 +1,55 @@
 @model VolleyballRallyManager.Lib.Models.Team
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Team Details";
 }
 
-<h1>Details</h1>
+<div class="container">
+    <h1>@Model.Name Details</h1>
+    <div class="card">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-2">Division</dt>
+                <dd class="col-sm-10">@Model.DivisionId</dd>
+                <dt class="col-sm-2">Group</dt>
+                <dd class="col-sm-10">@Model.GroupId</dd>
+            </dl>
+        </div>
+    </div>
 
-<div>
-    <h4>Team</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.School)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.School)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Color)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Color)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Division)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Division)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LogoUrl)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LogoUrl)
-        </dd>
-    </dl>
+    <div class="card mt-3">
+        <div class="card-header">
+            Match Results
+        </div>
+        <div class="card-body">
+            <ul id="match-results-list">
+                @foreach (var match in ViewBag.Matches)
+                {
+                    <li>@match.Team1Id vs @match.Team2Id: @match.Team1Score - @match.Team2Score</li>
+                }
+            </ul>
+        </div>
+    </div>
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.1/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/matchhub")
+            .build();
+
+        connection.on("ReceiveUpdate", (user, message) => {
+            const msg = message.replace(/&/g, "&").replace(/</g, "<").replace(/>/g, ">");
+            const encodedMsg = user + ": " + msg;
+            const li = document.createElement("li");
+            li.textContent = encodedMsg;
+            document.getElementById("match-results-list").appendChild(li);
+        });
+
+        connection.start().catch(err => console.error(err.toString()));
+    </script>
+}

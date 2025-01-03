@@ -1,4 +1,4 @@
-@model IEnumerable<VolleyballRallyManager.Lib.Models.Update>
+@model IEnumerable<VolleyballRallyManager.Lib.Models.MatchUpdate>
 
 @{
     ViewData["Title"] = "Index";
@@ -11,10 +11,7 @@
 </p>
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
+        <tr> 
             <th>
                 @Html.DisplayNameFor(model => model.Content)
             </th>
@@ -22,7 +19,7 @@
                 @Html.DisplayNameFor(model => model.UpdateType)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CreatedDate)
+                @Html.DisplayNameFor(model => model.ProcessedAt)
             </th>
             <th></th>
         </tr>
@@ -31,16 +28,13 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.Content)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.UpdateType)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
+                @Html.DisplayFor(modelItem => item.ProcessedAt)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
