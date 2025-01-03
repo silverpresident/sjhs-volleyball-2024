@@ -112,9 +112,9 @@ resource "azurerm_mssql_database_backup_long_term_retention_policy" "db" {
 }
 
 # App Service Backup Configuration - Admin App
-resource "azurerm_app_service_backup" "admin" {
+resource "azurerm_app_service_backup" "app" {
   count                = var.enable_backup ? 1 : 0
-  app_service_name     = azurerm_windows_web_app.admin.name
+  app_service_name     = azurerm_windows_web_app.app.name
   resource_group_name  = azurerm_resource_group.rg.name
   storage_account_url  = "https://${azurerm_storage_account.backup.name}.blob.core.windows.net/${azurerm_storage_container.backup.name}${azurerm_storage_account.backup.primary_access_key}"
 

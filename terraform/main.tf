@@ -145,8 +145,8 @@ resource "azurerm_service_plan" "plan" {
 }
 
 # Admin App Service
-resource "azurerm_windows_web_app" "admin" {
-  name                = "app-${var.project_name}-admin-${var.environment}"
+resource "azurerm_windows_web_app" "app" {
+  name                = "app-${var.project_name}-app-${var.environment}"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   service_plan_id     = azurerm_service_plan.plan.id
@@ -208,8 +208,8 @@ resource "azurerm_windows_web_app" "public" {
 data "azurerm_client_config" "current" {}
 
 # Outputs
-output "admin_app_url" {
-  value = "https://${azurerm_windows_web_app.admin.default_hostname}"
+output "app_app_url" {
+  value = "https://${azurerm_windows_web_app.app.default_hostname}"
 }
 
 output "public_app_url" {

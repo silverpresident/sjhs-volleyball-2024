@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
 
-namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
+namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize]

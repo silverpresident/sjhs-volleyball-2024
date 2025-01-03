@@ -1,4 +1,4 @@
-namespace VolleyballRallyManager.Admin.Models;
+namespace VolleyballRallyManager.App.Models;
 
 public class ErrorViewModel
 {

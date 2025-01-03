@@ -65,10 +65,10 @@ resource "azurerm_key_vault_secret" "app_insights_connection_string" {
 }
 
 # Grant access to web apps using managed identities
-resource "azurerm_key_vault_access_policy" "admin_app" {
+resource "azurerm_key_vault_access_policy" "app_app" {
   key_vault_id = azurerm_key_vault.kv.id
   tenant_id    = data.azurerm_client_config.current.tenant_id
-  object_id    = azurerm_windows_web_app.admin.identity[0].principal_id
+  object_id    = azurerm_windows_web_app.app.identity[0].principal_id
 
   secret_permissions = [
     "Get",

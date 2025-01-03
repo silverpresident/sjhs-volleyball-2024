@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5EA7EE66-3A0E-4E02-8568-D7E4A8677F93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VolleyballRallyManager.Admin", "src\VolleyballRallyManager.Admin\VolleyballRallyManager.Admin.csproj", "{C9A5E5A1-8B5E-4C1E-9C9A-8F1E8B5E4C1E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VolleyballRallyManager.App", "src\VolleyballRallyManager.App\VolleyballRallyManager.App.csproj", "{C9A5E5A1-8B5E-4C1E-9C9A-8F1E8B5E4C1E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VolleyballRallyManager.Lib", "src\VolleyballRallyManager.Lib\VolleyballRallyManager.Lib.csproj", "{D8A5E5A1-8B5E-4C1E-9C9A-8F1E8B5E4C1F}"
 EndProject

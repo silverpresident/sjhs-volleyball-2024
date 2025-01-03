@@ -9,7 +9,7 @@ locals {
     sql_server        = "sql-${local.full_name}"
     sql_database      = "sqldb-${local.full_name}"
     app_service_plan  = "plan-${local.full_name}"
-    admin_app         = "app-${local.full_name}-admin"
+    app_app         = "app-${local.full_name}-app"
     public_app        = "app-${local.full_name}-public"
     signalr           = "signalr-${local.full_name}"
     key_vault         = "kv-${local.full_name}"
@@ -34,7 +34,7 @@ locals {
   }
 
   # Admin app specific settings
-  admin_app_settings = merge(local.common_app_settings, {
+  app_app_settings = merge(local.common_app_settings, {
     IsAdminApp = "true"
   })
 
@@ -48,15 +48,15 @@ locals {
 
   # CORS settings
   cors_origins = distinct(concat(var.allowed_origins, [
-    "https://${local.resource_names.admin_app}.azurewebsites.net",
+    "https://${local.resource_names.app_app}.azurewebsites.net",
     "https://${local.resource_names.public_app}.azurewebsites.net"
   ]))
 
   # Key Vault access policies
   key_vault_access_policies = {
-    admin_app = {
+    app_app = {
       tenant_id = data.azurerm_client_config.current.tenant_id
-      object_id = azurerm_windows_web_app.admin.identity[0].principal_id
+      object_id = azurerm_windows_web_app.app.identity[0].principal_id
       secret_permissions = [
         "Get",
         "List"

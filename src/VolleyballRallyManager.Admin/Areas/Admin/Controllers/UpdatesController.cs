@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
 
-namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
+namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize]
@@ -20,25 +20,25 @@ namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
         // GET: Admin/Updates
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Updates.ToListAsync());
+            return View(await _context.MatchUpdates.ToListAsync());
         }
 
         // GET: Admin/Updates/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var update = await _context.Updates
+            var matchUpdate = await _context.MatchUpdates
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (update == null)
+            if (matchUpdate == null)
             {
                 return NotFound();
             }
 
-            return View(update);
+            return View(matchUpdate);
         }
 
         // GET: Admin/Updates/Create
@@ -52,31 +52,31 @@ namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Content,UpdateType,CreatedDate")] Update update)
+        public async Task<IActionResult> Create([Bind("Id,Title,Content,UpdateType,CreatedDate")] MatchUpdate matchUpdate)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(update);
+                _context.Add(matchUpdate);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(update);
+            return View(matchUpdate);
         }
 
         // GET: Admin/Updates/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var update = await _context.Updates.FindAsync(id);
-            if (update == null)
+            var matchUpdate = await _context.MatchUpdates.FindAsync(id);
+            if (matchUpdate == null)
             {
                 return NotFound();
             }
-            return View(update);
+            return View(matchUpdate);
         }
 
         // POST: Admin/Updates/Edit/5
@@ -84,9 +84,9 @@ namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Content,UpdateType,CreatedDate")] Update update)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Title,Content,UpdateType,CreatedDate")] MatchUpdate matchUpdate)
         {
-            if (id != update.Id)
+            if (id != matchUpdate.Id)
             {
                 return NotFound();
             }
@@ -95,12 +95,12 @@ namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
             {
                 try
                 {
-                    _context.Update(update);
+                    _context.Update(matchUpdate);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UpdateExists(update.Id))
+                    if (!UpdateExists(matchUpdate.Id))
                     {
                         return NotFound();
                     }
@@ -111,45 +111,45 @@ namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(update);
+            return View(matchUpdate);
         }
 
         // GET: Admin/Updates/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var update = await _context.Updates
+            var matchUpdate = await _context.MatchUpdates
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (update == null)
+            if (matchUpdate == null)
             {
                 return NotFound();
             }
 
-            return View(update);
+            return View(matchUpdate);
         }
 
         // POST: Admin/Updates/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var update = await _context.Updates.FindAsync(id);
-            if (update != null)
+            var matchUpdate = await _context.MatchUpdates.FindAsync(id);
+            if (matchUpdate != null)
             {
-                _context.Updates.Remove(update);
+                _context.MatchUpdates.Remove(matchUpdate);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UpdateExists(int id)
+        private bool UpdateExists(Guid id)
         {
-            return _context.Updates.Any(e => e.Id == id);
+            return _context.MatchUpdates.Any(e => e.Id == id);
         }
     }
 }

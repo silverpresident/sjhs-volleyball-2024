@@ -1,13 +1,13 @@
 # Azure AD Application for Admin App
-resource "azuread_application" "admin" {
-  display_name = "app-${local.full_name}-admin"
+resource "azuread_application" "app" {
+  display_name = "app-${local.full_name}-app"
   
   web {
-    homepage_url = "https://${azurerm_windows_web_app.admin.default_hostname}"
+    homepage_url = "https://${azurerm_windows_web_app.app.default_hostname}"
     redirect_uris = [
-      "https://${azurerm_windows_web_app.admin.default_hostname}/signin-oidc",
-      "https://${azurerm_windows_web_app.admin.default_hostname}/signin-google",
-      "https://${azurerm_windows_web_app.admin.default_hostname}/signin-microsoft"
+      "https://${azurerm_windows_web_app.app.default_hostname}/signin-oidc",
+      "https://${azurerm_windows_web_app.app.default_hostname}/signin-google",
+      "https://${azurerm_windows_web_app.app.default_hostname}/signin-microsoft"
     ]
 
     implicit_grant {
@@ -29,8 +29,8 @@ resource "azuread_application" "admin" {
 }
 
 # Azure AD Service Principal for Admin App
-resource "azuread_service_principal" "admin" {
-  application_id = azuread_application.admin.application_id
+resource "azuread_service_principal" "app" {
+  application_id = azuread_application.app.application_id
   
   tags = ["terraform", "volleyball-rally", local.full_name]
 }
@@ -128,21 +128,21 @@ resource "azurerm_mssql_database_extended_auditing_policy" "db_encryption" {
 }
 
 # Role Assignments
-resource "azurerm_role_assignment" "admin_app_contributor" {
-  scope                = azurerm_windows_web_app.admin.id
+resource "azurerm_role_assignment" "app_app_contributor" {
+  scope                = azurerm_windows_web_app.app.id
   role_definition_name = "Contributor"
-  principal_id         = azuread_service_principal.admin.object_id
+  principal_id         = azuread_service_principal.app.object_id
 }
 
-resource "azurerm_role_assignment" "admin_app_key_vault" {
+resource "azurerm_role_assignment" "app_app_key_vault" {
   scope                = azurerm_key_vault.kv.id
   role_definition_name = "Key Vault Secrets User"
-  principal_id         = azuread_service_principal.admin.object_id
+  principal_id         = azuread_service_principal.app.object_id
 }
 
 # IP Restrictions for App Services
-resource "azurerm_app_service_virtual_network_swift_connection" "admin" {
-  app_service_id = azurerm_windows_web_app.admin.id
+resource "azurerm_app_service_virtual_network_swift_connection" "app" {
+  app_service_id = azurerm_windows_web_app.app.id
   subnet_id      = azurerm_subnet.app_service.id
 }
 
@@ -161,9 +161,9 @@ resource "azurerm_app_service_certificate" "main" {
 }
 
 # Configure TLS settings for web apps
-resource "azurerm_app_service_custom_hostname_binding" "admin" {
-  hostname            = azurerm_windows_web_app.admin.default_hostname
-  app_service_name    = azurerm_windows_web_app.admin.name
+resource "azurerm_app_service_custom_hostname_binding" "app" {
+  hostname            = azurerm_windows_web_app.app.default_hostname
+  app_service_name    = azurerm_windows_web_app.app.name
   resource_group_name = azurerm_resource_group.rg.name
   ssl_state          = "SniEnabled"
   thumbprint         = azurerm_app_service_certificate.main.thumbprint

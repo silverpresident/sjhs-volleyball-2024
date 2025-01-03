@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
-using VolleyballRallyManager.Admin.Models;
+using VolleyballRallyManager.App.Models;
 
-namespace VolleyballRallyManager.Admin.Controllers;
+namespace VolleyballRallyManager.App.Controllers;
 
 public class HomeController : Controller
 {

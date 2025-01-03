@@ -86,7 +86,7 @@ resource "azurerm_monitor_metric_alert" "http_5xx" {
   name                = "alert-http5xx-${local.full_name}"
   resource_group_name = azurerm_resource_group.rg.name
   scopes = [
-    azurerm_windows_web_app.admin.id,
+    azurerm_windows_web_app.app.id,
     azurerm_windows_web_app.public.id
   ]
   description = "Alert when HTTP 5xx errors exceed threshold"
@@ -113,7 +113,7 @@ resource "azurerm_monitor_metric_alert" "response_time" {
   name                = "alert-response-time-${local.full_name}"
   resource_group_name = azurerm_resource_group.rg.name
   scopes = [
-    azurerm_windows_web_app.admin.id,
+    azurerm_windows_web_app.app.id,
     azurerm_windows_web_app.public.id
   ]
   description = "Alert when response time exceeds threshold"
@@ -172,9 +172,9 @@ resource "azurerm_log_analytics_workspace" "main" {
 }
 
 # Link App Services to Log Analytics
-resource "azurerm_monitor_diagnostic_setting" "admin_app" {
-  name                       = "diag-admin-app-${local.full_name}"
-  target_resource_id        = azurerm_windows_web_app.admin.id
+resource "azurerm_monitor_diagnostic_setting" "app_app" {
+  name                       = "diag-app-app-${local.full_name}"
+  target_resource_id        = azurerm_windows_web_app.app.id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
 
   log {

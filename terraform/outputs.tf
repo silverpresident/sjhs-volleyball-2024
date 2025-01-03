@@ -1,7 +1,7 @@
 # Web App URLs
-output "admin_app_url" {
+output "app_app_url" {
   description = "The URL of the admin web application"
-  value       = "https://${azurerm_windows_web_app.admin.default_hostname}"
+  value       = "https://${azurerm_windows_web_app.app.default_hostname}"
 }
 
 output "public_app_url" {
@@ -82,7 +82,7 @@ output "app_service_plan_name" {
 output "important_urls" {
   description = "Important URLs for application configuration"
   value = {
-    admin_app     = "https://${azurerm_windows_web_app.admin.default_hostname}"
+    app_app     = "https://${azurerm_windows_web_app.app.default_hostname}"
     public_app    = "https://${azurerm_windows_web_app.public.default_hostname}"
     sql_server    = azurerm_mssql_server.sql.fully_qualified_domain_name
     key_vault     = azurerm_key_vault.kv.vault_uri
@@ -112,7 +112,7 @@ output "resource_ids" {
     key_vault         = azurerm_key_vault.kv.id
     app_insights      = azurerm_application_insights.appinsights.id
     app_service_plan  = azurerm_service_plan.plan.id
-    admin_app         = azurerm_windows_web_app.admin.id
+    app_app         = azurerm_windows_web_app.app.id
     public_app        = azurerm_windows_web_app.public.id
   }
 }

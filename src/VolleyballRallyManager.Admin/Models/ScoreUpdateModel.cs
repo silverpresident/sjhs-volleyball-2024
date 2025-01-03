@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace VolleyballRallyManager.Admin.Models;
+namespace VolleyballRallyManager.App.Models;
 
 public class ScoreUpdateModel
 {

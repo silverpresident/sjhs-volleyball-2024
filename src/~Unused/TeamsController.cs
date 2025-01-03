@@ -6,7 +6,7 @@ using VolleyballRallyManager.Lib.Hubs;
 using VolleyballRallyManager.Lib.Models;
 using VolleyballRallyManager.Lib.Services;
 
-namespace VolleyballRallyManager.Admin.Controllers;
+namespace VolleyballRallyManager.App.Controllers;
 
 [Authorize]
 public class TeamsController : ApiControllerBase

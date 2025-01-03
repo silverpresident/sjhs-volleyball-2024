@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using VolleyballRallyManager.Lib.Models;
 using VolleyballRallyManager.Lib.Services;
 
-namespace VolleyballRallyManager.Admin.Areas.Admin.Controllers
+namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize]

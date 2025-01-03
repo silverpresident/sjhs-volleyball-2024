@@ -15,6 +15,7 @@ namespace VolleyballRallyManager.Lib.Extensions
         public static AuthorizationBuilder AddVolleyballRallyAuthorization(this IServiceCollection services)
         {
             return services.AddAuthorizationBuilder()
+                .AddPolicy("AdminArea", policy => policy.RequireAuthenticatedUser())
                 .AddPolicy("RequireAdministrator", policy => policy.RequireRole("Administrator"))
                 .AddPolicy("RequireJudge", policy => policy.RequireRole("Administrator", "Judge"))
                 .AddPolicy("RequireScorekeeper", policy => policy.RequireRole("Administrator", "Judge", "Scorekeeper"));
@@ -28,7 +29,7 @@ namespace VolleyballRallyManager.Lib.Extensions
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     configuration.GetConnectionString("DefaultConnection"),
-                    b => b.MigrationsAssembly("VolleyballRallyManager.Admin")
+                    b => b.MigrationsAssembly("VolleyballRallyManager.App")
                 )
             );
 

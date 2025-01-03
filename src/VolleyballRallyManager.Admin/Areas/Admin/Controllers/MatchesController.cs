@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
 
-namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
+namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize]
@@ -25,9 +25,9 @@ namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
         }
 
         // GET: Admin/Matches/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)
+            if (!id.HasValue)
             {
                 return NotFound();
             }
@@ -93,7 +93,7 @@ namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,HomeTeamId,AwayTeamId,MatchDate,Location,HomeScore,AwayScore,Notes")] Match match)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,HomeTeamId,AwayTeamId,MatchDate,Location,HomeScore,AwayScore,Notes")] Match match)
         {
             if (id != match.Id)
             {
@@ -126,9 +126,9 @@ namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
         }
 
         // GET: Admin/Matches/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null)
+            if (!id.HasValue)
             {
                 return NotFound();
             }
@@ -160,7 +160,7 @@ namespace VolleyballRallyManager.Web.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool MatchExists(int id)
+        private bool MatchExists(Guid? id)
         {
             return _context.Matches.Any(e => e.Id == id);
         }

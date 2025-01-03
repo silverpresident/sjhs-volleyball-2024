@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using VolleyballRallyManager.Admin.Models;
+using VolleyballRallyManager.App.Models;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Hubs;
 using VolleyballRallyManager.Lib.Models;
 using VolleyballRallyManager.Lib.Services;
 
-namespace VolleyballRallyManager.Admin.Controllers;
+namespace VolleyballRallyManager.App.Controllers;
 
 [Authorize]
 [ApiController]

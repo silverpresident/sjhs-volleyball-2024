@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Hubs;
 
-namespace VolleyballRallyManager.Admin.Controllers;
+namespace VolleyballRallyManager.App.Controllers;
 
 public abstract class ApiControllerBase : ControllerBase
 {

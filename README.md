@@ -13,7 +13,7 @@ The solution consists of three main projects:
    - SignalR hubs
    - Shared configurations
 
-2. **VolleyballRallyManager.Admin**
+2. **VolleyballRallyManager.App**
    - MVC application for tournament administration
    - User authentication and authorization
    - Match management
@@ -55,7 +55,7 @@ The solution consists of three main projects:
 3. Create and configure appsettings.json files:
    ```bash
    # Admin project
-   cp src/VolleyballRallyManager.Admin/appsettings.json.example src/VolleyballRallyManager.Admin/appsettings.json
+   cp src/VolleyballRallyManager.App/appsettings.json.example src/VolleyballRallyManager.App/appsettings.json
    
    # Public project
    cp src/VolleyballRallyManager.Public/wwwroot/appsettings.json.example src/VolleyballRallyManager.Public/wwwroot/appsettings.json
@@ -67,7 +67,7 @@ The solution consists of three main projects:
    sqlcmd -S (localdb)\MSSQLLocalDB -i database/setup.sql
    
    # Apply Entity Framework migrations
-   dotnet ef database update --project src/VolleyballRallyManager.Lib --startup-project src/VolleyballRallyManager.Admin
+   dotnet ef database update --project src/VolleyballRallyManager.Lib --startup-project src/VolleyballRallyManager.App
    ```
 
 5. Configure authentication:
@@ -78,7 +78,7 @@ The solution consists of three main projects:
 6. Run the applications:
    ```bash
    # Run Admin app
-   cd src/VolleyballRallyManager.Admin
+   cd src/VolleyballRallyManager.App
    dotnet run
    
    # Run Public app
@@ -111,7 +111,7 @@ The solution consists of three main projects:
 3. Deploy the applications:
    ```bash
    # Deploy Admin app
-   dotnet publish src/VolleyballRallyManager.Admin -c Release
+   dotnet publish src/VolleyballRallyManager.App -c Release
    az webapp deployment source config-zip --src bin/Release/net8.0/publish.zip --name your-admin-app --resource-group your-resource-group
    
    # Deploy Public app

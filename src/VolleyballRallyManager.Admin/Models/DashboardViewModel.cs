@@ -1,6 +1,6 @@
 using VolleyballRallyManager.Lib.Models;
 
-namespace VolleyballRallyManager.Admin.Models;
+namespace VolleyballRallyManager.App.Models;
 
 public class DashboardViewModel
 {
