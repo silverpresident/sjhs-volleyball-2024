@@ -21,24 +21,29 @@ namespace VolleyballRallyManager.Lib.Configuration
             // Apply migrations
             await dbContext.Database.MigrateAsync();
 
-            await SeedTournamentAsync(dbContext);
-
             // Seed initial data if needed
-            if (!await dbContext.Teams.AnyAsync() && await dbContext.Database.CanConnectAsync())
+            try
             {
-                try
-                {
-                    await SeedInitialDataAsync(dbContext);
-                }
-                catch (Exception ex)
-                {
-                    var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
-                    logger.LogError(ex, "An error occurred while seeding the database.");
-                }
+                // Seed default admin user
+                await SeedAdminUserAsync(scope.ServiceProvider);
+            }
+            catch (Exception ex)
+            {
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
+                logger.LogError(ex, "An error occurred while seeding the database.");
+            }
+            try
+            {
+                await SeedTournamentAsync(dbContext);
+
+                await SeedInitialDataAsync(dbContext);
+            }
+            catch (Exception ex)
+            {
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
+                logger.LogError(ex, "An error occurred while seeding the database.");
             }
 
-            // Seed default admin user
-            await SeedAdminUserAsync(scope.ServiceProvider);
         }
 
         private static async Task SeedAdminUserAsync(IServiceProvider serviceProvider)
@@ -46,10 +51,15 @@ namespace VolleyballRallyManager.Lib.Configuration
             var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            // Ensure the Admin role exists
-            if (!await roleManager.RoleExistsAsync("Admin"))
+            string[] roles = { "Administrator", "Judge", "Scorekeeper" };
+            string AdminRole = "Administrator";
+            foreach (string role in roles)
             {
-                await roleManager.CreateAsync(new IdentityRole("Admin"));
+                // Ensure the Admin role exists
+                if (!await roleManager.RoleExistsAsync(role))
+                {
+                    await roleManager.CreateAsync(new IdentityRole(role));
+                }
             }
 
             // Create default admin user if it doesn't exist
@@ -57,8 +67,10 @@ namespace VolleyballRallyManager.Lib.Configuration
             var adminUser = await userManager.FindByNameAsync(adminUserDefault.UserName);
             if (adminUser == null)
             {
-                await userManager.CreateAsync(adminUserDefault, "admin123");
-                adminUser = await userManager.FindByNameAsync(adminUserDefault.UserName);
+                adminUser = new IdentityUser { UserName = "admin", Email = "admin@example.com" };
+                adminUser.UserName = adminUserDefault.UserName;
+                adminUser.Email = adminUserDefault.Email;
+                await userManager.CreateAsync(adminUser, "admin123");
             }
             else
             {
@@ -68,7 +80,7 @@ namespace VolleyballRallyManager.Lib.Configuration
             if (adminUser != null)
             {
                 // Assign the Admin role to the user
-                await userManager.AddToRoleAsync(adminUser, "Admin");
+                await userManager.AddToRoleAsync(adminUser, AdminRole);
             }
         }
 
@@ -161,6 +173,10 @@ namespace VolleyballRallyManager.Lib.Configuration
         }
         private static async Task SeedInitialDataAsync(ApplicationDbContext dbContext)
         {
+            if (await dbContext.Teams.AnyAsync())
+            {
+                return;
+            }
             // Add sample divisions
             var divisions = await SeedDivisionsAsync(dbContext);
             var rounds = await SeedRoundsAsync(dbContext);
