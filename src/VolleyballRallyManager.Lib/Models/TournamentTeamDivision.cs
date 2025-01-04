@@ -21,7 +21,7 @@ namespace VolleyballRallyManager.Lib.Models
         [ForeignKey("DivisionId")]
         public Division Division { get; set; }
 
-        public string Group { get; set; }
+        public string GroupName { get; set; }
 
         public int SeedNumber { get; set; }
     }

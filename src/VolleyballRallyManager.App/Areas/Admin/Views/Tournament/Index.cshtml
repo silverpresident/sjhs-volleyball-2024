@@ -1,0 +1,40 @@
+@model IEnumerable<VolleyballRallyManager.Lib.Models.Tournament>
+
+@{
+    ViewData["Title"] = "Tournaments";
+}
+
+<div class="card">
+    <div class="card-header">
+        <h1 class="card-title">@ViewData["Title"]</h1>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Tournament Date</th>
+                    <th>Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                        <td>@Html.DisplayFor(modelItem => item.TournamentDate)</td>
+                        <td>@Html.DisplayFor(modelItem => item.IsActive)</td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Details</a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Edit</a>
+                            <a asp-action="SetActive" asp-route-id="@item.Id" class="btn btn-sm btn-success">Set Active</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

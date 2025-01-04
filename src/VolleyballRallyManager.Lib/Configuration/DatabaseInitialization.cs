@@ -260,7 +260,7 @@ namespace VolleyballRallyManager.Lib.Configuration
                         TournamentId = tournament.Id,
                         TeamId = team.Id,
                         DivisionId = division.Id,
-                        Group = "A",
+                        GroupName = "A",
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
                         CreatedBy = "System",

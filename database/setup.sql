@@ -77,28 +77,30 @@ GO
 -- Matches
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Matches' AND schema_id = SCHEMA_ID('dbo'))
 BEGIN
-    CREATE TABLE dbo.Matches
-    (
+    -- Table: Matches
+    CREATE TABLE dbo.Matches (
         Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
         MatchNumber INT NOT NULL,
+        ScheduledTime DATETIME2 NOT NULL,
+        ActualStartTime DATETIME2,
+        CourtLocation NVARCHAR(50) NOT NULL,
+        TournamentId UNIQUEIDENTIFIER NOT NULL,
+        DivisionId UNIQUEIDENTIFIER NOT NULL,
         RoundId UNIQUEIDENTIFIER NOT NULL,
         HomeTeamId UNIQUEIDENTIFIER NOT NULL,
         AwayTeamId UNIQUEIDENTIFIER NOT NULL,
         HomeTeamScore INT NOT NULL DEFAULT 0,
         AwayTeamScore INT NOT NULL DEFAULT 0,
-        ScheduledTime DATETIME2 NOT NULL,
-        ActualStartTime DATETIME2,
-        CourtLocation NVARCHAR(50) NOT NULL,
-        RefereeId NVARCHAR(100),
-        ScorerId NVARCHAR(100),
-        RefereeName NVARCHAR(100),
-        ScorerName NVARCHAR(100),
         IsFinished BIT NOT NULL DEFAULT 0,
         IsDisputed BIT NOT NULL DEFAULT 0,
+        RefereeName NVARCHAR(255),
+        ScorerName NVARCHAR(255),
         CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
         UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
         CreatedBy NVARCHAR(256),
         UpdatedBy NVARCHAR(256),
+        CONSTRAINT FK_Matches_Tournaments FOREIGN KEY (TournamentId) REFERENCES dbo.Tournaments(Id),
+        CONSTRAINT FK_Matches_Divisions FOREIGN KEY (DivisionId) REFERENCES dbo.Divisions(Id),
         CONSTRAINT FK_Matches_Rounds FOREIGN KEY (RoundId) REFERENCES dbo.Rounds(Id),
         CONSTRAINT FK_Matches_HomeTeam FOREIGN KEY (HomeTeamId) REFERENCES dbo.Teams(Id),
         CONSTRAINT FK_Matches_AwayTeam FOREIGN KEY (AwayTeamId) REFERENCES dbo.Teams(Id)
@@ -172,6 +174,8 @@ GO
 
 -- Create Indexes
 CREATE NONCLUSTERED INDEX IX_Teams_Division ON dbo.Teams(DivisionId);
+CREATE NONCLUSTERED INDEX IX_Matches_Tournament ON dbo.Matches(TournamentId);
+CREATE NONCLUSTERED INDEX IX_Matches_Division ON dbo.Matches(DivisionId);
 CREATE NONCLUSTERED INDEX IX_Matches_Round ON dbo.Matches(RoundId);
 CREATE NONCLUSTERED INDEX IX_Matches_Teams ON dbo.Matches(HomeTeamId, AwayTeamId);
 CREATE NONCLUSTERED INDEX IX_MatchUpdates_Match ON dbo.MatchUpdates(MatchId);
@@ -223,7 +227,7 @@ BEGIN
         TournamentId UNIQUEIDENTIFIER NOT NULL,
         TeamId UNIQUEIDENTIFIER NOT NULL,
         DivisionId UNIQUEIDENTIFIER NOT NULL,
-        Group NVARCHAR(50),
+        GroupName NVARCHAR(50),
         SeedNumber INT,
         CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
         UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),

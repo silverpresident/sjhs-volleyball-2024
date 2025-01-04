@@ -25,8 +25,6 @@ namespace VolleyballRallyManager.Lib.Data
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<Tournament>();
-
             builder.Entity<TournamentDivision>()
                 .HasKey(td => new { td.TournamentId, td.DivisionId });
 

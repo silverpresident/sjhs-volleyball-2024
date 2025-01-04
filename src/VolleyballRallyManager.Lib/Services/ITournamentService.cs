@@ -6,13 +6,17 @@ namespace VolleyballRallyManager.Lib.Services
 {
     public interface ITournamentService
     {
-        Task SetActiveTournament(Guid tournamentId);
-        Task<IEnumerable<Division>> GetTournamentDivisions(Guid tournamentId);
-        Task<IEnumerable<Team>> GetTournamentTeams(Guid tournamentId);
-        Task<IEnumerable<Match>> GetTournamentMatches(Guid tournamentId);
-        Task AddDivisionToTournament(Guid tournamentId, Guid divisionId);
-        Task RemoveDivisionFromTournament(Guid tournamentId, Guid divisionId);
-        Task AddTeamToTournament(Guid tournamentId, Guid teamId, Guid divisionId, string group, int seedNumber);
-        Task RemoveTeamFromTournament(Guid tournamentId, Guid teamId);
+        Task SetActiveTournamentAsync(Guid tournamentId);
+        Task<IEnumerable<Division>> GetTournamentDivisionsAsync(Guid tournamentId);
+        Task<IEnumerable<Team>> GetTournamentTeamsAsync(Guid tournamentId);
+        Task<IEnumerable<Match>> GetTournamentMatchesAsync(Guid tournamentId);
+        Task AddDivisionToTournamentAsync(Guid tournamentId, Guid divisionId);
+        Task RemoveDivisionFromTournamentAsync(Guid tournamentId, Guid divisionId);
+        Task AddTeamToTournamentAsync(Guid tournamentId, Guid teamId, Guid divisionId, string group, int seedNumber);
+        Task RemoveTeamFromTournamentAsync(Guid tournamentId, Guid teamId);
+        Task<Tournament> GetActiveTournamentAsync();
+        Task<Tournament> GetTournamentByIdAsync(Guid tournamentId);
+        Task<IEnumerable<Tournament>> GetAllTournamentsAsync();
+        Task UpdateTournamentAsync(Tournament tournament);
     }
 }
