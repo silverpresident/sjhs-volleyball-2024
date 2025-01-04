@@ -67,20 +67,33 @@ namespace VolleyballRallyManager.Lib.Configuration
             var adminUser = await userManager.FindByNameAsync(adminUserDefault.UserName);
             if (adminUser == null)
             {
-                adminUser = new IdentityUser { UserName = "admin", Email = "admin@example.com" };
-                adminUser.UserName = adminUserDefault.UserName;
-                adminUser.Email = adminUserDefault.Email;
+                adminUser = new IdentityUser
+                {
+                    EmailConfirmed = true,
+                    UserName = adminUserDefault.UserName,
+                    Email = adminUserDefault.Email
+                
+                };
                 await userManager.CreateAsync(adminUser, "admin123");
             }
             else
             {
                 await userManager.SetEmailAsync(adminUser, adminUserDefault.Email);
+                // Remove existing password if any, then add the default password
+                var hasPassword = await userManager.HasPasswordAsync(adminUser);
+                if (hasPassword)
+                {
+                    await userManager.RemovePasswordAsync(adminUser);
+                }
                 await userManager.AddPasswordAsync(adminUser, "admin123");
             }
             if (adminUser != null)
             {
                 // Assign the Admin role to the user
-                await userManager.AddToRoleAsync(adminUser, AdminRole);
+                if (!await userManager.IsInRoleAsync(adminUser, AdminRole))
+                {
+                    await userManager.AddToRoleAsync(adminUser, AdminRole);
+                }
             }
         }
 
