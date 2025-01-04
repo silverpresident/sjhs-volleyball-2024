@@ -21,8 +21,8 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>@item.DivisionId</td>
-                            <td>@item.GroupId</td>
+                            @* <td>@item.DivisionId</td>
+                            <td>@item.GroupId</td> *@
                             <td>@item.Name</td>
                             <td>
                                 <a asp-action="Details" asp-route-id="@item.Id">Details</a>

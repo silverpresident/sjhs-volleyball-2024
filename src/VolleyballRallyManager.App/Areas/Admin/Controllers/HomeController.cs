@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     [Authorize]
     public class HomeController : Controller
     {

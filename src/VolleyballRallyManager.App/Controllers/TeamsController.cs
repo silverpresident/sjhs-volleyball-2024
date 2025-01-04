@@ -24,7 +24,7 @@ namespace VolleyballRallyManager.App.Controllers
         {
             var teams = await _teamService.GetTeamsAsync();
 
-            if (divisionId.HasValue)
+           /* if (divisionId.HasValue)
             {
                 teams = teams.Where(t => t.DivisionId == divisionId.Value);
             }
@@ -33,7 +33,7 @@ namespace VolleyballRallyManager.App.Controllers
             {
                 teams = teams.Where(t => t.GroupId == groupId.Value);
             }
-
+*/
             return View(teams.ToList());
         }
 
@@ -46,7 +46,7 @@ namespace VolleyballRallyManager.App.Controllers
             }
 
             // Fetch matches for this team to display results
-            var matches = await _matchService.GetMatchesForTeamAsync(id);
+            var matches = await _matchService.GetMatchesByTeamAsync(id);
             ViewBag.Matches = matches;
 
             return View(team);

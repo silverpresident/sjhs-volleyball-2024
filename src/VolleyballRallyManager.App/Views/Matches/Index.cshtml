@@ -11,11 +11,9 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Division</th>
-                        <th>Group</th>
                         <th>Round</th>
-                        <th>Team 1</th>
-                        <th>Team 2</th>
+                        <th>Home Team</th>
+                        <th>Away Team</th>
                         <th>Score</th>
                         <th></th>
                     </tr>
@@ -24,12 +22,10 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>@item.DivisionId</td>
-                            <td>@item.GroupId</td>
                             <td>@item.RoundId</td>
-                            <td>@item.Team1Id</td>
-                            <td>@item.Team2Id</td>
-                            <td>@item.Team1Score - @item.Team2Score</td>
+                            <td>@item.HomeTeam.Name</td>
+                            <td>@item.AwayTeam.Name</td>
+                            <td>@item.HomeTeamScore - @item.AwayTeamScore</td>
                             <td>
                                 <a asp-action="Details" asp-route-id="@item.Id">Details</a>
                             </td>

@@ -18,11 +18,11 @@ namespace VolleyballRallyManager.App.Controllers
             _matchHub = matchHub;
         }
 
-        public async Task<IActionResult> Index(int? divisionId, int? groupId, int? roundId)
+        public async Task<IActionResult> Index(int? divisionId, int? groupId, Guid? roundId)
         {
             var matches = await _matchService.GetMatchesAsync();
 
-            if (divisionId.HasValue)
+   /*         if (divisionId.HasValue)
             {
                 matches = matches.Where(m => m.DivisionId == divisionId.Value);
             }
@@ -35,7 +35,7 @@ namespace VolleyballRallyManager.App.Controllers
             if (roundId.HasValue)
             {
                 matches = matches.Where(m => m.RoundId == roundId.Value);
-            }
+            }*/
 
             return View(matches.ToList());
         }

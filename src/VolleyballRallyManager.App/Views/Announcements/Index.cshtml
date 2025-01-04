@@ -1,3 +1,4 @@
+@model IEnumerable<VolleyballRallyManager.Lib.Models.Announcement>
 
 @{
     ViewData["Title"] = "Announcements";
@@ -12,10 +13,7 @@
                     <tr>
                         <th>
                             @Html.DisplayNameFor(model => model.Priority)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Title)
-                        </th>
+                        </th> 
                         <th>
                             @Html.DisplayNameFor(model => model.Content)
                         </th>
@@ -30,10 +28,7 @@
                     <tr>
                         <td>
                             @Html.DisplayFor(modelItem => item.Priority)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Title)
-                        </td>
+                        </td> 
                         <td>
                             @Html.Raw(item.Content)
                         </td>
