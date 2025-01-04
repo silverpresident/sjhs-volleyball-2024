@@ -41,7 +41,7 @@ namespace VolleyballRallyManager.Lib.Configuration
 
         private static async Task SeedAdminUserAsync(IServiceProvider serviceProvider)
         {
-            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
             // Ensure the Admin role exists
@@ -54,7 +54,7 @@ namespace VolleyballRallyManager.Lib.Configuration
             var adminUser = await userManager.FindByNameAsync("admin");
             if (adminUser == null)
             {
-                adminUser = new ApplicationUser { UserName = "admin", Email = "admin@example.com" };
+                adminUser = new IdentityUser { UserName = "admin", Email = "admin@example.com" };
                 await userManager.CreateAsync(adminUser, "admin123");
 
                 // Assign the Admin role to the user

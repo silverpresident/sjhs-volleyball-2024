@@ -161,7 +161,7 @@ namespace VolleyballRallyManager.Lib.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ApplicationUserId")
+                    b.Property<string>("IdentityUserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Content")
@@ -200,12 +200,12 @@ namespace VolleyballRallyManager.Lib.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("IdentityUserId");
 
                     b.ToTable("Announcements");
                 });
 
-            modelBuilder.Entity("VolleyballRallyManager.Lib.Models.ApplicationUser", b =>
+            modelBuilder.Entity("VolleyballRallyManager.Lib.Models.IdentityUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -372,7 +372,7 @@ namespace VolleyballRallyManager.Lib.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ApplicationUserId")
+                    b.Property<string>("IdentityUserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -415,7 +415,7 @@ namespace VolleyballRallyManager.Lib.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("IdentityUserId");
 
                     b.HasIndex("MatchId");
 
@@ -500,7 +500,7 @@ namespace VolleyballRallyManager.Lib.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("VolleyballRallyManager.Lib.Models.ApplicationUser", null)
+                    b.HasOne("VolleyballRallyManager.Lib.Models.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -509,7 +509,7 @@ namespace VolleyballRallyManager.Lib.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("VolleyballRallyManager.Lib.Models.ApplicationUser", null)
+                    b.HasOne("VolleyballRallyManager.Lib.Models.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -524,7 +524,7 @@ namespace VolleyballRallyManager.Lib.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("VolleyballRallyManager.Lib.Models.ApplicationUser", null)
+                    b.HasOne("VolleyballRallyManager.Lib.Models.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -533,7 +533,7 @@ namespace VolleyballRallyManager.Lib.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("VolleyballRallyManager.Lib.Models.ApplicationUser", null)
+                    b.HasOne("VolleyballRallyManager.Lib.Models.IdentityUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -542,9 +542,9 @@ namespace VolleyballRallyManager.Lib.Migrations
 
             modelBuilder.Entity("VolleyballRallyManager.Lib.Models.Announcement", b =>
                 {
-                    b.HasOne("VolleyballRallyManager.Lib.Models.ApplicationUser", null)
+                    b.HasOne("VolleyballRallyManager.Lib.Models.IdentityUser", null)
                         .WithMany("Announcements")
-                        .HasForeignKey("ApplicationUserId");
+                        .HasForeignKey("IdentityUserId");
                 });
 
             modelBuilder.Entity("VolleyballRallyManager.Lib.Models.Match", b =>
@@ -568,9 +568,9 @@ namespace VolleyballRallyManager.Lib.Migrations
 
             modelBuilder.Entity("VolleyballRallyManager.Lib.Models.MatchUpdate", b =>
                 {
-                    b.HasOne("VolleyballRallyManager.Lib.Models.ApplicationUser", null)
+                    b.HasOne("VolleyballRallyManager.Lib.Models.IdentityUser", null)
                         .WithMany("Updates")
-                        .HasForeignKey("ApplicationUserId");
+                        .HasForeignKey("IdentityUserId");
 
                     b.HasOne("VolleyballRallyManager.Lib.Models.Match", "Match")
                         .WithMany("Updates")
@@ -581,7 +581,7 @@ namespace VolleyballRallyManager.Lib.Migrations
                     b.Navigation("Match");
                 });
 
-            modelBuilder.Entity("VolleyballRallyManager.Lib.Models.ApplicationUser", b =>
+            modelBuilder.Entity("VolleyballRallyManager.Lib.Models.IdentityUser", b =>
                 {
                     b.Navigation("Announcements");
 

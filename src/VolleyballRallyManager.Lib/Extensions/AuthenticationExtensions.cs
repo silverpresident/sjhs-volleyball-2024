@@ -34,7 +34,7 @@ namespace VolleyballRallyManager.Lib.Extensions
             );
 
             // Add Identity services
-            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
                 // Password settings
                 options.Password.RequireDigit = true;
