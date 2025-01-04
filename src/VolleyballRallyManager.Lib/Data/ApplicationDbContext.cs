@@ -17,10 +17,17 @@ namespace VolleyballRallyManager.Lib.Data
         public DbSet<Announcement> Announcements { get; set; }
         public DbSet<MatchUpdate> MatchUpdates { get; set; }
         public DbSet<Division> Divisions { get; set; }
+        public DbSet<Tournament> Tournaments { get; set; }
+        public DbSet<TournamentDivision> TournamentDivisions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<Tournament>();
+
+            builder.Entity<TournamentDivision>()
+                .HasKey(td => new { td.TournamentId, td.DivisionId });
 
             // Configure Team relationships
             builder.Entity<Team>()

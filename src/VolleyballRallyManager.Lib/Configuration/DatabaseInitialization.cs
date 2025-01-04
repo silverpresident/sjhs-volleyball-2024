@@ -56,15 +56,18 @@ namespace VolleyballRallyManager.Lib.Configuration
             if (adminUser == null)
             {
                 await userManager.CreateAsync(adminUserDefault, "admin123");
+                adminUser = await userManager.FindByNameAsync(adminUserDefault.UserName);
             }
             else
             {
-                await userManager.SetEmailAsync(adminUserDefault, adminUserDefault.Email);
-                await userManager.AddPasswordAsync(adminUserDefault, "admin123");
+                await userManager.SetEmailAsync(adminUser, adminUserDefault.Email);
+                await userManager.AddPasswordAsync(adminUser, "admin123");
             }
-
-            // Assign the Admin role to the user
-            await userManager.AddToRoleAsync(adminUserDefault, "Admin");
+            if (adminUser != null)
+            {
+                // Assign the Admin role to the user
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+            }
         }
 
         private static async Task<List<Division>> SeedDivisionsAsync(ApplicationDbContext dbContext)
@@ -179,7 +182,7 @@ namespace VolleyballRallyManager.Lib.Configuration
                 team.UpdatedBy = "System";
                 team.CreatedBy = "System";
             }
-            if (await dbContext.Teams.AnyAsync())
+            if (!await dbContext.Teams.AnyAsync())
                 await dbContext.Teams.AddRangeAsync(teams);
             await dbContext.SaveChangesAsync();
 
@@ -195,8 +198,9 @@ namespace VolleyballRallyManager.Lib.Configuration
                 CreatedBy = "System",
                 UpdatedBy = "System"
             };
-
+            if (!await dbContext.Announcements.AnyAsync()){
             await dbContext.Announcements.AddAsync(announcement);
+            }
             await dbContext.SaveChangesAsync();
         }
     }

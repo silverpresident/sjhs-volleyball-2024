@@ -32,8 +32,8 @@ public class HomeController : Controller
         var dashboard = new DashboardViewModel
         {
             TotalTeams = await _context.Teams.CountAsync(),
-            TotalMatches = await _context.Matches.CountAsync(),
-            MatchesInProgress = await _context.Matches
+           TotalMatches = await _context.Matches.CountAsync(),
+/*             MatchesInProgress = await _context.Matches
                 .CountAsync(m => m.ActualStartTime.HasValue && !m.IsFinished),
             MatchesFinished = await _context.Matches.CountAsync(m => m.IsFinished),
             DisputedMatches = await _context.Matches.CountAsync(m => m.IsDisputed),
@@ -49,7 +49,7 @@ public class HomeController : Controller
             RecentAnnouncements = await _context.Announcements
                 .OrderByDescending(a => a.CreatedAt)
                 .Take(5)
-                .ToListAsync(),
+                .ToListAsync(),*/
 
             TeamsByDivision = teamsByDivision
         };

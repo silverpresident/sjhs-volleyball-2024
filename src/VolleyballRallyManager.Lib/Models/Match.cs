@@ -7,6 +7,8 @@ public class Match : BaseEntity
     public required DateTime ScheduledTime { get; set; }
     public DateTime? ActualStartTime { get; set; }
     public required string CourtLocation { get; set; }
+    public Guid TournamentId { get; set; }
+    public Tournament Tournament { get; set; }
     
     public required Guid HomeTeamId { get; set; }
     public required Guid AwayTeamId { get; set; }
