@@ -4,6 +4,7 @@ using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity;
 
 namespace VolleyballRallyManager.Lib.Configuration
 {
@@ -32,6 +33,32 @@ namespace VolleyballRallyManager.Lib.Configuration
                     var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
                     logger.LogError(ex, "An error occurred while seeding the database.");
                 }
+            }
+
+            // Seed default admin user
+            await SeedAdminUserAsync(scope.ServiceProvider);
+        }
+
+        private static async Task SeedAdminUserAsync(IServiceProvider serviceProvider)
+        {
+            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            // Ensure the Admin role exists
+            if (!await roleManager.RoleExistsAsync("Admin"))
+            {
+                await roleManager.CreateAsync(new IdentityRole("Admin"));
+            }
+
+            // Create default admin user if it doesn't exist
+            var adminUser = await userManager.FindByNameAsync("admin");
+            if (adminUser == null)
+            {
+                adminUser = new ApplicationUser { UserName = "admin", Email = "admin@example.com" };
+                await userManager.CreateAsync(adminUser, "admin123");
+
+                // Assign the Admin role to the user
+                await userManager.AddToRoleAsync(adminUser, "Admin");
             }
         }
 

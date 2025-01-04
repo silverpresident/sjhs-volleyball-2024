@@ -20,6 +20,9 @@ builder.Services.AddVolleyballRallyServices(builder.Configuration);
 // Add SignalR with custom configuration
 builder.Services.AddVolleyballSignalR();
 
+// Add Logging
+builder.Services.AddLogging();
+
 // Add Identity
 builder.Services.AddVolleyBallRallyAuthentication(builder.Configuration);
 
