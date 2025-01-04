@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,7 +7,7 @@ using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
 
 namespace VolleyballRallyManager.Lib.Services
-{
+{    
     public class TournamentService : ITournamentService
     {
         private readonly ApplicationDbContext _context;
@@ -18,11 +17,12 @@ namespace VolleyballRallyManager.Lib.Services
             _context = context;
         }
 
-        public async Task SetActiveTournament(int tournamentId)
+        public async Task SetActiveTournament(Guid tournamentId)
         {
             // Implementation not provided
             await Task.CompletedTask;
         }
+
 
         public async Task<IEnumerable<Division>> GetTournamentDivisions(Guid tournamentId)
         {
@@ -32,41 +32,17 @@ namespace VolleyballRallyManager.Lib.Services
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Team>> GetTournamentTeams(int tournamentId)
-        {
-            return await _context.Teams
-                .Where(t => t.TournamentId == tournamentId)
-                .ToListAsync();
-        }
 
-        public async Task<IEnumerable<Match>> GetTournamentMatches(int tournamentId)
-        {
-            return await _context.Matches
-                .Where(m => m.TournamentId == tournamentId)
-                .ToListAsync();
-        }
-        public async Task SetActiveTournament(int tournamentId)
-        {
-            // Implementation not provided
-            await Task.CompletedTask;
-        }
-
-        public async Task<IEnumerable<Division>> GetTournamentDivisions(int tournamentId)
+        public async Task<IEnumerable<Team>> GetTournamentTeams(Guid tournamentId)
         {
             return await _context.TournamentDivisions
                 .Where(td => td.TournamentId == tournamentId)
-                .Select(td => td.Division)
+                .Select(td => td.Division.Teams)
+                .SelectMany(teams => teams)
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Team>> GetTournamentTeams(int tournamentId)
-        {
-            return await _context.Teams
-                .Where(t => t.TournamentId == tournamentId)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Match>> GetTournamentMatches(int tournamentId)
+        public async Task<IEnumerable<Match>> GetTournamentMatches(Guid tournamentId)
         {
             return await _context.Matches
                 .Where(m => m.TournamentId == tournamentId)
