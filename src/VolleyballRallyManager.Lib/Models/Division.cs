@@ -7,5 +7,6 @@ namespace VolleyballRallyManager.Lib.Models
     {
         public string Name { get; set; } = string.Empty;
         public virtual ICollection<Team> Teams { get; set; } = new List<Team>();
+        public virtual ICollection<TournamentTeamDivision> TournamentTeamDivisions { get; set; } = new List<TournamentTeamDivision>();
     }
 }

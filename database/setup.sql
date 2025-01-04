@@ -178,6 +178,64 @@ CREATE NONCLUSTERED INDEX IX_MatchUpdates_Match ON dbo.MatchUpdates(MatchId);
 CREATE NONCLUSTERED INDEX IX_Announcements_Priority ON dbo.Announcements(Priority);
 GO
 
+-- Tournaments
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Tournaments' AND schema_id = SCHEMA_ID('dbo'))
+BEGIN
+    CREATE TABLE dbo.Tournaments
+    (
+        Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
+        Name NVARCHAR(200) NOT NULL,
+        StartDate DATETIME2 NOT NULL,
+        EndDate DATETIME2 NOT NULL,
+        IsActive BIT NOT NULL DEFAULT 0,
+        CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+        UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+        CreatedBy NVARCHAR(256),
+        UpdatedBy NVARCHAR(256)
+    );
+END
+GO
+
+-- TournamentDivisions
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'TournamentDivisions' AND schema_id = SCHEMA_ID('dbo'))
+BEGIN
+    CREATE TABLE dbo.TournamentDivisions
+    (
+        Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
+        TournamentId UNIQUEIDENTIFIER NOT NULL,
+        DivisionId UNIQUEIDENTIFIER NOT NULL,
+        CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+        UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+        CreatedBy NVARCHAR(256),
+        UpdatedBy NVARCHAR(256),
+        CONSTRAINT FK_TournamentDivisions_Tournaments FOREIGN KEY (TournamentId) REFERENCES dbo.Tournaments(Id),
+        CONSTRAINT FK_TournamentDivisions_Divisions FOREIGN KEY (DivisionId) REFERENCES dbo.Divisions(Id)
+    );
+END
+GO
+
+-- TournamentTeamDivisions
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'TournamentTeamDivisions' AND schema_id = SCHEMA_ID('dbo'))
+BEGIN
+    CREATE TABLE dbo.TournamentTeamDivisions
+    (
+        Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
+        TournamentId UNIQUEIDENTIFIER NOT NULL,
+        TeamId UNIQUEIDENTIFIER NOT NULL,
+        DivisionId UNIQUEIDENTIFIER NOT NULL,
+        Group NVARCHAR(50),
+        SeedNumber INT,
+        CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+        UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+        CreatedBy NVARCHAR(256),
+        UpdatedBy NVARCHAR(256),
+        CONSTRAINT FK_TournamentTeamDivisions_Tournaments FOREIGN KEY (TournamentId) REFERENCES dbo.Tournaments(Id),
+        CONSTRAINT FK_TournamentTeamDivisions_Teams FOREIGN KEY (TeamId) REFERENCES dbo.Teams(Id),
+        CONSTRAINT FK_TournamentTeamDivisions_Divisions FOREIGN KEY (DivisionId) REFERENCES dbo.Divisions(Id)
+    );
+END
+GO
+
 -- Create Triggers for UpdatedAt
 CREATE TRIGGER dbo.TR_Teams_UpdatedAt ON dbo.Teams AFTER UPDATE AS
 BEGIN

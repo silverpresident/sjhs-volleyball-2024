@@ -12,5 +12,7 @@ namespace VolleyballRallyManager.Lib.Services
         Task<IEnumerable<Match>> GetTournamentMatches(Guid tournamentId);
         Task AddDivisionToTournament(Guid tournamentId, Guid divisionId);
         Task RemoveDivisionFromTournament(Guid tournamentId, Guid divisionId);
+        Task AddTeamToTournament(Guid tournamentId, Guid teamId, Guid divisionId, string group, int seedNumber);
+        Task RemoveTeamFromTournament(Guid tournamentId, Guid teamId);
     }
 }

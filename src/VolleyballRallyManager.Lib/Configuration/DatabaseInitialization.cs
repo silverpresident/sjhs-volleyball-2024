@@ -21,6 +21,8 @@ namespace VolleyballRallyManager.Lib.Configuration
             // Apply migrations
             await dbContext.Database.MigrateAsync();
 
+            await SeedTournamentAsync(dbContext);
+
             // Seed initial data if needed
             if (!await dbContext.Teams.AnyAsync() && await dbContext.Database.CanConnectAsync())
             {
@@ -136,6 +138,27 @@ namespace VolleyballRallyManager.Lib.Configuration
             await dbContext.SaveChangesAsync();
             return rounds;
         }
+        private static async Task SeedTournamentAsync(ApplicationDbContext dbContext)
+        {
+            string tourName = $"Volleyball {DateTime.Now.Year}";
+            if (!await dbContext.Tournaments.AnyAsync())
+            {
+                var tournament = new Tournament()
+                {
+                    Description = string.Empty,
+                    Name = tourName,
+                    IsActive = true,
+                    TournamentDate = DateTime.Now.AddHours(9 - DateTime.Now.Hour),
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                    CreatedBy = "System",
+                    UpdatedBy = "System"
+                };
+                await dbContext.Tournaments.AddAsync(tournament);
+            }
+            await dbContext.SaveChangesAsync();
+
+        }
         private static async Task SeedInitialDataAsync(ApplicationDbContext dbContext)
         {
             // Add sample divisions
@@ -198,8 +221,52 @@ namespace VolleyballRallyManager.Lib.Configuration
                 CreatedBy = "System",
                 UpdatedBy = "System"
             };
-            if (!await dbContext.Announcements.AnyAsync()){
-            await dbContext.Announcements.AddAsync(announcement);
+            if (!await dbContext.Announcements.AnyAsync())
+            {
+                await dbContext.Announcements.AddAsync(announcement);
+            }
+            var tournament = await dbContext.Tournaments.FirstOrDefaultAsync();
+
+            if (!await dbContext.TournamentDivisions.AnyAsync())
+            {
+
+                if (tournament != null)
+                {
+                    foreach (var division in divisions)
+                    {
+                        await dbContext.TournamentDivisions.AddAsync(new TournamentDivision
+                        {
+                            TournamentId = tournament.Id,
+                            DivisionId = division.Id
+                        });
+                    }
+                    await dbContext.SaveChangesAsync();
+                }
+
+            }
+
+
+            if (!await dbContext.TournamentTeamDivisions.AnyAsync())
+            {
+                teams = await dbContext.Teams.ToArrayAsync();
+                bool sel1 = true;
+                foreach (var team in teams)
+                {
+                    var division = sel1 ? divisions[0] : divisions[1];
+                    sel1 = !sel1;
+
+                    await dbContext.TournamentTeamDivisions.AddAsync(new TournamentTeamDivision
+                    {
+                        TournamentId = tournament.Id,
+                        TeamId = team.Id,
+                        DivisionId = division.Id,
+                        Group = "A",
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow,
+                        CreatedBy = "System",
+                        UpdatedBy = "System"
+                    });
+                }
             }
             await dbContext.SaveChangesAsync();
         }

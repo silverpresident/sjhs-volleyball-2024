@@ -21,4 +21,5 @@ public class Team : BaseEntity
     // Navigation properties
     public virtual ICollection<Match> HomeMatches { get; set; } = new List<Match>();
     public virtual ICollection<Match> AwayMatches { get; set; } = new List<Match>();
+    public virtual ICollection<TournamentTeamDivision> TournamentTeamDivisions { get; set; } = new List<TournamentTeamDivision>();
 }

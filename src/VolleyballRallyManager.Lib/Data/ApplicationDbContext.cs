@@ -19,6 +19,7 @@ namespace VolleyballRallyManager.Lib.Data
         public DbSet<Division> Divisions { get; set; }
         public DbSet<Tournament> Tournaments { get; set; }
         public DbSet<TournamentDivision> TournamentDivisions { get; set; }
+        public DbSet<TournamentTeamDivision> TournamentTeamDivisions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -28,6 +29,24 @@ namespace VolleyballRallyManager.Lib.Data
 
             builder.Entity<TournamentDivision>()
                 .HasKey(td => new { td.TournamentId, td.DivisionId });
+
+            builder.Entity<TournamentTeamDivision>()
+                .HasKey(ttd => new { ttd.TournamentId, ttd.TeamId, ttd.DivisionId });
+
+            builder.Entity<TournamentTeamDivision>()
+                .HasOne(ttd => ttd.Tournament)
+                .WithMany(t => t.TournamentTeamDivisions)
+                .HasForeignKey(ttd => ttd.TournamentId);
+
+            builder.Entity<TournamentTeamDivision>()
+                .HasOne(ttd => ttd.Team)
+                .WithMany(t => t.TournamentTeamDivisions)
+                .HasForeignKey(ttd => ttd.TeamId);
+
+            builder.Entity<TournamentTeamDivision>()
+                .HasOne(ttd => ttd.Division)
+                .WithMany(d => d.TournamentTeamDivisions)
+                .HasForeignKey(ttd => ttd.DivisionId);
 
             // Configure Team relationships
             builder.Entity<Team>()
