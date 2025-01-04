@@ -46,7 +46,7 @@ namespace VolleyballRallyManager.Lib.Extensions
                 // Lockout settings
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
                 options.Lockout.MaxFailedAccessAttempts = 5;
-                options.Lockout.AllowedForNewUsers = true;
+                options.Lockout.AllowedForNewUsers = false;
 
                 // User settings
                 options.User.RequireUniqueEmail = true;

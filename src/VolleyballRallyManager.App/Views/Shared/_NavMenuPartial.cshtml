@@ -1,0 +1,56 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<ul class="navbar-nav flex-grow-1">
+@if (SignInManager.IsSignedIn(User))
+{
+    
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="tournamentDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-user me-1"></i>
+            Tournament
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="tournamentDropdown">
+            <li>
+            <a class="dropdown-item" asp-area="Admin" asp-controller="Tournament" asp-action="Index">Tournament</a>
+         
+            </li>
+            <li>
+            <a class="dropdown-item" asp-area="Admin" asp-controller="TournamentDivisions" asp-action="Index">Tournament Divisions</a>
+         </li>
+            <li>
+            <a class="dropdown-item" asp-area="Admin" asp-controller="TournamentTeams" asp-action="Index">Teams</a>
+         </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+             <a class="dropdown-item" asp-area="Admin" asp-controller="Divisions" asp-action="Index">Divisions</a>
+        </li>
+        </ul>
+      </li>
+
+    <li class="nav-item">
+        
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link" asp-area="Admin" asp-controller="Teams" asp-action="Index">Teams</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-area="Admin" asp-controller="Matches" asp-action="Index">Matches</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-area="Admin" asp-controller="Announcements" asp-action="Index">Announcements</a>
+    </li>
+} else {
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Teams" asp-action="Index">Teams</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Matches" asp-action="Index">Matches</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Announcements" asp-action="Index">Announcements</a>
+    </li>
+}
+</ul>

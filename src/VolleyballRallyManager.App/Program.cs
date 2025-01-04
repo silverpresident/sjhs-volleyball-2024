@@ -53,7 +53,6 @@ app.UseStaticFiles();
 app.UseCors("BlazorPolicy");
 
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 /*
