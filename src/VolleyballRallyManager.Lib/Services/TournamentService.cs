@@ -91,7 +91,8 @@ namespace VolleyballRallyManager.Lib.Services
         {
             if (!_context.TournamentTeamDivisions.Any(ttd => ttd.TournamentId == tournamentId && ttd.TeamId == teamId && ttd.DivisionId == divisionId))
             {
-                _context.TournamentTeamDivisions.Add(new TournamentTeamDivision { TournamentId = tournamentId, TeamId = teamId, DivisionId = divisionId, GroupName = groupName, SeedNumber = seedNumber });
+                var division = await _context.Divisions.FindAsync(divisionId);
+                _context.TournamentTeamDivisions.Add(new TournamentTeamDivision { TournamentId = tournamentId, TeamId = teamId, DivisionId = divisionId, Division = division, GroupName = groupName, SeedNumber = seedNumber });
                 await _context.SaveChangesAsync();
             }
         }
@@ -128,12 +129,97 @@ namespace VolleyballRallyManager.Lib.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<TournamentDivision>> GetTournamentDivisionsWithDivisions(Guid tournamentId)
+        public async Task<IEnumerable<Team>> GetTeamsByDivisionAsync(Division division)
         {
-            return await _context.TournamentDivisions
-                .Where(td => td.TournamentId == tournamentId)
-                .Include(td => td.Division)
-                .ToListAsync() ?? Enumerable.Empty<TournamentDivision>();
+            return await _context.TournamentTeamDivisions
+                .Include(ttd => ttd.Team)
+                .Where(ttd => ttd.DivisionId == division.Id)
+                .Select(ttd => ttd.Team)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Team>> GetLeaderboardAsync(Guid divisionId)
+        {
+            var query = _context.TournamentTeamDivisions
+            .Include(ttd => ttd.Team)
+            .Where(ttd => ttd.DivisionId == divisionId)
+            .OrderByDescending(ttd => ttd.TotalPoints)
+            .ThenByDescending(ttd => ttd.PointDifference)
+            .ThenByDescending(ttd => ttd.PointsScored)
+            .Select(ttd => ttd.Team);
+
+        return await query.ToListAsync();
+        }
+
+        public async Task RecalculateTeamStatisticsAsync(Guid teamId)
+        {
+            var tournamentTeamDivisions = await _context.TournamentTeamDivisions
+                .Where(ttd => ttd.TeamId == teamId)
+                .ToListAsync();
+
+            foreach (var ttd in tournamentTeamDivisions)
+            {
+                // Reset statistics for each tournament-team-division
+                ttd.MatchesPlayed = 0;
+                ttd.Wins = 0;
+                ttd.Draws = 0;
+                ttd.Losses = 0;
+                ttd.PointsScored = 0;
+                ttd.PointsConceded = 0;
+                ttd.TotalPoints = 0;
+
+                // Get all finished matches for this team in the specific tournament
+                var matches = await _context.Matches
+                    .Where(m => (m.HomeTeamId == teamId || m.AwayTeamId == teamId) && m.IsFinished && m.TournamentId == ttd.TournamentId)
+                    .ToListAsync();
+
+                foreach (var match in matches)
+                {
+                    ttd.MatchesPlayed++;
+
+                    if (match.HomeTeamId == teamId)
+                    {
+                        ttd.PointsScored += match.HomeTeamScore;
+                        ttd.PointsConceded += match.AwayTeamScore;
+
+                        if (match.HomeTeamScore > match.AwayTeamScore)
+                        {
+                            ttd.Wins++;
+                            ttd.TotalPoints += 3;
+                        }
+                        else if (match.HomeTeamScore < match.AwayTeamScore)
+                        {
+                            ttd.Losses++;
+                        }
+                        else
+                        {
+                            ttd.Draws++;
+                            ttd.TotalPoints += 1;
+                        }
+                    }
+                    else // Away team
+                    {
+                        ttd.PointsScored += match.AwayTeamScore;
+                        ttd.PointsConceded += match.HomeTeamScore;
+
+                        if (match.AwayTeamScore > match.HomeTeamScore)
+                        {
+                            ttd.Wins++;
+                            ttd.TotalPoints += 3;
+                        }
+                        else if (match.AwayTeamScore < match.HomeTeamScore)
+                        {
+                            ttd.Losses++;
+                        }
+                        else
+                        {
+                            ttd.Draws++;
+                            ttd.TotalPoints += 1;
+                        }
+                    }
+                }
+            }
+            await _context.SaveChangesAsync();
         }
     }
 }

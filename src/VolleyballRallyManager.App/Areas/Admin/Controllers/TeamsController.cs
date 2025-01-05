@@ -43,7 +43,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         // POST: Admin/Teams/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,School,Color,Division,LogoUrl")] Team team)
+        public async Task<IActionResult> Create([Bind("Name,School,Color,LogoUrl")] Team team)
         {
             if (ModelState.IsValid)
             {
@@ -74,7 +74,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         // POST: Admin/Teams/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,School,Color,Division,LogoUrl")] Team team)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,School,Color,LogoUrl")] Team team)
         {
             if (id != team.Id)
             {

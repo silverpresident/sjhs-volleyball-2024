@@ -40,19 +40,11 @@ BEGIN
         Name NVARCHAR(100) NOT NULL,
         School NVARCHAR(100) NOT NULL,
         Color NVARCHAR(50) NOT NULL,
-        DivisionId UNIQUEIDENTIFIER NOT NULL,
         LogoUrl NVARCHAR(500),
-        PointsScored INT NOT NULL DEFAULT 0,
-        PointsConceded INT NOT NULL DEFAULT 0,
-        MatchesPlayed INT NOT NULL DEFAULT 0,
-        Wins INT NOT NULL DEFAULT 0,
-        Draws INT NOT NULL DEFAULT 0,
-        Losses INT NOT NULL DEFAULT 0,
         CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
         UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
         CreatedBy NVARCHAR(256),
-        UpdatedBy NVARCHAR(256),
-        CONSTRAINT FK_Teams_Divisions FOREIGN KEY (DivisionId) REFERENCES dbo.Divisions(Id)
+        UpdatedBy NVARCHAR(256)
     );
 END
 GO
@@ -173,7 +165,6 @@ END
 GO
 
 -- Create Indexes
-CREATE NONCLUSTERED INDEX IX_Teams_Division ON dbo.Teams(DivisionId);
 CREATE NONCLUSTERED INDEX IX_Matches_Tournament ON dbo.Matches(TournamentId);
 CREATE NONCLUSTERED INDEX IX_Matches_Division ON dbo.Matches(DivisionId);
 CREATE NONCLUSTERED INDEX IX_Matches_Round ON dbo.Matches(RoundId);
@@ -229,6 +220,13 @@ BEGIN
         DivisionId UNIQUEIDENTIFIER NOT NULL,
         GroupName NVARCHAR(50),
         SeedNumber INT,
+        DivisionId UNIQUEIDENTIFIER NOT NULL,
+        PointsScored INT NOT NULL DEFAULT 0,
+        PointsConceded INT NOT NULL DEFAULT 0,
+        MatchesPlayed INT NOT NULL DEFAULT 0,
+        Wins INT NOT NULL DEFAULT 0,
+        Draws INT NOT NULL DEFAULT 0,
+        Losses INT NOT NULL DEFAULT 0,
         CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
         UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
         CreatedBy NVARCHAR(256),

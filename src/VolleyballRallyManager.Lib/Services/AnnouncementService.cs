@@ -6,16 +6,6 @@ using Markdig;
 
 namespace VolleyballRallyManager.Lib.Services;
 
-public interface IAnnouncementService
-{
-    Task<Announcement?> GetAnnouncementAsync(Guid id);
-    Task<IEnumerable<Announcement>> GetAnnouncementsAsync(bool includeHidden = false);
-    Task<Announcement> CreateAnnouncementAsync(Announcement announcement);
-    Task<Announcement> UpdateAnnouncementAsync(Announcement announcement);
-    Task<Announcement> UpdateAnnouncementVisibilityAsync(Guid id, bool isVisible);
-    Task<bool> DeleteAnnouncementAsync(Guid id);
-}
-
 public class AnnouncementService : IAnnouncementService
 {
     private readonly ApplicationDbContext _context;
@@ -33,12 +23,12 @@ public class AnnouncementService : IAnnouncementService
             .Build();
     }
 
-    public async Task<Announcement?> GetAnnouncementAsync(Guid id)
+    public async Task<Announcement?> GetAnnouncementByIdAsync(Guid id)
     {
         return await _context.Announcements.FindAsync(id);
     }
 
-    public async Task<IEnumerable<Announcement>> GetAnnouncementsAsync(bool includeHidden = false)
+    public async Task<IEnumerable<Announcement>> GetAllAnnouncementsAsync(bool includeHidden = false)
     {
         var query = _context.Announcements.AsQueryable();
 

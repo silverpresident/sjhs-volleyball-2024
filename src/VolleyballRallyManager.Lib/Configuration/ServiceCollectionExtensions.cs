@@ -36,6 +36,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAnnouncementService, AnnouncementService>();
         services.AddScoped<ITeamService, TeamService>();
         services.AddScoped<ITournamentService, TournamentService>();
+        services.AddScoped<IActiveTournamentService, ActiveTournamentService>();
 
         // SignalR
         services.AddSignalR();

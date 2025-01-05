@@ -80,9 +80,9 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         // POST: Admin/Divisions/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name")] Division division)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name")] Division model)
         {
-            if (id != division.Id)
+            if (id != model.Id)
             {
                 return NotFound();
             }
@@ -91,12 +91,18 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             {
                 try
                 {
-                    _context.Update(division);
+            var division = await _context.Divisions.FindAsync(id);
+            if (division == null)
+            {
+                return NotFound();
+            }
+            division.Name = model.Name;
+            division.UpdatedAt = DateTime.UtcNow;
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DivisionExists(division.Id))
+                    if (!DivisionExists(model.Id))
                     {
                         return NotFound();
                     }
@@ -107,7 +113,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(division);
+            return View(model);
         }
 
         // GET: Admin/Divisions/Delete/5
@@ -136,6 +142,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             var division = await _context.Divisions.FindAsync(id);
             if (division != null)
             {
+                //TODO check before deleting
                 _context.Divisions.Remove(division);
             }
             await _context.SaveChangesAsync();
