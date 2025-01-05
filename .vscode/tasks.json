@@ -36,6 +36,14 @@
                 "${workspaceFolder}/src/VolleyballRallyManager.App/VolleyballRallyManager.App.csproj"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "buildAndWatch",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "build",
+                "watch"
+            ]
         }
     ]
 }

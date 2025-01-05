@@ -13,7 +13,6 @@
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Description</th>
                     <th>Tournament Date</th>
                     <th>Active</th>
                     <th>Actions</th>
@@ -23,8 +22,9 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@Html.DisplayFor(modelItem => item.Name)</td>
-                        <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Name)
+                            <details>@Html.DisplayFor(modelItem => item.Description)</details>
+                        </td>
                         <td>@Html.DisplayFor(modelItem => item.TournamentDate)</td>
                         <td>@Html.DisplayFor(modelItem => item.IsActive)</td>
                         <td>
