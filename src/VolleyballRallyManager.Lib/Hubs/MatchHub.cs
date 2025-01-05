@@ -106,7 +106,7 @@ public class MatchHub : Hub
     public async Task SendTeamUpdate(Team team)
     {
         await Clients.Group($"team_{team.Id}").SendAsync("ReceiveTeamUpdate", team);
-        await Clients.Group($"division_{team.Division.Name}").SendAsync("ReceiveTeamUpdate", team);
+        //await Clients.Group($"division_{team.Division.Name}").SendAsync("ReceiveTeamUpdate", team);
     }
 
     public async Task SendRoundUpdate(Round round)

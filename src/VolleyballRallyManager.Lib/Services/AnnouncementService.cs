@@ -61,7 +61,7 @@ public class AnnouncementService : IAnnouncementService
 
     public async Task<Announcement> UpdateAnnouncementAsync(Announcement announcement)
     {
-        var existingAnnouncement = await GetAnnouncementAsync(announcement.Id) ??
+        var existingAnnouncement = await GetAnnouncementByIdAsync(announcement.Id) ??
             throw new InvalidOperationException($"Announcement with ID {announcement.Id} not found.");
 
         if (announcement.UseMarkdown)
@@ -81,7 +81,7 @@ public class AnnouncementService : IAnnouncementService
 
     public async Task<Announcement> UpdateAnnouncementVisibilityAsync(Guid id, bool isVisible)
     {
-        var announcement = await GetAnnouncementAsync(id) ??
+        var announcement = await GetAnnouncementByIdAsync(id) ??
             throw new InvalidOperationException($"Announcement with ID {id} not found.");
 
         announcement.IsVisible = isVisible;
@@ -92,7 +92,7 @@ public class AnnouncementService : IAnnouncementService
 
     public async Task<bool> DeleteAnnouncementAsync(Guid id)
     {
-        var announcement = await GetAnnouncementAsync(id);
+        var announcement = await GetAnnouncementByIdAsync(id);
         if (announcement == null)
         {
             return false;

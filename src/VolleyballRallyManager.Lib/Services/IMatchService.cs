@@ -27,5 +27,4 @@ public interface IMatchService
     Task<bool> HasTeamPlayedInRoundAsync(Guid teamId, Guid roundId);
     Task<bool> AreTeamsAvailableAsync(Guid homeTeamId, Guid awayTeamId, DateTime scheduledTime);
     Task<bool> IsCourtAvailableAsync(string courtLocation, DateTime scheduledTime);
-    Task UpdateTeamStatisticsAsync(Guid matchId);
 }

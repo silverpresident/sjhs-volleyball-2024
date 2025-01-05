@@ -1,0 +1,34 @@
+@model VolleyballRallyManager.Lib.Models.TournamentTeamDivision
+
+@{
+    ViewData["Title"] = "Edit Team in Division";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit Team in Tournament</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="Edit" asp-route-teamId="@Model.TeamId" asp-route-divisionId="@ViewBag.DivisionId">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <div class="form-group">
+                        <label asp-for="TeamId" class="control-label"></label>
+                        <select asp-for="TeamId" class="form-control" asp-items="@(ViewBag.TeamId as SelectList)"></select>
+                        <span asp-validation-for="TeamId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                        <a asp-action="Index" asp-route-divisionId="@ViewBag.DivisionId" class="btn btn-secondary">Back to List</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

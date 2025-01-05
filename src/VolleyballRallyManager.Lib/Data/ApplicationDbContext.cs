@@ -47,24 +47,18 @@ namespace VolleyballRallyManager.Lib.Data
                 .HasForeignKey(ttd => ttd.DivisionId);
 
             // Configure Team relationships
-            builder.Entity<Team>()
-                .HasMany(t => t.HomeMatches)
-                .WithOne(m => m.HomeTeam)
-                .HasForeignKey(m => m.HomeTeamId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<TournamentTeamDivision>()
+                .HasMany(t => t.HomeMatches);
 
-            builder.Entity<Team>()
-                .HasMany(t => t.AwayMatches)
-                .WithOne(m => m.AwayTeam)
-                .HasForeignKey(m => m.AwayTeamId)
-                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<TournamentTeamDivision>()
+                .HasMany(t => t.AwayMatches);
 
             // Configure Division relationships
             builder.Entity<Division>()
-                .HasMany(d => d.Teams)
-                .WithOne(t => t.Division)
-                .HasForeignKey("DivisionId")
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasMany(d => d.Teams);
+                //.WithOne(t => t.Division)
+                //.HasForeignKey("DivisionId")
+                //.OnDelete(DeleteBehavior.Restrict);
 
             // Configure Round relationships
             builder.Entity<Round>()
@@ -77,6 +71,14 @@ namespace VolleyballRallyManager.Lib.Data
                 .HasMany(m => m.Updates)
                 .WithOne(u => u.Match)
                 .HasForeignKey(u => u.MatchId);
+/*builder.Entity<Match>()
+                .WithOne(m => m.HomeTeam)
+                .HasForeignKey(m => m.HomeTeamId)
+                .OnDelete(DeleteBehavior.Restrict);
+                builder.Entity<Match>()
+                .WithOne(m => m.AwayTeam)
+                .HasForeignKey(m => m.AwayTeamId)
+                .OnDelete(DeleteBehavior.Restrict);*/
 
             // Configure required properties
             builder.Entity<Team>()

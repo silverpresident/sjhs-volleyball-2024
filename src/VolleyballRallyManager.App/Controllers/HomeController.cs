@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VolleyballRallyManager.Lib.Data;
-using VolleyballRallyManager.Lib.Models;
+using VolleyballRallyManager.Lib.Services;
 using VolleyballRallyManager.App.Models;
 
 namespace VolleyballRallyManager.App.Controllers;
@@ -11,28 +11,36 @@ public class HomeController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<HomeController> _logger;
+        private readonly IActiveTournamentService _activeTournamentService;
 
-    public HomeController(ApplicationDbContext context, ILogger<HomeController> logger)
+    public HomeController(ApplicationDbContext context, IActiveTournamentService activeTournamentService, ILogger<HomeController> logger)
     {
         _context = context;
         _logger = logger;
+        _activeTournamentService = activeTournamentService;
     }
 
     public async Task<IActionResult> Index()
     {
-        var divisions = await _context.Divisions.ToListAsync();
         var teamsByDivision = new Dictionary<string, int>();
+        var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
+        if (activeTournament != null)
+        {
+            var divisions = await _activeTournamentService.GetTournamentDivisionsAsync();
 
         foreach (var division in divisions)
         {
-            var teamCount = await _context.Teams.CountAsync(t => t.Division.Id == division.Id);
-            teamsByDivision[division.Name] = teamCount;
+            var teams = await _activeTournamentService.GetTournamentTeamsAsync(division.DivisionId);
+            teamsByDivision[division.Division.Name] = teams.Count();
         }
+        }
+
+    
 
         var dashboard = new DashboardViewModel
         {
-            TotalTeams = await _context.Teams.CountAsync(),
-           TotalMatches = await _context.Matches.CountAsync(),
+            TotalTeams = await _activeTournamentService.TeamCountAsync(),
+           TotalMatches = await _activeTournamentService.MatchCountAsync(),
 /*             MatchesInProgress = await _context.Matches
                 .CountAsync(m => m.ActualStartTime.HasValue && !m.IsFinished),
             MatchesFinished = await _context.Matches.CountAsync(m => m.IsFinished),

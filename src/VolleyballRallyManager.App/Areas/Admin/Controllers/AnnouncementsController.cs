@@ -18,13 +18,13 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var announcements = await _announcementService.GetAnnouncementsAsync();
-            return View(announcements);
+            var announcements = await _announcementService.GetAllAnnouncementsAsync();
+            return View(announcements.OrderByDescending(a => a.CreatedAt).ToList());
         }
 
         public async Task<IActionResult> Details(Guid id)
         {
-            var announcement = await _announcementService.GetAnnouncementAsync(id);
+            var announcement = await _announcementService.GetAnnouncementByIdAsync(id);
             if (announcement == null)
             {
                 return NotFound();
@@ -51,7 +51,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
         public async Task<IActionResult> Edit(Guid id)
         {
-            var announcement = await _announcementService.GetAnnouncementAsync(id);
+            var announcement = await _announcementService.GetAnnouncementByIdAsync(id);
             if (announcement == null)
             {
                 return NotFound();
@@ -73,7 +73,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
         public async Task<IActionResult> Delete(Guid id)
         {
-            var announcement = await _announcementService.GetAnnouncementAsync(id);
+            var announcement = await _announcementService.GetAnnouncementByIdAsync(id);
             if (announcement == null)
             {
                 return NotFound();

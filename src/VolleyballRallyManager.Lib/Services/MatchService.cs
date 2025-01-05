@@ -320,42 +320,4 @@ public class MatchService : IMatchService
                           m.ScheduledTime >= startWindow && m.ScheduledTime <= endWindow);
     }
 
-    public async Task UpdateTeamStatisticsAsync(Guid matchId)
-    {
-        var match = await GetMatchAsync(matchId);
-        if (match == null || !match.IsFinished) return;
-
-        var homeTeam = match.HomeTeam;
-        var awayTeam = match.AwayTeam;
-
-        if (homeTeam != null)
-        {
-            homeTeam.MatchesPlayed++;
-            homeTeam.PointsScored += match.HomeTeamScore;
-            homeTeam.PointsConceded += match.AwayTeamScore;
-
-            if (match.HomeTeamScore > match.AwayTeamScore)
-                homeTeam.Wins++;
-            else if (match.HomeTeamScore < match.AwayTeamScore)
-                homeTeam.Losses++;
-            else
-                homeTeam.Draws++;
-        }
-
-        if (awayTeam != null)
-        {
-            awayTeam.MatchesPlayed++;
-            awayTeam.PointsScored += match.AwayTeamScore;
-            awayTeam.PointsConceded += match.HomeTeamScore;
-
-            if (match.AwayTeamScore > match.HomeTeamScore)
-                awayTeam.Wins++;
-            else if (match.AwayTeamScore < match.HomeTeamScore)
-                awayTeam.Losses++;
-            else
-                awayTeam.Draws++;
-        }
-
-        await _context.SaveChangesAsync();
-    }
 }

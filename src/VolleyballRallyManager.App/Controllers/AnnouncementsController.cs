@@ -15,13 +15,13 @@ namespace VolleyballRallyManager.App.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var announcements = await _announcementService.GetAnnouncementsAsync(includeHidden: true);
+            var announcements = await _announcementService.GetAllAnnouncementsAsync(includeHidden: true);
             return View(announcements);
         }
 
         public async Task<IActionResult> Details(Guid id)
         {
-            var announcement = await _announcementService.GetAnnouncementAsync(id);
+            var announcement = await _announcementService.GetAnnouncementByIdAsync(id);
             if (announcement == null)
             {
                 return NotFound();

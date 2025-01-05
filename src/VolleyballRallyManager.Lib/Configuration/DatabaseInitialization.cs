@@ -201,29 +201,25 @@ namespace VolleyballRallyManager.Lib.Configuration
                     Id = Guid.NewGuid(),
                     Name = "Team A",
                     School = "School A",
-                    Color = "#FF0000",
-                    Division = divisions[0]
+                    Color = "#FF0000"
                 },
                 new Team {
                     Id = Guid.NewGuid(),
                     Name = "Team B",
                     School = "School B",
-                    Color = "#00FF00",
-                    Division = divisions[0]
+                    Color = "#00FF00"
                 },
                 new Team {
                     Id = Guid.NewGuid(),
                     Name = "Team C",
                     School = "School C",
-                    Color = "#0000FF",
-                    Division = divisions[1]
+                    Color = "#0000FF"
                 },
                 new Team {
                     Id = Guid.NewGuid(),
                     Name = "Team D",
                     School = "School D",
-                    Color = "#FFFF00",
-                    Division = divisions[1]
+                    Color = "#FFFF00"
                 }
             };
             foreach (var team in teams)
@@ -254,11 +250,10 @@ namespace VolleyballRallyManager.Lib.Configuration
                 await dbContext.Announcements.AddAsync(announcement);
             }
             var tournament = await dbContext.Tournaments.FirstOrDefaultAsync();
-
-            if (!await dbContext.TournamentDivisions.AnyAsync())
+            if (tournament != null)
             {
 
-                if (tournament != null)
+                if (!await dbContext.TournamentDivisions.AnyAsync())
                 {
                     foreach (var division in divisions)
                     {
@@ -270,32 +265,34 @@ namespace VolleyballRallyManager.Lib.Configuration
                             Division = division
                         });
                     }
+
+                    await dbContext.SaveChangesAsync();
+
                 }
-                await dbContext.SaveChangesAsync();
-
-            }
 
 
-            if (!await dbContext.TournamentTeamDivisions.AnyAsync())
-            {
-                teams = await dbContext.Teams.ToArrayAsync();
-                bool sel1 = true;
-                foreach (var team in teams)
+                if (!await dbContext.TournamentTeamDivisions.AnyAsync())
                 {
-                    var division = sel1 ? divisions[0] : divisions[1];
-                    sel1 = !sel1;
-
-                    await dbContext.TournamentTeamDivisions.AddAsync(new TournamentTeamDivision
+                    teams = await dbContext.Teams.ToArrayAsync();
+                    bool sel1 = true;
+                    foreach (var team in teams)
                     {
-                        TournamentId = tournament.Id,
-                        TeamId = team.Id,
-                        DivisionId = division.Id,
-                        GroupName = "A",
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow,
-                        CreatedBy = "System",
-                        UpdatedBy = "System"
-                    });
+                        var division = sel1 ? divisions[0] : divisions[1];
+                        sel1 = !sel1;
+
+                        await dbContext.TournamentTeamDivisions.AddAsync(new TournamentTeamDivision
+                        {
+                            TournamentId = tournament.Id,
+                            TeamId = team.Id,
+                            DivisionId = division.Id,
+                            Division = division,
+                            GroupName = "A",
+                            CreatedAt = DateTime.UtcNow,
+                            UpdatedAt = DateTime.UtcNow,
+                            CreatedBy = "System",
+                            UpdatedBy = "System"
+                        });
+                    }
                 }
             }
             await dbContext.SaveChangesAsync();

@@ -17,7 +17,7 @@ namespace VolleyballRallyManager.App.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAnnouncements()
         {
-            var announcements = await _announcementService.GetAnnouncementsAsync(includeHidden: true);
+            var announcements = await _announcementService.GetAllAnnouncementsAsync(includeHidden: true);
             return Ok(announcements);
         }
     }

@@ -1,13 +1,13 @@
-@model IEnumerable<VolleyballRallyManager.Lib.Models.Team>
+@model IEnumerable<VolleyballRallyManager.Lib.Models.TournamentTeamDivision>
 
 @{
     ViewData["Title"] = "Teams";
 }
-
+ 
 <div class="container">
     <div class="card">
         <div class="card-header">
-            <h1>Teams</h1>
+            <h1>Teams in Tournament</h1>
         </div>
         <div class="card-body">
             <div class="row mb-3">
@@ -28,17 +28,20 @@
                     <thead>
                         <tr>
                             <th>Actions</th>
-                            <th>@Html.DisplayNameFor(model => model.Name)</th>
-                            <th>@Html.DisplayNameFor(model => model.School)</th>
-                            <th>@Html.DisplayNameFor(model => model.Color)</th>
-                            <th>@Html.DisplayNameFor(model => model.LogoUrl)</th>
-   
+                            <th>@Html.DisplayNameFor(model => model.Team.Name)</th>
+                            <th>@Html.DisplayNameFor(model => model.Team.School)</th>
+                            <th>@Html.DisplayNameFor(model => model.Division)</th>
+                            <th>@Html.DisplayNameFor(model => model.TotalPoints)</th>
+                            <th>@Html.DisplayNameFor(model => model.MatchesPlayed)</th>
+                            <th>@Html.DisplayNameFor(model => model.Wins)</th>
+                            <th>@Html.DisplayNameFor(model => model.Draws)</th>
+                            <th>@Html.DisplayNameFor(model => model.Losses)</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Model)
                         {
-                            <tr>
+                            <tr data-division="@item.Division">
                                 <td>
                                     <div class="btn-group" role="group">
                                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Edit"><i class="bi bi-pencil"></i></a>
@@ -46,10 +49,14 @@
                                         <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></a>
                                     </div>
                                 </td>
-                                <td>@Html.DisplayFor(modelItem => item.Name)</td>
-                                <td>@Html.DisplayFor(modelItem => item.School)</td>
-                                <td>@Html.DisplayFor(modelItem => item.Color)</td>
-                                <td>@Html.DisplayFor(modelItem => item.LogoUrl)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Team.Name)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Team.School)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Division.Name)</td>
+                                <td>@Html.DisplayFor(modelItem => item.TotalPoints)</td>
+                                <td>@Html.DisplayFor(modelItem => item.MatchesPlayed)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Wins)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Draws)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Losses)</td>
                             </tr>
                         }
                     </tbody>

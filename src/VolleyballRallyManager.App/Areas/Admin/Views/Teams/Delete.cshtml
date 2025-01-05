@@ -13,36 +13,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-8">
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">@Model.Name</h5>
-                    <div class="team-color" style="width: 30px; height: 30px; border-radius: 50%; background-color: @Model.Color;"></div>
-                </div>
-                <div class="card-body">
-                    <dl class="row">
-                        <dt class="col-sm-3">School</dt>
-                        <dd class="col-sm-9">@Model.School</dd>
-
-                        <dt class="col-sm-3">Division</dt>
-                        <dd class="col-sm-9">@Model.Division</dd>
-
-                        @if (!string.IsNullOrEmpty(Model.LogoUrl))
-                        {
-                            <dt class="col-sm-3">Logo</dt>
-                            <dd class="col-sm-9">
-                                <img src="@Model.LogoUrl" alt="Team Logo" style="max-width: 100px;" />
-                            </dd>
-                        }
-
-                        <dt class="col-sm-3">Matches Played</dt>
-                        <dd class="col-sm-9">@Model.MatchesPlayed</dd>
-
-                        <dt class="col-sm-3">Total Points</dt>
-                        <dd class="col-sm-9">@Model.TotalPoints</dd>
-                    </dl>
-                </div>
-            </div>
+        <div class="col-md-8"> 
 
             <form asp-action="Delete">
                 <input type="hidden" asp-for="Id" />
