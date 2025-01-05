@@ -35,6 +35,40 @@
                 @Html.DisplayFor(model => model.IsActive)
             </dd>
         </dl>
+        <hr />
+        <div>
+            <h4>Tournament Divisions</h4>
+            @if (Model.TournamentDivisions != null && Model.TournamentDivisions.Any())
+            {
+                <ul>
+                    @foreach (var tournamentDivision in Model.TournamentDivisions)
+                    {
+                        <li>@tournamentDivision.Name</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>No divisions assigned to this tournament.</p>
+            }
+        </div>
+        <hr />
+        <div>
+            <h4>Tournament Teams</h4>
+            @if (Model.TournamentTeamDivisions != null && Model.TournamentTeamDivisions.Any())
+            {
+                <ul>
+                    @foreach (var tournamentTeam in Model.TournamentTeamDivisions.Select(td => td.Team).Distinct())
+                    {
+                        <li>@tournamentTeam.Name</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>No teams assigned to this tournament.</p>
+            }
+        </div>
     </div>
     <div class="card-footer">
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-secondary">Edit</a>

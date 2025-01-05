@@ -1,9 +1,17 @@
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
 namespace VolleyballRallyManager.Lib.Models;
 
 public class Round : BaseEntity
 {
+    [Display(Name = "Name")]
     public required string Name { get; set; }
+
+    [Display(Name = "Sequence")]
     public required int Sequence { get; set; }
+
+    [Display(Name = "Is Complete")]
     public bool IsComplete { get; set; }
 
     // Navigation properties

@@ -43,7 +43,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(Tournament tournament)
+        public async Task<IActionResult> Edit(Tournament tournament)
         {
             if (ModelState.IsValid)
             {
