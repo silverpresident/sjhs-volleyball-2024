@@ -17,5 +17,5 @@ public class Team : BaseEntity
     [Display(Name = "Logo Url")]
     public string? LogoUrl { get; set; }
 
-    public virtual ICollection<TournamentTeamDivision> TournamentTeamDivisions { get; set; } = new List<TournamentTeamDivision>();
+    //public virtual ICollection<TournamentTeamDivision> TournamentTeamDivisions { get; set; } = new List<TournamentTeamDivision>();
 }

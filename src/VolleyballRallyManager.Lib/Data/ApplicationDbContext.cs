@@ -36,11 +36,11 @@ namespace VolleyballRallyManager.Lib.Data
                 .WithMany(t => t.TournamentTeamDivisions)
                 .HasForeignKey(ttd => ttd.TournamentId);
 
-            builder.Entity<TournamentTeamDivision>()
+            /*builder.Entity<TournamentTeamDivision>()
                 .HasOne(ttd => ttd.Team)
                 .WithMany(t => t.TournamentTeamDivisions)
                 .HasForeignKey(ttd => ttd.TeamId);
-
+*/
             builder.Entity<TournamentTeamDivision>()
                 .HasOne(ttd => ttd.Division)
                 .WithMany(d => d.TournamentTeamDivisions)
@@ -55,7 +55,7 @@ namespace VolleyballRallyManager.Lib.Data
 
             // Configure Division relationships
             builder.Entity<Division>()
-                .HasMany(d => d.Teams);
+                .HasMany(d => d.TournamentTeamDivisions);
                 //.WithOne(t => t.Division)
                 //.HasForeignKey("DivisionId")
                 //.OnDelete(DeleteBehavior.Restrict);

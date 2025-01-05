@@ -19,8 +19,16 @@ namespace VolleyballRallyManager.Lib.Services
 
         public async Task<Tournament> GetActiveTournamentAsync()
         {
-            return await _dbContext.Tournaments
+            var model = await _dbContext.Tournaments
                 .FirstOrDefaultAsync(t => t.IsActive);
+                model.TournamentDivisions = await _dbContext.TournamentDivisions
+                .Where(td => td.TournamentId == model.Id).ToListAsync();
+                return model;
+        }
+
+        public async Task<IEnumerable<Division>> GetAvailableDivisionsAsync()
+        {
+            return await _dbContext.Divisions.ToListAsync();
         }
 
         public async Task<IEnumerable<TournamentDivision>> GetTournamentDivisionsAsync()
@@ -58,13 +66,13 @@ namespace VolleyballRallyManager.Lib.Services
             {
                 throw new Exception("No active tournament found.");
             }
-var rrd = await _dbContext.TournamentTeamDivisions.FirstOrDefaultAsync(t => t.TournamentId == activeTournament.Id && t.TeamId == teamId);
+            var rrd = await _dbContext.TournamentTeamDivisions.FirstOrDefaultAsync(t => t.TournamentId == activeTournament.Id && t.TeamId == teamId);
             /*if (rrd == null)
             {
                 throw new Exception("Team is not in this Tournament");
             }*/
             return rrd;
-    
+
         }
         public async Task RemoveTeamAsync(Guid teamId)
         {
@@ -144,7 +152,7 @@ var rrd = await _dbContext.TournamentTeamDivisions.FirstOrDefaultAsync(t => t.To
             await _dbContext.SaveChangesAsync();
             return tournamentTeamDivision;
         }
-                    public async Task<int> TeamCountAsync(Guid? divisionId = null)
+        public async Task<int> TeamCountAsync(Guid? divisionId = null)
         {
 
             var activeTournament = await GetActiveTournamentAsync();
@@ -160,7 +168,6 @@ var rrd = await _dbContext.TournamentTeamDivisions.FirstOrDefaultAsync(t => t.To
             }
             return await _dbContext.TournamentTeamDivisions.CountAsync(t => t.TournamentId == activeTournament.Id);
 
-
         }
         public async Task<int> MatchCountAsync(Guid? divisionId = null)
         {
@@ -172,7 +179,7 @@ var rrd = await _dbContext.TournamentTeamDivisions.FirstOrDefaultAsync(t => t.To
             if (divisionId != null)
             {
                 throw new NotImplementedException();
-//                return await _dbContext.Matches.CountAsync(m => m.TournamentId == activeTournament.Id && m.DivisionId == divisionId)
+                //                return await _dbContext.Matches.CountAsync(m => m.TournamentId == activeTournament.Id && m.DivisionId == divisionId)
             }
             return await _dbContext.Matches.CountAsync(m => m.TournamentId == activeTournament.Id);
         }
@@ -182,45 +189,77 @@ var rrd = await _dbContext.TournamentTeamDivisions.FirstOrDefaultAsync(t => t.To
             return count;
         }
 
-
-    public async Task UpdateTeamStatisticsAsync(Match match)
-    {
-        if (match == null || !match.IsFinished) return;
-
-        var homeTeam = await GetTeamAsync(match.HomeTeamId);
-        var awayTeam = await GetTeamAsync(match.AwayTeamId);
-
-        if (homeTeam != null)
+        public async Task UpdateTeamStatisticsAsync(Match match)
         {
-            homeTeam.MatchesPlayed++;
-            homeTeam.PointsScored += match.HomeTeamScore;
-            homeTeam.PointsConceded += match.AwayTeamScore;
+            if (match == null || !match.IsFinished) return;
 
-            if (match.HomeTeamScore > match.AwayTeamScore)
-                homeTeam.Wins++;
-            else if (match.HomeTeamScore < match.AwayTeamScore)
-                homeTeam.Losses++;
-            else
-                homeTeam.Draws++;
+            var homeTeam = await GetTeamAsync(match.HomeTeamId);
+            var awayTeam = await GetTeamAsync(match.AwayTeamId);
+
+            if (homeTeam != null)
+            {
+                homeTeam.MatchesPlayed++;
+                homeTeam.PointsScored += match.HomeTeamScore;
+                homeTeam.PointsConceded += match.AwayTeamScore;
+
+                if (match.HomeTeamScore > match.AwayTeamScore)
+                    homeTeam.Wins++;
+                else if (match.HomeTeamScore < match.AwayTeamScore)
+                    homeTeam.Losses++;
+                else
+                    homeTeam.Draws++;
+            }
+
+            if (awayTeam != null)
+            {
+                awayTeam.MatchesPlayed++;
+                awayTeam.PointsScored += match.AwayTeamScore;
+                awayTeam.PointsConceded += match.HomeTeamScore;
+
+                if (match.AwayTeamScore > match.HomeTeamScore)
+                    awayTeam.Wins++;
+                else if (match.AwayTeamScore < match.HomeTeamScore)
+                    awayTeam.Losses++;
+                else
+                    awayTeam.Draws++;
+            }
+
+            await _dbContext.SaveChangesAsync();
         }
 
-        if (awayTeam != null)
+        public async Task UpdateTournamentDivisionsAsync(List<Guid> selectedDivisionIds)
         {
-            awayTeam.MatchesPlayed++;
-            awayTeam.PointsScored += match.AwayTeamScore;
-            awayTeam.PointsConceded += match.HomeTeamScore;
+            var activeTournament = await GetActiveTournamentAsync();
+            if (activeTournament == null)
+            {
+                throw new Exception("No active tournament found.");
+            }
+            // Remove existing divisions
+            var existingDivisions = await _dbContext.TournamentDivisions
+                .Where(td => td.TournamentId == activeTournament.Id)
+                .ToListAsync();
 
-            if (match.AwayTeamScore > match.HomeTeamScore)
-                awayTeam.Wins++;
-            else if (match.AwayTeamScore < match.HomeTeamScore)
-                awayTeam.Losses++;
-            else
-                awayTeam.Draws++;
+            var defDivisions = existingDivisions.Where(d => !selectedDivisionIds.Contains(d.DivisionId)).ToList();
+            if (defDivisions.Count > 0)
+            {
+                _dbContext.TournamentDivisions.RemoveRange(defDivisions);
+            }
+
+            // Add selected divisions
+            var tournament = await GetActiveTournamentAsync();
+            if (tournament != null)
+            {
+                foreach (var divisionId in selectedDivisionIds)
+                {
+                    var division = await _dbContext.Divisions.FindAsync(divisionId);
+                    if (division != null)
+                    {
+                        _dbContext.TournamentDivisions.Add(new TournamentDivision { TournamentId = activeTournament.Id, DivisionId = divisionId, Tournament = activeTournament, Division = division });
+                    }
+                }
+
+                await _dbContext.SaveChangesAsync();
+            }
         }
-
-        await _dbContext.SaveChangesAsync();
-    }
-
-
     }
 }

@@ -35,6 +35,7 @@
                 "--project",
                 "${workspaceFolder}/src/VolleyballRallyManager.App/VolleyballRallyManager.App.csproj"
             ],
+            "isBackground": true,
             "problemMatcher": "$msCompile"
         },
         {

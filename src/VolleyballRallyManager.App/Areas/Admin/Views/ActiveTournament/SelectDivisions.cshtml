@@ -1,0 +1,35 @@
+@model VolleyballRallyManager.App.Models.SelectDivisionsViewModel
+
+@{
+    ViewData["Title"] = "Select Divisions";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form method="post" asp-action="SelectDivisions" >
+    <div class="row">
+    <div asp-validation-summary="All" class="text-danger"></div>
+        @foreach (var division in Model.AvailableDivisions)
+        {
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <div class="form-check">
+                                <input type="checkbox" name="SelectedDivisionIds" value="@division.Id" class="form-check-input" id="division_@division.Id"
+                                checked=@Model.SelectedDivisionIds.Contains(division.Id) />
+                                <label class="form-check-label" for="division_@division.Id">
+                                    @division.Name
+                                </label>
+                            </div>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        }
+            <pre>
+            @Model.SelectedDivisionIds.Select(m => m.ToString()).ToArray()
+            </pre>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Divisions</button>
+</form>

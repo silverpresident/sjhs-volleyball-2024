@@ -1,0 +1,8 @@
+@model IEnumerable<VolleyballRallyManager.Lib.Models.TournamentDivision>
+
+<ul class="list-group">
+    @foreach (var division in Model)
+    {
+        <li class="list-group-item">@division.Division.Name</li>
+    }
+</ul>

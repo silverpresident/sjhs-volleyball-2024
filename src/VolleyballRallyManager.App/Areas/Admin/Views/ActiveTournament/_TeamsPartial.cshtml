@@ -1,0 +1,16 @@
+@model Dictionary<VolleyballRallyManager.Lib.Models.TournamentDivision, IEnumerable<VolleyballRallyManager.Lib.Models.TournamentTeamDivision>>
+
+@foreach (var divisionTeams in Model)
+{
+    <div class="card mb-2">
+        <div class="card-header">
+            @divisionTeams.Key.Division.Name
+        </div>
+        <ul class="list-group list-group-flush">
+            @foreach (var team in divisionTeams.Value)
+            {
+                <li class="list-group-item">@team.Team.Name</li>
+            }
+        </ul>
+    </div>
+}
