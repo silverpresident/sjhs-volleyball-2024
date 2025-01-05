@@ -1,78 +1,57 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using VolleyballRallyManager.Lib.Data;
+using VolleyballRallyManager.Lib.Services;
 using VolleyballRallyManager.Lib.Models;
+using System;
+using System.Threading.Tasks;
 
 namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize]
     public class AnnouncementsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IAnnouncementService _announcementService;
 
-        public AnnouncementsController(ApplicationDbContext context)
+        public AnnouncementsController(IAnnouncementService announcementService)
         {
-            _context = context;
+            _announcementService = announcementService;
         }
 
-        // GET: Admin/Announcements
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Announcements.ToListAsync());
+            var announcements = await _announcementService.GetAllAnnouncementsAsync();
+            return View(announcements);
         }
 
-        // GET: Admin/Announcements/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        public async Task<IActionResult> Details(Guid id)
         {
-            if (!id.HasValue)
-            {
-                return NotFound();
-            }
-
-            var announcement = await _context.Announcements
-                .FirstOrDefaultAsync(m => m.Id == id.Value);
+            var announcement = await _announcementService.GetAnnouncementByIdAsync(id);
             if (announcement == null)
             {
                 return NotFound();
             }
-
             return View(announcement);
         }
 
-        // GET: Admin/Announcements/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Admin/Announcements/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Content,Priority,CreatedDate")] Announcement announcement)
+        public async Task<IActionResult> Create(Announcement announcement)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(announcement);
-                await _context.SaveChangesAsync();
+                await _announcementService.CreateAnnouncementAsync(announcement);
                 return RedirectToAction(nameof(Index));
             }
             return View(announcement);
         }
 
-        // GET: Admin/Announcements/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public async Task<IActionResult> Edit(Guid id)
         {
-            if (!id.HasValue)
-            {
-                return NotFound();
-            }
-
-            var announcement = await _context.Announcements.FindAsync(id.Value);
+            var announcement = await _announcementService.GetAnnouncementByIdAsync(id);
             if (announcement == null)
             {
                 return NotFound();
@@ -80,77 +59,34 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             return View(announcement);
         }
 
-        // POST: Admin/Announcements/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Title,Content,Priority,CreatedDate")] Announcement announcement)
+        public async Task<IActionResult> Edit(Announcement announcement)
         {
-            if (id != announcement.Id)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(announcement);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AnnouncementExists(announcement.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                await _announcementService.UpdateAnnouncementAsync(announcement);
                 return RedirectToAction(nameof(Index));
             }
             return View(announcement);
         }
 
-        // GET: Admin/Announcements/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            if (!id.HasValue)
-            {
-                return NotFound();
-            }
-
-            var announcement = await _context.Announcements
-                .FirstOrDefaultAsync(m => m.Id == id.Value);
+            var announcement = await _announcementService.GetAnnouncementByIdAsync(id);
             if (announcement == null)
             {
                 return NotFound();
             }
-
             return View(announcement);
         }
 
-        // POST: Admin/Announcements/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var announcement = await _context.Announcements.FindAsync(id);
-            if (announcement != null)
-            {
-                _context.Announcements.Remove(announcement);
-            }
-
-            await _context.SaveChangesAsync();
+            await _announcementService.DeleteAnnouncementAsync(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool AnnouncementExists(Guid id)
-        {
-            return _context.Announcements.Any(e => e.Id == id);
         }
     }
 }

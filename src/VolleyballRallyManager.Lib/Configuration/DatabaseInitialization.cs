@@ -265,11 +265,13 @@ namespace VolleyballRallyManager.Lib.Configuration
                         await dbContext.TournamentDivisions.AddAsync(new TournamentDivision
                         {
                             TournamentId = tournament.Id,
-                            DivisionId = division.Id
+                            Tournament = tournament,
+                            DivisionId = division.Id,
+                            Division = division
                         });
                     }
-                    await dbContext.SaveChangesAsync();
                 }
+                await dbContext.SaveChangesAsync();
 
             }
 

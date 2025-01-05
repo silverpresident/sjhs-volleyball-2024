@@ -8,8 +8,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VolleyballRallyManager.App"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VolleyballRallyManager.Lib", "src\VolleyballRallyManager.Lib\VolleyballRallyManager.Lib.csproj", "{D8A5E5A1-8B5E-4C1E-9C9A-8F1E8B5E4C1F}"
 EndProject
-'Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VolleyballRallyManager.Public", "src\VolleyballRallyManager.Public\VolleyballRallyManager.Public.csproj", "{E7A5E5A1-8B5E-4C1E-9C9A-8F1E8B5E4C20}"
-'EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,10 +22,6 @@ Global
 		{D8A5E5A1-8B5E-4C1E-9C9A-8F1E8B5E4C1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8A5E5A1-8B5E-4C1E-9C9A-8F1E8B5E4C1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8A5E5A1-8B5E-4C1E-9C9A-8F1E8B5E4C1F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E7A5E5A1-8B5E-4C1E-9C9A-8F1E8B5E4C20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E7A5E5A1-8B5E-4C1E-9C9A-8F1E8B5E4C20}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E7A5E5A1-8B5E-4C1E-9C9A-8F1E8B5E4C20}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E7A5E5A1-8B5E-4C1E-9C9A-8F1E8B5E4C20}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -35,7 +29,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{C9A5E5A1-8B5E-4C1E-9C9A-8F1E8B5E4C1E} = {5EA7EE66-3A0E-4E02-8568-D7E4A8677F93}
 		{D8A5E5A1-8B5E-4C1E-9C9A-8F1E8B5E4C1F} = {5EA7EE66-3A0E-4E02-8568-D7E4A8677F93}
-		{E7A5E5A1-8B5E-4C1E-9C9A-8F1E8B5E4C20} = {5EA7EE66-3A0E-4E02-8568-D7E4A8677F93}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F8A5E5A1-8B5E-4C1E-9C9A-8F1E8B5E4C21}
