@@ -12,7 +12,7 @@
         <div class="card-body">
             <div class="row mb-3">
                 <div class="col">
-                    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Create New Team</a>
+                    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Add Team</a>
                 </div>
                 <div class="col-auto">
                     <div class="btn-group" role="group">
@@ -49,9 +49,14 @@
                                         <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></a>
                                     </div>
                                 </td>
-                                <td>@Html.DisplayFor(modelItem => item.Team.Name)</td>
-                                <td>@Html.DisplayFor(modelItem => item.Team.School)</td>
-                                <td>@Html.DisplayFor(modelItem => item.Division.Name)</td>
+                                <td>
+                                @Html.DisplayFor(modelItem => item.Team.Name)
+                                <em>@Html.DisplayFor(modelItem => item.Team.School)</em>
+                                </td>
+                                <td>
+                                @Html.DisplayFor(modelItem => item.Division.Name)
+                                @Html.DisplayFor(modelItem => item.GroupName, "Group")
+                                </td>
                                 <td>@Html.DisplayFor(modelItem => item.TotalPoints)</td>
                                 <td>@Html.DisplayFor(modelItem => item.MatchesPlayed)</td>
                                 <td>@Html.DisplayFor(modelItem => item.Wins)</td>

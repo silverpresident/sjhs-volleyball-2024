@@ -31,6 +31,9 @@
         <div class="card">
             <div class="card-header">
                 Teams
+                <div class="btn-group float-right" role="group" aria-label="Divisions">
+                <a class="btn btn-primary" asp-action="TournamentTeams">Tournament Teams</a>
+                </div>
             </div>
             <div class="card-body">
                 @if (Model.TeamsByDivision.Any())

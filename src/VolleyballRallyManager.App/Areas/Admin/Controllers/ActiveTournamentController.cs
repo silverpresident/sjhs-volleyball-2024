@@ -61,7 +61,6 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            ModelState.AddModelError("A","WhyZZ");
             var availableDivisions = await _activeTournamentService.GetAvailableDivisionsAsync();
             var viewModel = new SelectDivisionsViewModel
             {
@@ -76,12 +75,8 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         public async Task<IActionResult> SelectDivisions([Bind("SelectedDivisionIds")]SelectDivisionsViewModel model)
         {
             _logger.LogInformation("Executing SelectDivisions post!!");
-           // ModelState.AddModelError("A0","Why");
-           // ModelState.AddModelError("A1",ModelState.IsValid.ToString());
-           // ModelState.AddModelError("A2",string.Join(",", model.SelectedDivisionIds.Select(m => m.ToString())));
             if (ModelState.IsValid)
             {
-            ModelState.AddModelError("A","IsValid");
                 var divisionIds = model.SelectedDivisionIds;
                 await _activeTournamentService.UpdateTournamentDivisionsAsync(divisionIds);
                 return RedirectToAction(nameof(Index));
