@@ -1,0 +1,7 @@
+@model string
+
+@if(string.IsNullOrEmpty(Model)){
+    <span class="badge badge-secondary">none</span>
+    return;
+}
+<span class="badge" style="background-color: @Model">&nbsp;</span>

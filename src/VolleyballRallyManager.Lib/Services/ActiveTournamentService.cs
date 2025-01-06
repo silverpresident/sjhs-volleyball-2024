@@ -21,9 +21,9 @@ namespace VolleyballRallyManager.Lib.Services
         {
             var model = await _dbContext.Tournaments
                 .FirstOrDefaultAsync(t => t.IsActive);
-                model.TournamentDivisions = await _dbContext.TournamentDivisions
-                .Where(td => td.TournamentId == model.Id).ToListAsync();
-                return model;
+            model.TournamentDivisions = await _dbContext.TournamentDivisions
+            .Where(td => td.TournamentId == model.Id).ToListAsync();
+            return model;
         }
 
         public async Task<IEnumerable<Division>> GetAvailableDivisionsAsync()
@@ -38,9 +38,16 @@ namespace VolleyballRallyManager.Lib.Services
             {
                 throw new Exception("No active tournament found.");
             }
-            return await _dbContext.TournamentDivisions
+            var model = await _dbContext.TournamentDivisions
+            //.Include(td => td.Division)
                 .Where(td => td.TournamentId == activeTournament.Id)
                 .ToListAsync();
+            if (model.Count() > 0)
+            {
+                var ids = model.Select(td => td.DivisionId).ToArray();
+                _dbContext.Divisions.Where(d => ids.Contains(d.Id)).Load();
+            }
+            return model;
         }
 
         public async Task<IEnumerable<TournamentTeamDivision>> GetTournamentTeamsAsync(Guid divisionId)
@@ -56,7 +63,28 @@ namespace VolleyballRallyManager.Lib.Services
             {
                 qry = qry.Where(ttd => ttd.DivisionId == divisionId);
             }
-            return await _dbContext.TournamentTeamDivisions.OrderBy(ttd => ttd.SeedNumber).ToListAsync();
+            return await qry.OrderBy(ttd => ttd.SeedNumber).ToListAsync();
+            /*
+            if (model == null)
+            {
+                return new List<TournamentTeamDivision>();
+            }
+            return model;*/
+        }
+        public async Task<int> GetTournamentTeamsCountAsync(Guid divisionId)
+        {
+            var activeTournament = await GetActiveTournamentAsync();
+            if (activeTournament == null)
+            {
+                throw new Exception("No active tournament found.");
+            }
+            var qry = _dbContext.TournamentTeamDivisions
+                .Where(ttd => ttd.TournamentId == activeTournament.Id);
+            if (divisionId != Guid.Empty)
+            {
+                qry = qry.Where(ttd => ttd.DivisionId == divisionId);
+            }
+            return await qry.CountAsync();
         }
 
         public async Task<TournamentTeamDivision> GetTeamAsync(Guid teamId)

@@ -11,35 +11,41 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
     public class ActiveTournamentController : Controller
     {
         private readonly IActiveTournamentService _activeTournamentService;
+        private readonly ILogger<ActiveTournamentController> _logger;
 
-        public ActiveTournamentController(IActiveTournamentService activeTournamentService)
+        public ActiveTournamentController(IActiveTournamentService activeTournamentService, ILogger<ActiveTournamentController> logger)
         {
             _activeTournamentService = activeTournamentService;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
         {
+            _logger.LogInformation("Executing Index action");
             var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
             if (activeTournament == null)
             {
+                _logger.LogWarning("Active tournament not found");
                 return NotFound();
-            }
-
-            var divisions = await _activeTournamentService.GetTournamentDivisionsAsync();
-            var teamsByDivision = new Dictionary<TournamentDivision, IEnumerable<TournamentTeamDivision>>();
-
-            foreach (var division in divisions)
-            {
-                var teams = await _activeTournamentService.GetTournamentTeamsAsync(division.DivisionId);
-                teamsByDivision.Add(division, teams);
             }
 
             var viewModel = new ActiveTournamentViewModel
             {
                 ActiveTournament = activeTournament,
-                Divisions = divisions,
-                TeamsByDivision = teamsByDivision
+                Divisions = new List<Division>()
             };
+            var tournamentDivisions = await _activeTournamentService.GetTournamentDivisionsAsync();
+            var teamsByDivision = new Dictionary<TournamentDivision, IEnumerable<TournamentTeamDivision>>();
+
+            foreach (var division in tournamentDivisions)
+            {
+                var teams = await _activeTournamentService.GetTournamentTeamsAsync(division.DivisionId);
+                teamsByDivision.Add(division, teams);
+                viewModel.Divisions.Add(division.Division);
+            }
+            viewModel.TournamentDivisions = tournamentDivisions;
+            viewModel.TeamsByDivision = teamsByDivision;
+
 
             return View(viewModel);
         }
@@ -47,9 +53,11 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> SelectDivisions()
         {
+            _logger.LogInformation("Executing SelectDivisions action");
             var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
             if (activeTournament == null)
             {
+                _logger.LogWarning("Active tournament not found");
                 return NotFound();
             }
 
@@ -67,10 +75,13 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> SelectDivisions([Bind("SelectedDivisionIds")]SelectDivisionsViewModel model)
         {
-            ModelState.AddModelError("A","Why");
-            ModelState.AddModelError("A",string.Join(",", model.SelectedDivisionIds.Select(m => m.ToString())));
+            _logger.LogInformation("Executing SelectDivisions post!!");
+           // ModelState.AddModelError("A0","Why");
+           // ModelState.AddModelError("A1",ModelState.IsValid.ToString());
+           // ModelState.AddModelError("A2",string.Join(",", model.SelectedDivisionIds.Select(m => m.ToString())));
             if (ModelState.IsValid)
             {
+            ModelState.AddModelError("A","IsValid");
                 var divisionIds = model.SelectedDivisionIds;
                 await _activeTournamentService.UpdateTournamentDivisionsAsync(divisionIds);
                 return RedirectToAction(nameof(Index));

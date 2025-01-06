@@ -11,7 +11,7 @@ public class HomeController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly ILogger<HomeController> _logger;
-        private readonly IActiveTournamentService _activeTournamentService;
+    private readonly IActiveTournamentService _activeTournamentService;
 
     public HomeController(ApplicationDbContext context, IActiveTournamentService activeTournamentService, ILogger<HomeController> logger)
     {
@@ -28,36 +28,35 @@ public class HomeController : Controller
         {
             var divisions = await _activeTournamentService.GetTournamentDivisionsAsync();
 
-        foreach (var division in divisions)
-        {
-            var teams = await _activeTournamentService.GetTournamentTeamsAsync(division.DivisionId);
-            teamsByDivision[division.Division.Name] = teams.Count();
-        }
+            foreach (var division in divisions)
+            {
+                teamsByDivision[division.Division.Name] = await _activeTournamentService.GetTournamentTeamsCountAsync(division.DivisionId);
+            }
         }
 
-    
+
 
         var dashboard = new DashboardViewModel
         {
             TotalTeams = await _activeTournamentService.TeamCountAsync(),
-           TotalMatches = await _activeTournamentService.MatchCountAsync(),
-/*             MatchesInProgress = await _context.Matches
-                .CountAsync(m => m.ActualStartTime.HasValue && !m.IsFinished),
-            MatchesFinished = await _context.Matches.CountAsync(m => m.IsFinished),
-            DisputedMatches = await _context.Matches.CountAsync(m => m.IsDisputed),
-            
-            RecentMatches = await _context.Matches
-                .Include(m => m.HomeTeam)
-                .Include(m => m.AwayTeam)
-                .Include(m => m.Round)
-                .OrderByDescending(m => m.ScheduledTime)
-                .Take(5)
-                .ToListAsync(),
+            TotalMatches = await _activeTournamentService.MatchCountAsync(),
+            /*             MatchesInProgress = await _context.Matches
+                            .CountAsync(m => m.ActualStartTime.HasValue && !m.IsFinished),
+                        MatchesFinished = await _context.Matches.CountAsync(m => m.IsFinished),
+                        DisputedMatches = await _context.Matches.CountAsync(m => m.IsDisputed),
 
-            RecentAnnouncements = await _context.Announcements
-                .OrderByDescending(a => a.CreatedAt)
-                .Take(5)
-                .ToListAsync(),*/
+                        RecentMatches = await _context.Matches
+                            .Include(m => m.HomeTeam)
+                            .Include(m => m.AwayTeam)
+                            .Include(m => m.Round)
+                            .OrderByDescending(m => m.ScheduledTime)
+                            .Take(5)
+                            .ToListAsync(),
+
+                        RecentAnnouncements = await _context.Announcements
+                            .OrderByDescending(a => a.CreatedAt)
+                            .Take(5)
+                            .ToListAsync(),*/
 
             TeamsByDivision = teamsByDivision
         };

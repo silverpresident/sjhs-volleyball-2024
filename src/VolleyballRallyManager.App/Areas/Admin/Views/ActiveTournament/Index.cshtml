@@ -16,9 +16,9 @@
                 </div>
             </div>
             <div class="card-body">
-                @if (Model.Divisions.Any())
+                @if (Model.TournamentDivisions.Any())
                 {
-                    <partial name="_DivisionsPartial" model="Model.Divisions" />
+                    <partial name="_DivisionsPartial" model="Model.TournamentDivisions" />
                 }
                 else
                 {
