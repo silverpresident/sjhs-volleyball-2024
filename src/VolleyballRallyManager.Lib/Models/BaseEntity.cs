@@ -9,6 +9,7 @@ public abstract class BaseEntity
     {
         Id = Guid.NewGuid();
         CreatedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
         CreatedBy = "system";
         UpdatedBy = "system";
     }

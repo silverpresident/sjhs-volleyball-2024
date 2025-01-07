@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using VolleyballRallyManager.Lib.Services;
 using VolleyballRallyManager.Lib.Models;
+using VolleyballRallyManager.App.Models;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
@@ -35,21 +36,12 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 {
                     return NotFound("Division not found in the active tournament.");
                 }*/
-
             }
-            var model = await _activeTournamentService.GetTournamentTeamsAsync(activeTournament.Id);
+            var model = await _activeTournamentService.GetTournamentTeamsAsync(Guid.Empty);
             return View(model);
         }
 
-        public IActionResult Create(Guid divisionId)
-        {
-            ViewBag.DivisionId = divisionId;
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Guid divisionId, [Bind("TeamId")] TournamentTeamDivision tournamentTeamDivision)
+        public async Task<IActionResult> Create()
         {
             var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
             if (activeTournament == null)
@@ -57,7 +49,31 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 return NotFound("No active tournament found.");
             }
 
-            var division = activeTournament.TournamentDivisions.FirstOrDefault(d => d.DivisionId == divisionId);
+            var model = new TournamentTeamAddViewModel()
+            {
+                TournamentId = activeTournament.Id,
+                ActiveTournament = activeTournament,
+                AvailableTeams = await _activeTournamentService.GetAvailableTeamsAsync(),
+                AvailableDivisions = await _activeTournamentService.GetAvailableDivisionsAsync()
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("TeamId,DivisionId,TournamentId,GroupName,SeedNumber")] TournamentTeamAddViewModel tournamentTeamDivision)
+        {
+            var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
+            if (activeTournament == null)
+            {
+                return NotFound("No active tournament found.");
+            }
+            if (activeTournament.Id != tournamentTeamDivision.TournamentId)
+            {
+                return NotFound("Active tournament has changed.");
+            }
+
+            var division = activeTournament.TournamentDivisions.FirstOrDefault(d => d.DivisionId == tournamentTeamDivision.DivisionId);
             if (division == null)
             {
                 return NotFound("Division not found in the active tournament.");
@@ -66,38 +82,48 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 await _activeTournamentService.AddTeamAsync(tournamentTeamDivision.TeamId, tournamentTeamDivision.DivisionId, tournamentTeamDivision.GroupName, tournamentTeamDivision.SeedNumber);
-                return RedirectToAction(nameof(Index), new { divisionId });
+                return RedirectToAction(nameof(Index));
             }
+            tournamentTeamDivision.TournamentId = activeTournament.Id;
+            tournamentTeamDivision.ActiveTournament = activeTournament;
+            tournamentTeamDivision.AvailableTeams = await _activeTournamentService.GetAvailableTeamsAsync();
+            tournamentTeamDivision.AvailableDivisions = await _activeTournamentService.GetAvailableDivisionsAsync();
             return View(tournamentTeamDivision);
         }
 
-        public async Task<IActionResult> Edit(Guid id, Guid divisionId)
+        public async Task<IActionResult> Edit(Guid id)
         {
             var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
             if (activeTournament == null)
             {
                 return NotFound("No active tournament found.");
             }
-
-            var division = activeTournament.TournamentDivisions.FirstOrDefault(d => d.DivisionId == divisionId);
-            if (division == null)
-            {
-                return NotFound("Division not found in the active tournament.");
-            }
-
+ 
             var tournamentTeamDivision = await _activeTournamentService.GetTeamAsync(id);
             if (tournamentTeamDivision == null)
             {
                 return NotFound();
             }
-            return View(tournamentTeamDivision);
+            var model = new TournamentTeamAddViewModel()
+            {
+                TeamName = tournamentTeamDivision.Team.Name,
+                TournamentId = activeTournament.Id,
+                ActiveTournament = activeTournament,
+                AvailableTeams = await _activeTournamentService.GetAvailableTeamsAsync(),
+                AvailableDivisions = await _activeTournamentService.GetAvailableDivisionsAsync(),
+                TeamId = tournamentTeamDivision.TeamId,
+                DivisionId = tournamentTeamDivision.DivisionId,
+                GroupName = tournamentTeamDivision.GroupName,
+                SeedNumber = tournamentTeamDivision.SeedNumber
+            };
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, Guid divisionId, [Bind("Id,TeamId")] TournamentTeamDivision tournamentTeamDivision)
+        public async Task<IActionResult> Edit(Guid id,[Bind("TeamId,DivisionId,TournamentId,GroupName,SeedNumber")] TournamentTeamDivision tournamentTeamDivision)
         {
-            if (id != tournamentTeamDivision.Id)
+            if (id != tournamentTeamDivision.TeamId)
             {
                 return NotFound();
             }
@@ -108,7 +134,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 return NotFound("No active tournament found.");
             }
 
-            var division = activeTournament.TournamentDivisions.FirstOrDefault(d => d.DivisionId == divisionId);
+            var division = activeTournament.TournamentDivisions.FirstOrDefault(d => d.DivisionId == tournamentTeamDivision.DivisionId);
             if (division == null)
             {
                 return NotFound("Division not found in the active tournament.");
@@ -120,11 +146,23 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 if (existingTeamDivision != null)
                 {
                     await _activeTournamentService.SetTeamAsync(tournamentTeamDivision.TeamId, tournamentTeamDivision.DivisionId, tournamentTeamDivision.GroupName, tournamentTeamDivision.SeedNumber);
-                    return RedirectToAction(nameof(Index), new { divisionId });
+                    return RedirectToAction(nameof(Index));
                 }
                 return NotFound();
             }
-            return View(tournamentTeamDivision);
+            var model = new TournamentTeamAddViewModel()
+            {
+                TeamName = tournamentTeamDivision.Team.Name,
+                TournamentId = activeTournament.Id,
+                ActiveTournament = activeTournament,
+                AvailableTeams = await _activeTournamentService.GetAvailableTeamsAsync(),
+                AvailableDivisions = await _activeTournamentService.GetAvailableDivisionsAsync(),
+                TeamId = tournamentTeamDivision.TeamId,
+                DivisionId = tournamentTeamDivision.DivisionId,
+                GroupName = tournamentTeamDivision.GroupName,
+                SeedNumber = tournamentTeamDivision.SeedNumber
+            };
+            return View(model);
         }
 
         public async Task<IActionResult> Delete(Guid id, Guid divisionId)

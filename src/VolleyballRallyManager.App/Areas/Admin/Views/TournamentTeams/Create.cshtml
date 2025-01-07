@@ -1,10 +1,10 @@
-@model VolleyballRallyManager.Lib.Models.TournamentTeamDivision
+@model VolleyballRallyManager.App.Models.TournamentTeamAddViewModel
 
 @{
     ViewData["Title"] = "Add Team to Division";
+    var teams = new SelectList(Model.AvailableTeams, "Id", "Name");
+    var divisions = new SelectList(Model.AvailableDivisions, "Id", "Name");
 }
-
-
 
 <div class="row">
     <div class="col-md-4">
@@ -15,10 +15,27 @@
             <div class="card-body">
                 <form asp-action="Create" asp-route-divisionId="@ViewBag.DivisionId">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="TournamentId" />
                     <div class="form-group">
                         <label asp-for="TeamId" class="control-label"></label>
-                        <select asp-for="TeamId" class="form-control" asp-items="@(ViewBag.TeamId as SelectList)"></select>
+                        <select asp-for="TeamId" class="form-control" asp-items="@(teams)"></select>
                         <span asp-validation-for="TeamId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="DivisionId" class="control-label"></label>
+                        <select asp-for="DivisionId" class="form-control" asp-items="@(divisions)"></select>
+                        <span asp-validation-for="DivisionId" class="text-danger"></span>
+                    </div>
+                       <div class="form-group">
+                        <label asp-for="GroupName" class="control-label"></label>
+                        <input asp-for="GroupName" class="form-control"/>
+                        <span asp-validation-for="GroupName" class="text-danger"></span>
+                    </div>
+                       <div class="form-group">
+                        <label asp-for="SeedNumber" class="control-label"></label>
+                        <input asp-for="SeedNumber" class="form-control" placehodler="Zero (0) to auto assign"/>
+                        <span asp-validation-for="SeedNumber" class="text-danger"></span>
+                            <div id="SeedNumberHelp" class="form-text">Zero (0) to auto assign.</div>
                     </div>
                     <div class="form-group">
                         <input type="submit" value="Add Team" class="btn btn-primary" />

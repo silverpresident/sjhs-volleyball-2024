@@ -30,6 +30,22 @@ namespace VolleyballRallyManager.Lib.Services
         {
             return await _dbContext.Divisions.ToListAsync();
         }
+        public async Task<IEnumerable<Team>> GetAvailableTeamsAsync()
+        {
+            
+            var activeTournament = await GetActiveTournamentAsync();
+            if (activeTournament == null)
+            {
+                throw new Exception("No active tournament found.");
+            }
+            var ids = _dbContext.TournamentTeamDivisions
+                .Where(ttd => ttd.TournamentId == activeTournament.Id)
+                .Select(ttd => ttd.TeamId)
+                .ToArray();
+
+            return await _dbContext.Teams.Where(t => !ids.Contains(t.Id)).OrderBy(t => t.Name).ToListAsync();
+        }
+        
 
         public async Task<IEnumerable<TournamentDivision>> GetTournamentDivisionsAsync()
         {
@@ -63,7 +79,15 @@ namespace VolleyballRallyManager.Lib.Services
             {
                 qry = qry.Where(ttd => ttd.DivisionId == divisionId);
             }
-            return await qry.OrderBy(ttd => ttd.SeedNumber).ToListAsync();
+            var model = await qry.OrderBy(ttd => ttd.SeedNumber).ToListAsync();
+             if (model.Count() > 0)
+            {
+                var ids = model.Select(td => td.DivisionId).ToArray();
+                _dbContext.Divisions.Where(d => ids.Contains(d.Id)).Load();
+                ids = model.Select(td => td.TeamId).ToArray();
+                _dbContext.Teams.Where(d => ids.Contains(d.Id)).Load();
+            }
+            return model;
             /*
             if (model == null)
             {
@@ -145,6 +169,7 @@ namespace VolleyballRallyManager.Lib.Services
             }
             tournamentTeamDivision.DivisionId = divisionId;
             tournamentTeamDivision.GroupName = groupName;
+            tournamentTeamDivision.UpdatedAt = DateTime.UtcNow;
             await _dbContext.SaveChangesAsync();
             return tournamentTeamDivision;
         }
@@ -177,6 +202,7 @@ namespace VolleyballRallyManager.Lib.Services
             }
             tournamentTeamDivision.DivisionId = divisionId;
             tournamentTeamDivision.GroupName = groupName;
+            tournamentTeamDivision.UpdatedAt = DateTime.UtcNow;
             await _dbContext.SaveChangesAsync();
             return tournamentTeamDivision;
         }
