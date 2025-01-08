@@ -76,6 +76,7 @@ BEGIN
         ScheduledTime DATETIME2 NOT NULL,
         ActualStartTime DATETIME2,
         CourtLocation NVARCHAR(50) NOT NULL,
+        GroupName NVARCHAR(50) NOT NULL,
         TournamentId UNIQUEIDENTIFIER NOT NULL,
         DivisionId UNIQUEIDENTIFIER NOT NULL,
         RoundId UNIQUEIDENTIFIER NOT NULL,

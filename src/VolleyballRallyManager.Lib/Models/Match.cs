@@ -19,7 +19,10 @@ public class Match : BaseEntity
     public DateTime? ActualStartTime { get; set; }
 
     [Display(Name = "Court Location")]
-    public required string CourtLocation { get; set; }
+    public required string CourtLocation { get; set; } = "Unassigned";
+    
+    [Display(Name = "Group")]
+    public required string GroupName { get; set; } = string.Empty;
 
     [Display(Name = "Tournament")]
     public Guid TournamentId { get; set; }

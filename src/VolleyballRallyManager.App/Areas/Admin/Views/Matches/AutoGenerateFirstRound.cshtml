@@ -1,0 +1,56 @@
+@model VolleyballRallyManager.App.Models.AutoGenerateMatchesViewModel
+
+@{
+    ViewData["Title"] = "Auto Generate First Round Matches";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="AutoGenerateFirstRound">
+                    <div class="form-group">
+                        <label asp-for="SelectedDivisionIds">Divisions</label>
+                        <select asp-for="SelectedDivisionIds" class="form-control" asp-items="Model.Divisions" multiple></select>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="SelectedGroupNames">Groups</label>
+                        <select asp-for="SelectedGroupNames" class="form-control" multiple></select>
+                    </div>
+                    <div class="form-group form-check">
+                        <input asp-for="RemoveExistingMatches" type="checkbox" class="form-check-input" />
+                        <label class="form-check-label" asp-for="RemoveExistingMatches">Remove Existing Matches</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Matches</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#SelectedDivisionIds').change(function () {
+                var selectedDivisions = $(this).val();
+                if (selectedDivisions && selectedDivisions.length > 0) {
+                    $.ajax({
+                        type: "GET",
+                        url: '@Url.Action("GetGroups")',
+                        data: { divisionIds: selectedDivisions },
+                        success: function (groups) {
+                            $('#SelectedGroupNames').empty();
+                            $.each(groups, function (i, group) {
+                                $('#SelectedGroupNames').append($('<option></option>').val(group.id).text(group.name));
+                            });
+                        }
+                    });
+                } else {
+                    $('#SelectedGroupNames').empty();
+                }
+            });
+        });
+    </script>
+}
