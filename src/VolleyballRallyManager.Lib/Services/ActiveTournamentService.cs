@@ -21,18 +21,20 @@ namespace VolleyballRallyManager.Lib.Services
         {
             var model = await _dbContext.Tournaments
                 .FirstOrDefaultAsync(t => t.IsActive);
-            model.TournamentDivisions = await _dbContext.TournamentDivisions
-            .Where(td => td.TournamentId == model.Id).ToListAsync();
+            if (model != null)
+            {
+                model.TournamentDivisions = await _dbContext.TournamentDivisions
+                    .Where(td => td.TournamentId == model.Id).ToListAsync();
+            }
             return model;
         }
-
         public async Task<IEnumerable<Division>> GetAvailableDivisionsAsync()
         {
             return await _dbContext.Divisions.ToListAsync();
         }
         public async Task<IEnumerable<Team>> GetAvailableTeamsAsync()
         {
-            
+
             var activeTournament = await GetActiveTournamentAsync();
             if (activeTournament == null)
             {
@@ -45,19 +47,18 @@ namespace VolleyballRallyManager.Lib.Services
 
             return await _dbContext.Teams.Where(t => !ids.Contains(t.Id)).OrderBy(t => t.Name).ToListAsync();
         }
-        
 
         public async Task<IEnumerable<TournamentDivision>> GetTournamentDivisionsAsync()
         {
             var activeTournament = await GetActiveTournamentAsync();
             if (activeTournament == null)
-            {
+{
                 throw new Exception("No active tournament found.");
             }
             var model = await _dbContext.TournamentDivisions
             //.Include(td => td.Division)
                 .Where(td => td.TournamentId == activeTournament.Id)
-                .ToListAsync();
+                                .ToListAsync();
             if (model.Count() > 0)
             {
                 var ids = model.Select(td => td.DivisionId).ToArray();
@@ -80,12 +81,13 @@ namespace VolleyballRallyManager.Lib.Services
                 qry = qry.Where(ttd => ttd.DivisionId == divisionId);
             }
             var model = await qry.OrderBy(ttd => ttd.SeedNumber).ToListAsync();
-             if (model.Count() > 0)
+            if (model.Count() > 0)
             {
                 var ids = model.Select(td => td.DivisionId).ToArray();
                 _dbContext.Divisions.Where(d => ids.Contains(d.Id)).Load();
                 ids = model.Select(td => td.TeamId).ToArray();
                 _dbContext.Teams.Where(d => ids.Contains(d.Id)).Load();
+                model = model.OrderBy(m => m.Division.Name).ThenBy(m => m.GroupName).OrderBy(m => m.Team.Name).ToList();
             }
             return model;
             /*
@@ -123,6 +125,11 @@ namespace VolleyballRallyManager.Lib.Services
             {
                 throw new Exception("Team is not in this Tournament");
             }*/
+            if (rrd != null)
+            {
+                _dbContext.Divisions.Where(d => d.Id == rrd.DivisionId).Load();
+                _dbContext.Teams.Where(d => d.Id == rrd.TeamId).Load();
+            }
             return rrd;
 
         }
@@ -314,6 +321,11 @@ namespace VolleyballRallyManager.Lib.Services
 
                 await _dbContext.SaveChangesAsync();
             }
+        }
+
+        public Task<IEnumerable<Match>> GetMatchesAsync(Guid? divisionId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

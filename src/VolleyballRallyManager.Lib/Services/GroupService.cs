@@ -8,14 +8,15 @@ public class GroupService
     private static Dictionary<string, string> groupColorMap = new Dictionary<string, string>();
     private static string[] colors = new string[] {
         "#98FB98", //Pale Green	
-        "#FFFFE0", //Light Yellow
+        // "#FFFFE0", //Light Yellow
         "#FFA07A", //Light Salmon	
         "#E0FFFF", //Light Cyan	
-        "#FFF8DC", // Cornsilk
-        "#F0FFFF", //Azure
+        //"#FFF8DC", // Cornsilk
+        //"#F0FFFF", //Azure
         "#F5F5DC", //Beige
         "#F0F8FF", //Alice Blue
-        "#F0F0F0" //Light Gray	
+        "#F0F0F0",//Light Gray	
+         "#FFEFD5"//"Papaya Whip"
     };
  //   public static Dictionary<string, string> groupIconMap = new Dictionary<string, string>();
     public string GetColor(string groupName)

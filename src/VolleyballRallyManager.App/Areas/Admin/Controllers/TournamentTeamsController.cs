@@ -121,7 +121,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id,[Bind("TeamId,DivisionId,TournamentId,GroupName,SeedNumber")] TournamentTeamDivision tournamentTeamDivision)
+        public async Task<IActionResult> Edit(Guid id,[Bind("TeamId,DivisionId,TournamentId,GroupName,SeedNumber")] TournamentTeamAddViewModel tournamentTeamDivision)
         {
             if (id != tournamentTeamDivision.TeamId)
             {
@@ -139,10 +139,11 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             {
                 return NotFound("Division not found in the active tournament.");
             }
+            var existingTeamDivision = await _activeTournamentService.GetTeamAsync(tournamentTeamDivision.TeamId);
+                
 
             if (ModelState.IsValid)
             {
-                var existingTeamDivision = await _activeTournamentService.GetTeamAsync(tournamentTeamDivision.TeamId);
                 if (existingTeamDivision != null)
                 {
                     await _activeTournamentService.SetTeamAsync(tournamentTeamDivision.TeamId, tournamentTeamDivision.DivisionId, tournamentTeamDivision.GroupName, tournamentTeamDivision.SeedNumber);
@@ -152,7 +153,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             }
             var model = new TournamentTeamAddViewModel()
             {
-                TeamName = tournamentTeamDivision.Team.Name,
+                TeamName = existingTeamDivision.Team.Name,
                 TournamentId = activeTournament.Id,
                 ActiveTournament = activeTournament,
                 AvailableTeams = await _activeTournamentService.GetAvailableTeamsAsync(),

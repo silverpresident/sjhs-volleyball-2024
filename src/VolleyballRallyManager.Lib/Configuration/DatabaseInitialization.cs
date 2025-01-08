@@ -35,7 +35,13 @@ namespace VolleyballRallyManager.Lib.Configuration
             try
             {
                 await SeedTournamentAsync(dbContext);
-
+            }
+            catch (Exception ex)
+            {
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
+                logger.LogError(ex, "An error occurred while seeding the database.");
+            }try
+            {
                 await SeedInitialDataAsync(dbContext);
             }
             catch (Exception ex)
@@ -185,17 +191,18 @@ namespace VolleyballRallyManager.Lib.Configuration
         }
         private static async Task SeedInitialDataAsync(ApplicationDbContext dbContext)
         {
-            if (await dbContext.Teams.AnyAsync())
+            /*if (await dbContext.Teams.AnyAsync())
             {
                 return;
-            }
+            }*/
             // Add sample divisions
             var divisions = await SeedDivisionsAsync(dbContext);
             var rounds = await SeedRoundsAsync(dbContext);
 
 
             // Add sample teams
-            var teams = new[]
+            var teams = new List<Team>();
+            /*var teams = new[]
             {
                 new Team {
                     Id = Guid.NewGuid(),
@@ -221,7 +228,25 @@ namespace VolleyballRallyManager.Lib.Configuration
                     School = "School D",
                     Color = "#FFFF00"
                 }
-            };
+            };*/
+            char alphaStart = 'E';
+            char alphaEnd = 'L';
+            for (char i = alphaStart; i <= alphaEnd; i++)
+            {
+                string anchorLetter = i.ToString();
+                var tn = $"Team {anchorLetter}";
+                if (await dbContext.Teams.AnyAsync(t => t.Name == tn))
+                {
+                    //continue;
+                }
+                teams.Add(new Team
+                {
+                    Id = Guid.NewGuid(),
+                    Name = tn,
+                    School = $"School {anchorLetter}",
+                    Color = "#FFFF00"
+                });
+            }
             foreach (var team in teams)
             {
                 team.UpdatedAt = DateTime.Now;
@@ -230,7 +255,7 @@ namespace VolleyballRallyManager.Lib.Configuration
                 team.CreatedBy = "System";
             }
             if (!await dbContext.Teams.AnyAsync())
-                await dbContext.Teams.AddRangeAsync(teams);
+                await dbContext.Teams.AddRangeAsync(new List<Team>(teams));
             await dbContext.SaveChangesAsync();
 
             // Add sample announcement
@@ -270,10 +295,9 @@ namespace VolleyballRallyManager.Lib.Configuration
 
                 }
 
-
                 if (!await dbContext.TournamentTeamDivisions.AnyAsync())
                 {
-                    teams = await dbContext.Teams.ToArrayAsync();
+                    teams = await dbContext.Teams.ToListAsync();
                     bool sel1 = true;
                     foreach (var team in teams)
                     {

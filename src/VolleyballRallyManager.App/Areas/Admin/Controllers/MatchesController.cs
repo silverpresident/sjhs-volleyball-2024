@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
+using VolleyballRallyManager.Lib.Services;
 
 namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 {
@@ -10,18 +11,21 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
     [Authorize]
     public class MatchesController : Controller
     {
+
+        private readonly IActiveTournamentService _activeTournamentService;
         private readonly ApplicationDbContext _context;
 
-        public MatchesController(ApplicationDbContext context)
+        public MatchesController(IActiveTournamentService activeTournamentService,ApplicationDbContext context)
         {
             _context = context;
+            _activeTournamentService = activeTournamentService;
         }
 
         // GET: Admin/Matches
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Matches.Include(m => m.AwayTeam).Include(m => m.HomeTeam);
-            return View(await applicationDbContext.ToListAsync());
+            var matches = await _activeTournamentService.GetMatchesAsync();
+            return View(matches);
         }
 
         // GET: Admin/Matches/Details/5
