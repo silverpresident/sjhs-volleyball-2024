@@ -323,9 +323,32 @@ namespace VolleyballRallyManager.Lib.Services
             }
         }
 
-        public Task<IEnumerable<Match>> GetMatchesAsync(Guid? divisionId)
+        public async Task<IEnumerable<Match>> GetMatchesAsync(Guid? divisionId = null, Guid? roundId = null)
         {
-            throw new NotImplementedException();
+            var activeTournament = await GetActiveTournamentAsync();
+            if (activeTournament == null)
+            {
+                throw new Exception("No active tournament found.");
+            }
+            var qry = _dbContext.Matches.Where(m => m.TournamentId == activeTournament.Id);
+            if (divisionId != null)
+            {
+                //qry = qry.Where(m => m.DivisionId == divisionId);
+            }
+            if (roundId != null)
+            {
+                qry = qry.Where(m => m.RoundId == roundId);
+            }
+            var model = await qry.ToListAsync();
+            if (model.Count() > 0)
+            {
+                var ids = model.Select(td => td.DivisionId).ToArray();
+                _dbContext.Divisions.Where(d => ids.Contains(d.Id)).Load();
+                ids = model.Select(td => td.AwayTeamId).ToArray();
+                ids = ids.Union(model.Select(td => td.AwayTeamId).ToArray()).ToArray();
+                _dbContext.Teams.Where(d => ids.Contains(d.Id)).Load();
+            }
+            return model.OrderBy(m => m?.Division?.Name).ThenBy(m => m?.Round?.Sequence).ThenBy(m => m.ScheduledTime).ToList(); 
         }
     }
 }

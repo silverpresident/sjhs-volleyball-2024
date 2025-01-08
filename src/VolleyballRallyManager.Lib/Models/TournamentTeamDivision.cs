@@ -55,8 +55,8 @@ namespace VolleyballRallyManager.Lib.Models
         public int PointDifference => PointsScored - PointsConceded;
 
         // Navigation properties
-        public virtual ICollection<Match> HomeMatches { get; set; } = new List<Match>();
-        public virtual ICollection<Match> AwayMatches { get; set; } = new List<Match>();
+       // public virtual ICollection<Match> HomeMatches { get; set; } = new List<Match>();
+      //  public virtual ICollection<Match> AwayMatches { get; set; } = new List<Match>();
 
     }
 }

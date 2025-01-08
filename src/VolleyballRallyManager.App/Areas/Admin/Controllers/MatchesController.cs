@@ -15,7 +15,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         private readonly IActiveTournamentService _activeTournamentService;
         private readonly ApplicationDbContext _context;
 
-        public MatchesController(IActiveTournamentService activeTournamentService,ApplicationDbContext context)
+        public MatchesController(IActiveTournamentService activeTournamentService, ApplicationDbContext context)
         {
             _context = context;
             _activeTournamentService = activeTournamentService;
@@ -39,6 +39,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             var match = await _context.Matches
                 .Include(m => m.AwayTeam)
                 .Include(m => m.HomeTeam)
+                .Include(m => m.Division)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (match == null)
             {

@@ -47,12 +47,12 @@ namespace VolleyballRallyManager.Lib.Data
                 .HasForeignKey(ttd => ttd.DivisionId);
 
             // Configure Team relationships
-            builder.Entity<TournamentTeamDivision>()
+           /* builder.Entity<TournamentTeamDivision>()
                 .HasMany(t => t.HomeMatches);
 
             builder.Entity<TournamentTeamDivision>()
                 .HasMany(t => t.AwayMatches);
-
+*/
             // Configure Division relationships
             builder.Entity<Division>()
                 .HasMany(d => d.TournamentTeamDivisions);

@@ -21,8 +21,7 @@ namespace VolleyballRallyManager.Lib.Services
         Task UpdateTeamStatisticsAsync(Match match);
         Task<IEnumerable<Division>> GetAvailableDivisionsAsync();
         Task<IEnumerable<Team>> GetAvailableTeamsAsync();
-        Task<IEnumerable<Match>> GetMatchesAsync();
-        Task<IEnumerable<Match>> GetMatchesAsync(Guid tournamentId);
+        Task<IEnumerable<Match>> GetMatchesAsync(Guid? divisionId = null, Guid? roundId = null);
         Task UpdateTournamentDivisionsAsync(List<Guid> selectedDivisionIds);
     }
 }

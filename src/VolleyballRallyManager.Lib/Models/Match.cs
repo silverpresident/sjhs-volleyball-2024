@@ -23,7 +23,10 @@ public class Match : BaseEntity
 
     [Display(Name = "Tournament")]
     public Guid TournamentId { get; set; }
+    [Display(Name = "Division")]
+    public Guid DivisionId { get; set; }
 
+    [Display(Name = "Tournament")]
     public Tournament Tournament { get; set; }
     
     [Display(Name = "Home Team")]
@@ -51,6 +54,7 @@ public class Match : BaseEntity
     public string? ScorerName { get; set; }
 
     // Navigation properties
+    public virtual Round? Division { get; set; }
     public virtual Round? Round { get; set; }
     public virtual Team? HomeTeam { get; set; }
     public virtual Team? AwayTeam { get; set; }
