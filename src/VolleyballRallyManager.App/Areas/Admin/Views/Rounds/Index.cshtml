@@ -1,0 +1,20 @@
+@model IEnumerable<VolleyballRallyManager.Lib.Models.Round>
+@{
+    ViewData["Title"] = "Rounds";
+}
+
+<h1>Rounds</h1>
+
+<div class="row">
+    @foreach (var round in Model)
+    {
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Round @round.Name</h5>
+                    <p class="card-text">-</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>

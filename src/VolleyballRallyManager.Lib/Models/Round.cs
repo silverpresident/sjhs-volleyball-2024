@@ -11,9 +11,6 @@ public class Round : BaseEntity
     [Display(Name = "Sequence")]
     public required int Sequence { get; set; }
 
-    [Display(Name = "Is Complete")]
-    public bool IsComplete { get; set; }
-
     // Navigation properties
     public virtual ICollection<Match> Matches { get; set; } = new List<Match>();
 }
