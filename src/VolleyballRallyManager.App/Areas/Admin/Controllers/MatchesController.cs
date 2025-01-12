@@ -17,14 +17,16 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
         private readonly IActiveTournamentService _activeTournamentService;
         private readonly ApplicationDbContext _dbContext;
+        private readonly IMatchService _matchService;
 
         private readonly ILogger<MatchesController> _logger;
 
-        public MatchesController(ILogger<MatchesController> logger, IActiveTournamentService activeTournamentService, ApplicationDbContext context)
+        public MatchesController(ILogger<MatchesController> logger, IActiveTournamentService activeTournamentService, ApplicationDbContext context, IMatchService matchService)
         {
             _dbContext = context;
             _activeTournamentService = activeTournamentService;
             _logger = logger;
+            _matchService = matchService;
         }
 
         // GET: Admin/Matches
@@ -355,6 +357,139 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             await _dbContext.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Admin/Matches/AutoGenerateNextRound
+        public IActionResult AutoGenerateNextRound()
+        {
+            var viewModel = new AutoGenerateNextRoundViewModel
+            {
+                Divisions = _dbContext.Divisions.Select(d => new SelectListItem { Value = d.Id.ToString(), Text = d.Name }).ToList()
+            };
+            return View(viewModel);
+        }
+
+        // POST: Admin/Matches/AutoGenerateNextRound
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AutoGenerateNextRound(AutoGenerateNextRoundViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                model.Divisions = _dbContext.Divisions.Select(d => new SelectListItem { Value = d.Id.ToString(), Text = d.Name }).ToList();
+                return View(model);
+            }
+
+            var selectedDivisionId = model.SelectedDivisionId;
+            var teamsToAdvance = model.TeamsToAdvance;
+            var selectionMethod = model.SelectionMethod;
+
+            var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
+            if (activeTournament == null)
+            {
+                return NotFound("No active tournament found.");
+            }
+
+            var currentRoundNumber = await _dbContext.Rounds
+                .Where(r => r.Matches.Any(m => m.TournamentId == activeTournament.Id && m.DivisionId == selectedDivisionId))
+                .MaxAsync(r => (int?)r.Sequence) ?? 0;
+            var nextRoundNumber = currentRoundNumber + 1;
+
+            var nextRound = new Round
+            {
+                Id = Guid.NewGuid(),
+                Name = $"Round {nextRoundNumber}",
+                Sequence = nextRoundNumber,
+                QualifyingTeams = teamsToAdvance
+            };
+            _dbContext.Rounds.Add(nextRound);
+            await _dbContext.SaveChangesAsync();
+
+            var divisionMatches = await _dbContext.Matches
+                .Include(m => m.HomeTeam)
+                .Include(m => m.AwayTeam)
+                .Where(m => m.TournamentId == activeTournament.Id && m.DivisionId == selectedDivisionId)
+                .ToListAsync();
+
+            List<Team> advancingTeams = new List<Team>();
+
+            if (selectionMethod == "TopFromEachGroup")
+            {
+                var groupedMatches = divisionMatches
+                    .GroupBy(m => m.GroupName);
+
+                foreach (var group in groupedMatches)
+                {
+                    var scoredMatches = group
+                        .Where(m => m.HomeTeamScore > -1 && m.AwayTeamScore > -1);
+
+                    if (scoredMatches.Any())
+                    {
+                        var teamPoints = scoredMatches.SelectMany(m => new[]
+                        {
+                            new { Team = m.HomeTeam, Points = CalculatePoints(m.HomeTeamScore, m.AwayTeamScore) },
+                            new { Team = m.AwayTeam, Points = CalculatePoints(m.AwayTeamScore, m.HomeTeamScore) }
+                        })
+                        .GroupBy(tp => tp.Team)
+                        .Select(g => new { Team = g.Key, TotalPoints = g.Sum(x => x.Points) })
+                        .OrderByDescending(tp => tp.TotalPoints)
+                        .Take(teamsToAdvance)
+                        .ToList();
+
+                        advancingTeams.AddRange(teamPoints.Select(tp => tp.Team));
+                    }
+                }
+            }
+            else if (selectionMethod == "TopFromGroupAndNextBest")
+            {
+                // Implementation for "Top from group and next best"
+            }
+            else if (selectionMethod == "TopByPoints")
+            {
+                // Implementation for "Top by points"
+            }
+
+            if (advancingTeams.Count >= 2)
+            {
+                // Create matches for the next round
+                for (int i = 0; i < advancingTeams.Count - 1; i += 2)
+                {
+                    var match = new Match
+                    {
+                        Id = Guid.NewGuid(),
+                        TournamentId = activeTournament.Id,
+                        DivisionId = selectedDivisionId,
+                        RoundId = nextRound.Id,
+                        HomeTeamId = advancingTeams[i].Id,
+                        AwayTeamId = advancingTeams[i + 1].Id,
+                        ScheduledTime = activeTournament.TournamentDate.AddDays(nextRoundNumber), // Example scheduling
+                        CourtLocation = "TBD",
+                        CreatedBy = "System",
+                        CreatedAt = DateTime.UtcNow,
+                        GroupName = "TBD"
+                    };
+                    _dbContext.Matches.Add(match);
+                }
+                await _dbContext.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        private int CalculatePoints(int homeScore, int awayScore)
+        {
+            if (homeScore > awayScore)
+            {
+                return 3;
+            }
+            else if (homeScore < awayScore)
+            {
+                return 0;
+            }
+            else
+            {
+                return 1;
+            }
         }
 
         [HttpGet]

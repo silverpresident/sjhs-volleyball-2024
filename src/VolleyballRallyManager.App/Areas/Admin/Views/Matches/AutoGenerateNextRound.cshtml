@@ -1,0 +1,48 @@
+@model VolleyballRallyManager.App.Models.AutoGenerateNextRoundViewModel
+
+@{
+    ViewData["Title"] = "Auto Generate Next Round";
+}
+
+<div class="container">
+    <h1>@ViewData["Title"]</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <form asp-action="AutoGenerateNextRound">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="mb-3">
+                    <label asp-for="SelectedDivisionId" class="form-label"></label>
+                    <select asp-for="SelectedDivisionId" class="form-select" asp-items="@Model.Divisions">
+                        <option value="">-- Select Division --</option>
+                    </select>
+                    <span asp-validation-for="SelectedDivisionId" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="TeamsToAdvance" class="form-label"></label>
+                    <select asp-for="TeamsToAdvance" class="form-select">
+                        <option value="2">2</option>
+                        <option value="4">4</option>
+                        <option value="8">8</option>
+                        <option value="16">16</option>
+                    </select>
+                    <span asp-validation-for="TeamsToAdvance" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="SelectionMethod" class="form-label"></label>
+                    <select asp-for="SelectionMethod" class="form-select">
+                        <option value="TopFromEachGroup">Top from each group only</option>
+                        <option value="TopFromGroupAndNextBest">Top from group and next best</option>
+                        <option value="TopByPoints">Top by points</option>
+                    </select>
+                    <span asp-validation-for="SelectionMethod" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-primary">Generate Next Round</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
