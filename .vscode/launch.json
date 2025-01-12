@@ -13,7 +13,9 @@
             "program": "${workspaceFolder}/src/VolleyballRallyManager.App/bin/Debug/net8.0/VolleyballRallyManager.App.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/VolleyballRallyManager.App",
-            "stopAtEntry": false,
+            "stopAtEntry": false,  
+            //console: integratedTerminal use same terminal as build
+            "console": "internalConsole",
             // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
             "serverReadyAction": {
                 "action": "openExternally",

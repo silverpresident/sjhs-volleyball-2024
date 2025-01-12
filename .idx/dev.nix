@@ -12,6 +12,7 @@
     # pkgs.nodejs_20
     # pkgs.nodePackages.nodemon
     pkgs.dotnet-sdk_8 # Or the desired .NET SDK version
+    pkgs.dotnetCorePackages.sdk_9_0
     pkgs.sqlcmd
   ];
 

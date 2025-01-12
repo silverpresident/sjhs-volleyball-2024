@@ -22,9 +22,9 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>@item.RoundId</td>
-                            <td>@item.HomeTeam.Name</td>
-                            <td>@item.AwayTeam.Name</td>
+                            <td>@item.Round.Name</td>
+                            <td>@Html.DisplayFor(modelItem => item.HomeTeam, "Team")</td>
+                            <td>@Html.DisplayFor(modelItem => item.AwayTeam, "Team")</td>
                             <td>@item.HomeTeamScore - @item.AwayTeamScore</td>
                             <td>
                                 <a asp-action="Details" asp-route-id="@item.Id">Details</a>

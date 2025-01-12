@@ -39,7 +39,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.OrderBy(m => m.ScheduledTime))
+                @foreach (var item in Model)
                 {
                     var status = item.IsFinished ? "finished" : 
                                 item.IsDisputed ? "disputed" :
@@ -57,16 +57,15 @@
                         <td>@Html.DisplayFor(modelItem => item.Round.Name)</td>
                         <td>
                             @item.ScheduledTime.ToString("dd/MM HH:mm")
-                            @if (item.ActualStartTime.HasValue)
+                          @*  @if (item.ActualStartTime.HasValue)
                             {
                                 <br/>
                                 <small class="text-muted">Started: @item.ActualStartTime.Value.ToString("HH:mm")</small>
-                            }
+                            }*@
                         </td>
                         <td>@Html.DisplayFor(modelItem => item.CourtLocation)</td>
                         <td>
-                            <span class="team-color" style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: @item.HomeTeam.Color; margin-right: 5px;"></span>
-                            @Html.DisplayFor(modelItem => item.HomeTeam.Name)
+                           @Html.DisplayFor(modelItem => item.HomeTeam, "Team")
                         </td>
                         <td>
                             @if (item.IsFinished)
@@ -83,8 +82,7 @@
                             }
                         </td>
                         <td>
-                            <span class="team-color" style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: @item.AwayTeam.Color; margin-right: 5px;"></span>
-                            @Html.DisplayFor(modelItem => item.AwayTeam.Name)
+                            @Html.DisplayFor(modelItem => item.AwayTeam, "Team") 
                         </td>
                         <td>
                             @if (item.IsDisputed)

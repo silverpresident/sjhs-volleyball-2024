@@ -1,0 +1,9 @@
+@model VolleyballRallyManager.Lib.Models.Team
+
+@if(Model == null){
+    <span class="badge badge-secondary">none</span>
+    return;
+}
+
+<span class="team-color" style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: @Model.Color; margin-right: 5px;"></span>
+ @Html.DisplayFor(modelItem => Model.Name) 

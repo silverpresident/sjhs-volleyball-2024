@@ -344,9 +344,11 @@ namespace VolleyballRallyManager.Lib.Services
             {
                 var ids = model.Select(td => td.DivisionId).ToArray();
                 _dbContext.Divisions.Where(d => ids.Contains(d.Id)).Load();
-                ids = model.Select(td => td.AwayTeamId).ToArray();
+                ids = model.Select(td => td.HomeTeamId).ToArray();
                 ids = ids.Union(model.Select(td => td.AwayTeamId).ToArray()).ToArray();
                 _dbContext.Teams.Where(d => ids.Contains(d.Id)).Load();
+                ids = model.Select(td => td.RoundId).ToArray();
+                _dbContext.Rounds.Where(d => ids.Contains(d.Id)).Load();
             }
             return model.OrderBy(m => m?.Division?.Name).ThenBy(m => m?.Round?.Sequence).ThenBy(m => m.ScheduledTime).ToList(); 
         }

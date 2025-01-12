@@ -18,10 +18,13 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         private readonly IActiveTournamentService _activeTournamentService;
         private readonly ApplicationDbContext _dbContext;
 
-        public MatchesController(IActiveTournamentService activeTournamentService, ApplicationDbContext context)
+        private readonly ILogger<MatchesController> _logger;
+
+        public MatchesController(ILogger<MatchesController> logger, IActiveTournamentService activeTournamentService, ApplicationDbContext context)
         {
             _dbContext = context;
             _activeTournamentService = activeTournamentService;
+            _logger = logger;
         }
 
         // GET: Admin/Matches
@@ -43,6 +46,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 .Include(m => m.AwayTeam)
                 .Include(m => m.HomeTeam)
                 .Include(m => m.Division)
+                .Include(m => m.Round)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (match == null)
             {
@@ -53,10 +57,11 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         }
 
         // GET: Admin/Matches/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["AwayTeamId"] = new SelectList(_dbContext.Teams, "Id", "Name");
-            ViewData["HomeTeamId"] = new SelectList(_dbContext.Teams, "Id", "Name");
+            var teams = await _activeTournamentService.GetAvailableTeamsAsync();
+            ViewData["AwayTeamId"] = new SelectList(teams, "Id", "Name");
+            ViewData["HomeTeamId"] = new SelectList(teams, "Id", "Name");
             return View();
         }
 
@@ -91,6 +96,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+            var teams = await _activeTournamentService.GetAvailableTeamsAsync();
             ViewData["AwayTeamId"] = new SelectList(_dbContext.Teams, "Id", "Name", match.AwayTeamId);
             ViewData["HomeTeamId"] = new SelectList(_dbContext.Teams, "Id", "Name", match.HomeTeamId);
             return View(match);
@@ -169,12 +175,18 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         }
 
         // GET: Admin/Matches/AutoGenerateFirstRound
-        public IActionResult AutoGenerateFirstRound()
+        public async Task<IActionResult> AutoGenerateFirstRound()
         {
-            var divisions = _dbContext.Divisions.Select(d => new SelectListItem
+            var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
+            if (activeTournament == null)
             {
-                Value = d.Id.ToString(),
-                Text = d.Name
+                return NotFound("No active tournament found.");
+            }
+            var tds = await _activeTournamentService.GetTournamentDivisionsAsync();
+            var divisions = tds.Select(d => new SelectListItem
+            {
+                Value = d.Division.Id.ToString(),
+                Text = d.Division.Name
             }).ToList();
 
             var viewModel = new AutoGenerateMatchesViewModel
@@ -202,7 +214,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 return NotFound("No active tournament found.");
             }
             // Retrieve teams based on selected divisions and groups
-            
+
             var qryBaseTTD = _dbContext.TournamentTeamDivisions
                 .Where(ttd => ttd.TournamentId == activeTournament.Id);
 
@@ -220,49 +232,61 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
             var teams = qry.OrderBy(ttd => ttd.SeedNumber).Select(ttd => ttd.Team).ToList();
 
-
+            var qryTourMatches = _dbContext.Matches
+                .Where(m => m.TournamentId == activeTournament.Id);
+            if (selectedDivisionIds.Contains(Guid.Empty) == false && selectedDivisionIds.Count > 0)
+            {
+                qryTourMatches = qryTourMatches.Where(ttd => selectedDivisionIds.Contains(ttd.DivisionId));
+            }
+            if (selectedGroupNames.Contains(string.Empty) == false && selectedGroupNames.Count > 0)
+            {
+                qryTourMatches = qryTourMatches.Where(ttd => selectedGroupNames.Contains(ttd.GroupName));
+            }
             // Remove existing matches if requested
             if (removeExistingMatches)
             {
-                var qryRM = _dbContext.Matches
-                    .Where(m => m.TournamentId == activeTournament.Id);
-                if (selectedDivisionIds.Contains(Guid.Empty) == false && selectedDivisionIds.Count > 0)
-                {
-                    qryRM = qryRM.Where(ttd => selectedDivisionIds.Contains(ttd.DivisionId));
-                }
-                if (selectedGroupNames.Contains(string.Empty) == false && selectedGroupNames.Count > 0)
-                {
-                    qryRM = qryRM.Where(ttd => selectedGroupNames.Contains(ttd.GroupName));
-                }
-                var existingMatches = qryRM;
-                _dbContext.Matches.RemoveRange(existingMatches);
+                var qryRM = qryTourMatches;
+                //var existingMatches = qryRM;
+                _dbContext.Matches.RemoveRange(qryRM);
                 await _dbContext.SaveChangesAsync();
             }
             var qryBase = _dbContext.TournamentTeamDivisions
                             .Where(ttd => ttd.TournamentId == activeTournament.Id);
             var matchesToCreate = new List<Match>();
-            if (selectedDivisionIds.Contains(Guid.Empty) == false || selectedDivisionIds.Count == 0)
+            if (selectedDivisionIds.Contains(Guid.Empty) == true || selectedDivisionIds.Count == 0)
             {
                 selectedDivisionIds = qryBase
                 .Select(ttd => ttd.DivisionId).Distinct().ToList();
             }
 
             var nextMatchTime = activeTournament.TournamentDate.AddMinutes(15);
-            
-                            // Get the "First Round" round
-                            var firstRound = _dbContext.Rounds.FirstOrDefault(r => r.Name == "Round 1");
 
-                            if (firstRound == null)
-                            {
-//TODO how to resolve
-                            }
+            // Get the "First Round" round
+            var firstRound = _dbContext.Rounds.FirstOrDefault(r => r.Name == "Round 1");
+
+            if (firstRound == null)
+            {
+                //TODO how to resolve
+            }
+            _logger.LogInformation($"Selected divs: {selectedDivisionIds.Count}");
+            Console.WriteLine("-----hello");
             // Iterate through selected divisions
             foreach (var divisionId in selectedDivisionIds)
             {
-                int matchNumber = _dbContext.Matches.Where(m => m.TournamentId == activeTournament.Id && m.DivisionId == divisionId).Max(m => m.MatchNumber);
-                List<string> actualGroups;
-                if (selectedGroupNames.Contains(string.Empty) == false && selectedGroupNames.Count == 0)
+                var qryMatchBase = _dbContext.Matches.Where(m => m.TournamentId == activeTournament.Id && m.DivisionId == divisionId);
+
+                int matchNumber = 0;
+                if (qryMatchBase.Any())
                 {
+                    matchNumber = qryMatchBase.Max(m => m.MatchNumber);
+                }
+                List<string> actualGroups;
+                if (selectedGroupNames.Contains(string.Empty) == false || selectedGroupNames.Count == 0)
+                {
+                    var str = qryBase
+                    .Where(ttd => ttd.DivisionId == divisionId)
+                    .Select(ttd => ttd.GroupName).Distinct().ToQueryString();
+                    _logger.LogInformation($"gggg Query : {str}");
                     actualGroups = qryBase
                     .Where(ttd => ttd.DivisionId == divisionId)
                     .Select(ttd => ttd.GroupName).Distinct().ToList();
@@ -270,18 +294,24 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 else
                 {
                     actualGroups = qryBase
-                                    .Where(ttd => ttd.DivisionId == divisionId)
-                                    .Where(ttd => selectedGroupNames.Contains(ttd.GroupName))
-                                    .Select(ttd => ttd.GroupName).Distinct().ToList();
+                    .Where(ttd => ttd.DivisionId == divisionId)
+                    .Where(ttd => selectedGroupNames.Contains(ttd.GroupName))
+                    .Select(ttd => ttd.GroupName).Distinct().ToList();
                 }
+                _logger.LogInformation($"Selected actualGroups: {actualGroups.Count}");
                 // Iterate through selected groups
                 foreach (var groupName in actualGroups)
                 {
+                    var qryMatchGroup = qryMatchBase.Where(m => m.GroupName == groupName && m.RoundId == firstRound.Id);
                     // Get teams in the current division and current group
                     var teamIds = qryBaseTTD
                         .Where(ttd => ttd.DivisionId == divisionId && ttd.GroupName == groupName)
                         .OrderBy(ttd => ttd.SeedNumber).Select(ttd => ttd.TeamId).Distinct().ToList();
-
+                    if (teamIds.Count() <= 1)
+                    {
+                        //TODO error not enought teams
+                        continue;
+                    }
                     // Generate pairings (round-robin within the group)
                     for (int i = 0; i < teamIds.Count; i++)
                     {
@@ -290,29 +320,36 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                             var homeTeamId = teamIds[i];
                             var awayTeamId = teamIds[j];
 
-                                // Create match object
-                                var match = new Match
-                                {
-                                    Id = Guid.NewGuid(),
-                                    TournamentId = activeTournament.Id,
-                                    DivisionId = divisionId,
-                                    GroupName = groupName, 
-                                    HomeTeamId = homeTeamId,
-                                    AwayTeamId = awayTeamId,
-                                    RoundId = firstRound.Id,
-                                    ScheduledTime = nextMatchTime,
-                                    MatchNumber = ++matchNumber,
-                                    CourtLocation = "Unassigned",
-                                    CreatedBy = "System",
-                                    UpdatedBy = "System",
-                                    UpdatedAt = DateTime.UtcNow
-                                };
-                                matchesToCreate.Add(match);
-                                nextMatchTime = nextMatchTime.AddMinutes(10);
+                            if (qryMatchGroup.Any(m => (m.HomeTeamId == homeTeamId && m.AwayTeamId == awayTeamId)
+                            || (m.HomeTeamId == awayTeamId && m.AwayTeamId == homeTeamId)))
+                            {
+                                continue;
+                            }
+
+                            // Create match object
+                            var match = new Match
+                            {
+                                Id = Guid.NewGuid(),
+                                TournamentId = activeTournament.Id,
+                                DivisionId = divisionId,
+                                GroupName = groupName,
+                                HomeTeamId = homeTeamId,
+                                AwayTeamId = awayTeamId,
+                                RoundId = firstRound.Id,
+                                ScheduledTime = nextMatchTime,
+                                MatchNumber = ++matchNumber,
+                                CourtLocation = "Unassigned",
+                                CreatedBy = "System",
+                                UpdatedBy = "System",
+                                UpdatedAt = DateTime.UtcNow
+                            };
+                            matchesToCreate.Add(match);
+                            nextMatchTime = nextMatchTime.AddMinutes(10);
                         }
                     }
                 }
             }
+            _logger.LogInformation($"matchesToCreate: {matchesToCreate.Count}");
             // Save generated matches to the database
             _dbContext.Matches.AddRange(matchesToCreate);
             await _dbContext.SaveChangesAsync();
@@ -321,11 +358,22 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetGroups(Guid[] divisionIds)
+        public async Task<IActionResult> GetGroups(Guid[] divisionIds)
         {
-            var groups = _dbContext.TournamentTeamDivisions
-                .Where(ttd => divisionIds.Contains(ttd.DivisionId))
-                .Select(ttd => new { id = ttd.GroupName, name = ttd.GroupName })
+            var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
+            if (activeTournament == null)
+            {
+                return NotFound("No active tournament found.");
+            }
+            var qry = _dbContext.TournamentTeamDivisions
+                .Where(ttd => ttd.TournamentId == activeTournament.Id);
+            _logger.LogInformation(divisionIds.Length + " div ids");
+            if (divisionIds.Contains(Guid.Empty) == false && divisionIds.Length > 0)
+            {
+                qry = qry.Where(ttd => divisionIds.Contains(ttd.DivisionId));
+
+            }
+            var groups = qry.Select(ttd => new { id = ttd.GroupName, name = ttd.GroupName })
                 .Distinct()
                 .OrderBy(g => g.name)
                 .ToList();

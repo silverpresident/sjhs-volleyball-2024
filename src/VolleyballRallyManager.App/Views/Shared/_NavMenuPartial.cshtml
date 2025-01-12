@@ -28,7 +28,7 @@
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="activeTournamentDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="fas fa-sitemap me-1"></i>
-            Tournament
+            Active Tournament
         </a>
         <ul class="dropdown-menu" aria-labelledby="activeTournamentDropdown">
             <li>
@@ -48,9 +48,26 @@
         </ul>
       </li>
 
-    <li class="nav-item">
-        <a class="nav-link" asp-area="Admin" asp-controller="Teams" asp-action="Index">Teams</a>
-    </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="publicDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-list me-1"></i>
+            Public Pages
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="publicDropdown">
+            <li>
+             <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Index">Home Page</a>
+            </li>
+            <li>
+            <a class="dropdown-item" asp-area="" asp-controller="Announcements" asp-action="Index">Announcements</a>
+            </li>
+            <li>
+            <a class="dropdown-item" asp-area="" asp-controller="Teams" asp-action="Index">Teams</a>
+         </li>
+            <li>
+             <a class="dropdown-item" asp-area="" asp-controller="Matches" asp-action="Index">Matches</a>
+            </li>
+        </ul>
+      </li>
     <li class="nav-item">
         <a class="nav-link" asp-area="Admin" asp-controller="Matches" asp-action="Index">Matches</a>
     </li>

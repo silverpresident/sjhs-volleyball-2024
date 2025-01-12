@@ -11,17 +11,21 @@ namespace VolleyballRallyManager.App.Controllers
     {
         private readonly IMatchService _matchService;
         private readonly IHubContext<MatchHub> _matchHub;
+           private readonly IActiveTournamentService _activeTournamentService;
+        private readonly ILogger<MatchesController> _logger;
 
-        public MatchesController(IMatchService matchService, IHubContext<MatchHub> matchHub)
+        public MatchesController(ILogger<MatchesController> logger, IActiveTournamentService activeTournamentService,IMatchService matchService, IHubContext<MatchHub> matchHub)
         {
             _matchService = matchService;
             _matchHub = matchHub;
+            _activeTournamentService = activeTournamentService;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index(int? divisionId, int? groupId, Guid? roundId)
         {
-            var matches = await _matchService.GetMatchesAsync();
 
+            var matches = await _activeTournamentService.GetMatchesAsync(); 
    /*         if (divisionId.HasValue)
             {
                 matches = matches.Where(m => m.DivisionId == divisionId.Value);

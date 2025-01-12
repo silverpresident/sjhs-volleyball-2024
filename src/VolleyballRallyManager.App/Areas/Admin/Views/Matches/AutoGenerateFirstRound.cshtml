@@ -10,7 +10,7 @@
     <div class="col-md-8">
         <div class="card">
             <div class="card-body">
-                <form asp-action="AutoGenerateFirstRound">
+                <form asp-action="AutoGenerateFirstRound" method="POST">
                     <div class="form-group">
                         <label asp-for="SelectedDivisionIds">Divisions</label>
                         <select asp-for="SelectedDivisionIds" class="form-control" asp-items="Model.Divisions" multiple></select>
@@ -39,6 +39,7 @@
                     $.ajax({
                         type: "GET",
                         url: '@Url.Action("GetGroups")',
+                        traditional: true,
                         data: { divisionIds: selectedDivisions },
                         success: function (groups) {
                             $('#SelectedGroupNames').empty();
