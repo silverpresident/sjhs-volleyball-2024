@@ -57,7 +57,7 @@ BEGIN
         Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
         Name NVARCHAR(50) NOT NULL,
         Sequence INT NOT NULL,
-        IsComplete BIT NOT NULL DEFAULT 0,
+        QualifyingTeams  INT NOT NULL DEFAULT 0,
         CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
         UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
         CreatedBy NVARCHAR(256),
@@ -155,13 +155,13 @@ GO
 -- Insert Rounds
 IF NOT EXISTS (SELECT * FROM dbo.Rounds)
 BEGIN
-    INSERT INTO dbo.Rounds (Id, Name, Sequence, CreatedBy, UpdatedBy) VALUES
-    (NEWID(), 'Round 1', 1, 'system', 'system'),
-    (NEWID(), 'Round 2', 2, 'system', 'system'),
-    (NEWID(), 'Round 3', 3, 'system', 'system'),
-    (NEWID(), 'Quarter Finals', 4, 'system', 'system'),
-    (NEWID(), 'Semi Finals', 5, 'system', 'system'),
-    (NEWID(), 'Finals', 6, 'system', 'system');
+    INSERT INTO dbo.Rounds (Id, Name, Sequence, QualifyingTeams, CreatedBy, UpdatedBy) VALUES
+    (NEWID(), 'Round 1', 1, 0, 'system', 'system'),
+    (NEWID(), 'Round 2', 2, 0, 'system', 'system'),
+    (NEWID(), 'Quarter Finals', 3, 8, 'system', 'system'),
+    (NEWID(), 'Third Place Playoff', 4, 2, 'system', 'system'),
+    (NEWID(), 'Semi Finals', 5, 4, 'system', 'system'),
+    (NEWID(), 'Finals', 6, 2, 'system', 'system');
 END
 GO
 
