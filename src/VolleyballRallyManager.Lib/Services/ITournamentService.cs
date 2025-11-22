@@ -14,8 +14,8 @@ namespace VolleyballRallyManager.Lib.Services
         Task RemoveDivisionFromTournamentAsync(Guid tournamentId, Guid divisionId);
         Task AddTeamToTournamentAsync(Guid tournamentId, Guid teamId, Guid divisionId, string group, int seedNumber);
         Task RemoveTeamFromTournamentAsync(Guid tournamentId, Guid teamId);
-        Task<Tournament> GetActiveTournamentAsync();
-        Task<Tournament> GetTournamentByIdAsync(Guid tournamentId);
+        Task<Tournament?> GetActiveTournamentAsync();
+        Task<Tournament?> GetTournamentByIdAsync(Guid tournamentId);
         Task<IEnumerable<Tournament>> GetAllTournamentsAsync();
         Task UpdateTournamentAsync(Tournament tournament);
     Task<IEnumerable<Team>> GetTeamsByDivisionAsync(Division division);

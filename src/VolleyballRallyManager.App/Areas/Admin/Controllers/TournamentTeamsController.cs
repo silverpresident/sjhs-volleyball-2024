@@ -151,6 +151,11 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 }
                 return NotFound();
             }
+            if (existingTeamDivision == null)
+            {
+                return NotFound();
+            }
+            
             var model = new TournamentTeamAddViewModel()
             {
                 TeamName = existingTeamDivision.Team.Name,

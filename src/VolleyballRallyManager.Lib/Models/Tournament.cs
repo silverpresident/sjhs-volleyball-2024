@@ -17,7 +17,7 @@ namespace VolleyballRallyManager.Lib.Models
         [Display(Name = "Is Active")]
         public bool IsActive { get; set; } = false;
 
-        public ICollection<TournamentDivision> TournamentDivisions { get; set; }
-        public ICollection<TournamentTeamDivision> TournamentTeamDivisions { get; set; }
+        public ICollection<TournamentDivision> TournamentDivisions { get; set; } = new List<TournamentDivision>();
+        public ICollection<TournamentTeamDivision> TournamentTeamDivisions { get; set; } = new List<TournamentTeamDivision>();
     }
 }

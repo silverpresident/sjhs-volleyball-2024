@@ -22,7 +22,7 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>@item.Round.Name</td>
+                            <td>@item.Round?.Name</td>
                             <td>@Html.DisplayFor(modelItem => item.HomeTeam, "Team")</td>
                             <td>@Html.DisplayFor(modelItem => item.AwayTeam, "Team")</td>
                             <td>@item.HomeTeamScore - @item.AwayTeamScore</td>

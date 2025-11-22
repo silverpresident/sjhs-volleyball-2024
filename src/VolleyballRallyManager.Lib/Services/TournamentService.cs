@@ -111,12 +111,12 @@ namespace VolleyballRallyManager.Lib.Services
             }
         }
 
-        public async Task<Tournament> GetActiveTournamentAsync()
+        public async Task<Tournament?> GetActiveTournamentAsync()
         {
             return await _context.Tournaments.FirstOrDefaultAsync(t => t.IsActive);
         }
 
-        public async Task<Tournament> GetTournamentByIdAsync(Guid tournamentId)
+        public async Task<Tournament?> GetTournamentByIdAsync(Guid tournamentId)
         {
             return await _context.Tournaments.FindAsync(tournamentId);
         }

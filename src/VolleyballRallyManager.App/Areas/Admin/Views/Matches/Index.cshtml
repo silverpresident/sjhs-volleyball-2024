@@ -54,7 +54,7 @@
                             </div>
                         </td>
                         <td>@Html.DisplayFor(modelItem => item.MatchNumber)</td>
-                        <td>@Html.DisplayFor(modelItem => item.Round.Name)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Round!.Name)</td>
                         <td>
                             @item.ScheduledTime.ToString("dd/MM HH:mm")
                           @*  @if (item.ActualStartTime.HasValue)

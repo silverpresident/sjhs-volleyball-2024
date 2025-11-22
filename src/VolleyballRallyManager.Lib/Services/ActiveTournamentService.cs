@@ -17,7 +17,7 @@ namespace VolleyballRallyManager.Lib.Services
             _dbContext = dbContext;
         }
 
-        public async Task<Tournament> GetActiveTournamentAsync()
+        public async Task<Tournament?> GetActiveTournamentAsync()
         {
             var model = await _dbContext.Tournaments
                 .FirstOrDefaultAsync(t => t.IsActive);
@@ -113,7 +113,7 @@ namespace VolleyballRallyManager.Lib.Services
             return await qry.CountAsync();
         }
 
-        public async Task<TournamentTeamDivision> GetTeamAsync(Guid teamId)
+        public async Task<TournamentTeamDivision?> GetTeamAsync(Guid teamId)
         {
             var activeTournament = await GetActiveTournamentAsync();
             if (activeTournament == null)
@@ -244,10 +244,10 @@ namespace VolleyballRallyManager.Lib.Services
             }
             return await _dbContext.Matches.CountAsync(m => m.TournamentId == activeTournament.Id);
         }
-        private async Task<int> GenerateSeedNumberAsync(Guid tournamentId, Guid divisionId)
+        private Task<int> GenerateSeedNumberAsync(Guid tournamentId, Guid divisionId)
         {
             int count = _dbContext.TournamentTeamDivisions.Count(t => t.TournamentId == tournamentId);
-            return count;
+            return Task.FromResult(count);
         }
 
         public async Task UpdateTeamStatisticsAsync(Match match)

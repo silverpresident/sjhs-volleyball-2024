@@ -7,11 +7,11 @@ namespace VolleyballRallyManager.Lib.Services
 {
     public interface IActiveTournamentService
     {
-        Task<Tournament> GetActiveTournamentAsync();
+        Task<Tournament?> GetActiveTournamentAsync();
         Task<IEnumerable<TournamentDivision>> GetTournamentDivisionsAsync();
         Task<IEnumerable<TournamentTeamDivision>> GetTournamentTeamsAsync(Guid divisionId);
         Task<int> GetTournamentTeamsCountAsync(Guid divisionId);
-        Task<TournamentTeamDivision> GetTeamAsync(Guid teamId);
+        Task<TournamentTeamDivision?> GetTeamAsync(Guid teamId);
         Task RemoveTeamAsync(Guid teamId);
         Task<TournamentTeamDivision> AddTeamAsync(Guid teamId, Guid divisionId, string groupName, int seedNumber = 0);
         Task<TournamentTeamDivision> SetTeamAsync(Guid teamId, Guid divisionId, string groupName, int seedNumber = 0);

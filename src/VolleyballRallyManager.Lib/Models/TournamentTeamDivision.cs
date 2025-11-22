@@ -9,21 +9,21 @@ namespace VolleyballRallyManager.Lib.Models
         [Required]
         public Guid TournamentId { get; set; }
         [ForeignKey("TournamentId")]
-        public Tournament Tournament { get; set; }
+        public Tournament Tournament { get; set; } = null!;
 
         [Required]
         public Guid TeamId { get; set; }
         [ForeignKey("TeamId")]
-        public Team Team { get; set; }
+        public Team Team { get; set; } = null!;
 
         [Required]
         public Guid DivisionId { get; set; }
         [ForeignKey("DivisionId")]
         [Display(Name = "Division")]
-        public Division Division { get; set; }
+        public Division Division { get; set; } = null!;
 
 
-        public string GroupName { get; set; }
+        public string GroupName { get; set; } = null!;
 
         public int SeedNumber { get; set; } = 0;
 

@@ -30,7 +30,7 @@ public class Match : BaseEntity
     public Guid DivisionId { get; set; }
 
     [Display(Name = "Tournament")]
-    public Tournament Tournament { get; set; }
+    public Tournament Tournament { get; set; } = null!;
     
     [Display(Name = "Home Team")]
     public required Guid HomeTeamId { get; set; }
