@@ -10,7 +10,7 @@ namespace VolleyballRallyManager.App.Models
         [Required]
         [Display(Name = "Division")]
         public Guid SelectedDivisionId { get; set; }
-        public IEnumerable<SelectListItem> Divisions { get; set; }
+        public IEnumerable<SelectListItem> Divisions { get; set; } = new List<SelectListItem>();
 
         [Required]
         [Display(Name = "Teams to Advance")]
@@ -25,7 +25,7 @@ namespace VolleyballRallyManager.App.Models
 
         [Required]
         [Display(Name = "Selection Method")]
-        public string SelectionMethod { get; set; }
+        public string SelectionMethod { get; set; } = string.Empty;
         public List<SelectListItem> SelectionMethods { get; set; } = new List<SelectListItem>
         {
             new SelectListItem { Value = "TopFromEachGroup", Text = "Top from each group only" },

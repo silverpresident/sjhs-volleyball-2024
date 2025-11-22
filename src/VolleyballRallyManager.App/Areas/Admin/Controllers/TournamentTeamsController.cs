@@ -81,7 +81,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                await _activeTournamentService.AddTeamAsync(tournamentTeamDivision.TeamId, tournamentTeamDivision.DivisionId, tournamentTeamDivision.GroupName, tournamentTeamDivision.SeedNumber);
+                await _activeTournamentService.AddTeamAsync(tournamentTeamDivision.TeamId, tournamentTeamDivision.DivisionId, tournamentTeamDivision.GroupName ?? "", tournamentTeamDivision.SeedNumber);
                 return RedirectToAction(nameof(Index));
             }
             tournamentTeamDivision.TournamentId = activeTournament.Id;
@@ -146,7 +146,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             {
                 if (existingTeamDivision != null)
                 {
-                    await _activeTournamentService.SetTeamAsync(tournamentTeamDivision.TeamId, tournamentTeamDivision.DivisionId, tournamentTeamDivision.GroupName, tournamentTeamDivision.SeedNumber);
+                    await _activeTournamentService.SetTeamAsync(tournamentTeamDivision.TeamId, tournamentTeamDivision.DivisionId, tournamentTeamDivision.GroupName ?? "", tournamentTeamDivision.SeedNumber);
                     return RedirectToAction(nameof(Index));
                 }
                 return NotFound();

@@ -268,7 +268,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
             if (firstRound == null)
             {
-                //TODO how to resolve
+                return NotFound("First round not found.");
             }
             _logger.LogInformation($"Selected divs: {selectedDivisionIds.Count}");
             Console.WriteLine("-----hello");
