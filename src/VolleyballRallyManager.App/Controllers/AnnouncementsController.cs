@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using VolleyballRallyManager.Lib.Services;
-using System.Threading.Tasks;
 
 namespace VolleyballRallyManager.App.Controllers
 {

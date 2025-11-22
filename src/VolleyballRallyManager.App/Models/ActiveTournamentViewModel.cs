@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using VolleyballRallyManager.Lib.Models;
 
 namespace VolleyballRallyManager.App.Models

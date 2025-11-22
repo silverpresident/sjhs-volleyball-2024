@@ -18,7 +18,7 @@ public class GroupService
         "#F0F0F0",//Light Gray	
          "#FFEFD5"//"Papaya Whip"
     };
- //   public static Dictionary<string, string> groupIconMap = new Dictionary<string, string>();
+    //   public static Dictionary<string, string> groupIconMap = new Dictionary<string, string>();
     public string GetColor(string groupName)
     {
         groupName = groupName.ToLower();

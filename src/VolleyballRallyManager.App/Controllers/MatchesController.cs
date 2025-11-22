@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using VolleyballRallyManager.Lib.Services;
-using System.Threading.Tasks;
-using System.Linq;
 using Microsoft.AspNetCore.SignalR;
 using VolleyballRallyManager.Lib.Hubs;
+using VolleyballRallyManager.Lib.Services;
 
 namespace VolleyballRallyManager.App.Controllers
 {
@@ -11,10 +9,10 @@ namespace VolleyballRallyManager.App.Controllers
     {
         private readonly IMatchService _matchService;
         private readonly IHubContext<MatchHub> _matchHub;
-           private readonly IActiveTournamentService _activeTournamentService;
+        private readonly IActiveTournamentService _activeTournamentService;
         private readonly ILogger<MatchesController> _logger;
 
-        public MatchesController(ILogger<MatchesController> logger, IActiveTournamentService activeTournamentService,IMatchService matchService, IHubContext<MatchHub> matchHub)
+        public MatchesController(ILogger<MatchesController> logger, IActiveTournamentService activeTournamentService, IMatchService matchService, IHubContext<MatchHub> matchHub)
         {
             _matchService = matchService;
             _matchHub = matchHub;
@@ -25,21 +23,21 @@ namespace VolleyballRallyManager.App.Controllers
         public async Task<IActionResult> Index(int? divisionId, int? groupId, Guid? roundId)
         {
 
-            var matches = await _activeTournamentService.GetMatchesAsync(); 
-   /*         if (divisionId.HasValue)
-            {
-                matches = matches.Where(m => m.DivisionId == divisionId.Value);
-            }
+            var matches = await _activeTournamentService.GetMatchesAsync();
+            /*         if (divisionId.HasValue)
+                     {
+                         matches = matches.Where(m => m.DivisionId == divisionId.Value);
+                     }
 
-            if (groupId.HasValue)
-            {
-                matches = matches.Where(m => m.GroupId == groupId.Value);
-            }
+                     if (groupId.HasValue)
+                     {
+                         matches = matches.Where(m => m.GroupId == groupId.Value);
+                     }
 
-            if (roundId.HasValue)
-            {
-                matches = matches.Where(m => m.RoundId == roundId.Value);
-            }*/
+                     if (roundId.HasValue)
+                     {
+                         matches = matches.Where(m => m.RoundId == roundId.Value);
+                     }*/
 
             return View(matches.ToList());
         }

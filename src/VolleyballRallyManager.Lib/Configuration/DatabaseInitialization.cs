@@ -1,10 +1,9 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Identity;
 
 namespace VolleyballRallyManager.Lib.Configuration
 {
@@ -40,7 +39,8 @@ namespace VolleyballRallyManager.Lib.Configuration
             {
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
                 logger.LogError(ex, "An error occurred while seeding the database.");
-            }try
+            }
+            try
             {
                 await SeedInitialDataAsync(dbContext);
             }

@@ -1,12 +1,7 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using VolleyballRallyManager.Lib.Configuration;
 using VolleyballRallyManager.Lib.Data;
-using VolleyballRallyManager.Lib.Models;
 using VolleyballRallyManager.Lib.Extensions;
-using VolleyballRallyManager.Lib.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

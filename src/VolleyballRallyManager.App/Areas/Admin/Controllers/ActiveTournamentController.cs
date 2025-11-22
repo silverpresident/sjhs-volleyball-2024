@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using VolleyballRallyManager.App.Models;
 using VolleyballRallyManager.Lib.Models;
 using VolleyballRallyManager.Lib.Services;
@@ -72,7 +70,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SelectDivisions([Bind("SelectedDivisionIds")]SelectDivisionsViewModel model)
+        public async Task<IActionResult> SelectDivisions([Bind("SelectedDivisionIds")] SelectDivisionsViewModel model)
         {
             _logger.LogInformation("Executing SelectDivisions post!!");
             if (ModelState.IsValid)

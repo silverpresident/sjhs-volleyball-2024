@@ -1,8 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
 
@@ -151,7 +147,7 @@ namespace VolleyballRallyManager.Lib.Services
             .ThenByDescending(ttd => ttd.PointsScored)
             .Select(ttd => ttd.Team);
 
-        return await query.ToListAsync();
+            return await query.ToListAsync();
         }
 
         public async Task RecalculateTeamStatisticsAsync(Guid teamId)

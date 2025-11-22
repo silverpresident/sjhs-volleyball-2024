@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VolleyballRallyManager.Lib.Data;
-using VolleyballRallyManager.Lib.Models;
 
 namespace VolleyballRallyManager.Lib.Extensions
 {

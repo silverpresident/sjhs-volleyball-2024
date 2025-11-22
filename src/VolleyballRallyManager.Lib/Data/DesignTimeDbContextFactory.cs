@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using System.IO;
 using VolleyballRallyManager.Lib.Configuration;
 
 namespace VolleyballRallyManager.Lib.Data;

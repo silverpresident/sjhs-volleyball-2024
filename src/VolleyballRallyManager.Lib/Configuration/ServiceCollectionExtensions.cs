@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Services;
-using Microsoft.AspNetCore.Authentication;
 
 namespace VolleyballRallyManager.Lib.Configuration;
 
@@ -38,7 +37,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITournamentService, TournamentService>();
         services.AddScoped<IActiveTournamentService, ActiveTournamentService>();
         services.AddSingleton<GroupService>();
-        
+
 
         // SignalR
         services.AddSignalR();

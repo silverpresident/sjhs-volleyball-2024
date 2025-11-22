@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using VolleyballRallyManager.Lib.Services;
-using System.Threading.Tasks;
-using System.Linq;
 using Microsoft.AspNetCore.SignalR;
 using VolleyballRallyManager.Lib.Hubs;
+using VolleyballRallyManager.Lib.Services;
 
 namespace VolleyballRallyManager.App.Controllers
 {
@@ -24,16 +22,16 @@ namespace VolleyballRallyManager.App.Controllers
         {
             var teams = await _teamService.GetTeamsAsync();
 
-           /* if (divisionId.HasValue)
-            {
-                teams = teams.Where(t => t.DivisionId == divisionId.Value);
-            }
+            /* if (divisionId.HasValue)
+             {
+                 teams = teams.Where(t => t.DivisionId == divisionId.Value);
+             }
 
-            if (groupId.HasValue)
-            {
-                teams = teams.Where(t => t.GroupId == groupId.Value);
-            }
-*/
+             if (groupId.HasValue)
+             {
+                 teams = teams.Where(t => t.GroupId == groupId.Value);
+             }
+ */
             return View(teams.ToList());
         }
 

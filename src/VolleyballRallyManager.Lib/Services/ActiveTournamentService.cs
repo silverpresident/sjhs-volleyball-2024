@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
@@ -52,7 +48,7 @@ namespace VolleyballRallyManager.Lib.Services
         {
             var activeTournament = await GetActiveTournamentAsync();
             if (activeTournament == null)
-{
+            {
                 throw new Exception("No active tournament found.");
             }
             var model = await _dbContext.TournamentDivisions
@@ -350,7 +346,7 @@ namespace VolleyballRallyManager.Lib.Services
                 ids = model.Select(td => td.RoundId).ToArray();
                 _dbContext.Rounds.Where(d => ids.Contains(d.Id)).Load();
             }
-            return model.OrderBy(m => m?.Division?.Name).ThenBy(m => m?.Round?.Sequence).ThenBy(m => m.ScheduledTime).ToList(); 
+            return model.OrderBy(m => m?.Division?.Name).ThenBy(m => m?.Round?.Sequence).ThenBy(m => m.ScheduledTime).ToList();
         }
     }
 }

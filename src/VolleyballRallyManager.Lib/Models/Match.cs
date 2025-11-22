@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace VolleyballRallyManager.Lib.Models;
@@ -20,7 +18,7 @@ public class Match : BaseEntity
 
     [Display(Name = "Court Location")]
     public required string CourtLocation { get; set; } = "Unassigned";
-    
+
     [Display(Name = "Group")]
     public required string GroupName { get; set; } = string.Empty;
 
@@ -31,25 +29,25 @@ public class Match : BaseEntity
 
     [Display(Name = "Tournament")]
     public Tournament Tournament { get; set; } = null!;
-    
+
     [Display(Name = "Home Team")]
     public required Guid HomeTeamId { get; set; }
 
     [Display(Name = "Away Team")]
     public required Guid AwayTeamId { get; set; }
-    
+
     [Display(Name = "Home Team Score")]
     public int HomeTeamScore { get; set; }
 
     [Display(Name = "Away Team Score")]
     public int AwayTeamScore { get; set; }
-    
+
     [Display(Name = "Is Finished")]
     public bool IsFinished { get; set; }
 
     [Display(Name = "Is Disputed")]
     public bool IsDisputed { get; set; }
-    
+
     [Display(Name = "Referee Name")]
     public string? RefereeName { get; set; }
 

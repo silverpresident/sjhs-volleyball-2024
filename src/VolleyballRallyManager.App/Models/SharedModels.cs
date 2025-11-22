@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using VolleyballRallyManager.Lib.Models;
 
 namespace VolleyballRallyManager.App.Models;

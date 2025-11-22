@@ -91,13 +91,13 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             {
                 try
                 {
-            var division = await _context.Divisions.FindAsync(id);
-            if (division == null)
-            {
-                return NotFound();
-            }
-            division.Name = model.Name;
-            division.UpdatedAt = DateTime.UtcNow;
+                    var division = await _context.Divisions.FindAsync(id);
+                    if (division == null)
+                    {
+                        return NotFound();
+                    }
+                    division.Name = model.Name;
+                    division.UpdatedAt = DateTime.UtcNow;
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

@@ -1,10 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using VolleyballRallyManager.Lib.Services;
-using VolleyballRallyManager.Lib.Models;
 using VolleyballRallyManager.App.Models;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Linq;
+using VolleyballRallyManager.Lib.Services;
 
 namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 {
@@ -98,7 +94,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             {
                 return NotFound("No active tournament found.");
             }
- 
+
             var tournamentTeamDivision = await _activeTournamentService.GetTeamAsync(id);
             if (tournamentTeamDivision == null)
             {
@@ -121,7 +117,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id,[Bind("TeamId,DivisionId,TournamentId,GroupName,SeedNumber")] TournamentTeamAddViewModel tournamentTeamDivision)
+        public async Task<IActionResult> Edit(Guid id, [Bind("TeamId,DivisionId,TournamentId,GroupName,SeedNumber")] TournamentTeamAddViewModel tournamentTeamDivision)
         {
             if (id != tournamentTeamDivision.TeamId)
             {
@@ -140,7 +136,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 return NotFound("Division not found in the active tournament.");
             }
             var existingTeamDivision = await _activeTournamentService.GetTeamAsync(tournamentTeamDivision.TeamId);
-                
+
 
             if (ModelState.IsValid)
             {
@@ -155,7 +151,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            
+
             var model = new TournamentTeamAddViewModel()
             {
                 TeamName = existingTeamDivision.Team.Name,

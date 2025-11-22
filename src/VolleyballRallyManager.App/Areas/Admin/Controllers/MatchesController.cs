@@ -2,11 +2,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.App.Models;
+using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
 using VolleyballRallyManager.Lib.Services;
-using System.Linq;
 
 namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 {

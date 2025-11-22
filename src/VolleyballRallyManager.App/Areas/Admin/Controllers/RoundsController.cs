@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using VolleyballRallyManager.Lib.Data;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
 
 namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 {

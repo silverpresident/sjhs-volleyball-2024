@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using VolleyballRallyManager.Lib.Hubs;
 using VolleyballRallyManager.Lib.Services;
 
@@ -34,7 +32,7 @@ public static class SignalRConfiguration
             {
                 options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets |
                                    Microsoft.AspNetCore.Http.Connections.HttpTransportType.ServerSentEvents;
-                
+
                 options.ApplicationMaxBufferSize = 102400; // 100 KB
                 options.TransportMaxBufferSize = 102400; // 100 KB
             });

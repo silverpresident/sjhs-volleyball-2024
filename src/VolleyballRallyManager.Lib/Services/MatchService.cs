@@ -162,7 +162,7 @@ public class MatchService : IMatchService
         if (match == null) throw new KeyNotFoundException("Match not found");
 
         match.IsFinished = true;
-         var update = new MatchUpdate
+        var update = new MatchUpdate
         {
             MatchId = id,
             UpdateType = UpdateType.MatchFinished,
@@ -303,8 +303,8 @@ public class MatchService : IMatchService
         var endWindow = scheduledTime.Add(timeWindow);
 
         return !await _context.Matches
-            .AnyAsync(m => 
-                (m.HomeTeamId == homeTeamId || m.AwayTeamId == homeTeamId || 
+            .AnyAsync(m =>
+                (m.HomeTeamId == homeTeamId || m.AwayTeamId == homeTeamId ||
                  m.HomeTeamId == awayTeamId || m.AwayTeamId == awayTeamId) &&
                 m.ScheduledTime >= startWindow && m.ScheduledTime <= endWindow);
     }

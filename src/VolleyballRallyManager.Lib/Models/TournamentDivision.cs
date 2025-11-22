@@ -1,5 +1,3 @@
-using System;
-
 namespace VolleyballRallyManager.Lib.Models
 {
     public class TournamentDivision

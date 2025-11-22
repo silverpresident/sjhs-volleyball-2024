@@ -1,9 +1,7 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using VolleyballRallyManager.App.Models;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Services;
-using VolleyballRallyManager.App.Models;
 
 namespace VolleyballRallyManager.App.Controllers;
 
