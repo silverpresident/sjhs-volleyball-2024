@@ -436,7 +436,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                         .Take(teamsToAdvance)
                         .ToList();
 
-                        advancingTeams.AddRange(teamPoints.Select(tp => tp.Team));
+                        advancingTeams.AddRange(teamPoints.Where(tp => tp.Team != null).Select(tp => tp.Team!));
                     }
                 }
             }
