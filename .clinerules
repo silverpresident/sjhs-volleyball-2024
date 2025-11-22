@@ -1,13 +1,13 @@
 # ST JAGO Volleyball Rally Manager - Cline Rules
 
 ## Project Overview
-This is a .NET 8.0 volleyball tournament management system with three main projects:
+This is a .NET 10.0 volleyball tournament management system with three main projects:
 - **VolleyballRallyManager.Lib**: Core business logic, models, services, and SignalR hubs
 - **VolleyballRallyManager.App**: ASP.NET Core MVC admin application
 - **VolleyballRallyManager.Public**: Blazor WebAssembly public display application
 
 ## Technology Stack
-- .NET 8.0
+- .NET 10.0
 - ASP.NET Core MVC
 - Blazor WebAssembly
 - Entity Framework Core
@@ -208,3 +208,4 @@ await _signalRService.SendMatchUpdateAsync(matchId, "Score updated");
 - Keep API contracts consistent between Admin and Public apps
 - The Public app refreshes automatically every 2 minutes
 - Match updates should trigger immediate SignalR notifications
+- The theme colour of the project is green and gold.

@@ -217,3 +217,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Support
 
 For support, please contact the development team or create an issue in the repository.
+
+
+## Covert SVG to ICO
+cairosvg -f ico -o src/VolleyballRallyManager.App/wwwroot/favicon.ico src/VolleyballRallyManager.App/wwwroot/favicon.svg
