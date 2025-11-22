@@ -92,8 +92,11 @@ namespace VolleyballRallyManager.Lib.Services
             if (!_context.TournamentTeamDivisions.Any(ttd => ttd.TournamentId == tournamentId && ttd.TeamId == teamId && ttd.DivisionId == divisionId))
             {
                 var division = await _context.Divisions.FindAsync(divisionId);
-                _context.TournamentTeamDivisions.Add(new TournamentTeamDivision { TournamentId = tournamentId, TeamId = teamId, DivisionId = divisionId, Division = division, GroupName = groupName, SeedNumber = seedNumber });
-                await _context.SaveChangesAsync();
+                if (division != null)
+                {
+                    _context.TournamentTeamDivisions.Add(new TournamentTeamDivision { TournamentId = tournamentId, TeamId = teamId, DivisionId = divisionId, Division = division, GroupName = groupName, SeedNumber = seedNumber });
+                    await _context.SaveChangesAsync();
+                }
             }
         }
 
