@@ -221,7 +221,6 @@ BEGIN
         DivisionId UNIQUEIDENTIFIER NOT NULL,
         GroupName NVARCHAR(50),
         SeedNumber INT,
-        DivisionId UNIQUEIDENTIFIER NOT NULL,
         TotalPoints INT NOT NULL DEFAULT 0,
         PointsScored INT NOT NULL DEFAULT 0,
         PointsConceded INT NOT NULL DEFAULT 0,

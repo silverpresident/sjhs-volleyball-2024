@@ -23,7 +23,7 @@ public abstract class BaseEntity
     public string CreatedBy { get; set; } = "system";
 
     [Display(Name = "Updated At")]
-    public DateTime? UpdatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 
     [Display(Name = "Updated By")]
     public string UpdatedBy { get; set; } = "system";
