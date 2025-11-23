@@ -17,11 +17,17 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<Applicatio
 
         var dbSettings = configuration.GetSection(DatabaseSettings.SectionName).Get<DatabaseSettings>();
 
-        if (dbSettings == null)
+        if (dbSettings == null){
+            dbSettings = new DatabaseSettings();
+        }
+        var connectionString = configuration.GetConnectionString("DefaultDatabase");
+        if (string.IsNullOrEmpty(connectionString))
+        {
             throw new InvalidOperationException("Database settings are not configured");
+        }
 
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-        optionsBuilder.UseSqlServer(dbSettings.ConnectionString);
+        optionsBuilder.UseSqlServer(connectionString);
 
         return new ApplicationDbContext(optionsBuilder.Options);
     }

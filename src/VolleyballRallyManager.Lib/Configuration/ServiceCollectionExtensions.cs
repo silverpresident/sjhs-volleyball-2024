@@ -30,7 +30,6 @@ public static class ServiceCollectionExtensions
         if (string.IsNullOrEmpty(connectionString))
         {
             throw new InvalidOperationException("Database settings are not configured");
-
         }
 
         services.AddDbContext<ApplicationDbContext>(options =>
