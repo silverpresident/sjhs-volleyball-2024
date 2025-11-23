@@ -23,6 +23,7 @@ public static class ServiceCollectionExtensions
 
         if (dbSettings == null)
             throw new InvalidOperationException("Database settings are not configured");
+        dbSettings.ConnectionString = configuration.GetConnectionString("DefaultDatabase");
 
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(
