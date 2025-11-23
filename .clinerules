@@ -44,7 +44,7 @@ This is a .NET 10.0 volleyball tournament management system with three main proj
 - Keep methods focused and under 50 lines when possible
 
 ### Entity Framework & Database
-- All database entities must inherit from `BaseEntity`
+- Database entities must inherit from `BaseEntity`
 - Use Entity Framework Core migrations for schema changes
 - Always use parameterized queries to prevent SQL injection
 - Database initialization should use the `DatabaseInitialization` class

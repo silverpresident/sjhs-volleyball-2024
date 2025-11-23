@@ -25,11 +25,7 @@ namespace VolleyballRallyManager.Lib.Data
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<TournamentDivision>()
-                .HasKey(td => new { td.TournamentId, td.DivisionId });
-
-            builder.Entity<TournamentTeamDivision>()
-                .HasKey(ttd => new { ttd.TournamentId, ttd.TeamId, ttd.DivisionId });
+            // TournamentDivision and TournamentTeamDivision use single Id primary keys (inherited from BaseEntity)
 
             builder.Entity<TournamentTeamDivision>()
                 .HasOne(ttd => ttd.Tournament)
