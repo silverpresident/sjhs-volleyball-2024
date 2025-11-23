@@ -20,7 +20,7 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<Applicatio
         if (dbSettings == null){
             dbSettings = new DatabaseSettings();
         }
-        var connectionString = configuration.GetConnectionString("DefaultDatabase");
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
         if (string.IsNullOrEmpty(connectionString))
         {
             throw new InvalidOperationException("Database settings are not configured");
