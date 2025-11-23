@@ -22,12 +22,20 @@ public static class ServiceCollectionExtensions
             .Get<DatabaseSettings>();
 
         if (dbSettings == null)
+        {
+            dbSettings = new DatabaseSettings();
+        }
+            
+        var connectionString = configuration.GetConnectionString("DefaultDatabase");
+        if (string.IsNullOrEmpty(connectionString))
+        {
             throw new InvalidOperationException("Database settings are not configured");
-        dbSettings.ConnectionString = configuration.GetConnectionString("DefaultDatabase");
+
+        }
 
         services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(
-                dbSettings.ConnectionString,
+                connectionString,
                 b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
         // Services
