@@ -52,23 +52,22 @@ namespace VolleyballRallyManager.Lib.Extensions
                 options.SignIn.RequireConfirmedEmail = false; // Disabled for development
             })
             .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders()
-            .AddDefaultUI();
+            .AddDefaultTokenProviders();
 
             // Configure authentication
-            services.AddAuthentication(options =>
+            services.ConfigureApplicationCookie(options =>
             {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-            })
-            .AddCookie(options =>
-            {
-                options.LoginPath = "/Identity/Account/Login";
-                options.LogoutPath = "/Identity/Account/Logout";
-                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
+                options.AccessDeniedPath = "/Account/AccessDenied";
                 options.SlidingExpiration = true;
                 options.ExpireTimeSpan = TimeSpan.FromHours(12);
-            })
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+                options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+            });
+
+            services.AddAuthentication()
             .AddGoogle(options =>
             {
                 var googleAuth = configuration.GetSection("Authentication:Google");
