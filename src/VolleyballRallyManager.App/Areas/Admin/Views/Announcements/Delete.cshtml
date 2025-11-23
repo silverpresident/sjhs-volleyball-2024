@@ -43,10 +43,10 @@
                         <div class="col">
                             <small class="text-muted">Created by: @Model.CreatedBy</small>
                         </div>
-                        @if (Model.UpdatedAt.HasValue)
+                        @if (Model.UpdatedAt != Model.CreatedAt)
                         {
                             <div class="col text-end">
-                                <small class="text-muted">Last updated: @Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm") by @Model.UpdatedBy</small>
+                                <small class="text-muted">Last updated: @Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm") by @Model.UpdatedBy</small>
                             </div>
                         }
                     </div>
@@ -74,11 +74,11 @@
                             <small class="text-muted">by @Model.CreatedBy</small>
                         </dd>
 
-                        @if (Model.UpdatedAt.HasValue)
+                        @if (Model.UpdatedAt != Model.CreatedAt)
                         {
                             <dt class="col-sm-3">Last Updated</dt>
                             <dd class="col-sm-9">
-                                @Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                                @Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")
                                 <small class="text-muted">by @Model.UpdatedBy</small>
                             </dd>
                         }

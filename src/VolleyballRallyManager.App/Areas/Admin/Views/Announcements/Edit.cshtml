@@ -64,11 +64,11 @@
                             <input type="text" class="form-control" value="@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")" readonly />
                         </div>
 
-                        @if (Model.UpdatedAt.HasValue)
+                        @if (Model.UpdatedAt != Model.CreatedAt)
                         {
                             <div class="form-group mt-2">
                                 <label class="control-label">Last Updated</label>
-                                <input type="text" class="form-control" value="@Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")" readonly />
+                                <input type="text" class="form-control" value="@Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")" readonly />
                             </div>
                         }
                     </div>
