@@ -2,7 +2,7 @@
 # see: https://developers.google.com/idx/guides/customize-idx-env
 { pkgs, ... }: {
   # Which nixpkgs channel to use.
-  channel = "stable-24.05"; # or "unstable"
+  channel = "unstable"; # or "stable-24.05"
 
   # Use https://search.nixos.org/packages to find packages
   packages = [
@@ -10,9 +10,10 @@
     # pkgs.python311
     # pkgs.python311Packages.pip
     # pkgs.nodejs_20
-    # pkgs.nodePackages.nodemon
-    pkgs.dotnet-sdk_8 # Or the desired .NET SDK version
-    pkgs.dotnetCorePackages.sdk_9_0
+    # pkgs.nodePackages.nodemon    
+    # pkgs.dotnet-sdk_8 # Or the desired .NET SDK version
+    # pkgs.dotnetCorePackages.sdk_9_0
+    pkgs.dotnet-sdk_10
     pkgs.sqlcmd
   ];
 
@@ -22,6 +23,9 @@
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
     extensions = [
       # "vscodevim.vim"
+      "ms-dotnettools.vscode-dotnet-runtime"
+      "muhammad-sammy.csharp"
+      "saoudrizwan.claude-dev"
     ];
 
     # Enable previews
