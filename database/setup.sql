@@ -15,6 +15,24 @@ BEGIN
 END
 GO
 
+-- Tournaments
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Tournaments' AND schema_id = SCHEMA_ID('dbo'))
+BEGIN
+    CREATE TABLE dbo.Tournaments
+    (
+        Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
+        Name NVARCHAR(200) NOT NULL,
+        Description NVARCHAR(MAX) NULL,
+        TournamentDate DATETIME2 NOT NULL,
+        IsActive BIT NOT NULL DEFAULT 0,
+        CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+        UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+        CreatedBy NVARCHAR(256),
+        UpdatedBy NVARCHAR(256)
+    );
+END
+GO
+
 -- Create Tables
 -- Divisions
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Divisions' AND schema_id = SCHEMA_ID('dbo'))
@@ -172,24 +190,6 @@ CREATE NONCLUSTERED INDEX IX_Matches_Round ON dbo.Matches(RoundId);
 CREATE NONCLUSTERED INDEX IX_Matches_Teams ON dbo.Matches(HomeTeamId, AwayTeamId);
 CREATE NONCLUSTERED INDEX IX_MatchUpdates_Match ON dbo.MatchUpdates(MatchId);
 CREATE NONCLUSTERED INDEX IX_Announcements_Priority ON dbo.Announcements(Priority);
-GO
-
--- Tournaments
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Tournaments' AND schema_id = SCHEMA_ID('dbo'))
-BEGIN
-    CREATE TABLE dbo.Tournaments
-    (
-        Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
-        Name NVARCHAR(200) NOT NULL,
-        Description NVARCHAR(MAX) NULL,
-        TournamentDate DATETIME2 NOT NULL,
-        IsActive BIT NOT NULL DEFAULT 0,
-        CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
-        UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
-        CreatedBy NVARCHAR(256),
-        UpdatedBy NVARCHAR(256)
-    );
-END
 GO
 
 -- TournamentDivisions
