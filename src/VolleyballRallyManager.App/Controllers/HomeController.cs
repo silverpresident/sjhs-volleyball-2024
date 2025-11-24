@@ -58,6 +58,10 @@ public class HomeController : Controller
 
             TeamsByDivision = teamsByDivision
         };
+        if (activeTournament != null)
+        {
+            dashboard.ActiveTournamentName = activeTournament.Name;
+        }
 
         return View(dashboard);
     }

@@ -13,4 +13,5 @@ public class DashboardViewModel
     public IEnumerable<Match> RecentMatches { get; set; } = new List<Match>();
     public IEnumerable<Announcement> RecentAnnouncements { get; set; } = new List<Announcement>();
     public Dictionary<string, int> TeamsByDivision { get; set; } = new Dictionary<string, int>();
+    public string ActiveTournamentName { get; internal set; } = "ST JAGO VOLLEYBALL RALLY";
 }

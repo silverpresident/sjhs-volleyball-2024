@@ -10,8 +10,11 @@
 <div class="row mb-4">
     <div class="col-md-6">
         <div class="card">
-            <div class="card-header bg-success text-white">
+            <div class="card-header bg-success text-white d-flex justify-content-between">
                 <h5 class="mb-0">Division Statistics</h5>
+                <div class="btn-group">
+                    <a class="btn btn-sm btn-warning" asp-action="SelectDivisions">Select Divisions</a>
+                </div>
             </div>
             <div class="card-body">
                 @if (Model.Divisions != null && Model.Divisions.Any())
@@ -23,39 +26,18 @@
                     <p class="text-muted">No divisions are currently active for this tournament.</p>
                 }
             </div>
-            <div class="card-footer">
-                <a class="btn btn-sm btn-primary" asp-action="SelectDivisions">Select Divisions</a>
-            </div>
         </div>
-    </div>
-    <div class="col-md-6">
         <div class="card">
-            <div class="card-header" style="background-color: #ffc107;">
+            <div class="card-header d-flex justify-content-between" style="background-color: #ffc107;">
                 <h5 class="mb-0">Round Progress</h5>
+                <div class="btn-group">
+                    <a class="btn btn-sm btn-warning" asp-controller="Matches">Matches</a>
+                </div>
             </div>
             <div class="card-body">
                 @if (Model.Rounds != null && Model.Rounds.Any())
                 {
-                    var totalScheduled = Model.Rounds.Sum(r => r.MatchesScheduled);
-                    var totalPlayed = Model.Rounds.Sum(r => r.MatchesPlayed);
-                    var overallPercentage = totalScheduled > 0 ? (int)((double)totalPlayed / totalScheduled * 100) : 0;
-                    
-                    <div class="mb-3">
-                        <h6>Overall Progress</h6>
-                        <div class="progress" style="height: 25px;">
-                            <div class="progress-bar bg-success" role="progressbar" 
-                                 style="width: @overallPercentage%;" 
-                                 aria-valuenow="@overallPercentage" 
-                                 aria-valuemin="0" 
-                                 aria-valuemax="100">
-                                @totalPlayed / @totalScheduled matches (@overallPercentage%)
-                            </div>
-                        </div>
-                    </div>
-                    <small class="text-muted">
-                        <strong>@Model.Rounds.Count</strong> rounds across 
-                        <strong>@Model.Rounds.Select(r => r.DivisionId).Distinct().Count()</strong> divisions
-                    </small>
+                    <partial name="_RoundsPartial" model="Model.Rounds" />
                 }
                 else
                 {
@@ -64,46 +46,46 @@
             </div>
         </div>
     </div>
-</div>
 
-<!-- Teams and Detailed Information -->
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                Teams
-                <div class="btn-group float-right" role="group" aria-label="Divisions">
-                    <a class="btn btn-primary" asp-controller="TournamentTeams">Tournament Teams</a>
+    <!-- Teams and Detailed Information -->
+        <div class="col-md-6">
+            <div class="card">
+            <div class="card-header bg-primary d-flex justify-content-between">
+                    <h2>
+                    Teams
+                </h2>
+                    <span class="btn-group" role="group" aria-label="Divisions">
+                        <a class="btn btn-primary" asp-controller="TournamentTeams">Tournament Teams</a>
+                    </span>
                 </div>
-            </div>
-            <div class="card-body">
-                @if (Model.Teams != null && Model.Teams.Any())
-                {
-                    var teamsByDivision = Model.Teams.GroupBy(t => t.Division.Name);
-                    foreach (var divisionGroup in teamsByDivision)
+                <div class="card-body">
+                    @if (Model.Teams != null && Model.Teams.Any())
                     {
-                        <div class="card mb-2">
-                            <div class="card-header">
-                                @divisionGroup.Key
+                        var teamsByDivision = Model.Teams.GroupBy(t => t.Division.Name);
+                        foreach (var divisionGroup in teamsByDivision)
+                        {
+                            <div class="card mb-2">
+                                <div class="card-header">
+                                    @divisionGroup.Key
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    @foreach (var team in divisionGroup.OrderBy(t => t.GroupName).ThenBy(t => t.Team.Name))
+                                    {
+                                        <li class="list-group-item">
+                                            <span class="badge bg-secondary">@team.GroupName</span>
+                                            @team.Team.Name
+                                            <small>(@team.Team.School)</small>
+                                        </li>
+                                    }
+                                </ul>
                             </div>
-                            <ul class="list-group list-group-flush">
-                                @foreach (var team in divisionGroup.OrderBy(t => t.GroupName).ThenBy(t => t.Team.Name))
-                                {
-                                    <li class="list-group-item">
-                                        <span class="badge bg-secondary">@team.GroupName</span>
-                                        @team.Team.Name
-                                        <small>(@team.Team.School)</small>
-                                    </li>
-                                }
-                            </ul>
-                        </div>
+                        }
                     }
-                }
-                else
-                {
-                    <p>No teams are currently participating in this tournament.</p>
-                }
+                    else
+                    {
+                        <p>No teams are currently participating in this tournament.</p>
+                    }
+                </div>
             </div>
         </div>
     </div>
-</div>
