@@ -11,6 +11,11 @@
             @User.Identity?.Name
         </a>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li>
+                <a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword">
+                    <i class="fas fa-key me-2"></i>Change Password
+                </a>
+            </li>
             <li><hr class="dropdown-divider"></li>
             <li>
                 <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">

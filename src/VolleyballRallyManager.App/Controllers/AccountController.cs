@@ -266,6 +266,89 @@ namespace VolleyballRallyManager.App.Controllers
         }
 
         /// <summary>
+        /// Display the change password page
+        /// </summary>
+        [HttpGet]
+        [Authorize]
+        public IActionResult ChangePassword()
+        {
+            return View(new ChangePasswordViewModel());
+        }
+
+        /// <summary>
+        /// Process password change request
+        /// </summary>
+        /// <param name="model">Password change information</param>
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    _logger.LogError("Unable to load user for password change");
+                    return RedirectToAction(nameof(Login));
+                }
+
+                // Check if user has a password (users who signed up via OAuth may not)
+                var hasPassword = await _userManager.HasPasswordAsync(user);
+                
+                if (!hasPassword)
+                {
+                    // If user doesn't have a password, add one (first-time password setup)
+                    var addPasswordResult = await _userManager.AddPasswordAsync(user, model.NewPassword);
+                    if (addPasswordResult.Succeeded)
+                    {
+                        _logger.LogInformation("User {Email} successfully set their password", user.Email);
+                        await _signInManager.RefreshSignInAsync(user);
+                        TempData["SuccessMessage"] = "Your password has been set successfully.";
+                        return RedirectToAction("Index", "Home", new { area = "Admin" });
+                    }
+                    
+                    foreach (var error in addPasswordResult.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View(model);
+                }
+
+                // User has a password, so change it
+                var changePasswordResult = await _userManager.ChangePasswordAsync(
+                    user,
+                    model.CurrentPassword,
+                    model.NewPassword);
+
+                if (changePasswordResult.Succeeded)
+                {
+                    _logger.LogInformation("User {Email} successfully changed their password", user.Email);
+                    await _signInManager.RefreshSignInAsync(user);
+                    TempData["SuccessMessage"] = "Your password has been changed successfully.";
+                    return RedirectToAction("Index", "Home", new { area = "Admin" });
+                }
+
+                foreach (var error in changePasswordResult.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during password change for user");
+                ModelState.AddModelError(string.Empty, "An error occurred while changing your password. Please try again.");
+                return View(model);
+            }
+        }
+
+        /// <summary>
         /// Safely redirect to local URL, preventing open redirect vulnerabilities
         /// </summary>
         /// <param name="returnUrl">The URL to redirect to</param>
