@@ -1,0 +1,238 @@
+@model VolleyballRallyManager.App.Areas.Admin.Models.EditUserViewModel
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-edit me-2"></i>Edit User
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+                        
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <!-- Email Address -->
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-semibold">
+                                <i class="fas fa-envelope me-1"></i>Email Address
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Email" class="form-control" placeholder="user@example.com" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                            <small class="form-text text-muted">
+                                This will be used as the username for login
+                            </small>
+                        </div>
+
+                        <!-- Display Name -->
+                        <div class="mb-3">
+                            <label asp-for="DisplayName" class="form-label fw-semibold">
+                                <i class="fas fa-user me-1"></i>Display Name
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="DisplayName" class="form-control" placeholder="John Doe" />
+                            <span asp-validation-for="DisplayName" class="text-danger small"></span>
+                            <small class="form-text text-muted">
+                                The name that will be displayed in the system
+                            </small>
+                        </div>
+
+                        <!-- Account Status -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-toggle-on me-1"></i>Account Status
+                            </label>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <div class="form-check form-switch">
+                                        <input asp-for="IsEnabled" class="form-check-input" type="checkbox" 
+                                               role="switch" id="isEnabledSwitch">
+                                        <label class="form-check-label" for="isEnabledSwitch">
+                                            <strong>Account Enabled</strong>
+                                            <br><small class="text-muted">When disabled, the user cannot log in</small>
+                                        </label>
+                                    </div>
+                                    <hr>
+                                    <div class="form-check">
+                                        <input asp-for="EmailConfirmed" class="form-check-input" type="checkbox" 
+                                               id="emailConfirmedCheck">
+                                        <label class="form-check-label" for="emailConfirmedCheck">
+                                            <strong>Email Confirmed</strong>
+                                            <br><small class="text-muted">Mark this if the user has verified their email</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Role Assignment -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                <i class="fas fa-user-shield me-1"></i>Assigned Roles
+                            </label>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    @if (Model.AvailableRoles != null && Model.AvailableRoles.Any())
+                                    {
+                                        @foreach (var role in Model.AvailableRoles)
+                                        {
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input" type="checkbox" 
+                                                       name="SelectedRoles" value="@role" id="role_@role"
+                                                       checked="@Model.SelectedRoles.Contains(role)">
+                                                <label class="form-check-label" for="role_@role">
+                                                    <strong>@role</strong>
+                                                    @switch (role)
+                                                    {
+                                                        case "Administrator":
+                                                            <br><small class="text-muted">Full access to all features including user management</small>
+                                                            break;
+                                                        case "Judge":
+                                                            <br><small class="text-muted">Can manage matches and scores</small>
+                                                            break;
+                                                        case "Scorekeeper":
+                                                            <br><small class="text-muted">Can update scores only</small>
+                                                            break;
+                                                    }
+                                                </label>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted mb-0">No roles available</p>
+                                    }
+                                </div>
+                            </div>
+                            <small class="form-text text-muted">
+                                Select one or more roles for this user
+                            </small>
+                        </div>
+
+                        <!-- Warning Box -->
+                        <div class="alert alert-warning">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Important Notes
+                            </h6>
+                            <ul class="mb-0">
+                                <li>Changing the email address will update the username</li>
+                                <li>Disabling an account will immediately prevent the user from logging in</li>
+                                <li>Role changes take effect immediately</li>
+                                <li>You cannot disable your own account</li>
+                            </ul>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-between mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Back to List
+                            </a>
+                            <div class="d-grid gap-2 d-md-flex">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save me-1"></i>Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- User Information -->
+            <div class="card border-info mt-4">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-info-circle me-2"></i>User Information
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">User ID:</dt>
+                        <dd class="col-sm-8"><code>@Model.Id</code></dd>
+                        
+                        <dt class="col-sm-4">Current Email:</dt>
+                        <dd class="col-sm-8">@Model.Email</dd>
+                        
+                        <dt class="col-sm-4">Current Roles:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.SelectedRoles.Any())
+                            {
+                                @string.Join(", ", Model.SelectedRoles)
+                            }
+                            else
+                            {
+                                <span class="text-muted">None</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        @if (Model.IsEnabled)
+                        {
+                            <form asp-action="Disable" asp-route-id="@Model.Id" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-outline-warning w-100"
+                                        onclick="return confirm('Are you sure you want to disable this user account? They will not be able to log in.')">
+                                    <i class="fas fa-ban me-1"></i>Disable This Account
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="Enable" asp-route-id="@Model.Id" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-outline-success w-100"
+                                        onclick="return confirm('Are you sure you want to enable this user account?')">
+                                    <i class="fas fa-check me-1"></i>Enable This Account
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<style>
+    .btn-success {
+        background-color: #198754;
+        border-color: #198754;
+    }
+
+    .btn-success:hover {
+        background-color: #157347;
+        border-color: #146c43;
+    }
+
+    .card-header.bg-success {
+        background-color: #198754 !important;
+    }
+
+    .form-check-input:checked {
+        background-color: #198754;
+        border-color: #198754;
+    }
+
+    .form-switch .form-check-input:checked {
+        background-color: #198754;
+        border-color: #198754;
+    }
+</style>

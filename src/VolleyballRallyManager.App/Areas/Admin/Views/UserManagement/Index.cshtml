@@ -1,0 +1,258 @@
+@model VolleyballRallyManager.App.Areas.Admin.Models.UserListViewModel
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="fw-bold text-success">
+                <i class="fas fa-users me-2"></i>User Management
+            </h2>
+            <p class="text-muted">Manage user accounts and role assignments</p>
+        </div>
+        <div class="col-md-4 text-end">
+            @if (User.IsInRole("Administrator"))
+            {
+                <a asp-action="Create" class="btn btn-success">
+                    <i class="fas fa-user-plus me-1"></i> Add New User
+                </a>
+            }
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+            @if (TempData["TempPassword"] != null)
+            {
+                <hr>
+                <strong>Temporary Password:</strong> <code>@TempData["TempPassword"]</code>
+                <br><small class="text-muted">Please share this password securely with the user. They should change it upon first login.</small>
+            }
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Search and Filter -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-3">
+                <div class="col-md-5">
+                    <label for="searchTerm" class="form-label">Search</label>
+                    <input type="text" class="form-control" id="searchTerm" name="searchTerm" 
+                           value="@Model.SearchTerm" placeholder="Search by email or name...">
+                </div>
+                <div class="col-md-4">
+                    <label for="roleFilter" class="form-label">Filter by Role</label>
+                    <select class="form-select" id="roleFilter" name="roleFilter">
+                        <option value="">All Roles</option>
+                        @foreach (var role in Model.AvailableRoles)
+                        {
+                            <option value="@role" selected="@(Model.RoleFilter == role)">@role</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-search me-1"></i> Search
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-redo me-1"></i> Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (Model.Users.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Email</th>
+                                <th>Display Name</th>
+                                <th>Roles</th>
+                                <th>Status</th>
+                                <th>Email Confirmed</th>
+                                @if (User.IsInRole("Administrator"))
+                                {
+                                    <th class="text-end">Actions</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model.Users)
+                            {
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-envelope text-muted me-2"></i>
+                                        @user.Email
+                                    </td>
+                                    <td>@user.DisplayName</td>
+                                    <td>
+                                        @if (user.Roles.Any())
+                                        {
+                                            @foreach (var role in user.Roles)
+                                            {
+                                                <span class="badge bg-primary me-1">@role</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No roles assigned</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (user.IsEnabled)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check-circle me-1"></i>Enabled
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-ban me-1"></i>Disabled
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (user.EmailConfirmed)
+                                        {
+                                            <i class="fas fa-check text-success"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fas fa-times text-danger"></i>
+                                        }
+                                    </td>
+                                    @if (User.IsInRole("Administrator"))
+                                    {
+                                        <td class="text-end">
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="Edit" asp-route-id="@user.Id" 
+                                                   class="btn btn-sm btn-outline-primary" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                @if (user.IsEnabled)
+                                                {
+                                                    <form asp-action="Disable" asp-route-id="@user.Id" method="post" class="d-inline">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-sm btn-outline-warning" 
+                                                                title="Disable Account"
+                                                                onclick="return confirm('Are you sure you want to disable this user account?')">
+                                                            <i class="fas fa-ban"></i>
+                                                        </button>
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    <form asp-action="Enable" asp-route-id="@user.Id" method="post" class="d-inline">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-sm btn-outline-success" 
+                                                                title="Enable Account"
+                                                                onclick="return confirm('Are you sure you want to enable this user account?')">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                    </form>
+                                                }
+                                            </div>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-3">
+                    <p class="text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Showing @Model.Users.Count user(s)
+                    </p>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No users found</h5>
+                    <p class="text-muted">
+                        @if (!string.IsNullOrEmpty(Model.SearchTerm) || !string.IsNullOrEmpty(Model.RoleFilter))
+                        {
+                            <text>Try adjusting your search criteria</text>
+                        }
+                        else
+                        {
+                            <text>No users in the system yet</text>
+                        }
+                    </p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="card border-info mt-4">
+        <div class="card-header bg-info text-white">
+            <i class="fas fa-info-circle me-2"></i>User Management Guide
+        </div>
+        <div class="card-body">
+            <h6>Available Roles:</h6>
+            <ul>
+                <li><strong>Administrator:</strong> Full access to all features including user management</li>
+                <li><strong>Judge:</strong> Can manage matches and scores</li>
+                <li><strong>Scorekeeper:</strong> Can update scores only</li>
+            </ul>
+            
+            @if (User.IsInRole("Administrator"))
+            {
+                <h6 class="mt-3">Admin Actions:</h6>
+                <ul>
+                    <li><strong>Add User:</strong> Create new user accounts with auto-generated secure passwords</li>
+                    <li><strong>Edit:</strong> Modify user details and role assignments</li>
+                    <li><strong>Enable/Disable:</strong> Control account access without deleting users</li>
+                </ul>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-success {
+        background-color: #198754;
+        border-color: #198754;
+    }
+
+    .btn-success:hover {
+        background-color: #157347;
+        border-color: #146c43;
+    }
+
+    .text-success {
+        color: #198754 !important;
+    }
+
+    .badge.bg-primary {
+        background-color: #0d6efd !important;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(25, 135, 84, 0.05);
+    }
+</style>
