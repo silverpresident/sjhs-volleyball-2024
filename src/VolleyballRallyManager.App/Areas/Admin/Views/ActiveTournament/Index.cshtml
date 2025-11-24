@@ -10,6 +10,26 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
+                Teams
+                <div class="btn-group float-right" role="group" aria-label="Divisions">
+                <a class="btn btn-primary" asp-controller="TournamentTeams">Tournament Teams</a>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (Model.TeamsByDivision.Any())
+                {
+                    <partial name="_TeamsPartial" model="Model.TeamsByDivision" />
+                }
+                else
+                {
+                    <p>No teams are currently participating in this tournament.</p>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
                 Divisions
                 <div class="btn-group float-right" role="group" aria-label="Divisions">
                 <a class="btn btn-primary" asp-action="SelectDivisions">Select Divisions</a>
@@ -23,26 +43,6 @@
                 else
                 {
                     <p>No divisions are currently active for this tournament.</p>
-                }
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                Teams
-                <div class="btn-group float-right" role="group" aria-label="Divisions">
-                <a class="btn btn-primary" asp-action="TournamentTeams">Tournament Teams</a>
-                </div>
-            </div>
-            <div class="card-body">
-                @if (Model.TeamsByDivision.Any())
-                {
-                    <partial name="_TeamsPartial" model="Model.TeamsByDivision" />
-                }
-                else
-                {
-                    <p>No teams are currently participating in this tournament.</p>
                 }
             </div>
         </div>
