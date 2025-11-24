@@ -1,1 +1,1 @@
-create Admin/Views/Home/Index.cshtml and controller action.
+create a basic admin dashboard at Admin/Views/Home/Index.cshtml with controller action.

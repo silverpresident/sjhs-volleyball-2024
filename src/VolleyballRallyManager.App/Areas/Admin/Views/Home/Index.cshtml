@@ -1,0 +1,302 @@
+@model VolleyballRallyManager.App.Models.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h1>Admin Dashboard</h1>
+            <p class="text-muted">Welcome to the ST JAGO Volleyball Rally Manager</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-uppercase mb-0">Total Teams</h6>
+                            <h2 class="mb-0">@Model.TotalTeams</h2>
+                        </div>
+                        <div>
+                            <i class="bi bi-people fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-primary bg-opacity-75">
+                    <a asp-area="Admin" asp-controller="Teams" asp-action="Index" class="text-white text-decoration-none">
+                        View All <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-uppercase mb-0">Total Matches</h6>
+                            <h2 class="mb-0">@Model.TotalMatches</h2>
+                        </div>
+                        <div>
+                            <i class="bi bi-trophy fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-success bg-opacity-75">
+                    <a asp-area="Admin" asp-controller="Matches" asp-action="Index" class="text-white text-decoration-none">
+                        View All <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-uppercase mb-0">In Progress</h6>
+                            <h2 class="mb-0">@Model.MatchesInProgress</h2>
+                        </div>
+                        <div>
+                            <i class="bi bi-play-circle fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-warning bg-opacity-75">
+                    <span class="text-white">Active matches</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-uppercase mb-0">Finished</h6>
+                            <h2 class="mb-0">@Model.MatchesFinished</h2>
+                        </div>
+                        <div>
+                            <i class="bi bi-check-circle fs-1"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-info bg-opacity-75">
+                    <span class="text-white">Completed matches</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.DisputedMatches > 0)
+    {
+        <div class="row mb-4">
+            <div class="col">
+                <div class="alert alert-danger" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <strong>Attention:</strong> There are @Model.DisputedMatches disputed match(es) that require review.
+                    <a asp-area="Admin" asp-controller="Matches" asp-action="Index" class="alert-link">View Disputed Matches</a>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="bi bi-lightning-fill"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a asp-area="Admin" asp-controller="Matches" asp-action="Create" class="btn btn-primary w-100">
+                                <i class="bi bi-plus-circle"></i> Create Match
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a asp-area="Admin" asp-controller="Teams" asp-action="Create" class="btn btn-primary w-100">
+                                <i class="bi bi-plus-circle"></i> Add Team
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a asp-area="Admin" asp-controller="Announcements" asp-action="Create" class="btn btn-primary w-100">
+                                <i class="bi bi-megaphone"></i> New Announcement
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a asp-area="Admin" asp-controller="ActiveTournament" asp-action="Index" class="btn btn-primary w-100">
+                                <i class="bi bi-gear"></i> Tournament Settings
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Matches -->
+        <div class="col-lg-7 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-trophy"></i> Recent Matches</h5>
+                    <a asp-area="Admin" asp-controller="Matches" asp-action="Index" class="btn btn-sm btn-light">View All</a>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentMatches.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Match</th>
+                                        <th>Teams</th>
+                                        <th>Score</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var match in Model.RecentMatches)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>#@match.MatchNumber</strong><br/>
+                                                <small class="text-muted">@match.ScheduledTime.ToString("dd/MM HH:mm")</small>
+                                            </td>
+                                            <td>
+                                                @match.HomeTeam.Name<br/>
+                                                <small class="text-muted">vs @match.AwayTeam.Name</small>
+                                            </td>
+                                            <td>
+                                                @if (match.IsFinished)
+                                                {
+                                                    <strong>@match.HomeTeamScore - @match.AwayTeamScore</strong>
+                                                }
+                                                else if (match.ActualStartTime.HasValue)
+                                                {
+                                                    <span>@match.HomeTeamScore - @match.AwayTeamScore</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">-</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (match.IsDisputed)
+                                                {
+                                                    <span class="badge bg-danger">Disputed</span>
+                                                }
+                                                else if (match.IsFinished)
+                                                {
+                                                    <span class="badge bg-success">Finished</span>
+                                                }
+                                                else if (match.ActualStartTime.HasValue)
+                                                {
+                                                    <span class="badge bg-primary">In Progress</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Scheduled</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <a asp-area="Admin" asp-controller="Matches" asp-action="Details" asp-route-id="@match.Id" class="btn btn-sm btn-outline-info">
+                                                    <i class="bi bi-info-circle"></i>
+                                                </a>
+                                                <a asp-area="Admin" asp-controller="Matches" asp-action="Scorer" asp-route-id="@match.Id" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-calculator"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No matches scheduled yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-lg-5 mb-4">
+            <!-- Recent Announcements -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-megaphone"></i> Recent Announcements</h5>
+                    <a asp-area="Admin" asp-controller="Announcements" asp-action="Index" class="btn btn-sm btn-light">View All</a>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentAnnouncements.Any())
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var announcement in Model.RecentAnnouncements)
+                            {
+                                <div class="list-group-item px-0">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">@announcement.Title</h6>
+                                        @if (announcement.Priority == VolleyballRallyManager.Lib.Models.AnnouncementPriority.High)
+                                        {
+                                            <span class="badge bg-danger">High</span>
+                                        }
+                                        else if (announcement.Priority == VolleyballRallyManager.Lib.Models.AnnouncementPriority.Medium)
+                                        {
+                                            <span class="badge bg-warning text-dark">Medium</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Normal</span>
+                                        }
+                                    </div>
+                                    <p class="mb-1 small">@announcement.Message</p>
+                                    <small class="text-muted">@announcement.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No announcements yet.</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Teams by Division -->
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-diagram-3"></i> Teams by Division</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.TeamsByDivision.Any())
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var division in Model.TeamsByDivision)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    @division.Key
+                                    <span class="badge bg-primary rounded-pill">@division.Value</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">No divisions configured yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
