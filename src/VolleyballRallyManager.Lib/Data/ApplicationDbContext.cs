@@ -107,6 +107,15 @@ namespace VolleyballRallyManager.Lib.Data
             builder.Entity<MatchUpdate>()
                 .Property(u => u.Content)
                 .IsRequired();
+                
+        builder.Entity<Announcement>()
+            .Property(o => o.Priority)
+            .HasConversion<string>(); // Tells EF Core to store as string
+            
+        builder.Entity<MatchUpdate>()
+            .Property(o => o.UpdateType)
+            .HasConversion<string>(); // Tells EF Core to store as string
+
         }
     }
 }

@@ -11,11 +11,12 @@ public class Announcement : BaseEntity
     public string RenderedContent { get; set; } = string.Empty;
 
     [Display(Name = "Use Markdown")]
-    public bool UseMarkdown { get; set; }
+    public bool UseMarkdown { get; set; } = true;
 
     [Display(Name = "Priority")]
-    public AnnouncementPriority Priority { get; set; }
+    public AnnouncementPriority Priority { get; set; } = AnnouncementPriority.Normal;
+
 
     [Display(Name = "Is Visible")]
-    public bool IsVisible { get; set; }
+    public bool IsVisible { get; set; } = true;
 }
