@@ -238,40 +238,4 @@ BEGIN
     );
 END
 GO
-
--- Create Triggers for UpdatedAt
-CREATE TRIGGER dbo.TR_Teams_UpdatedAt ON dbo.Teams AFTER UPDATE AS
-BEGIN
-    UPDATE dbo.Teams
-    SET UpdatedAt = GETUTCDATE()
-    FROM dbo.Teams t
-    INNER JOIN inserted i ON t.Id = i.Id;
-END
-GO
-
-CREATE TRIGGER dbo.TR_Matches_UpdatedAt ON dbo.Matches AFTER UPDATE AS
-BEGIN
-    UPDATE dbo.Matches
-    SET UpdatedAt = GETUTCDATE()
-    FROM dbo.Matches m
-    INNER JOIN inserted i ON m.Id = i.Id;
-END
-GO
-
-CREATE TRIGGER dbo.TR_MatchUpdates_UpdatedAt ON dbo.MatchUpdates AFTER UPDATE AS
-BEGIN
-    UPDATE dbo.MatchUpdates
-    SET UpdatedAt = GETUTCDATE()
-    FROM dbo.MatchUpdates mu
-    INNER JOIN inserted i ON mu.Id = i.Id;
-END
-GO
-
-CREATE TRIGGER dbo.TR_Announcements_UpdatedAt ON dbo.Announcements AFTER UPDATE AS
-BEGIN
-    UPDATE dbo.Announcements
-    SET UpdatedAt = GETUTCDATE()
-    FROM dbo.Announcements a
-    INNER JOIN inserted i ON a.Id = i.Id;
-END
-GO
+ 
