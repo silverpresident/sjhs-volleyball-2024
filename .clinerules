@@ -42,6 +42,8 @@ This is a .NET 10.0 volleyball tournament management system with three main proj
 - Use `var` for local variables when type is obvious
 - Always include XML documentation comments for public APIs
 - Keep methods focused and under 50 lines when possible
+- Do not embed styles in cshtml files, where necessary create a separate css file.
+- Do not embed script in cshtml files, where necessary create a separate js file.
 
 ### Entity Framework & Database
 - Database entities must inherit from `BaseEntity`
