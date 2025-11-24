@@ -52,13 +52,13 @@
 
                         <div class="mb-3">
                             <label asp-for="Email" class="form-label fw-semibold">Email Address</label>
-                            <input asp-for="Email" class="form-control form-control-lg" placeholder="Enter your email" autocomplete="username" />
+                            <input asp-for="Email" class="form-control form-control-lg" autocomplete="username" aria-required="true" placeholder="name@example.com" />
                             <span asp-validation-for="Email" class="text-danger small"></span>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="Password" class="form-label fw-semibold">Password</label>
-                            <input asp-for="Password" class="form-control form-control-lg" placeholder="Enter your password" autocomplete="current-password" />
+                            <input asp-for="Password" class="form-control form-control-lg" autocomplete="current-password" aria-required="true" placeholder="password" />
                             <span asp-validation-for="Password" class="text-danger small"></span>
                         </div>
 
