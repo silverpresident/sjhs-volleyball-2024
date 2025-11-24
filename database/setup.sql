@@ -102,7 +102,9 @@ BEGIN
         AwayTeamId UNIQUEIDENTIFIER NOT NULL,
         HomeTeamScore INT NOT NULL DEFAULT 0,
         AwayTeamScore INT NOT NULL DEFAULT 0,
+        CurrentSetNumber INT NOT NULL DEFAULT 0,
         IsFinished BIT NOT NULL DEFAULT 0,
+        IsLocked BIT NOT NULL DEFAULT 0,
         IsDisputed BIT NOT NULL DEFAULT 0,
         RefereeName NVARCHAR(255),
         ScorerName NVARCHAR(255),
@@ -236,6 +238,33 @@ BEGIN
         CONSTRAINT FK_TournamentTeamDivisions_Teams FOREIGN KEY (TeamId) REFERENCES dbo.Teams(Id),
         CONSTRAINT FK_TournamentTeamDivisions_Divisions FOREIGN KEY (DivisionId) REFERENCES dbo.Divisions(Id)
     );
+END
+-- Create MatchSets table
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'MatchSets')
+BEGIN
+    CREATE TABLE MatchSets (
+        Id UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
+        MatchId UNIQUEIDENTIFIER NOT NULL,
+        SetNumber INT NOT NULL,
+        HomeTeamScore INT NOT NULL DEFAULT 0,
+        AwayTeamScore INT NOT NULL DEFAULT 0,
+        IsFinished BIT NOT NULL DEFAULT 0,
+        IsLocked BIT NOT NULL DEFAULT 0,
+        CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+        CreatedBy NVARCHAR(MAX) NOT NULL DEFAULT 'system',
+        UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
+        UpdatedBy NVARCHAR(MAX) NOT NULL DEFAULT 'system',
+        
+        -- Foreign key constraint
+        CONSTRAINT FK_MatchSets_Matches_MatchId FOREIGN KEY (MatchId) 
+            REFERENCES Matches(Id) ON DELETE CASCADE,
+        
+        -- Unique constraint on MatchId and SetNumber combination
+        CONSTRAINT UQ_MatchSets_MatchId_SetNumber UNIQUE (MatchId, SetNumber)
+    );
+    
+    -- Create index for better query performance
+    CREATE INDEX IX_MatchSets_MatchId ON MatchSets(MatchId);
 END
 GO
  

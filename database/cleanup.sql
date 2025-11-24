@@ -2,6 +2,10 @@
 USE stjago-volleyball-demo;
 GO
 
+IF OBJECT_ID('dbo.MatchSets', 'U') IS NOT NULL
+    DROP TABLE dbo.MatchSets;
+GO
+
 IF OBJECT_ID('dbo.MatchUpdates', 'U') IS NOT NULL
     DROP TABLE dbo.MatchUpdates;
 GO
