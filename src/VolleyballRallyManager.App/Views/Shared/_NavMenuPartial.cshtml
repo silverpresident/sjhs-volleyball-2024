@@ -3,86 +3,91 @@
 @inject UserManager<IdentityUser> UserManager
 
 <ul class="navbar-nav flex-grow-1">
-@if (SignInManager.IsSignedIn(User))
-{
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="tournamentDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-list me-1"></i>
-            Entities
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="tournamentDropdown">
-            <li>
-            <a class="dropdown-item" asp-area="Admin" asp-controller="Tournament" asp-action="Index">Tournaments</a>
-            </li>
-            <li>
-            <a class="dropdown-item" asp-area="Admin" asp-controller="Teams" asp-action="Index">Teams</a>
-         </li>
-            <li>
-             <a class="dropdown-item" asp-area="Admin" asp-controller="Divisions" asp-action="Index">Divisions</a>
-            </li>
-            <li>
-             <a class="dropdown-item" asp-area="Admin" asp-controller="Rounds" asp-action="Index">Rounds</a>
-            </li>
-        </ul>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="activeTournamentDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-sitemap me-1"></i>
-            Active Tournament
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="activeTournamentDropdown">
-            <li>
-            <a class="dropdown-item" asp-area="Admin" asp-controller="ActiveTournament" asp-action="Index">Active Tournament</a>
-         
-            </li>
-            <li>
-            <a class="dropdown-item" asp-area="Admin" asp-controller="ActiveTournament" asp-action="SelectDivisions">Tournament Divisions</a>
-         </li>
-            <li>
-            <a class="dropdown-item" asp-area="Admin" asp-controller="TournamentTeams" asp-action="Index">Teams</a>
-         </li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-             <a class="dropdown-item" asp-area="Admin" asp-controller="Matches" asp-action="Index">Matches</a>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="tournamentDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-list me-1"></i>
+                Entities
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="tournamentDropdown">
+                <li>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="Tournament" asp-action="Index">Tournaments</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="Teams" asp-action="Index">Teams</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="Divisions" asp-action="Index">Divisions</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="Rounds" asp-action="Index">Rounds</a>
+                </li>
+            </ul>
         </li>
-        </ul>
-      </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="activeTournamentDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-sitemap me-1"></i>
+                Active Tournament
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="activeTournamentDropdown">
+                <li>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="ActiveTournament" asp-action="Index">Active Tournament</a>
 
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="publicDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fas fa-list me-1"></i>
-            Public Pages
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="publicDropdown">
-            <li>
-             <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Index">Home Page</a>
-            </li>
-            <li>
-            <a class="dropdown-item" asp-area="" asp-controller="Announcements" asp-action="Index">Announcements</a>
-            </li>
-            <li>
-            <a class="dropdown-item" asp-area="" asp-controller="Teams" asp-action="Index">Teams</a>
-         </li>
-            <li>
-             <a class="dropdown-item" asp-area="" asp-controller="Matches" asp-action="Index">Matches</a>
-            </li>
-        </ul>
-      </li>
-    <li class="nav-item">
-        <a class="nav-link" asp-area="Admin" asp-controller="Matches" asp-action="Index">Matches</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" asp-area="Admin" asp-controller="Announcements" asp-action="Index">Announcements</a>
-    </li>
-} else {
-    <li class="nav-item">
-        <a class="nav-link" asp-controller="Teams" asp-action="Index">Teams</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" asp-controller="Matches" asp-action="Index">Matches</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" asp-controller="Announcements" asp-action="Index">Announcements</a>
-    </li>
-}
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="ActiveTournament" asp-action="SelectDivisions">Tournament Divisions</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="TournamentTeams" asp-action="Index">Teams</a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="Matches" asp-action="Index">Matches</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="UPdates" asp-action="Index">Match Updates</a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="publicDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-list me-1"></i>
+                Public Pages
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="publicDropdown">
+                <li>
+                    <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Index">Home Page</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-area="" asp-controller="Announcements" asp-action="Index">Announcements</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-area="" asp-controller="Teams" asp-action="Index">Teams</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-area="" asp-controller="Matches" asp-action="Index">Matches</a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Admin" asp-controller="UserManagement" asp-action="Index">Users</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Admin" asp-controller="Announcements" asp-action="Index">Announcements</a>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Teams" asp-action="Index">Teams</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Matches" asp-action="Index">Matches</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Announcements" asp-action="Index">Announcements</a>
+        </li>
+    }
 </ul>
