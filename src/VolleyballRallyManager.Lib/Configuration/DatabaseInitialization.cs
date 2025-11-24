@@ -78,7 +78,6 @@ namespace VolleyballRallyManager.Lib.Configuration
                     EmailConfirmed = true,
                     UserName = adminUserDefault.UserName,
                     Email = adminUserDefault.Email
-
                 };
                 await userManager.CreateAsync(adminUser, "admin123");
             }
@@ -230,7 +229,7 @@ namespace VolleyballRallyManager.Lib.Configuration
                 }
             };*/
             char alphaStart = 'E';
-            char alphaEnd = 'L';
+            char alphaEnd = 'V';
             for (char i = alphaStart; i <= alphaEnd; i++)
             {
                 string anchorLetter = i.ToString();

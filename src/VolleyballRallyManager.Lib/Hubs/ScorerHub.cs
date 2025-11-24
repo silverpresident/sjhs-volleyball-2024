@@ -13,12 +13,12 @@ public class ScorerHub : Hub
         _matchService = matchService;
     }
 
-    public async Task JoinMatchScorer(string matchId)
+    public async Task JoinMatchGroup(string matchId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, $"scorer_{matchId}");
     }
 
-    public async Task LeaveMatchScorer(string matchId)
+    public async Task LeaveMatchGroup(string matchId)
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"scorer_{matchId}");
     }

@@ -30,8 +30,8 @@
                         <div class="team-name" id="homeTeamName">@Model.HomeTeamName</div>
                         <div class="team-score" id="homeScore">0</div>
                         <div>
-                            <button class="btn btn-light score-btn" onclick="updateScore('@Model.HomeTeamId', 1)">+</button>
-                            <button class="btn btn-outline-light score-btn" onclick="updateScore('@Model.HomeTeamId', -1)">−</button>
+                            <button class="btn btn-light score-btn" data-team-id="@Model.HomeTeamId" data-opcode="updateScore" data-score-change="1">+</button>
+                            <button class="btn btn-outline-light score-btn" data-team-id="@Model.HomeTeamId" data-opcode="updateScore" data-score-change="-1">−</button>
                         </div>
                     </div>
                 </div>
@@ -43,8 +43,8 @@
                         <div class="team-name" id="awayTeamName">@Model.AwayTeamName</div>
                         <div class="team-score" id="awayScore">0</div>
                         <div>
-                            <button class="btn btn-light score-btn" onclick="updateScore('@Model.AwayTeamId', 1)">+</button>
-                            <button class="btn btn-outline-light score-btn" onclick="updateScore('@Model.AwayTeamId', -1)">−</button>
+                            <button class="btn btn-light score-btn" data-team-id="@Model.AwayTeamId" data-opcode="updateScore" data-score-change="1">+</button>
+                            <button class="btn btn-outline-light score-btn" data-team-id="@Model.AwayTeamId" data-opcode="updateScore" data-score-change="-1">−</button>
                         </div>
                     </div>
                 </div>
@@ -56,17 +56,17 @@
                 
                 <div class="row mb-3">
                     <div class="col-md-4">
-                        <button class="btn btn-warning set-control-btn" id="btnPreviousSet" onclick="handleSetAction('RevertToPreviousSet')" disabled>
+                        <button class="btn btn-warning set-control-btn" id="btnPreviousSet" data-opcode="handleSetAction" data-action="RevertToPreviousSet" disabled>
                             <i class="bi bi-arrow-left"></i> Previous Set
                         </button>
                     </div>
                     <div class="col-md-4">
-                        <button class="btn btn-danger set-control-btn" id="btnEndSet" onclick="handleSetAction('EndCurrentSet')">
+                        <button class="btn btn-danger set-control-btn" id="btnEndSet" data-opcode="handleSetAction" data-action="EndCurrentSet">
                             <i class="bi bi-stop-circle"></i> End Set
                         </button>
                     </div>
                     <div class="col-md-4">
-                        <button class="btn btn-success set-control-btn" id="btnNewSet" onclick="handleSetAction('StartNextSet')" style="display:none;">
+                        <button class="btn btn-success set-control-btn" id="btnNewSet" data-opcode="handleSetAction" data-action="StartNextSet" style="display:none;">
                             <i class="bi bi-plus-circle"></i> New Set
                         </button>
                     </div>
@@ -99,22 +99,22 @@
                 <h5 class="text-white mb-3">Quick Actions</h5>
                 <div class="row">
                     <div class="col-md-3">
-                        <button class="btn btn-info quick-action-btn" onclick="handleQuickAction('CallToCourt')">
+                        <button class="btn btn-info quick-action-btn"  data-opcode="handleQuickAction" data-action="CallToCourt">
                             <i class="bi bi-megaphone"></i> Call to Court
                         </button>
                     </div>
                     <div class="col-md-3">
-                        <button class="btn btn-success quick-action-btn" onclick="handleQuickAction('MatchStarted')" id="btnStartMatch">
+                        <button class="btn btn-success quick-action-btn" id="btnStartMatch" data-opcode="handleQuickAction" data-action="MatchStarted">
                             <i class="bi bi-play-circle"></i> Match Started
                         </button>
                     </div>
                     <div class="col-md-3">
-                        <button class="btn btn-danger quick-action-btn" onclick="handleQuickAction('MatchEnded')" id="btnEndMatch">
+                        <button class="btn btn-danger quick-action-btn" id="btnEndMatch" data-opcode="handleQuickAction" data-action="MatchEnded">
                             <i class="bi bi-stop-circle"></i> Match Ended
                         </button>
                     </div>
                     <div class="col-md-3">
-                        <button class="btn btn-warning quick-action-btn" onclick="handleQuickAction('Disputed')">
+                        <button class="btn btn-warning quick-action-btn" data-opcode="handleQuickAction" data-action="Disputed">
                             <i class="bi bi-exclamation-triangle"></i> Disputed
                         </button>
                     </div>
