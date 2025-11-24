@@ -1,0 +1,1 @@
+create Admin/Views/Home/Index.cshtml and controller action.

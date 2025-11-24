@@ -37,16 +37,16 @@ public class Match : BaseEntity
     public required Guid AwayTeamId { get; set; }
 
     [Display(Name = "Home Team Score")]
-    public int HomeTeamScore { get; set; }
+    public int HomeTeamScore { get; set; } = 0;
 
     [Display(Name = "Away Team Score")]
-    public int AwayTeamScore { get; set; }
+    public int AwayTeamScore { get; set; } = 0;
 
     [Display(Name = "Is Finished")]
-    public bool IsFinished { get; set; }
+    public bool IsFinished { get; set; } = false;
 
     [Display(Name = "Is Disputed")]
-    public bool IsDisputed { get; set; }
+    public bool IsDisputed { get; set; } = false;
 
     [Display(Name = "Referee Name")]
     public string? RefereeName { get; set; }
@@ -58,7 +58,7 @@ public class Match : BaseEntity
     public int CurrentSetNumber { get; set; } = 0;
 
     [Display(Name = "Is Locked")]
-    public bool IsLocked { get; set; }
+    public bool IsLocked { get; set; } = false;
 
     // Navigation properties
     public virtual Round? Division { get; set; }

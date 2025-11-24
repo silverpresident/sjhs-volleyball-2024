@@ -10,19 +10,19 @@ public class MatchSet : BaseEntity
     public required Guid MatchId { get; set; }
 
     [Display(Name = "Set Number")]
-    public int SetNumber { get; set; }
+    public int SetNumber { get; set; } 
 
     [Display(Name = "Home Team Score")]
-    public int HomeTeamScore { get; set; }
+    public int HomeTeamScore { get; set; } = 0;
 
     [Display(Name = "Away Team Score")]
-    public int AwayTeamScore { get; set; }
+    public int AwayTeamScore { get; set; } = 0;
 
     [Display(Name = "Is Finished")]
-    public bool IsFinished { get; set; }
+    public bool IsFinished { get; set; } = false;
 
     [Display(Name = "Is Locked")]
-    public bool IsLocked { get; set; }
+    public bool IsLocked { get; set; } = false;
 
     // Navigation property
     public virtual Match? Match { get; set; }
