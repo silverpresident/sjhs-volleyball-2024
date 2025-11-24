@@ -1,4 +1,4 @@
-@model VolleyballRallyManager.Lib.Models.Tournament
+@model VolleyballRallyManager.App.Models.TournamentDetailsViewModel
 
 @{
     ViewData["Title"] = "Tournament Details";
@@ -6,76 +6,193 @@
 
 <div class="card">
     <div class="card-header">
-        <h1 class="card-title">@ViewData["Title"]</h1>
+        <h1 class="card-title">@Model.Tournament.Name</h1>
     </div>
     <div class="card-body">
-        <dl class="row">
+        <!-- Tournament Basic Info -->
+        <dl class="row mb-4">
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model.Tournament.Name)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Name)
+                @Html.DisplayFor(model => model.Tournament.Name)
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Description)
+                @Html.DisplayNameFor(model => model.Tournament.Description)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Description)
+                @Html.DisplayFor(model => model.Tournament.Description)
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.TournamentDate)
+                @Html.DisplayNameFor(model => model.Tournament.TournamentDate)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.TournamentDate)
+                @Html.DisplayFor(model => model.Tournament.TournamentDate)
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.IsActive)
+                @Html.DisplayNameFor(model => model.Tournament.IsActive)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.IsActive)
+                @Html.DisplayFor(model => model.Tournament.IsActive)
             </dd>
         </dl>
-        <hr />
-        <div>
-            <h4>Tournament Divisions</h4>
-            @if (Model.TournamentDivisions != null && Model.TournamentDivisions.Any())
-            {
-                <ul class="list-group">
-                    @foreach (var tournamentDivision in Model.TournamentDivisions)
-                    {
-                        <li class="list-group-item">@tournamentDivision.Division.Name</li>
-                    }
-                </ul>
-            }
-            else
-            {
-                <p>No divisions assigned to this tournament.</p>
-            }
-        </div>
-        <hr />
-        <div>
-            <h4>Tournament Teams</h4>
-            @if (Model.TournamentTeamDivisions != null && Model.TournamentTeamDivisions.Any())
-            {
-                <ul class="list-group">
-                    @foreach (var tournamentTeam in Model.TournamentTeamDivisions)
-                    {
-                        <li class="list-group-item">
-                            @tournamentTeam?.Team.Name
-                            @Html.DisplayFor(modelItem => tournamentTeam.GroupName, "Group")
 
-                        </li>
+        <hr />
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs" id="tournamentTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="divisions-tab" data-bs-toggle="tab" data-bs-target="#divisions" type="button" role="tab" aria-controls="divisions" aria-selected="true">
+                    Divisions
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="rounds-tab" data-bs-toggle="tab" data-bs-target="#rounds" type="button" role="tab" aria-controls="rounds" aria-selected="false">
+                    Rounds
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="teams-tab" data-bs-toggle="tab" data-bs-target="#teams" type="button" role="tab" aria-controls="teams" aria-selected="false">
+                    Teams
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content mt-3" id="tournamentTabsContent">
+            <!-- Divisions Tab -->
+            <div class="tab-pane fade show active" id="divisions" role="tabpanel" aria-labelledby="divisions-tab">
+                @if (Model.Divisions != null && Model.Divisions.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Division Name</th>
+                                    <th>Groups</th>
+                                    <th>Team Count</th>
+                                    <th>Matches Played</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var division in Model.Divisions)
+                                {
+                                    <tr>
+                                        <td><strong>@division.DivisionName</strong></td>
+                                        <td>@string.Join(", ", division.GroupNames)</td>
+                                        <td>@division.TeamCount</td>
+                                        <td>@division.MatchesPlayed</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">No divisions assigned to this tournament.</p>
+                }
+            </div>
+
+            <!-- Rounds Tab -->
+            <div class="tab-pane fade" id="rounds" role="tabpanel" aria-labelledby="rounds-tab">
+                @if (Model.Rounds != null && Model.Rounds.Any())
+                {
+                    var roundsByDivision = Model.Rounds.GroupBy(r => r.DivisionName);
+                    foreach (var divisionGroup in roundsByDivision)
+                    {
+                        <h5 class="mt-3">@divisionGroup.Key</h5>
+                        <div class="table-responsive mb-4">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Round Name</th>
+                                        <th>Teams</th>
+                                        <th>Matches Scheduled</th>
+                                        <th>Matches Completed</th>
+                                        <th>Progress</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var round in divisionGroup.OrderBy(r => r.Sequence))
+                                    {
+                                        <tr>
+                                            <td><strong>@round.RoundName</strong></td>
+                                            <td>@round.TeamCount</td>
+                                            <td>@round.MatchesScheduled</td>
+                                            <td>@round.MatchesPlayed</td>
+                                            <td>
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar bg-success" role="progressbar" 
+                                                         style="width: @round.CompletionPercentage%;" 
+                                                         aria-valuenow="@round.CompletionPercentage" 
+                                                         aria-valuemin="0" 
+                                                         aria-valuemax="100">
+                                                        @round.CompletionPercentage%
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
                     }
-                </ul>
-            }
-            else
-            {
-                <p>No teams assigned to this tournament.</p>
-            }
+                }
+                else
+                {
+                    <p class="text-muted">No rounds scheduled for this tournament.</p>
+                }
+            </div>
+
+            <!-- Teams Tab -->
+            <div class="tab-pane fade" id="teams" role="tabpanel" aria-labelledby="teams-tab">
+                @if (Model.Teams != null && Model.Teams.Any())
+                {
+                    var teamsByDivision = Model.Teams.GroupBy(t => t.Division.Name);
+                    foreach (var divisionGroup in teamsByDivision)
+                    {
+                        <h5 class="mt-3">@divisionGroup.Key</h5>
+                        <div class="table-responsive mb-4">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Group</th>
+                                        <th>Team Name</th>
+                                        <th>School</th>
+                                        <th>Seed</th>
+                                        <th>Matches</th>
+                                        <th>W/D/L</th>
+                                        <th>Points</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var team in divisionGroup.OrderBy(t => t.GroupName).ThenBy(t => t.SeedNumber))
+                                    {
+                                        <tr>
+                                            <td><span class="badge bg-secondary">@team.GroupName</span></td>
+                                            <td><strong>@team.Team.Name</strong></td>
+                                            <td>@team.Team.School</td>
+                                            <td>@team.SeedNumber</td>
+                                            <td>@team.MatchesPlayed</td>
+                                            <td>@team.Wins / @team.Draws / @team.Losses</td>
+                                            <td><strong>@team.TotalPoints</strong></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted">No teams assigned to this tournament.</p>
+                }
+            </div>
         </div>
     </div>
     <div class="card-footer">
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-secondary">Edit</a>
+        <a asp-action="Edit" asp-route-id="@Model.TournamentId" class="btn btn-sm btn-secondary">Edit</a>
         <a asp-action="Index" class="btn btn-sm btn-light">Back to List</a>
     </div>
 </div>

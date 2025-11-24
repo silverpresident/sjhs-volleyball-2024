@@ -1,8 +1,38 @@
-@model IEnumerable<VolleyballRallyManager.Lib.Models.TournamentDivision>
+@model List<VolleyballRallyManager.App.Models.TournamentDivisionViewModel>
 
-<ul class="list-group">
-    @foreach (var division in Model)
-    {
-        <li class="list-group-item">@division.Division.Name</li>
-    }
-</ul>
+<div class="table-responsive">
+    <table class="table table-hover table-sm">
+        <thead>
+            <tr>
+                <th>Division</th>
+                <th>Groups</th>
+                <th>Teams</th>
+                <th>Matches Played</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var division in Model)
+            {
+                <tr>
+                    <td><strong>@division.DivisionName</strong></td>
+                    <td>
+                        @if (division.GroupNames.Any())
+                        {
+                            <small class="text-muted">@string.Join(", ", division.GroupNames)</small>
+                        }
+                        else
+                        {
+                            <small class="text-muted">-</small>
+                        }
+                    </td>
+                    <td>
+                        <span class="badge bg-primary">@division.TeamCount</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-success">@division.MatchesPlayed</span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
