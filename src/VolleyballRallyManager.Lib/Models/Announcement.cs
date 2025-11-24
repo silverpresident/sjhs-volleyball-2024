@@ -14,7 +14,7 @@ public class Announcement : BaseEntity
     public bool UseMarkdown { get; set; } = true;
 
     [Display(Name = "Priority")]
-    public AnnouncementPriority Priority { get; set; } = AnnouncementPriority.Normal;
+    public AnnouncementPriority Priority { get; set; } = AnnouncementPriority.Info;
 
 
     [Display(Name = "Is Visible")]
