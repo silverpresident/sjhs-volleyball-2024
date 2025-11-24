@@ -1,15 +1,19 @@
-Implement changes for "Match Scorer" (scorer.cshtml) page  to separate CSS and JS from CSHTML
----
+Refactor the "Match Scorer" page (scorer.cshtml) to separate concerns.
 
-### 1. Move the style sheet
+1. Extract CSS
 
-Create a separate stylesheet.
-Move all the CSS style in the page to this stylesheet
-Add a link to this style
----
+Create a new file named scorer.css in the same directory (or specify wwwroot/css/ if applicable).
 
-### 2. MOve the inline javascript
-Create a separate javascript file.
-Add a script tag to the file, on the script tag add a data attribute for the matchid, hometeamid and awayteamid.
-at the start of the script file read these values into const from the currentScript element
-move the remaining javascript to this file.
+Move all styles from the cshtml file to this new file.
+
+Reference this stylesheet in the scorer.cshtml.
+
+2. Extract JavaScript
+
+Create a new file named scorer.js in wwwroot/js.
+
+Data Passing: In scorer.cshtml, add the script tag referencing scorer.js. Add data-match-id, data-hometeam-id, and data-awayteam-id attributes to this script tag, populating them with the corresponding Razor Model values.
+
+Variable Initialization: At the very top of scorer.js, capture document.currentScript to read these data attributes into const variables.
+
+Logic Migration: Move all remaining JS logic to scorer.js. Important: Ensure any previous Razor syntax (e.g., @Model.MatchId) used inside the logic is replaced by the new const variables created from the data attributes.

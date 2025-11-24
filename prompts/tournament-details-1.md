@@ -1,33 +1,35 @@
-Implement changes for "Tournament Details" 
----
+I need to update the "Tournament Details" feature. Please perform the following steps. 
 
-### 1. Create a view model
+### 1. Create View Models
+Create a new file for `TournamentDetailsViewModel` and its supporting classes. 
+The structure should be:
 
-Create a view model Tournament Details View Model
-It should contina a tournamentId
-a Tournament property
-a Divisions property which is a list of Tournament Division View Model
-a Rounds property which is a list of Tournament Rounds View Model
-a Teams property which is a list of TournamentTeamDivions
+**TournamentDetailsViewModel**
+- `int TournamentId`
+- `Tournament` (The existing entity)
+- `List<TournamentDivisionViewModel> Divisions`
+- `List<TournamentRoundViewModel> Rounds`
+- `List<TournamentTeamDivision> Teams`
 
-The  Tournament Division View Model
-Should contain the properties of  Tournament Division as well as
-- Group Name 
-- Team Count
-- Matches Played
+**TournamentDivisionViewModel**
+- Should map properties from the existing `TournamentDivision` entity.
+- `string GroupName` 
+- `int TeamCount` (Logic: Count of teams in this division)
+- `int MatchesPlayed` (Logic: Count of matches in this division with a completed status)
 
-The Tournament Rounds View Model
-Should contain the properties for
-- Division
-- Round
-- Team Count
-- Matches Scheduled
-- Matches Played
+**TournamentRoundViewModel**
+- `string DivisionName`
+- `string RoundName`
+- `int TeamCount`
+- `int MatchesScheduled` (Logic: Total matches in this round)
+- `int MatchesPlayed` (Logic: Completed matches in this round)
 
+### 2. Update Controller/Logic
+Update the Controller that handles `Tournaments/Details` and `ActiveTournament/Index`. 
+- Populate the `TournamentDetailsViewModel`. 
+- Ensure you write the LINQ queries or logic required to calculate the counts for `TeamCount`, `MatchesScheduled`, and `MatchesPlayed`.
 
----
-
-### 2. Update the views of TOurnaments  
- UPdate the Details view of TOurnaments and the Index view of ActiveTournament to use this view model.
-THe division section should display the relevant details from Tournament Division View Model
-Add a round seciton to display relevant informaiton from the Tournament Rounds View Model
+### 3. Update Views
+Update the `Tournaments/Details.cshtml` and `ActiveTournament/Index.cshtml` views to use the new ViewModel.
+- **Divisions Section:** Create a responsive table listing the divisions with their calculated stats.
+- **Rounds Section:** Create a separate section (or tab) displaying the round information.

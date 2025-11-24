@@ -1,0 +1,1 @@
+Help me improve this prompt for cline ai bot being used vs code. It already knows the context of my project:
