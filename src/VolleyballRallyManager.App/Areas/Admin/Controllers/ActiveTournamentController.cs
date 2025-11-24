@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using VolleyballRallyManager.App.Models;
 using VolleyballRallyManager.Lib.Models;
 using VolleyballRallyManager.Lib.Services;
@@ -35,12 +36,14 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             var tournamentDivisions = await _activeTournamentService.GetTournamentDivisionsAsync();
             var teamsByDivision = new Dictionary<TournamentDivision, IEnumerable<TournamentTeamDivision>>();
 
+            var Divs = new HashSet<Division>();
             foreach (var division in tournamentDivisions)
             {
                 var teams = await _activeTournamentService.GetTournamentTeamsAsync(division.DivisionId);
-                teamsByDivision.Add(division, teams);
-                viewModel.Divisions.Add(division.Division);
+                teamsByDivision.Add(division, teams.OrderBy(ttd => ttd.GroupName).ToList());
+                Divs.Add(division.Division);
             }
+            viewModel.Divisions = Divs.ToList();
             viewModel.TournamentDivisions = tournamentDivisions;
             viewModel.TeamsByDivision = teamsByDivision;
 

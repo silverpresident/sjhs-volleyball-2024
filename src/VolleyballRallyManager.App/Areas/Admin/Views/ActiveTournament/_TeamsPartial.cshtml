@@ -9,7 +9,12 @@
         <ul class="list-group list-group-flush">
             @foreach (var team in divisionTeams.Value)
             {
-                <li class="list-group-item">@team.Team.Name</li>
+                <li class="list-group-item">
+                    @Html.DisplayFor(modelItem => team.GroupName, "Group")
+                    @team.Team.Name
+                    <small>(@Html.DisplayFor(modelItem => team.Team.School))
+                    </small>
+                </li>
             }
         </ul>
     </div>

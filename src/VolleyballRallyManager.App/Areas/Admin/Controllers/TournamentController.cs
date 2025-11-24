@@ -27,6 +27,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+            await _tournamentService.GetDetailsAsync(tournament);
             return View(tournament);
         }
 

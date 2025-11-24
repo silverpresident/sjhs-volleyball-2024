@@ -55,6 +55,10 @@ namespace VolleyballRallyManager.Lib.Services
 
         public async Task AddDivisionToTournamentAsync(Guid tournamentId, Guid divisionId)
         {
+            if (_context.TournamentDivisions.Any(td => td.TournamentId == tournamentId && td.DivisionId == divisionId))
+            {
+                return;
+            }
             var tournament = await _context.Tournaments.FindAsync(tournamentId);
             var division = await _context.Divisions.FindAsync(divisionId);
 
@@ -219,6 +223,17 @@ namespace VolleyballRallyManager.Lib.Services
                 }
             }
             await _context.SaveChangesAsync();
+        }
+
+        public Task GetDetailsAsync(Tournament tournament)
+        {
+            if (tournament == null)
+            {
+                return Task.CompletedTask;
+            }
+            tournament.TournamentDivisions = _context.TournamentDivisions.Where(td => td.TournamentId == tournament.Id).Include(td => td.Division).ToList();
+            tournament.TournamentTeamDivisions = _context.TournamentTeamDivisions.Where(td => td.TournamentId == tournament.Id).Include(td => td.Division).Include(td => td.Team).ToList();
+            return Task.CompletedTask;
         }
     }
 }

@@ -76,14 +76,14 @@ namespace VolleyballRallyManager.Lib.Services
             {
                 qry = qry.Where(ttd => ttd.DivisionId == divisionId);
             }
-            var model = await qry.OrderBy(ttd => ttd.SeedNumber).ToListAsync();
+            var model = await qry.ToListAsync();
             if (model.Count() > 0)
             {
                 var ids = model.Select(td => td.DivisionId).ToArray();
                 _dbContext.Divisions.Where(d => ids.Contains(d.Id)).Load();
                 ids = model.Select(td => td.TeamId).ToArray();
                 _dbContext.Teams.Where(d => ids.Contains(d.Id)).Load();
-                model = model.OrderBy(m => m.Division.Name).ThenBy(m => m.GroupName).OrderBy(m => m.Team.Name).ToList();
+                model = model.OrderBy(m => m.Division.Name).ThenBy(m => m.GroupName).ThenBy(m => m.Team.Name).ToList();
             }
             return model;
             /*
