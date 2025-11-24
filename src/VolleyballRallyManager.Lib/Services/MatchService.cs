@@ -320,4 +320,282 @@ public class MatchService : IMatchService
                           m.ScheduledTime >= startWindow && m.ScheduledTime <= endWindow);
     }
 
+    // MatchSet operations
+    public async Task<List<MatchSet>> GetMatchSetsAsync(Guid matchId)
+    {
+        return await _context.MatchSets
+            .Where(ms => ms.MatchId == matchId)
+            .OrderBy(ms => ms.SetNumber)
+            .ToListAsync();
+    }
+
+    public async Task<MatchSet?> GetCurrentSetAsync(Guid matchId)
+    {
+        var match = await _context.Matches.FindAsync(matchId);
+        if (match == null) return null;
+
+        return await _context.MatchSets
+            .FirstOrDefaultAsync(ms => ms.MatchId == matchId && ms.SetNumber == match.CurrentSetNumber);
+    }
+
+    public async Task<MatchSet> UpdateSetScoreAsync(Guid matchId, int setNumber, int homeScore, int awayScore, string userId)
+    {
+        var matchSet = await _context.MatchSets
+            .FirstOrDefaultAsync(ms => ms.MatchId == matchId && ms.SetNumber == setNumber);
+
+        if (matchSet == null)
+        {
+            // Create new set if it doesn't exist
+            matchSet = new MatchSet
+            {
+                MatchId = matchId,
+                SetNumber = setNumber,
+                HomeTeamScore = homeScore,
+                AwayTeamScore = awayScore
+            };
+            _context.MatchSets.Add(matchSet);
+        }
+        else
+        {
+            if (matchSet.IsLocked)
+                throw new InvalidOperationException("Cannot update a locked set");
+
+            matchSet.HomeTeamScore = homeScore;
+            matchSet.AwayTeamScore = awayScore;
+            matchSet.UpdatedAt = DateTime.UtcNow;
+            matchSet.UpdatedBy = userId;
+        }
+
+        var match = await GetMatchAsync(matchId);
+        if (match != null)
+        {
+            var update = new MatchUpdate
+            {
+                MatchId = matchId,
+                UpdateType = UpdateType.ScoreUpdate,
+                Content = $"Set {setNumber} score updated to {homeScore}-{awayScore}"
+            };
+            _context.MatchUpdates.Add(update);
+        }
+
+        await _context.SaveChangesAsync();
+        
+        if (match != null)
+        {
+            await _notificationService.NotifyScoreUpdateAsync(match);
+        }
+
+        return matchSet;
+    }
+
+    public async Task<MatchSet> FinishSetAsync(Guid matchId, int setNumber, string userId)
+    {
+        var matchSet = await _context.MatchSets
+            .FirstOrDefaultAsync(ms => ms.MatchId == matchId && ms.SetNumber == setNumber);
+
+        if (matchSet == null)
+            throw new KeyNotFoundException("Set not found");
+
+        matchSet.IsFinished = true;
+        matchSet.UpdatedAt = DateTime.UtcNow;
+        matchSet.UpdatedBy = userId;
+
+        var update = new MatchUpdate
+        {
+            MatchId = matchId,
+            UpdateType = UpdateType.MatchSetFinished,
+            Content = $"Set {setNumber} finished: {matchSet.HomeTeamScore}-{matchSet.AwayTeamScore}"
+        };
+        _context.MatchUpdates.Add(update);
+
+        await _context.SaveChangesAsync();
+
+        var match = await GetMatchAsync(matchId);
+        if (match != null)
+        {
+            await _notificationService.NotifyMatchUpdatedAsync(match);
+        }
+
+        return matchSet;
+    }
+
+    public async Task<MatchSet> StartNextSetAsync(Guid matchId, string userId)
+    {
+        var match = await _context.Matches.FindAsync(matchId);
+        if (match == null)
+            throw new KeyNotFoundException("Match not found");
+
+        match.CurrentSetNumber++;
+
+        var newSet = new MatchSet
+        {
+            MatchId = matchId,
+            SetNumber = match.CurrentSetNumber,
+            HomeTeamScore = 0,
+            AwayTeamScore = 0,
+            IsFinished = false,
+            IsLocked = false
+        };
+
+        _context.MatchSets.Add(newSet);
+
+        var update = new MatchUpdate
+        {
+            MatchId = matchId,
+            UpdateType = UpdateType.MatchSetStarted,
+            Content = $"Set {match.CurrentSetNumber} started"
+        };
+        _context.MatchUpdates.Add(update);
+
+        await _context.SaveChangesAsync();
+
+        var matchFull = await GetMatchAsync(matchId);
+        if (matchFull != null)
+        {
+            await _notificationService.NotifyMatchUpdatedAsync(matchFull);
+        }
+
+        return newSet;
+    }
+
+    public async Task<MatchSet> RevertToPreviousSetAsync(Guid matchId, string userId)
+    {
+        var match = await _context.Matches.FindAsync(matchId);
+        if (match == null)
+            throw new KeyNotFoundException("Match not found");
+
+        if (match.CurrentSetNumber <= 1)
+            throw new InvalidOperationException("Cannot revert from first set");
+
+        var currentSet = await _context.MatchSets
+            .FirstOrDefaultAsync(ms => ms.MatchId == matchId && ms.SetNumber == match.CurrentSetNumber);
+
+        if (currentSet != null && (currentSet.HomeTeamScore != 0 || currentSet.AwayTeamScore != 0))
+            throw new InvalidOperationException("Can only revert if current set score is 0-0");
+
+        match.CurrentSetNumber--;
+
+        var previousSet = await _context.MatchSets
+            .FirstOrDefaultAsync(ms => ms.MatchId == matchId && ms.SetNumber == match.CurrentSetNumber);
+
+        if (previousSet != null)
+        {
+            previousSet.IsFinished = false;
+            previousSet.UpdatedAt = DateTime.UtcNow;
+            previousSet.UpdatedBy = userId;
+        }
+
+        if (currentSet != null)
+        {
+            _context.MatchSets.Remove(currentSet);
+        }
+
+        var update = new MatchUpdate
+        {
+            MatchId = matchId,
+            UpdateType = UpdateType.Other,
+            Content = $"Reverted to Set {match.CurrentSetNumber}"
+        };
+        _context.MatchUpdates.Add(update);
+
+        await _context.SaveChangesAsync();
+
+        var matchFull = await GetMatchAsync(matchId);
+        if (matchFull != null)
+        {
+            await _notificationService.NotifyMatchUpdatedAsync(matchFull);
+        }
+
+        return previousSet ?? throw new KeyNotFoundException("Previous set not found");
+    }
+
+    public async Task<Match> EndMatchAndLockSetsAsync(Guid matchId, string userId)
+    {
+        var match = await GetMatchAsync(matchId);
+        if (match == null)
+            throw new KeyNotFoundException("Match not found");
+
+        var sets = await GetMatchSetsAsync(matchId);
+
+        // Calculate sets won
+        int homeSetsWon = sets.Count(s => s.HomeTeamScore > s.AwayTeamScore);
+        int awaySetsWon = sets.Count(s => s.AwayTeamScore > s.HomeTeamScore);
+
+        match.HomeTeamScore = homeSetsWon;
+        match.AwayTeamScore = awaySetsWon;
+        match.IsFinished = true;
+        match.IsLocked = true;
+
+        // Lock all sets
+        foreach (var set in sets)
+        {
+            set.IsLocked = true;
+            set.IsFinished = true;
+        }
+
+        var update = new MatchUpdate
+        {
+            MatchId = matchId,
+            UpdateType = UpdateType.MatchFinished,
+            Content = $"Match ended by {userId}. Final score: {homeSetsWon}-{awaySetsWon} sets"
+        };
+        _context.MatchUpdates.Add(update);
+
+        await _context.SaveChangesAsync();
+        await _notificationService.NotifyMatchFinishedAsync(match);
+
+        return match;
+    }
+
+    public async Task<Match> UpdateMatchDetailsAsync(Guid matchId, DateTime? scheduledTime, string? courtLocation, string? refereeName, string? scorerName, string userId)
+    {
+        var match = await GetMatchAsync(matchId);
+        if (match == null)
+            throw new KeyNotFoundException("Match not found");
+
+        var changes = new List<string>();
+
+        if (scheduledTime.HasValue && match.ScheduledTime != scheduledTime.Value)
+        {
+            var oldTime = match.ScheduledTime;
+            match.ScheduledTime = scheduledTime.Value;
+            changes.Add($"Time changed from {oldTime:g} to {scheduledTime.Value:g}");
+        }
+
+        if (!string.IsNullOrEmpty(courtLocation) && match.CourtLocation != courtLocation)
+        {
+            var oldLocation = match.CourtLocation;
+            match.CourtLocation = courtLocation;
+            changes.Add($"Court changed from {oldLocation} to {courtLocation}");
+        }
+
+        if (refereeName != null && match.RefereeName != refereeName)
+        {
+            match.RefereeName = refereeName;
+            changes.Add($"Referee assigned: {refereeName}");
+        }
+
+        if (scorerName != null && match.ScorerName != scorerName)
+        {
+            match.ScorerName = scorerName;
+            changes.Add($"Scorer assigned: {scorerName}");
+        }
+
+        if (changes.Count > 0)
+        {
+            var update = new MatchUpdate
+            {
+                MatchId = matchId,
+                UpdateType = UpdateType.Other,
+                Content = string.Join("; ", changes)
+            };
+            _context.MatchUpdates.Add(update);
+
+            await _context.SaveChangesAsync();
+            await _notificationService.NotifyMatchUpdatedAsync(match);
+        }
+
+        return match;
+    }
+
 }

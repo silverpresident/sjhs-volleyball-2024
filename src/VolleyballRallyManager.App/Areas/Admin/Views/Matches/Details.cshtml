@@ -1,8 +1,9 @@
-@model VolleyballRallyManager.Lib.Models.Match
+@model VolleyballRallyManager.App.Areas.Admin.Models.MatchDetailsViewModel
 @using VolleyballRallyManager.Lib.Models
 
 @{
     ViewData["Title"] = "Match Details";
+    var match = Model.Match;
 }
 
 <div class="container">
@@ -13,16 +14,16 @@
             <div class="card mb-4">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Match #@Model.MatchNumber</h5>
-                        @if (Model.IsDisputed)
+                        <h5 class="mb-0">Match #@match.MatchNumber</h5>
+                        @if (match.IsDisputed)
                         {
                             <span class="badge bg-danger">Disputed</span>
                         }
-                        else if (Model.IsFinished)
+                        else if (match.IsFinished)
                         {
                             <span class="badge bg-success">Finished</span>
                         }
-                        else if (Model.ActualStartTime.HasValue)
+                        else if (match.ActualStartTime.HasValue)
                         {
                             <span class="badge bg-primary">In Progress</span>
                         }
@@ -36,25 +37,26 @@
                     <div class="row mb-4">
                         <div class="col">
                             <h6>Round</h6>
-                            <p>@Model.Round?.Name</p>
+                            <p>@match.Round?.Name</p>
                         </div>
                         <div class="col">
                             <h6>Court</h6>
-                            <p>@Model.CourtLocation</p>
+                            <p>@match.CourtLocation</p>
                         </div>
                         <div class="col">
                             <h6>Scheduled Time</h6>
-                            <p>@Model.ScheduledTime.ToString("dd/MM/yyyy HH:mm")</p>
+                            <p>@match.ScheduledTime.ToString("dd/MM/yyyy HH:mm")</p>
                         </div>
                     </div>
 
                     <div class="row mb-4">
                         <div class="col-md-5 text-center">
                             <div class="team-box p-3 border rounded">
-                                <div class="team-color mb-2" style="width: 30px; height: 30px; border-radius: 50%; background-color: @Model.HomeTeam?.Color; margin: 0 auto;"></div>
-                                <h5>@Model.HomeTeam?.Name</h5>
-                                <small class="text-muted">@Model.HomeTeam?.School</small>
-                                <h2 class="mt-3">@Model.HomeTeamScore</h2>
+                                <div class="team-color mb-2" style="width: 30px; height: 30px; border-radius: 50%; background-color: @match.HomeTeam?.Color; margin: 0 auto;"></div>
+                                <h5>@match.HomeTeam?.Name</h5>
+                                <small class="text-muted">@match.HomeTeam?.School</small>
+                                <h2 class="mt-3">@match.HomeTeamScore</h2>
+                                <small class="text-muted">Sets Won</small>
                             </div>
                         </div>
                         <div class="col-md-2 d-flex align-items-center justify-content-center">
@@ -62,10 +64,11 @@
                         </div>
                         <div class="col-md-5 text-center">
                             <div class="team-box p-3 border rounded">
-                                <div class="team-color mb-2" style="width: 30px; height: 30px; border-radius: 50%; background-color: @Model.AwayTeam?.Color; margin: 0 auto;"></div>
-                                <h5>@Model.AwayTeam?.Name</h5>
-                                <small class="text-muted">@Model.AwayTeam?.School</small>
-                                <h2 class="mt-3">@Model.AwayTeamScore</h2>
+                                <div class="team-color mb-2" style="width: 30px; height: 30px; border-radius: 50%; background-color: @match.AwayTeam?.Color; margin: 0 auto;"></div>
+                                <h5>@match.AwayTeam?.Name</h5>
+                                <small class="text-muted">@match.AwayTeam?.School</small>
+                                <h2 class="mt-3">@match.AwayTeamScore</h2>
+                                <small class="text-muted">Sets Won</small>
                             </div>
                         </div>
                     </div>
@@ -73,29 +76,102 @@
                     <div class="row mb-4">
                         <div class="col-md-6">
                             <h6>Referee</h6>
-                            <p>@(string.IsNullOrEmpty(Model.RefereeName) ? "Not assigned" : Model.RefereeName)</p>
+                            <p>@(string.IsNullOrEmpty(match.RefereeName) ? "Not assigned" : match.RefereeName)</p>
                         </div>
                         <div class="col-md-6">
                             <h6>Scorer</h6>
-                            <p>@(string.IsNullOrEmpty(Model.ScorerName) ? "Not assigned" : Model.ScorerName)</p>
+                            <p>@(string.IsNullOrEmpty(match.ScorerName) ? "Not assigned" : match.ScorerName)</p>
                         </div>
                     </div>
 
-                    @if (Model.ActualStartTime.HasValue)
+                    @if (match.ActualStartTime.HasValue)
                     {
                         <div class="row">
                             <div class="col">
                                 <h6>Started At</h6>
-                                <p>@Model.ActualStartTime.Value.ToString("dd/MM/yyyy HH:mm")</p>
+                                <p>@match.ActualStartTime.Value.ToString("dd/MM/yyyy HH:mm")</p>
                             </div>
                         </div>
                     }
                 </div>
             </div>
 
-            <div>
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary"><i class="bi bi-pencil"></i> Edit</a>
-                <a asp-action="Index" class="btn btn-secondary"><i class="bi bi-arrow-left-circle"></i> Back to List</a>
+            @if (Model.Sets.Any())
+            {
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Set History</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Set</th>
+                                    <th>@match.HomeTeam?.Name</th>
+                                    <th>@match.AwayTeam?.Name</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var set in Model.Sets.OrderBy(s => s.SetNumber))
+                                {
+                                    <tr>
+                                        <td><strong>Set @set.SetNumber</strong></td>
+                                        <td class="@(set.HomeTeamScore > set.AwayTeamScore ? "fw-bold text-success" : "")">@set.HomeTeamScore</td>
+                                        <td class="@(set.AwayTeamScore > set.HomeTeamScore ? "fw-bold text-success" : "")">@set.AwayTeamScore</td>
+                                        <td>
+                                            @if (set.IsLocked)
+                                            {
+                                                <span class="badge bg-secondary">
+                                                    <i class="bi bi-lock-fill"></i> Locked
+                                                </span>
+                                            }
+                                            else if (set.IsFinished)
+                                            {
+                                                <span class="badge bg-success">Finished</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-primary">In Progress</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (!set.IsLocked)
+                                            {
+                                                <button class="btn btn-sm btn-warning" disabled title="Edit functionality coming soon">
+                                                    <i class="bi bi-pencil"></i> Edit
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">Cannot edit locked set</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+
+            <div class="mb-4">
+                <a asp-action="Assign" asp-route-id="@match.Id" class="btn btn-success">
+                    <i class="bi bi-calendar-check"></i> Assign Details
+                </a>
+                <a asp-action="Update" asp-route-id="@match.Id" class="btn btn-warning">
+                    <i class="bi bi-chat-left-text"></i> Add Update
+                </a>
+                <a asp-action="Scorer" asp-route-id="@match.Id" class="btn btn-primary">
+                    <i class="bi bi-calculator"></i> Scorer Interface
+                </a>
+                <a asp-action="Edit" asp-route-id="@match.Id" class="btn btn-secondary">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left-circle"></i> Back to List
+                </a>
             </div>
         </div>
 

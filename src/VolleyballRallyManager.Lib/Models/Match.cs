@@ -54,10 +54,17 @@ public class Match : BaseEntity
     [Display(Name = "Scorer Name")]
     public string? ScorerName { get; set; }
 
+    [Display(Name = "Current Set Number")]
+    public int CurrentSetNumber { get; set; } = 0;
+
+    [Display(Name = "Is Locked")]
+    public bool IsLocked { get; set; }
+
     // Navigation properties
     public virtual Round? Division { get; set; }
     public virtual Round? Round { get; set; }
     public virtual Team? HomeTeam { get; set; }
     public virtual Team? AwayTeam { get; set; }
     public virtual ICollection<MatchUpdate> Updates { get; set; } = new List<MatchUpdate>();
+    public virtual ICollection<MatchSet> Sets { get; set; } = new List<MatchSet>();
 }

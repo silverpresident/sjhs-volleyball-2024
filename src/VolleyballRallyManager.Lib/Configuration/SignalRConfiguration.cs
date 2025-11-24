@@ -36,6 +36,15 @@ public static class SignalRConfiguration
                 options.ApplicationMaxBufferSize = 102400; // 100 KB
                 options.TransportMaxBufferSize = 102400; // 100 KB
             });
+
+            endpoints.MapHub<ScorerHub>("/scorerhub", options =>
+            {
+                options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets |
+                                   Microsoft.AspNetCore.Http.Connections.HttpTransportType.ServerSentEvents;
+
+                options.ApplicationMaxBufferSize = 102400; // 100 KB
+                options.TransportMaxBufferSize = 102400; // 100 KB
+            });
         });
 
         return app;

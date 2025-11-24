@@ -1,0 +1,52 @@
+@model VolleyballRallyManager.App.Areas.Admin.Models.MatchUpdateViewModel
+
+@{
+    ViewData["Title"] = "Add Match Update";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i class="bi bi-chat-left-text"></i> Add Update for Match #@Model.MatchNumber
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>@Model.HomeTeamName</strong> vs <strong>@Model.AwayTeamName</strong>
+                    </div>
+
+                    <form asp-action="Update" method="post">
+                        <input type="hidden" asp-for="MatchId" />
+                        <input type="hidden" asp-for="MatchNumber" />
+                        <input type="hidden" asp-for="HomeTeamName" />
+                        <input type="hidden" asp-for="AwayTeamName" />
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Comment" class="form-label"></label>
+                            <textarea asp-for="Comment" class="form-control" rows="5" placeholder="Enter match update or commentary..."></textarea>
+                            <span asp-validation-for="Comment" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Details" asp-route-id="@Model.MatchId" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-plus-lg"></i> Add Update
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

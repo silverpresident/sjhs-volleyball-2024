@@ -14,6 +14,7 @@ namespace VolleyballRallyManager.Lib.Data
         public DbSet<Team> Teams { get; set; }
         public DbSet<Round> Rounds { get; set; }
         public DbSet<Match> Matches { get; set; }
+        public DbSet<MatchSet> MatchSets { get; set; }
         public DbSet<Announcement> Announcements { get; set; }
         public DbSet<MatchUpdate> MatchUpdates { get; set; }
         public DbSet<Division> Divisions { get; set; }
@@ -67,6 +68,12 @@ namespace VolleyballRallyManager.Lib.Data
                 .HasMany(m => m.Updates)
                 .WithOne(u => u.Match)
                 .HasForeignKey(u => u.MatchId);
+
+            builder.Entity<Match>()
+                .HasMany(m => m.Sets)
+                .WithOne(ms => ms.Match)
+                .HasForeignKey(ms => ms.MatchId)
+                .OnDelete(DeleteBehavior.Cascade);
             /*builder.Entity<Match>()
                             .WithOne(m => m.HomeTeam)
                             .HasForeignKey(m => m.HomeTeamId)

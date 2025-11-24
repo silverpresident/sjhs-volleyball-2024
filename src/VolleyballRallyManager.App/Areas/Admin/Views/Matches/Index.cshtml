@@ -48,9 +48,10 @@
                     <tr data-status="@status">
                         <td>
                             <div class="btn-group" role="group">
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Edit"><i class="bi bi-pencil"></i></a>
+                                <a asp-action="Assign" asp-route-id="@item.Id" class="btn btn-sm btn-outline-success" title="Assign"><i class="bi bi-calendar-check"></i></a>
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Details"><i class="bi bi-info-circle"></i></a>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></a>
+                                <a asp-action="Scorer" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Scorer"><i class="bi bi-calculator"></i></a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
                             </div>
                         </td>
                         <td>

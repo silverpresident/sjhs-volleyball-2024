@@ -27,4 +27,14 @@ public interface IMatchService
     Task<bool> HasTeamPlayedInRoundAsync(Guid teamId, Guid roundId);
     Task<bool> AreTeamsAvailableAsync(Guid homeTeamId, Guid awayTeamId, DateTime scheduledTime);
     Task<bool> IsCourtAvailableAsync(string courtLocation, DateTime scheduledTime);
+    
+    // MatchSet operations
+    Task<List<MatchSet>> GetMatchSetsAsync(Guid matchId);
+    Task<MatchSet?> GetCurrentSetAsync(Guid matchId);
+    Task<MatchSet> UpdateSetScoreAsync(Guid matchId, int setNumber, int homeScore, int awayScore, string userId);
+    Task<MatchSet> FinishSetAsync(Guid matchId, int setNumber, string userId);
+    Task<MatchSet> StartNextSetAsync(Guid matchId, string userId);
+    Task<MatchSet> RevertToPreviousSetAsync(Guid matchId, string userId);
+    Task<Match> EndMatchAndLockSetsAsync(Guid matchId, string userId);
+    Task<Match> UpdateMatchDetailsAsync(Guid matchId, DateTime? scheduledTime, string? courtLocation, string? refereeName, string? scorerName, string userId);
 }

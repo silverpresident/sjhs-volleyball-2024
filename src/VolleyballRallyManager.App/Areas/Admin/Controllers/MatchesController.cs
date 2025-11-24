@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using VolleyballRallyManager.App.Areas.Admin.Models;
 using VolleyballRallyManager.App.Models;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
@@ -10,7 +11,6 @@ using VolleyballRallyManager.Lib.Services;
 namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize]
     public class MatchesController : Controller
     {
 
@@ -43,18 +43,193 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var match = await _dbContext.Matches
-                .Include(m => m.AwayTeam)
-                .Include(m => m.HomeTeam)
-                .Include(m => m.Division)
-               // .Include(m => m.Round)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var match = await _matchService.GetMatchAsync(id.Value);
             if (match == null)
             {
                 return NotFound();
             }
 
-            return View(match);
+            var sets = await _matchService.GetMatchSetsAsync(id.Value);
+            var updates = await _matchService.GetMatchUpdatesAsync(id.Value);
+
+            var viewModel = new MatchDetailsViewModel
+            {
+                Match = match,
+                Sets = sets,
+                Updates = updates
+            };
+
+            return View(viewModel);
+        }
+
+        // GET: Admin/Matches/Assign/5
+        public async Task<IActionResult> Assign(Guid? id)
+        {
+            if (!id.HasValue)
+            {
+                return NotFound();
+            }
+
+            var match = await _matchService.GetMatchAsync(id.Value);
+            if (match == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new MatchAssignViewModel
+            {
+                MatchId = match.Id,
+                MatchNumber = match.MatchNumber,
+                HomeTeamName = match.HomeTeam?.Name ?? "Unknown",
+                AwayTeamName = match.AwayTeam?.Name ?? "Unknown",
+                ScheduledTime = match.ScheduledTime,
+                CourtLocation = match.CourtLocation,
+                RefereeName = match.RefereeName,
+                ScorerName = match.ScorerName
+            };
+
+            return View(viewModel);
+        }
+
+        // POST: Admin/Matches/Assign/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Assign(Guid id, MatchAssignViewModel model)
+        {
+            if (id != model.MatchId)
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                await _matchService.UpdateMatchDetailsAsync(
+                    model.MatchId,
+                    model.ScheduledTime,
+                    model.CourtLocation,
+                    model.RefereeName,
+                    model.ScorerName,
+                    User.Identity?.Name ?? "admin"
+                );
+
+                TempData["SuccessMessage"] = "Match details updated successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Error updating match: {ex.Message}");
+                return View(model);
+            }
+        }
+
+        // GET: Admin/Matches/Update/5
+        public async Task<IActionResult> Update(Guid? id)
+        {
+            if (!id.HasValue)
+            {
+                return NotFound();
+            }
+
+            var match = await _matchService.GetMatchAsync(id.Value);
+            if (match == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new MatchUpdateViewModel
+            {
+                MatchId = match.Id,
+                MatchNumber = match.MatchNumber,
+                HomeTeamName = match.HomeTeam?.Name ?? "Unknown",
+                AwayTeamName = match.AwayTeam?.Name ?? "Unknown"
+            };
+
+            return View(viewModel);
+        }
+
+        // POST: Admin/Matches/Update/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(Guid id, MatchUpdateViewModel model)
+        {
+            if (id != model.MatchId)
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var update = new MatchUpdate
+                {
+                    MatchId = model.MatchId,
+                    UpdateType = UpdateType.Other,
+                    Content = model.Comment
+                };
+
+                await _matchService.AddMatchUpdateAsync(update);
+
+                TempData["SuccessMessage"] = "Match update added successfully.";
+                return RedirectToAction(nameof(Details), new { id = model.MatchId });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Error adding update: {ex.Message}");
+                return View(model);
+            }
+        }
+
+        // GET: Admin/Matches/Scorer/5
+        public async Task<IActionResult> Scorer(Guid? id)
+        {
+            if (!id.HasValue)
+            {
+                return NotFound();
+            }
+
+            var match = await _matchService.GetMatchAsync(id.Value);
+            if (match == null)
+            {
+                return NotFound();
+            }
+
+            var sets = await _matchService.GetMatchSetsAsync(id.Value);
+            var recentUpdates = await _matchService.GetMatchUpdatesAsync(id.Value);
+
+            var viewModel = new MatchScorerViewModel
+            {
+                MatchId = match.Id,
+                MatchNumber = match.MatchNumber,
+                HomeTeamName = match.HomeTeam?.Name ?? "Unknown",
+                HomeTeamId = match.HomeTeamId,
+                AwayTeamName = match.AwayTeam?.Name ?? "Unknown",
+                AwayTeamId = match.AwayTeamId,
+                CourtLocation = match.CourtLocation,
+                CurrentSetNumber = match.CurrentSetNumber,
+                IsFinished = match.IsFinished,
+                IsDisputed = match.IsDisputed,
+                ActualStartTime = match.ActualStartTime,
+                Sets = sets.Select(s => new MatchSetDto
+                {
+                    SetNumber = s.SetNumber,
+                    HomeTeamScore = s.HomeTeamScore,
+                    AwayTeamScore = s.AwayTeamScore,
+                    IsFinished = s.IsFinished,
+                    IsLocked = s.IsLocked
+                }).ToList(),
+                RecentUpdates = recentUpdates.Take(15).ToList()
+            };
+
+            return View(viewModel);
         }
 
         // GET: Admin/Matches/Create
