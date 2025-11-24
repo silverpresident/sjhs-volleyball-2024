@@ -47,7 +47,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 .Include(m => m.AwayTeam)
                 .Include(m => m.HomeTeam)
                 .Include(m => m.Division)
-                .Include(m => m.Round)
+               // .Include(m => m.Round)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (match == null)
             {

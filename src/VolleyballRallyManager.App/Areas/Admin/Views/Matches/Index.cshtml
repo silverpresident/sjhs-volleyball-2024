@@ -53,7 +53,12 @@
                                 <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></a>
                             </div>
                         </td>
-                        <td>@Html.DisplayFor(modelItem => item.MatchNumber)</td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MatchNumber)
+                            <small>
+                                @Html.DisplayFor(modelItem => item.Division.Name)
+                            </small>
+                        </td>
                         <td>@Html.DisplayFor(modelItem => item.Round!.Name)</td>
                         <td>
                             @item.ScheduledTime.ToString("dd/MM HH:mm")
