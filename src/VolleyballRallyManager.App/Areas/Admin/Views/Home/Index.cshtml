@@ -247,21 +247,29 @@
                             {
                                 <div class="list-group-item px-0">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h6 class="mb-1">@announcement.Title</h6>
-                                        @if (announcement.Priority == VolleyballRallyManager.Lib.Models.AnnouncementPriority.High)
+                                        <h6 class="mb-1">Announcement #@announcement.Id.ToString().Substring(0, 8)</h6>
+                                        @if (announcement.Priority == VolleyballRallyManager.Lib.Models.AnnouncementPriority.Danger)
                                         {
-                                            <span class="badge bg-danger">High</span>
+                                            <span class="badge bg-danger">Danger</span>
                                         }
-                                        else if (announcement.Priority == VolleyballRallyManager.Lib.Models.AnnouncementPriority.Medium)
+                                        else if (announcement.Priority == VolleyballRallyManager.Lib.Models.AnnouncementPriority.Warning)
                                         {
-                                            <span class="badge bg-warning text-dark">Medium</span>
+                                            <span class="badge bg-warning text-dark">Warning</span>
+                                        }
+                                        else if (announcement.Priority == VolleyballRallyManager.Lib.Models.AnnouncementPriority.Primary)
+                                        {
+                                            <span class="badge bg-primary">Primary</span>
+                                        }
+                                        else if (announcement.Priority == VolleyballRallyManager.Lib.Models.AnnouncementPriority.Secondary)
+                                        {
+                                            <span class="badge bg-secondary">Secondary</span>
                                         }
                                         else
                                         {
-                                            <span class="badge bg-secondary">Normal</span>
+                                            <span class="badge bg-info">Info</span>
                                         }
                                     </div>
-                                    <p class="mb-1 small">@announcement.Message</p>
+                                    <p class="mb-1 small">@(announcement.Content.Length > 100 ? announcement.Content.Substring(0, 100) + "..." : announcement.Content)</p>
                                     <small class="text-muted">@announcement.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
                                 </div>
                             }
