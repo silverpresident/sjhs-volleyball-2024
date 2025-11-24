@@ -1,38 +1,66 @@
 @model VolleyballRallyManager.Lib.Models.Announcement
+@using VolleyballRallyManager.Lib.Models
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Announcement Details";
 }
 
 <div class="container">
-    <h1>Details</h1>
-    <div class="card">
-        <div class="card-body">
-            <h4>Announcement</h4>
-            <hr />
-            <dl class="row">
-                <dt class = "col-sm-2">
-                    @Html.DisplayNameFor(model => model.Priority)
-                </dt>
-                <dd class = "col-sm-10">
-                    @Model.Priority.ToString()
-                </dd>
-                <dt class = "col-sm-2">
-                    @Html.DisplayNameFor(model => model.Content)
-                </dt>
-                <dd class = "col-sm-10">
-                    @Html.Raw(Model.Content)
-                </dd>
-                <dt class = "col-sm-2">
-                    @Html.DisplayNameFor(model => model.CreatedAt)
-                </dt>
-                <dd class = "col-sm-10">
-                    @Html.DisplayFor(model => model.CreatedAt)
-                </dd>
-            </dl>
+    <h1>Announcement Details</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-@(Model.Priority.ToString().ToLower())">@Model.Priority</span>
+                            @if (!Model.IsVisible)
+                            {
+                                <span class="badge bg-secondary ms-2">Hidden</span>
+                            }
+                        </div>
+                        <small class="text-muted">Created @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (Model.UseMarkdown)
+                    {
+                        <div class="markdown-content">@Html.Raw(Model.RenderedContent)</div>
+                    }
+                    else
+                    {
+                        <p class="card-text">@Model.Content</p>
+                    }
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col">
+                            <small class="text-muted">Created by: @Model.CreatedBy</small>
+                        </div>
+                        @if (Model.UpdatedAt != Model.CreatedAt)
+                        {
+                            <div class="col text-end">
+                                <small class="text-muted">Last updated: @Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm") by @Model.UpdatedBy</small>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+             
+            <div>
+                <a asp-action="Index" class="btn btn-secondary"><i class="bi bi-arrow-left-circle"></i> Back to List</a>
+            </div>
         </div>
-    </div>
-    <div>
-        <a asp-action="Index">Back to List</a>
+         
     </div>
 </div>
+
+@section Styles {
+    <style> 
+        .markdown-content img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+}
