@@ -1,3 +1,4 @@
+using VolleyballRallyManager.Lib.Common;
 using VolleyballRallyManager.Lib.Models;
 
 namespace VolleyballRallyManager.Lib.Services
@@ -12,7 +13,7 @@ namespace VolleyballRallyManager.Lib.Services
         Task RemoveTeamAsync(Guid teamId);
         Task<TournamentTeamDivision> AddTeamAsync(Guid teamId, Guid divisionId, string groupName, int seedNumber = 0);
         Task<TournamentTeamDivision> SetTeamAsync(Guid teamId, Guid divisionId, string groupName, int seedNumber = 0);
-        Task<int> MatchCountAsync(Guid? divisionId = null);
+        Task<int> MatchCountAsync(MatchState matchState = MatchState.None, Guid? divisionId = null);
         Task<int> TeamCountAsync(Guid? divisionId = null);
 
         Task UpdateTeamStatisticsAsync(Match match);
@@ -20,5 +21,6 @@ namespace VolleyballRallyManager.Lib.Services
         Task<IEnumerable<Team>> GetAvailableTeamsAsync();
         Task<IEnumerable<Match>> GetMatchesAsync(Guid? divisionId = null, Guid? roundId = null);
         Task UpdateTournamentDivisionsAsync(List<Guid> selectedDivisionIds);
+        Task<IEnumerable<Match>> RecentMatchesAsync();
     }
 }

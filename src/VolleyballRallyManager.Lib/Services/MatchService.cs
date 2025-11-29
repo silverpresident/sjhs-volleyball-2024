@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
@@ -127,9 +128,9 @@ public class MatchService : IMatchService
         {
             MatchId = id,
             UpdateType = UpdateType.ScoreUpdate,
-            Content = $"Score updated to {homeTeamScore}-{awayTeamScore}",
-            PreviousValue = $"{match.HomeTeamScore}-{match.AwayTeamScore}",
-            NewValue = $"{homeTeamScore}-{awayTeamScore}"
+            Content = $"Score updated to {homeTeamScore}:{awayTeamScore}",
+            PreviousValue = $"{match.HomeTeamScore}:{match.AwayTeamScore}",
+            NewValue = $"{homeTeamScore}:{awayTeamScore}"
         };
 
         _context.MatchUpdates.Add(update);
@@ -138,22 +139,39 @@ public class MatchService : IMatchService
         return match;
     }
 
-    public async Task<Match> StartMatchAsync(Guid id, string userId)
+    public async Task<Match> StartMatchAsync(Guid id, string userName)
     {
         var match = await GetMatchAsync(id);
         if (match == null) throw new KeyNotFoundException("Match not found");
 
-        match.ActualStartTime = DateTime.UtcNow;
-        var update = new MatchUpdate
+        if (match.IsLocked)
         {
-            MatchId = id,
-            UpdateType = UpdateType.MatchStarted,
-            Content = $"Match started by {userId}"
-        };
-        _context.MatchUpdates.Add(update);
-        await _context.SaveChangesAsync();
+            throw new KeyNotFoundException("Match is locked");
+        }
+        if (match.CurrentSetNumber == 0)
+        {
+            match.ActualStartTime = DateTime.UtcNow;
+            var update = new MatchUpdate
+            {
+                MatchId = id,
+                UpdateType = UpdateType.MatchStarted,
+                Content = $"Match started"
+            };
+            match.CurrentSetNumber = 1;
+            CreateBaseEntity(update, userName);
+            _context.MatchUpdates.Add(update);
+            await _context.SaveChangesAsync();
+        }
         await _notificationService.NotifyMatchStartedAsync(match);
         return match;
+    }
+
+    private void CreateBaseEntity(BaseEntity update, string userName)
+    {
+        update.CreatedBy = userName;
+        update.UpdatedBy = userName;
+        update.CreatedAt = DateTime.Now;
+        update.UpdatedAt = DateTime.Now;
     }
 
     public async Task<Match> FinishMatchAsync(Guid id, string userId)
@@ -162,6 +180,10 @@ public class MatchService : IMatchService
         if (match == null) throw new KeyNotFoundException("Match not found");
 
         match.IsFinished = true;
+        match.HomeTeamScore = _context.MatchSets.Where(s => s.MatchId == match.Id && s.HomeTeamScore > s.AwayTeamScore).Count();
+        match.AwayTeamScore = _context.MatchSets.Where(s => s.MatchId == match.Id && s.HomeTeamScore < s.AwayTeamScore).Count(); ;
+
+
         var update = new MatchUpdate
         {
             MatchId = id,
@@ -353,6 +375,7 @@ public class MatchService : IMatchService
                 HomeTeamScore = homeScore,
                 AwayTeamScore = awayScore
             };
+            CreateBaseEntity(matchSet, userId);
             _context.MatchSets.Add(matchSet);
         }
         else
@@ -396,6 +419,10 @@ public class MatchService : IMatchService
         if (matchSet == null)
             throw new KeyNotFoundException("Set not found");
 
+        if (matchSet.IsFinished == true)
+        {
+            return matchSet;
+        }
         matchSet.IsFinished = true;
         matchSet.UpdatedAt = DateTime.UtcNow;
         matchSet.UpdatedBy = userId;
@@ -413,13 +440,17 @@ public class MatchService : IMatchService
         var match = await GetMatchAsync(matchId);
         if (match != null)
         {
-            await _notificationService.NotifyMatchUpdatedAsync(match);
-        }
+            match.HomeTeamScore = _context.MatchSets.Where(s => s.MatchId == match.Id && s.HomeTeamScore > s.AwayTeamScore).Count();
+            match.AwayTeamScore = _context.MatchSets.Where(s => s.MatchId == match.Id && s.HomeTeamScore < s.AwayTeamScore).Count(); ;
 
+            await _context.SaveChangesAsync();
+            await _notificationService.NotifyMatchUpdatedAsync(match);
+        } 
+        //TODO update match with sets won v lost
         return matchSet;
     }
 
-    public async Task<MatchSet> StartNextSetAsync(Guid matchId, string userId)
+    public async Task<MatchSet> StartNextSetAsync(Guid matchId, string userName, int currentSetNumber)
     {
         var match = await _context.Matches.FindAsync(matchId);
         if (match == null)
@@ -436,7 +467,7 @@ public class MatchService : IMatchService
             IsFinished = false,
             IsLocked = false
         };
-
+        CreateBaseEntity(newSet, userName);
         _context.MatchSets.Add(newSet);
 
         var update = new MatchUpdate
@@ -445,6 +476,7 @@ public class MatchService : IMatchService
             UpdateType = UpdateType.MatchSetStarted,
             Content = $"Set {match.CurrentSetNumber} started"
         };
+        CreateBaseEntity(update, userName);
         _context.MatchUpdates.Add(update);
 
         await _context.SaveChangesAsync();
@@ -458,7 +490,7 @@ public class MatchService : IMatchService
         return newSet;
     }
 
-    public async Task<MatchSet> RevertToPreviousSetAsync(Guid matchId, string userId)
+    public async Task<MatchSet> RevertToPreviousSetAsync(Guid matchId, string userId, int currentSetNumber)
     {
         var match = await _context.Matches.FindAsync(matchId);
         if (match == null)
@@ -598,4 +630,31 @@ public class MatchService : IMatchService
         return match;
     }
 
+    public async Task<MatchSet?> GetMatchSetAsync(Guid matchId, int currentSetNumber)
+    {
+        return await _context.MatchSets
+            .FirstOrDefaultAsync(ms => ms.MatchId == matchId && ms.SetNumber == currentSetNumber);
+
+    }
+    public async Task<MatchSet> GetOrCreateMatchSetAsync(Guid matchId, int currentSetNumber, string userName)
+    {
+        var currentSet = await _context.MatchSets
+            .FirstOrDefaultAsync(ms => ms.MatchId == matchId && ms.SetNumber == currentSetNumber);
+        if (currentSet == null)
+        {
+            currentSet = new MatchSet()
+            {
+                MatchId = matchId,
+                SetNumber = currentSetNumber,
+                HomeTeamScore = 0,
+                AwayTeamScore = 0,
+                IsLocked = false,
+                IsFinished = false,
+            };
+            CreateBaseEntity(currentSet, userName);
+            _context.MatchSets.Add(currentSet);
+            await _context.SaveChangesAsync();
+        }
+        return currentSet;
+    }
 }

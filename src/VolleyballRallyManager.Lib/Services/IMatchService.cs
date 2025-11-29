@@ -33,8 +33,10 @@ public interface IMatchService
     Task<MatchSet?> GetCurrentSetAsync(Guid matchId);
     Task<MatchSet> UpdateSetScoreAsync(Guid matchId, int setNumber, int homeScore, int awayScore, string userId);
     Task<MatchSet> FinishSetAsync(Guid matchId, int setNumber, string userId);
-    Task<MatchSet> StartNextSetAsync(Guid matchId, string userId);
-    Task<MatchSet> RevertToPreviousSetAsync(Guid matchId, string userId);
+    Task<MatchSet> StartNextSetAsync(Guid matchId, string userId, int currentSetNumber);
+    Task<MatchSet> RevertToPreviousSetAsync(Guid matchId, string userId, int currentSetNumber);
     Task<Match> EndMatchAndLockSetsAsync(Guid matchId, string userId);
     Task<Match> UpdateMatchDetailsAsync(Guid matchId, DateTime? scheduledTime, string? courtLocation, string? refereeName, string? scorerName, string userId);
+    Task<MatchSet?> GetMatchSetAsync(Guid matchId, int currentSetNumber);
+    Task<MatchSet> GetOrCreateMatchSetAsync(Guid matchId, int setNumber, string userName);
 }

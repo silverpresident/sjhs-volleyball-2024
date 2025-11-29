@@ -103,4 +103,13 @@ public class AnnouncementService : IAnnouncementService
 
         return true;
     }
+
+    public async Task<IEnumerable<Announcement>> GetRecentAnnouncementsAsync(int count)
+    {
+        return await _context.Announcements
+                            .OrderByDescending(a => a.CreatedAt)
+                            .Where(a => a.IsVisible == true)
+                            .Take(count)
+                            .ToListAsync();
+    }
 }

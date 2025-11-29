@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using VolleyballRallyManager.App.Models;
+using VolleyballRallyManager.Lib.Common;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Services;
 
@@ -10,12 +11,14 @@ public class HomeController : Controller
     private readonly ApplicationDbContext _context;
     private readonly ILogger<HomeController> _logger;
     private readonly IActiveTournamentService _activeTournamentService;
+    private readonly IAnnouncementService _announcementService;
 
-    public HomeController(ApplicationDbContext context, IActiveTournamentService activeTournamentService, ILogger<HomeController> logger)
+    public HomeController(ApplicationDbContext context, IActiveTournamentService activeTournamentService, ILogger<HomeController> logger, IAnnouncementService announcementService)
     {
         _context = context;
         _logger = logger;
         _activeTournamentService = activeTournamentService;
+        _announcementService = announcementService;
     }
 
     public async Task<IActionResult> Index()
@@ -38,24 +41,11 @@ public class HomeController : Controller
         {
             TotalTeams = await _activeTournamentService.TeamCountAsync(),
             TotalMatches = await _activeTournamentService.MatchCountAsync(),
-            /*             MatchesInProgress = await _context.Matches
-                            .CountAsync(m => m.ActualStartTime.HasValue && !m.IsFinished),
-                        MatchesFinished = await _context.Matches.CountAsync(m => m.IsFinished),
-                        DisputedMatches = await _context.Matches.CountAsync(m => m.IsDisputed),
-
-                        RecentMatches = await _context.Matches
-                            .Include(m => m.HomeTeam)
-                            .Include(m => m.AwayTeam)
-                            .Include(m => m.Round)
-                            .OrderByDescending(m => m.ScheduledTime)
-                            .Take(5)
-                            .ToListAsync(),
-
-                        RecentAnnouncements = await _context.Announcements
-                            .OrderByDescending(a => a.CreatedAt)
-                            .Take(5)
-                            .ToListAsync(),*/
-
+            MatchesInProgress = await _activeTournamentService.MatchCountAsync(MatchState.InProgress),
+            DisputedMatches = await _activeTournamentService.MatchCountAsync(MatchState.Disputed),
+            MatchesFinished = await _activeTournamentService.MatchCountAsync(MatchState.Finished),
+            RecentMatches = await _activeTournamentService.RecentMatchesAsync(),
+            RecentAnnouncements = await _announcementService.GetRecentAnnouncementsAsync(5),
             TeamsByDivision = teamsByDivision
         };
         if (activeTournament != null)

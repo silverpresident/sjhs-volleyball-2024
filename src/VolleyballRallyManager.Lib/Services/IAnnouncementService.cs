@@ -10,4 +10,5 @@ public interface IAnnouncementService
     Task<Announcement> UpdateAnnouncementAsync(Announcement announcement);
     Task<Announcement> UpdateAnnouncementVisibilityAsync(Guid id, bool isVisible);
     Task<bool> DeleteAnnouncementAsync(Guid id);
+    Task<IEnumerable<Announcement>> GetRecentAnnouncementsAsync(int count);
 }

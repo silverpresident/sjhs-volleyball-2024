@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using VolleyballRallyManager.Lib.Common;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
 
@@ -226,19 +227,31 @@ namespace VolleyballRallyManager.Lib.Services
             return await _dbContext.TournamentTeamDivisions.CountAsync(t => t.TournamentId == activeTournament.Id);
 
         }
-        public async Task<int> MatchCountAsync(Guid? divisionId = null)
+        public async Task<int> MatchCountAsync(MatchState matchState = MatchState.None,Guid? divisionId = null)
         {
             var activeTournament = await GetActiveTournamentAsync();
             if (activeTournament == null)
             {
                 return 0;
             }
+            var qry = _dbContext.Matches.Where(m => m.TournamentId == activeTournament.Id);
             if (divisionId != null)
             {
-                throw new NotImplementedException();
-                //                return await _dbContext.Matches.CountAsync(m => m.TournamentId == activeTournament.Id && m.DivisionId == divisionId)
+                qry = qry.Where(m => m.DivisionId == divisionId);
             }
-            return await _dbContext.Matches.CountAsync(m => m.TournamentId == activeTournament.Id);
+            if (matchState == MatchState.Finished)
+            {
+                qry = qry.Where(m => m.IsFinished);
+            }
+            if (matchState == MatchState.Disputed)
+            {
+                qry = qry.Where(m => m.IsDisputed);
+            }
+            if (matchState == MatchState.InProgress)
+            {
+                qry = qry.Where(m => m.IsFinished == false && m.CurrentSetNumber > 0);
+            }
+            return await qry.CountAsync();
         }
         private Task<int> GenerateSeedNumberAsync(Guid tournamentId, Guid divisionId)
         {
@@ -347,6 +360,18 @@ namespace VolleyballRallyManager.Lib.Services
                 _dbContext.Rounds.Where(d => ids.Contains(d.Id)).Load();
             }
             return model.OrderBy(m => m?.Division?.Name).ThenBy(m => m?.Round?.Sequence).ThenBy(m => m.ScheduledTime).ToList();
+        }
+
+        public async Task<IEnumerable<Match>> RecentMatchesAsync()
+        {
+           return await _dbContext.Matches
+                .Include(m => m.HomeTeam)
+                .Include(m => m.AwayTeam)
+                .Include(m => m.Round)
+                .OrderByDescending(m => m.ScheduledTime)
+                .ThenBy(m => m.ScheduledTime)
+                .Take(5)
+                .ToListAsync();
         }
     }
 }
