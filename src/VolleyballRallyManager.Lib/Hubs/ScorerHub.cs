@@ -142,6 +142,16 @@ public class ScorerHub : Hub
 
             switch (actionType.ToLower())
             {
+                case "calltosupport":
+                    /*update = new MatchUpdate
+                    {
+                        MatchId = matchId,
+                        UpdateType = UpdateType.Other,
+                        Content = $"{match.HomeTeam?.Name} vs {match.AwayTeam?.Name} called to court"
+                    };
+                    await _matchService.AddMatchUpdateAsync(update);*/
+                    .//TODO notify admin users, use the matchId to find the court of the call
+                    break;
                 case "calltocourt":
                     update = new MatchUpdate
                     {
@@ -150,6 +160,7 @@ public class ScorerHub : Hub
                         Content = $"{match.HomeTeam?.Name} vs {match.AwayTeam?.Name} called to court"
                     };
                     await _matchService.AddMatchUpdateAsync(update);
+                    //TODO post announcement
                     break;
 
                 case "matchstarted":

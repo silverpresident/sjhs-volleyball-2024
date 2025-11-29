@@ -44,6 +44,8 @@ This is a .NET 10.0 volleyball tournament management system with three main proj
 - Keep methods focused and under 50 lines when possible
 - Do not embed styles in cshtml files, where necessary create a separate css file.
 - Do not embed script in cshtml files, where necessary create a separate js file.
+- Keep the README.md file updated
+- Document the project using *.md files in the docs folder
 
 ### Entity Framework & Database
 - Database entities must inherit from `BaseEntity`
@@ -147,6 +149,8 @@ This is a .NET 10.0 volleyball tournament management system with three main proj
 - Service implementations go in `Services/*Service.cs`
 - Models go in `Models/*.cs`
 - Database entities go in `Lib/Models/*.cs`
+- Background and Hosted Service implementations go in `Workers/*Worker.cs`
+- Hubs go in `Hubs/*Hub.cs`
 
 ### When Modifying Files
 - Always read the entire file before making changes

@@ -258,6 +258,8 @@ $(function () {
             $('#btnPreviousSet').show();
             $('[data-action="Disputed"]').show();
             $('[data-action="MatchEnded"]').show();
+
+            $('#btnStartMatch').prop('disabled', true).hide();
         }
         // Disable score buttons if match finished
         if (matchState.isFinished) {
@@ -285,6 +287,8 @@ $(function () {
         $('[data-score-change]').prop('disabled', true).hide();
         $('#setBtnDisplayArea').hide();
         $('[data-action="CallToCourt"]').hide();
+        $('[data-action="CallToSupport"]').hide();
+        
         $('[data-action="MatchStarted"]').hide();
         $('[data-action="MatchEnded"]').hide();
         if (matchState.homeSetsWon > matchState.awaySetsWon) {
