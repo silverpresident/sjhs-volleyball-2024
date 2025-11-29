@@ -7,7 +7,7 @@
 
 <link rel="stylesheet" href="~/css/scorer.css" />
 
-<div class="scorer-container">
+<div class="scorer-container" id="scorerContainer">
     <div class="row mb-2">
         <div class="col">
             <h3>Match #@Model.MatchNumber Scorer</h3>
@@ -15,6 +15,9 @@
         <div class="col-auto">
             <a asp-action="Details" asp-route-id="@Model.MatchId" class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i> Back to Details
+            </a>
+            <a asp-action="Index"  class="btn btn-info">
+                <i class="bi bi-arrow-left"></i> Back to Match List
             </a>
         </div>
     </div>
@@ -47,12 +50,10 @@
                     <div class="sets-won-display">
                         <div>
                             <div id="homeSetsWon">0</div>
-                            <small>@Model.HomeTeamName</small>
                         </div>
                         <div class="text-muted fs-3">|</div>
                         <div>
-                            <div id="awaySetsWon">0</div>
-                            <small>@Model.AwayTeamName</small>
+                            <div id="awaySetsWon" class="text-end">0</div>
                         </div>
                     </div>
                 </div>

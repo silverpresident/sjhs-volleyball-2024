@@ -1,4 +1,4 @@
-@model IEnumerable<VolleyballRallyManager.Lib.Models.Team>
+@model IEnumerable<VolleyballRallyManager.Lib.Models.TournamentTeamDivision>
 
 @{
     ViewData["Title"] = "Teams";
@@ -21,11 +21,23 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            @* <td>@item.DivisionId</td>
-                            <td>@item.GroupId</td> *@
-                            <td>@item.Name</td>
                             <td>
-                                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                                <a class="btn btn-link" asp-route-DivisionId="@item.DivisionId">
+                                    @item.Division.Name
+                                </a>
+                            </td>
+                            <td>
+                                <a class="btn btn-link" asp-route-DivisionId="@item.DivisionId" asp-route-GroupName="@item.GroupName">
+                                    @item.GroupName
+                                </a>
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@item.TeamId">
+                                @item.Team.Name
+                                </a>
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@item.TeamId">Details</a>
                             </td>
                         </tr>
                     }

@@ -10,9 +10,9 @@
         <div class="card-body">
             <dl class="row">
                 <dt class="col-sm-2">Division</dt>
-                <dd class="col-sm-10">@Model.Division</dd>
+                <dd class="col-sm-10">@Model.Division.Name</dd>
                 <dt class="col-sm-2">Group</dt>
-                <dd class="col-sm-10">//TODO</dd>
+                <dd class="col-sm-10">@Model.GroupName</dd>
             </dl>
         </div>
     </div>
@@ -23,9 +23,9 @@
         </div>
         <div class="card-body">
             <ul id="match-results-list">
-                @foreach (var match in ViewBag.Matches)
+                @foreach (Match match in ViewBag.Matches)
                 {
-                    <li>@match.Team1Id vs @match.Team2Id: @match.Team1Score - @match.Team2Score</li>
+                    <li>@match.HomeTeam.Name vs @match.AwayTeam.Name: @match.HomeTeamScore - @match.AwayTeamScore</li>
                 }
             </ul>
         </div>

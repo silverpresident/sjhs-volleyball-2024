@@ -10,41 +10,45 @@ namespace VolleyballRallyManager.App.Controllers
         private readonly ITeamService _teamService;
         private readonly IMatchService _matchService;
         private readonly IHubContext<MatchHub> _matchHub;
+        private readonly ILogger<TeamsController> _logger;
+        private readonly IActiveTournamentService _activeTournamentService;
 
-        public TeamsController(ITeamService teamService, IMatchService matchService, IHubContext<MatchHub> matchHub)
+        public TeamsController(ITeamService teamService, IMatchService matchService, IHubContext<MatchHub> matchHub, ILogger<TeamsController> logger, IActiveTournamentService activeTournamentService)
         {
             _teamService = teamService;
             _matchService = matchService;
             _matchHub = matchHub;
+            _logger = logger;
+            _activeTournamentService = activeTournamentService;
         }
 
-        public async Task<IActionResult> Index(int? divisionId, int? groupId)
+        public async Task<IActionResult> Index(Guid? divisionId, String? groupName)
         {
-            var teams = await _teamService.GetTeamsAsync();
-
-            /* if (divisionId.HasValue)
+            var teams = await _activeTournamentService.GetTournamentTeamsAsync(Guid.Empty);
+             if (divisionId.HasValue)
              {
                  teams = teams.Where(t => t.DivisionId == divisionId.Value);
              }
 
-             if (groupId.HasValue)
+             if (string.IsNullOrEmpty(groupName) == false)
              {
-                 teams = teams.Where(t => t.GroupId == groupId.Value);
+                 teams = teams.Where(t => t.GroupName == groupName);
              }
- */
+ 
             return View(teams.ToList());
         }
 
         public async Task<IActionResult> Details(Guid id)
         {
-            var team = await _teamService.GetTeamAsync(id);
+            var team = await _activeTournamentService.GetTeamAsync(id);
             if (team == null)
             {
                 return NotFound();
             }
 
             // Fetch matches for this team to display results
-            var matches = await _matchService.GetMatchesByTeamAsync(id);
+            var matches = await _activeTournamentService.GetMatchesAsync(null, null, null, id);
+            //await _matchService.GetMatchesByTeamAsync(id);
             ViewBag.Matches = matches;
 
             return View(team);

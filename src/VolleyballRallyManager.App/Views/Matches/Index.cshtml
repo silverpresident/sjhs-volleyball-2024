@@ -11,6 +11,7 @@
             <table class="table">
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>Round</th>
                         <th>Home Team</th>
                         <th>Away Team</th>
@@ -19,15 +20,41 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @foreach (Match item in Model)
                     {
                         <tr>
-                            <td>@item.Round?.Name</td>
-                            <td>@Html.DisplayFor(modelItem => item.HomeTeam, "Team")</td>
-                            <td>@Html.DisplayFor(modelItem => item.AwayTeam, "Team")</td>
+                            <td>
+                                <a class="btn btn-link" asp-action="Details" asp-route-id="@item.Id">@item.MatchNumber</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-link" asp-route-DivisionId="@item.DivisionId" asp-route-RoundId="@item.RoundId">
+                                    @item.Round?.Name
+                                </a>
+
+                                <a class="btn btn-link" asp-route-DivisionId="@item.DivisionId" asp-route-GroupName="@item.GroupName">
+                                    @item.GroupName
+                                </a>
+
+                                <a class="btn btn-link" asp-route-DivisionId="@item.DivisionId">
+                                    @item.Division.Name
+                                </a>
+                            </td>
+                            <td>
+                                <a class="btn btn-outline-secondary" asp-route-TeamId="@item.HomeTeamId">
+                                    <i class="bi bi-filter"></i>
+                                </a>
+                                @Html.DisplayFor(modelItem => item.HomeTeam, "Team")
+                            
+                            </td>
+                            <td>
+                                <a class="btn btn-outline-secondary" asp-route-TeamId="@item.AwayTeamId">
+                                    <i class="bi bi-filter"></i>
+                                </a>
+                                @Html.DisplayFor(modelItem => item.AwayTeam, "Team")
+                            </td>
                             <td>@item.HomeTeamScore - @item.AwayTeamScore</td>
                             <td>
-                                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                                <a class="btn btn-link" asp-action="Details" asp-route-id="@item.Id">Details</a>
                             </td>
                         </tr>
                     }

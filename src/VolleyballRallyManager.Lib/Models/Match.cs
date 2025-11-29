@@ -61,7 +61,7 @@ public class Match : BaseEntity
     public bool IsLocked { get; set; } = false;
 
     // Navigation properties
-    public virtual Round? Division { get; set; }
+    public virtual Division? Division { get; set; }
     public virtual Round? Round { get; set; }
     public virtual Team? HomeTeam { get; set; }
     public virtual Team? AwayTeam { get; set; }

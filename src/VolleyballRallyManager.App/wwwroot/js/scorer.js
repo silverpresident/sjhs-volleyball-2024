@@ -8,6 +8,7 @@ const initialSets = JSON.parse(scriptTag.getAttribute('data-sets'));
 const initialIsFinished = scriptTag.getAttribute('data-is-finished') === 'true';
 
 $(function () {
+    const scorerContainer = $('#scorerContainer');
     let currentSetNumber = initialCurrentSetNumber;
     let scorerConnection;
 
@@ -18,6 +19,7 @@ $(function () {
         homeSetsWon: 0,
         awaySetsWon: 0,
         sets: initialSets,
+        isDisputed: false,
         isFinished: initialIsFinished,
         currentSetNumber: initialCurrentSetNumber
     };
@@ -56,6 +58,13 @@ $(function () {
         scorerConnection.on("ReceiveFeedUpdate", function (update) {
             console.log("Feed update received:", update);
             addUpdateToFeed(update);
+        });
+        // Receive complete feed
+        scorerConnection.on("ReceiveFeedList", function (updates) {
+            console.log("Feed list received:", updates);
+            updates.forEach(update => {
+                addUpdateToFeed(update);
+            });
         });
         scorerConnection.start()
             .then(() => {
@@ -189,17 +198,13 @@ $(function () {
     function handleMatchStateUpdate(data) {
         matchState.currentSetNumber = data.currentSetNumber;
         matchState.isFinished = data.isFinished;
+        matchState.isDisputed = data.isDisputed;
+        matchState.isLocked = data.isLocked;
 
         if (data.isFinished) {
-            $('#btnStartMatch').prop('disabled', true);
-            $('#btnEndMatch').prop('disabled', true);
             alert("Match has ended!");
         }
-        if (data.currentSetNumber == 0) {
-            //TODO only optin is start new set
-        }
-
-        updateButtonStates();
+        updateDisplayStates();
     }
 
     function updateSetHistory() {
@@ -216,8 +221,14 @@ $(function () {
 
         $('#setHistoryList').html(historyHtml || '<p class="text-muted">No sets completed yet</p>');
     }
-
-    function updateButtonStates() {
+    function updateDisplayStates() {
+        if (matchState.isFinished) {
+            $('#btnStartMatch').prop('disabled', true);
+            $('#btnEndMatch').prop('disabled', true);
+        }
+        updateButtonStates();
+    }
+        function updateButtonStates() {
         const currentSet = matchState.sets.find(s => s.setNumber === matchState.currentSetNumber);
         const isCurrentSetFinished = currentSet ? currentSet.isFinished : false;
 
@@ -253,13 +264,23 @@ $(function () {
             $('.score-btn').prop('disabled', true);
             $('.set-control-btn').prop('disabled', true);
             updateDisplayFinished();
-        }
+            }
+            if (matchState.isLocked) {
+                $('[data-action="Disputed"]').hide();
+            }
     }
     function updateDisplayFinished() {
         if (matchState.isFinished != true) {
             return;
         }
-        $('#setLabel').text('FINISHED');
+        let el = $('#setLabel');
+        if (matchState.isDisputed) {
+            el.text('DISPUTED');
+            scorerContainer.addClass('disputed-match'); 
+        } else {
+            el.text('FINISHED');
+            scorerContainer.addClass('finished-match'); 
+        }
         updateScoreDisplay(matchState.currentSetNumber, matchState.homeSetsWon, matchState.awaySetsWon);
         $('[data-score-change]').prop('disabled', true).hide();
         $('#setBtnDisplayArea').hide();

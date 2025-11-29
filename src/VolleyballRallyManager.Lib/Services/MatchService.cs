@@ -23,6 +23,7 @@ public class MatchService : IMatchService
             .Include(m => m.AwayTeam)
             .Include(m => m.Round)
             .Include(m => m.Updates)
+            .Include(m => m.Division)
             .FirstOrDefaultAsync(m => m.Id == id);
     }
 
@@ -208,7 +209,6 @@ public class MatchService : IMatchService
             UpdateType = UpdateType.DisputeRaised,
             Content = $"Match disputed by {userId}"
         };
-
         _context.MatchUpdates.Add(update);
         await _context.SaveChangesAsync();
         await _notificationService.NotifyMatchDisputedAsync(match);
@@ -290,7 +290,6 @@ public class MatchService : IMatchService
             PreviousValue = oldTime.ToString("g"),
             NewValue = scheduledTime.ToString("g")
         };
-
         _context.MatchUpdates.Add(update);
         await _context.SaveChangesAsync();
         await _notificationService.NotifyMatchUpdatedAsync(match);

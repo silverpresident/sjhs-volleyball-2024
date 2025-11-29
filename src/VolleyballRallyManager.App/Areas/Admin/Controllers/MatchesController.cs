@@ -283,7 +283,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,HomeTeamId,AwayTeamId,MatchDate,Location,HomeScore,AwayScore,Notes")] Match match)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,HomeTeamId,AwayTeamId,MatchDate,Location,HomeScore,AwayScore,Notes,IsLocked,IsDisputed,IsFinished")] Match match)
         {
             if (id != match.Id)
             {

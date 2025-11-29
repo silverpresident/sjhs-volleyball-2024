@@ -55,6 +55,12 @@ body { overflow-x: hidden; }
     color: #2e7d32;
     margin-bottom: 20px;
 }
+#scorerContainer.finished-match .set-label {
+    color: blue;
+}
+#scorerContainer.disputed-match .set-label {
+    color: #f9a825;
+}
 .set-control-btn {
     width: 100%;
     margin: 10px 0;
@@ -65,8 +71,8 @@ body { overflow-x: hidden; }
 .sets-won-display {
     display: flex;
     justify-content: center;
-    gap: 20px;
-    margin: 20px 0;
+    gap: 16px;
+    margin: 8px 0;
 }
 .set-box {
     width: 60px;

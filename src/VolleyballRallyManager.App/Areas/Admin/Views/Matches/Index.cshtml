@@ -29,7 +29,7 @@
             <thead>
                 <tr>
                     <th>Actions</th>
-                    <th>@Html.DisplayNameFor(model => model.MatchNumber)</th>
+                    <th>#</th>
                     <th>Round</th>
                     <th>Time</th>
                     <th>Court</th>
@@ -57,11 +57,14 @@
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.MatchNumber)
+                        </td>
+                        <td>
                             <small>
                                 @Html.DisplayFor(modelItem => item.Division.Name)
                             </small>
+                            @Html.DisplayFor(modelItem => item.Round!.Name)
+                            
                         </td>
-                        <td>@Html.DisplayFor(modelItem => item.Round!.Name)</td>
                         <td>
                             @item.ScheduledTime.ToString("dd/MM HH:mm")
                           @*  @if (item.ActualStartTime.HasValue)
@@ -70,7 +73,28 @@
                                 <small class="text-muted">Started: @item.ActualStartTime.Value.ToString("HH:mm")</small>
                             }*@
                         </td>
-                        <td>@Html.DisplayFor(modelItem => item.CourtLocation)</td>
+                        <td>
+                            @if (string.IsNullOrEmpty(item.CourtLocation) || item.CourtLocation == "")
+                            {
+                                <span class="text-danger">
+                                    @Html.DisplayFor(modelItem => item.CourtLocation)
+                                </span>
+                            } else {
+                                @Html.DisplayFor(modelItem => item.CourtLocation)
+                                if (string.IsNullOrEmpty(item.RefereeName) == false)
+                                {
+                                    <p class="text-info">
+                                        re: @Html.DisplayFor(modelItem => item.RefereeName)
+                                    </p>
+                                }
+                                if (string.IsNullOrEmpty(item.ScorerName) == false)
+                                {
+                                    <p class="text-info">
+                                        sc: @Html.DisplayFor(modelItem => item.ScorerName)
+                                    </p>
+                                }
+                            }
+                        </td>
                         <td>
                            @Html.DisplayFor(modelItem => item.HomeTeam, "Team")
                         </td>
@@ -100,13 +124,17 @@
                             {
                                 <span class="badge bg-success">Finished</span>
                             }
-                            else if (item.ActualStartTime.HasValue)
+                            else if (item.ActualStartTime.HasValue || (item.CurrentSetNumber > 0))
                             {
                                 <span class="badge bg-primary">In Progress</span>
                             }
                             else
                             {
                                 <span class="badge bg-secondary">Scheduled</span>
+                            }
+                            @if (item.IsLocked)
+                            {
+                                <span class="badge bg-warning">Locked</span>
                             }
                         </td>
                     </tr>

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using VolleyballRallyManager.Lib.Models;
 using VolleyballRallyManager.Lib.Services;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace VolleyballRallyManager.Lib.Hubs;
 
@@ -49,6 +50,18 @@ public class ScorerHub : Hub
             }),
             Timestamp = DateTime.UtcNow
         });
+
+
+        var updates = await _matchService.GetMatchUpdatesAsync(matchId);
+        var updatesDto = updates.Take(20).Select(u => new
+        {
+            Content = u.Content,
+            CreatedAt = u.CreatedAt,
+            Timestamp = u.CreatedAt,
+            UpdateType = u.UpdateType
+        }).ToList();
+        await Clients.Caller.SendAsync("ReceiveFeedList", updatesDto);
+
     }
 
     public async Task LeaveMatchGroup(string matchId)
@@ -166,6 +179,7 @@ public class ScorerHub : Hub
                 ActionType = actionType,
                 IsFinished = match.IsFinished,
                 IsDisputed = match.IsDisputed,
+                IsLocked = match.IsLocked,
                 ActualStartTime = match.ActualStartTime,
                 CurrentSetNumber = match?.CurrentSetNumber ?? 0,
                 Timestamp = DateTime.UtcNow
@@ -181,6 +195,20 @@ public class ScorerHub : Hub
         {
             await Clients.Caller.SendAsync("ReceiveError", ex.Message);
         }
+    }
+    public async Task SendFeedList(Guid matchId)
+    {
+        try
+        {
+            var updates = await _matchService.GetMatchUpdatesAsync(matchId);
+            updates = updates.Take(20).ToList();
+            await Clients.Group($"scorer_{matchId}").SendAsync("ReceiveFeedList", updates);
+
+        }
+        catch (Exception ex)
+        {
+            await Clients.Caller.SendAsync("ReceiveError", ex.Message);
+}
     }
 
     public async Task SendSetStateChange(Guid matchId, string actionType, int currentSetNumber)
