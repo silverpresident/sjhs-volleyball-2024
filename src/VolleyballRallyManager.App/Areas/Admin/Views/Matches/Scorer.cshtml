@@ -8,10 +8,9 @@
 <link rel="stylesheet" href="~/css/scorer.css" />
 
 <div class="scorer-container">
-    <div class="row mb-3">
+    <div class="row mb-2">
         <div class="col">
-            <h2>Match #@Model.MatchNumber Scorer</h2>
-            <p class="text-muted">@Model.CourtLocation</p>
+            <h3>Match #@Model.MatchNumber Scorer</h3>
         </div>
         <div class="col-auto">
             <a asp-action="Details" asp-route-id="@Model.MatchId" class="btn btn-secondary">
@@ -26,8 +25,11 @@
             <!-- Team Score Panels -->
             <div class="row mb-4">
                 <div class="col-md-5">
-                    <div class="team-panel">
-                        <div class="team-name" id="homeTeamName">@Model.HomeTeamName</div>
+                    <div class="team-panel" id="homeTeamPanel">
+                        <div class="team-name" id="homeTeamName">
+                            @Model.HomeTeamName
+                            <i class="bi bi-trophy-fill blink-fade" style="display:none"></i>
+                        </div>
                         <div class="team-score" id="homeScore">0</div>
                         <div>
                             <button class="btn btn-light score-btn" data-team-id="@Model.HomeTeamId" data-opcode="updateScore" data-score-change="1">+</button>
@@ -35,12 +37,31 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-2 d-flex align-items-center justify-content-center">
+                <div class="col-md-2 d-flex flex-column align-items-center justify-content-center">
+                    <p class="text-muted">@Model.CourtLocation</p>
+                    <br />
                     <h1 class="text-muted">VS</h1>
+                    <br />
+                    <div class="set-label text-center" id="setLabel">SET 1</div>
+                    <!-- Sets Won Display -->
+                    <div class="sets-won-display">
+                        <div>
+                            <div id="homeSetsWon">0</div>
+                            <small>@Model.HomeTeamName</small>
+                        </div>
+                        <div class="text-muted fs-3">|</div>
+                        <div>
+                            <div id="awaySetsWon">0</div>
+                            <small>@Model.AwayTeamName</small>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-5">
-                    <div class="team-panel away-panel">
-                        <div class="team-name" id="awayTeamName">@Model.AwayTeamName</div>
+                    <div class="team-panel away-panel" id="awayTeamPanel">
+                        <div class="team-name" id="awayTeamName">
+                            @Model.AwayTeamName
+                            <i class="bi bi-trophy-fill blink-fade" style="display:none"></i>
+                        </div>
                         <div class="team-score" id="awayScore">0</div>
                         <div>
                             <button class="btn btn-light score-btn" data-team-id="@Model.AwayTeamId" data-opcode="updateScore" data-score-change="1">+</button>
@@ -52,9 +73,8 @@
 
             <!-- Center Controls -->
             <div class="center-controls">
-                <div class="set-label text-center" id="setLabel">SET 1</div>
                 
-                <div class="row mb-3">
+                <div id="setBtnDisplayArea" class="row mb-3">
                     <div class="col-md-4">
                         <button class="btn btn-warning set-control-btn" id="btnPreviousSet" data-opcode="handleSetAction" data-action="RevertToPreviousSet" disabled>
                             <i class="bi bi-arrow-left"></i> Previous Set
@@ -72,18 +92,6 @@
                     </div>
                 </div>
 
-                <!-- Sets Won Display -->
-                <div class="sets-won-display">
-                    <div>
-                        <div id="homeSetsWon">0</div>
-                        <small>@Model.HomeTeamName</small>
-                    </div>
-                    <div class="text-muted fs-3">|</div>
-                    <div>
-                        <div id="awaySetsWon">0</div>
-                        <small>@Model.AwayTeamName</small>
-                    </div>
-                </div>
 
                 <!-- Set History -->
                 <div class="set-history">
@@ -139,6 +147,7 @@
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
     <script src="~/js/scorer.js" 
+            asp-append-version="true"
             data-match-id="@Model.MatchId" 
             data-hometeam-id="@Model.HomeTeamId" 
             data-awayteam-id="@Model.AwayTeamId"

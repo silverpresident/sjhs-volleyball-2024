@@ -22,9 +22,6 @@ $(function () {
         currentSetNumber: initialCurrentSetNumber
     };
 
-    initializeSignalR();
-    loadInitialState();
-
     function initializeSignalR() {
         scorerConnection = new signalR.HubConnectionBuilder()
             .withUrl("/scorerhub")
@@ -48,13 +45,18 @@ $(function () {
             console.log("Match state change received:", data);
             handleMatchStateUpdate(data);
         });
+        // Receive match state  (initial)
+        scorerConnection.on("ReceiveMatchState", function (data) {
+            console.log("MatchState received:", data);
+            handleMatchStateUpdate(data);
+        }); 
+
 
         // Receive feed updates
         scorerConnection.on("ReceiveFeedUpdate", function (update) {
             console.log("Feed update received:", update);
             addUpdateToFeed(update);
         });
-
         scorerConnection.start()
             .then(() => {
                 console.log("SignalR Connected");
@@ -93,6 +95,13 @@ $(function () {
         }
 
         try {
+            if (teamId == homeTeamId) {
+                matchState.homeScore += increment;
+            }
+            if (teamId == awayTeamId) {
+                matchState.awayScore += increment;
+            }
+            updateScoreDisplay(matchState.currentSetNumber, matchState.homeScore, matchState.awayScore);
             await scorerConnection.invoke("SendScoreUpdate", matchId, matchState.currentSetNumber, teamId, increment);
         } catch (err) {
             console.error("Error sending score update:", err);
@@ -110,20 +119,21 @@ $(function () {
     }
     function handeOpcodeClick(event) {
         event.preventDefault();
-        const opcode = scriptTag.getAttribute('data-opcode');
+        const opcode = this.getAttribute('data-opcode');
+        console.log('Op: ', opcode);
         if (opcode == "handleQuickAction") {
-            const action = scriptTag.getAttribute('data-action');
+            const action = this.getAttribute('data-action');
             handleQuickAction(action);
             return;
         }
         if (opcode == "handleSetAction") {
-            const action = scriptTag.getAttribute('data-action');
+            const action = this.getAttribute('data-action');
             handleSetAction(action);
             return;
         }
         if (opcode == "updateScore") {
-            const teamId = scriptTag.getAttribute('data-team-id');
-            const scoreChange = scriptTag.getAttribute('data-score-change');
+            const teamId = this.getAttribute('data-team-id');
+            const scoreChange = this.getAttribute('data-score-change');
             updateScore(teamId, parseInt(scoreChange));
             return;
         }
@@ -131,7 +141,7 @@ $(function () {
 
     async function handleSetAction(actionType) {
         try {
-            await scorerConnection.invoke("SendSetStateChange", matchId, actionType);
+            await scorerConnection.invoke("SendSetStateChange", matchId, actionType, matchState.currentSetNumber);
         } catch (err) {
             console.error("Error sending set state change:", err);
             alert("Failed to perform action. Please try again.");
@@ -177,12 +187,16 @@ $(function () {
     }
 
     function handleMatchStateUpdate(data) {
+        matchState.currentSetNumber = data.currentSetNumber;
         matchState.isFinished = data.isFinished;
 
         if (data.isFinished) {
             $('#btnStartMatch').prop('disabled', true);
             $('#btnEndMatch').prop('disabled', true);
             alert("Match has ended!");
+        }
+        if (data.currentSetNumber == 0) {
+            //TODO only optin is start new set
         }
 
         updateButtonStates();
@@ -220,13 +234,45 @@ $(function () {
             $('#btnNewSet').hide();
         }
 
+        if (matchState.currentSetNumber == 0) {
+            $('[data-score-change]').prop('disabled', true).hide();
+            $('#btnEndSet').hide();
+            $('#btnPreviousSet').hide();
+            $('#btnNewSet').show().prop('disabled', false);
+            $('[data-action="Disputed"]').hide();
+            $('[data-action="MatchEnded"]').hide();
+        } else {
+            $('#setBtnDisplayArea').show();
+            $('[data-score-change]').prop('disabled', false).show();
+            $('#btnPreviousSet').show();
+            $('[data-action="Disputed"]').show();
+            $('[data-action="MatchEnded"]').show();
+        }
         // Disable score buttons if match finished
         if (matchState.isFinished) {
             $('.score-btn').prop('disabled', true);
             $('.set-control-btn').prop('disabled', true);
+            updateDisplayFinished();
         }
     }
-
+    function updateDisplayFinished() {
+        if (matchState.isFinished != true) {
+            return;
+        }
+        $('#setLabel').text('FINISHED');
+        updateScoreDisplay(matchState.currentSetNumber, matchState.homeSetsWon, matchState.awaySetsWon);
+        $('[data-score-change]').prop('disabled', true).hide();
+        $('#setBtnDisplayArea').hide();
+        $('[data-action="CallToCourt"]').hide();
+        $('[data-action="MatchStarted"]').hide();
+        $('[data-action="MatchEnded"]').hide();
+        if (matchState.homeSetsWon > matchState.awaySetsWon) {
+            $('#homeTeamPanel').find('.bi').show();
+        }
+        if (matchState.awaySetsWon > matchState.homeSetsWon) {
+            $('#awayTeamPanel').find('.bi').show();
+        }
+    }
     function addUpdateToFeed(update) {
         const updateHtml = `
         <div class="update-item">
@@ -241,5 +287,7 @@ $(function () {
         // Keep only last 15 updates
         $('.update-item').slice(15).remove();
     }
+    initializeSignalR();
+    loadInitialState();
     $('body').on('click', '[data-opcode]', handeOpcodeClick);
 });

@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 using VolleyballRallyManager.Lib.Models;
 using VolleyballRallyManager.Lib.Services;
 
@@ -13,9 +15,40 @@ public class ScorerHub : Hub
         _matchService = matchService;
     }
 
-    public async Task JoinMatchGroup(string matchId)
+    public async Task JoinMatchGroup(Guid matchId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, $"scorer_{matchId}");
+
+        var match = await _matchService.GetMatchAsync(matchId);
+        if (match == null)
+        {
+            await Clients.Caller.SendAsync("ReceiveError", "Match not found");
+            return;
+        }
+
+        var sets = await _matchService.GetMatchSetsAsync(matchId);
+        await Clients.Caller.SendAsync("ReceiveMatchState", new
+        {
+            MatchId = matchId,
+            CurrentSetNumber = match?.CurrentSetNumber ?? 0,
+            IsFinished = match.IsFinished,
+            IsDisputed = match.IsDisputed,
+            IsLocked = match.IsLocked,
+            HomeScore = match.HomeTeamScore,
+            AwayScore = match.AwayTeamScore,
+            HomeSetsWon = match.HomeTeamScore,
+            AwaySetsWon = match.AwayTeamScore,
+            ActualStartTime = match.ActualStartTime,
+            Sets = sets.Select(s => new
+            {
+                s.SetNumber,
+                s.HomeTeamScore,
+                s.AwayTeamScore,
+                s.IsFinished,
+                s.IsLocked
+            }),
+            Timestamp = DateTime.UtcNow
+        });
     }
 
     public async Task LeaveMatchGroup(string matchId)
@@ -34,7 +67,10 @@ public class ScorerHub : Hub
                 return;
             }
 
-            var currentSet = await _matchService.GetCurrentSetAsync(matchId);
+            var currentSet = await _matchService.GetOrCreateMatchSetAsync(matchId, setNumber, "scorer");
+
+
+            //var currentSet = await _matchService.GetCurrentSetAsync(matchId);
             if (currentSet == null || currentSet.SetNumber != setNumber)
             {
                 await Clients.Caller.SendAsync("ReceiveError", "Set not found or not current");
@@ -131,6 +167,7 @@ public class ScorerHub : Hub
                 IsFinished = match.IsFinished,
                 IsDisputed = match.IsDisputed,
                 ActualStartTime = match.ActualStartTime,
+                CurrentSetNumber = match?.CurrentSetNumber ?? 0,
                 Timestamp = DateTime.UtcNow
             });
 
@@ -146,7 +183,7 @@ public class ScorerHub : Hub
         }
     }
 
-    public async Task SendSetStateChange(Guid matchId, string actionType)
+    public async Task SendSetStateChange(Guid matchId, string actionType, int currentSetNumber)
     {
         try
         {
@@ -162,48 +199,69 @@ public class ScorerHub : Hub
             switch (actionType.ToLower())
             {
                 case "endcurrentset":
-                    resultSet = await _matchService.FinishSetAsync(matchId, match.CurrentSetNumber, "scorer");
+                    if (currentSetNumber == match.CurrentSetNumber)
+                    {
+                        resultSet = await _matchService.FinishSetAsync(matchId, match.CurrentSetNumber, "scorer");
+                    }
                     break;
 
                 case "startnextset":
-                    resultSet = await _matchService.StartNextSetAsync(matchId, "scorer");
+                    if (currentSetNumber == match.CurrentSetNumber)
+                    {
+
+                        if (match.CurrentSetNumber > 0)
+                        {
+                            var currentSet = await _matchService.GetMatchSetAsync(matchId, match.CurrentSetNumber);
+                            if (currentSet != null && currentSet.IsFinished == false)
+                            {
+                                await _matchService.FinishSetAsync(matchId, match.CurrentSetNumber, "scorer");
+                                await BroadcastSetStateChangeAsync(matchId, "EndCurrentSet");
+                            }
+                        }
+                        resultSet = await _matchService.StartNextSetAsync(matchId, "scorer", currentSetNumber);
+                    }
+
                     break;
 
                 case "reverttopreviousset":
-                    resultSet = await _matchService.RevertToPreviousSetAsync(matchId, "scorer");
+                        resultSet = await _matchService.RevertToPreviousSetAsync(matchId, "scorer", currentSetNumber);
                     break;
             }
-
-            // Get updated match and all sets
-            match = await _matchService.GetMatchAsync(matchId);
-            var allSets = await _matchService.GetMatchSetsAsync(matchId);
-
-            // Calculate sets won
-            int homeSetsWon = allSets.Count(s => s.IsFinished && s.HomeTeamScore > s.AwayTeamScore);
-            int awaySetsWon = allSets.Count(s => s.IsFinished && s.AwayTeamScore > s.HomeTeamScore);
-
-            await Clients.Group($"scorer_{matchId}").SendAsync("ReceiveSetStateChange", new
-            {
-                MatchId = matchId,
-                ActionType = actionType,
-                CurrentSetNumber = match?.CurrentSetNumber ?? 0,
-                Sets = allSets.Select(s => new
-                {
-                    s.SetNumber,
-                    s.HomeTeamScore,
-                    s.AwayTeamScore,
-                    s.IsFinished,
-                    s.IsLocked
-                }),
-                HomeSetsWon = homeSetsWon,
-                AwaySetsWon = awaySetsWon,
-                Timestamp = DateTime.UtcNow
-            });
+            await BroadcastSetStateChangeAsync(matchId, actionType);
         }
         catch (Exception ex)
         {
             await Clients.Caller.SendAsync("ReceiveError", ex.Message);
         }
+    }
+
+    private async Task BroadcastSetStateChangeAsync(Guid matchId, string actionType)
+    {
+        // Get updated match and all sets
+        var match = await _matchService.GetMatchAsync(matchId);
+        var allSets = await _matchService.GetMatchSetsAsync(matchId);
+
+        // Calculate sets won
+        int homeSetsWon = allSets.Count(s => s.IsFinished && s.HomeTeamScore > s.AwayTeamScore);
+        int awaySetsWon = allSets.Count(s => s.IsFinished && s.AwayTeamScore > s.HomeTeamScore);
+
+        await Clients.Group($"scorer_{matchId}").SendAsync("ReceiveSetStateChange", new
+        {
+            MatchId = matchId,
+            ActionType = actionType,
+            CurrentSetNumber = match?.CurrentSetNumber ?? 0,
+            Sets = allSets.Select(s => new
+            {
+                s.SetNumber,
+                s.HomeTeamScore,
+                s.AwayTeamScore,
+                s.IsFinished,
+                s.IsLocked
+            }),
+            HomeSetsWon = homeSetsWon,
+            AwaySetsWon = awaySetsWon,
+            Timestamp = DateTime.UtcNow
+        });
     }
 
     public override async Task OnConnectedAsync()
