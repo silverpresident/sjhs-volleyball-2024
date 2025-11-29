@@ -332,7 +332,7 @@ namespace VolleyballRallyManager.Lib.Services
             }
         }
 
-        public async Task<IEnumerable<Match>> GetMatchesAsync(Guid? divisionId = null, Guid? roundId = null)
+        public async Task<IEnumerable<Match>> GetMatchesAsync(Guid? divisionId = null, Guid? roundId = null, string? groupName = null, Guid? teamId = null)
         {
             var activeTournament = await GetActiveTournamentAsync();
             if (activeTournament == null)
@@ -342,11 +342,19 @@ namespace VolleyballRallyManager.Lib.Services
             var qry = _dbContext.Matches.Where(m => m.TournamentId == activeTournament.Id);
             if (divisionId != null)
             {
-                //qry = qry.Where(m => m.DivisionId == divisionId);
+                qry = qry.Where(m => m.DivisionId == divisionId);
             }
             if (roundId != null)
             {
                 qry = qry.Where(m => m.RoundId == roundId);
+            }
+            if (teamId != null)
+            {
+                qry = qry.Where(m => m.HomeTeamId == teamId || m.AwayTeamId == teamId);
+            }
+            if (string.IsNullOrEmpty(groupName) == false)
+            {
+                qry = qry.Where(m => m.GroupName == groupName);
             }
             var model = await qry.ToListAsync();
             if (model.Count() > 0)
