@@ -1,0 +1,127 @@
+@model IEnumerable<VolleyballRallyManager.Lib.Models.Announcement>
+
+@{
+    ViewData["Title"] = "Announcer Board";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/announcer-board.css" />
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-broadcast"></i> Announcer Board</h2>
+        <a asp-area="Admin" asp-controller="Announcements" asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-gear"></i> Manage Announcements
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+            <h4>No Announcements in Queue</h4>
+            <p>All announcements have been called or the queue is empty.</p>
+            <a asp-area="Admin" asp-controller="Announcements" asp-action="Create" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Create New Announcement
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row" id="announcer-board">
+            @foreach (var announcement in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4" data-announcement-id="@announcement.Id">
+                    <div class="card h-100 announcement-card @GetPriorityClass(announcement.Priority)">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge priority-badge">
+                                    @announcement.Priority.ToString()
+                                </span>
+                                <span class="badge bg-secondary ms-2">#@announcement.SequencingNumber</span>
+                            </div>
+                            <div>
+                                @if (announcement.RemainingRepeatCount > 1)
+                                {
+                                    <span class="badge bg-info">
+                                        <i class="bi bi-arrow-repeat"></i> @announcement.RemainingRepeatCount
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">@announcement.Title</h5>
+                            <p class="card-text">@announcement.Content</p>
+                            
+                            <div class="announcement-stats mb-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-megaphone"></i> Called: @announcement.AnnouncedCount times
+                                    @if (announcement.LastAnnouncementTime.HasValue)
+                                    {
+                                        <br />
+                                        <i class="bi bi-clock"></i> Last: @announcement.LastAnnouncementTime.Value.ToLocalTime().ToString("HH:mm:ss")
+                                    }
+                                </small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="d-grid gap-2">
+                                <form asp-action="Call" asp-route-id="@announcement.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-success btn-lg w-100">
+                                        <i class="bi bi-megaphone-fill"></i> Call/Announce
+                                    </button>
+                                </form>
+                                <div class="btn-group" role="group">
+                                    <form asp-action="Defer" asp-route-id="@announcement.Id" method="post" class="flex-fill">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-warning w-100">
+                                            <i class="bi bi-skip-forward"></i> Defer
+                                        </button>
+                                    </form>
+                                    <a asp-action="Details" asp-route-id="@announcement.Id" class="btn btn-info">
+                                        <i class="bi bi-eye"></i> Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/js/announcer-board.js"></script>
+}
+
+@functions {
+    private string GetPriorityClass(VolleyballRallyManager.Lib.Models.AnnouncementPriority priority)
+    {
+        return priority switch
+        {
+            VolleyballRallyManager.Lib.Models.AnnouncementPriority.Urgent => "border-danger",
+            VolleyballRallyManager.Lib.Models.AnnouncementPriority.Info => "border-info",
+            VolleyballRallyManager.Lib.Models.AnnouncementPriority.Routine => "border-secondary",
+            _ => ""
+        };
+    }
+}

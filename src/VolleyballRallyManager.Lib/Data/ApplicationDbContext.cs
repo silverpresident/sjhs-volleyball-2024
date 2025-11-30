@@ -21,6 +21,8 @@ namespace VolleyballRallyManager.Lib.Data
         public DbSet<Tournament> Tournaments { get; set; }
         public DbSet<TournamentDivision> TournamentDivisions { get; set; }
         public DbSet<TournamentTeamDivision> TournamentTeamDivisions { get; set; }
+        public DbSet<Announcement> Announcements { get; set; }
+        public DbSet<AnnouncementHistoryLog> AnnouncementHistoryLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -104,6 +106,21 @@ namespace VolleyballRallyManager.Lib.Data
                 .Property(a => a.Content)
                 .IsRequired();
 
+            builder.Entity<Announcement>()
+                .Property(a => a.Title)
+                .IsRequired()
+                .HasMaxLength(200);
+
+            builder.Entity<Announcement>()
+                .Property(a => a.Content)
+                .IsRequired();
+
+            builder.Entity<Announcement>()
+                .HasMany(a => a.HistoryLogs)
+                .WithOne(h => h.Announcement)
+                .HasForeignKey(h => h.AnnouncementId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.Entity<MatchUpdate>()
                 .Property(u => u.Content)
                 .IsRequired();
@@ -114,6 +131,10 @@ namespace VolleyballRallyManager.Lib.Data
             
         builder.Entity<MatchUpdate>()
             .Property(o => o.UpdateType)
+            .HasConversion<string>(); // Tells EF Core to store as string
+
+        builder.Entity<Announcement>()
+            .Property(o => o.Priority)
             .HasConversion<string>(); // Tells EF Core to store as string
 
         }

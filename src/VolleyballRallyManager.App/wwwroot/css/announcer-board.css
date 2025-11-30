@@ -1,0 +1,183 @@
+/* Announcer Board Styles - Green & Gold Theme */
+
+.announcement-card {
+    border-width: 3px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.announcement-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Priority Badge Styling */
+.announcement-card .priority-badge {
+    font-size: 0.85rem;
+    font-weight: bold;
+    padding: 0.35rem 0.65rem;
+}
+
+.announcement-card.border-danger .priority-badge {
+    background-color: #dc3545;
+    color: white;
+}
+
+.announcement-card.border-info .priority-badge {
+    background-color: #0dcaf0;
+    color: black;
+}
+
+.announcement-card.border-secondary .priority-badge {
+    background-color: #6c757d;
+    color: white;
+}
+
+/* Card Header Styling */
+.announcement-card .card-header {
+    background-color: rgba(255, 215, 0, 0.1);
+    border-bottom: 2px solid #d4af37;
+}
+
+.announcement-card.border-danger .card-header {
+    background-color: rgba(220, 53, 69, 0.1);
+    border-bottom-color: #dc3545;
+}
+
+.announcement-card.border-info .card-header {
+    background-color: rgba(13, 202, 240, 0.1);
+    border-bottom-color: #0dcaf0;
+}
+
+/* Card Body */
+.announcement-card .card-body {
+    background-color: #ffffff;
+}
+
+.announcement-card .card-title {
+    color: #2d5016;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.announcement-card .card-text {
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Stats Section */
+.announcement-stats {
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border-left: 3px solid #d4af37;
+}
+
+/* Button Styling - Green & Gold Theme */
+.announcement-card .btn-success {
+    background-color: #2d5016;
+    border-color: #2d5016;
+    font-weight: bold;
+}
+
+.announcement-card .btn-success:hover {
+    background-color: #1e3510;
+    border-color: #1e3510;
+}
+
+.announcement-card .btn-warning {
+    background-color: #d4af37;
+    border-color: #d4af37;
+    color: #000;
+    font-weight: bold;
+}
+
+.announcement-card .btn-warning:hover {
+    background-color: #b8962d;
+    border-color: #b8962d;
+}
+
+/* First Card Highlight */
+.announcement-card:first-child {
+    box-shadow: 0 0 15px rgba(45, 80, 22, 0.3);
+}
+
+.announcement-card:first-child .card-header {
+    background-color: rgba(45, 80, 22, 0.1);
+    border-bottom-color: #2d5016;
+}
+
+/* Urgent Priority Special Styling */
+.announcement-card.border-danger {
+    animation: pulse-border 2s ease-in-out infinite;
+}
+
+@keyframes pulse-border {
+    0%, 100% {
+        border-color: #dc3545;
+    }
+    50% {
+        border-color: #ff6b7a;
+    }
+}
+
+/* Empty State Styling */
+.alert.alert-info i {
+    color: #2d5016;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .announcement-card {
+        margin-bottom: 1rem;
+    }
+    
+    .announcement-card .card-title {
+        font-size: 1.1rem;
+    }
+}
+
+/* Loading State */
+.btn.disabled, .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Badge Styling */
+.badge.bg-info {
+    background-color: #0dcaf0 !important;
+}
+
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+/* Card Footer */
+.announcement-card .card-footer {
+    background-color: rgba(248, 249, 250, 0.5);
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+/* Button Group in Footer */
+.announcement-card .btn-group {
+    width: 100%;
+}
+
+.announcement-card .btn-group .btn {
+    flex: 1;
+}
+
+.announcement-card .btn-info {
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+    color: #000;
+}
+
+.announcement-card .btn-info:hover {
+    background-color: #31d2f2;
+    border-color: #31d2f2;
+}
+
+/* Smooth Transitions */
+.announcement-card * {
+    transition: all 0.2s ease-in-out;
+}

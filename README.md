@@ -181,6 +181,12 @@ Key configuration settings required in appsettings.json:
 
 - User authentication with Google and Microsoft accounts
 - Real-time match updates using SignalR
+- **Announcer System** with priority-based queue management
+  - Real-time announcement board with SignalR updates
+  - Priority-based sequencing (Urgent, Info, Routine)
+  - Automatic repeat handling and re-queuing
+  - Call history and statistics tracking
+  - Keyboard shortcuts for quick operation
 - Markdown support for Bulletins
 - Responsive design for all screen sizes
 - Automatic page refresh every 2 minutes
@@ -199,8 +205,10 @@ The database includes tables for:
 - Bulletins
 - Match Updates
 - Divisions
+- **Announcements** (with priority-based queue)
+- **AnnouncementHistoryLogs** (call tracking)
 
-See `database/setup.sql` for complete schema.
+See `database/setup.sql` and `database/announcements-setup.sql` for complete schema.
 
 ## Contributing
 
@@ -213,6 +221,13 @@ See `database/setup.sql` for complete schema.
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Documentation
+
+- [Announcer Feature Guide](docs/ANNOUNCER_FEATURE.md) - Complete guide to the announcement queue system
+- [User Management Guide](docs/USER_MANAGEMENT_GUIDE.md) - User administration documentation
+- [Scoring Channel](docs/SCORING_CHANNEL.md) - Match scoring system documentation
+- [Authentication Setup](docs/AUTHENTICATION_SETUP.md) - OAuth configuration guide
 
 ## Support
 

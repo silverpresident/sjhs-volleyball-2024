@@ -22,4 +22,9 @@ public interface ISignalRNotificationService
     Task NotifyErrorAsync(string error);
     Task BroadcastMessageAsync(string message, string type = "info");
     Task NotifyAddFeedAsync(MatchUpdate update);
+    Task NotifyAnnouncementCreatedAsync(Announcement announcement);
+    Task NotifyAnnouncementUpdatedAsync(Announcement announcement);
+    Task NotifyAnnouncementDeletedAsync(Guid announcementId);
+    Task NotifyAnnouncementQueueChangedAsync();
+    Task NotifyAnnouncementCalledAsync(Announcement announcement);
 }

@@ -1,0 +1,138 @@
+@model VolleyballRallyManager.Lib.Models.Announcement
+
+@{
+    ViewData["Title"] = "Announcement Details";
+    var history = ViewBag.History as IEnumerable<VolleyballRallyManager.Lib.Models.AnnouncementHistoryLog>;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4><i class="bi bi-info-circle"></i> Announcement Details</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">Title</dt>
+                        <dd class="col-sm-9"><strong>@Model.Title</strong></dd>
+
+                        <dt class="col-sm-3">Content</dt>
+                        <dd class="col-sm-9">@Model.Content</dd>
+
+                        <dt class="col-sm-3">Priority</dt>
+                        <dd class="col-sm-9">
+                            @switch (Model.Priority)
+                            {
+                                case VolleyballRallyManager.Lib.Models.AnnouncementPriority.Urgent:
+                                    <span class="badge bg-danger">Urgent</span>
+                                    break;
+                                case VolleyballRallyManager.Lib.Models.AnnouncementPriority.Info:
+                                    <span class="badge bg-info">Info</span>
+                                    break;
+                                case VolleyballRallyManager.Lib.Models.AnnouncementPriority.Routine:
+                                    <span class="badge bg-secondary">Routine</span>
+                                    break;
+                            }
+                        </dd>
+
+                        <dt class="col-sm-3">Sequencing Number</dt>
+                        <dd class="col-sm-9">@Model.SequencingNumber</dd>
+
+                        <dt class="col-sm-3">Remaining Repeats</dt>
+                        <dd class="col-sm-9">@Model.RemainingRepeatCount</dd>
+
+                        <dt class="col-sm-3">Announced Count</dt>
+                        <dd class="col-sm-9">@Model.AnnouncedCount</dd>
+
+                        <dt class="col-sm-3">Status</dt>
+                        <dd class="col-sm-9">
+                            @if (Model.IsHidden)
+                            {
+                                <span class="badge bg-secondary">Hidden</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-3">First Announced</dt>
+                        <dd class="col-sm-9">
+                            @if (Model.FirstAnnouncementTime.HasValue)
+                            {
+                                @Model.FirstAnnouncementTime.Value.ToLocalTime().ToString("MM/dd/yyyy HH:mm:ss")
+                            }
+                            else
+                            {
+                                <span class="text-muted">Never</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-3">Last Announced</dt>
+                        <dd class="col-sm-9">
+                            @if (Model.LastAnnouncementTime.HasValue)
+                            {
+                                @Model.LastAnnouncementTime.Value.ToLocalTime().ToString("MM/dd/yyyy HH:mm:ss")
+                            }
+                            else
+                            {
+                                <span class="text-muted">Never</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-3">Created</dt>
+                        <dd class="col-sm-9">@Model.CreatedAt.ToLocalTime().ToString("MM/dd/yyyy HH:mm:ss") by @Model.CreatedBy</dd>
+
+                        <dt class="col-sm-3">Updated</dt>
+                        <dd class="col-sm-9">@Model.UpdatedAt.ToLocalTime().ToString("MM/dd/yyyy HH:mm:ss") by @Model.UpdatedBy</dd>
+                    </dl>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to List
+                        </a>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5><i class="bi bi-clock-history"></i> Announcement History</h5>
+                </div>
+                <div class="card-body">
+                    @if (history != null && history.Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var log in history)
+                            {
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">
+                                            <i class="bi bi-megaphone-fill text-success"></i> Called
+                                        </h6>
+                                    </div>
+                                    <small class="text-muted">
+                                        @log.Timestamp.ToLocalTime().ToString("MM/dd/yyyy HH:mm:ss")
+                                    </small>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">
+                            <i class="bi bi-inbox"></i><br />
+                            No history available
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

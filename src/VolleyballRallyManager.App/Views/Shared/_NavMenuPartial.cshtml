@@ -77,6 +77,25 @@
         <li class="nav-item">
             <a class="nav-link" asp-area="Admin" asp-controller="Bulletin" asp-action="Index">Bulletins</a>
         </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="announcerDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="bi bi-megaphone me-1"></i>
+                Announcer
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="announcerDropdown">
+                <li>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="AnnouncerBoard" asp-action="Index">
+                        <i class="bi bi-broadcast"></i> Announcer Board
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="Announcements" asp-action="Index">
+                        <i class="bi bi-gear"></i> Manage Announcements
+                    </a>
+                </li>
+            </ul>
+        </li>
     }
     else
     {

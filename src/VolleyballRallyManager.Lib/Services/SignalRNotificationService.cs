@@ -108,4 +108,29 @@ public class SignalRNotificationService : ISignalRNotificationService
             await _matchHubContext.Clients.Group($"match_{matchId}").SendAsync("ReceiveFeedUpdate", update);
         }
     }
+
+    public async Task NotifyAnnouncementCreatedAsync(Announcement announcement)
+    {
+        await _matchHubContext.Clients.All.SendAsync("AnnouncementCreated", announcement);
+    }
+
+    public async Task NotifyAnnouncementUpdatedAsync(Announcement announcement)
+    {
+        await _matchHubContext.Clients.All.SendAsync("AnnouncementUpdated", announcement);
+    }
+
+    public async Task NotifyAnnouncementDeletedAsync(Guid announcementId)
+    {
+        await _matchHubContext.Clients.All.SendAsync("AnnouncementDeleted", announcementId);
+    }
+
+    public async Task NotifyAnnouncementQueueChangedAsync()
+    {
+        await _matchHubContext.Clients.All.SendAsync("AnnouncementQueueChanged");
+    }
+
+    public async Task NotifyAnnouncementCalledAsync(Announcement announcement)
+    {
+        await _matchHubContext.Clients.All.SendAsync("AnnouncementCalled", announcement);
+    }
 }

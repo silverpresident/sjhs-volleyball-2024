@@ -1,0 +1,81 @@
+@model VolleyballRallyManager.Lib.Models.Announcement
+
+@{
+    ViewData["Title"] = "Edit Announcement";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h4><i class="bi bi-pencil"></i> Edit Announcement</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="SequencingNumber" />
+                        <input type="hidden" asp-for="FirstAnnouncementTime" />
+                        <input type="hidden" asp-for="LastAnnouncementTime" />
+                        <input type="hidden" asp-for="AnnouncedCount" />
+                        <input type="hidden" asp-for="IsHidden" />
+                        <input type="hidden" asp-for="CreatedAt" />
+                        <input type="hidden" asp-for="CreatedBy" />
+                        
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label"></label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Content" class="form-label"></label>
+                            <textarea asp-for="Content" class="form-control" rows="5"></textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Priority" class="form-label"></label>
+                            <select asp-for="Priority" class="form-select" asp-items="Html.GetEnumSelectList<VolleyballRallyManager.Lib.Models.AnnouncementPriority>()">
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="RemainingRepeatCount" class="form-label"></label>
+                            <input asp-for="RemainingRepeatCount" class="form-control" type="number" min="0" max="100" />
+                            <span asp-validation-for="RemainingRepeatCount" class="text-danger"></span>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <strong>Current Status:</strong><br />
+                            Announced Count: @Model.AnnouncedCount<br />
+                            @if (Model.FirstAnnouncementTime.HasValue)
+                            {
+                                <text>First Announced: @Model.FirstAnnouncementTime.Value.ToLocalTime().ToString("MM/dd/yyyy HH:mm")<br /></text>
+                            }
+                            @if (Model.LastAnnouncementTime.HasValue)
+                            {
+                                <text>Last Announced: @Model.LastAnnouncementTime.Value.ToLocalTime().ToString("MM/dd/yyyy HH:mm")</text>
+                            }
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-check-circle"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
