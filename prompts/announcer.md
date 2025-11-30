@@ -1,31 +1,67 @@
-//note to self the current announcemnt should be called notices
+I need to implement an 'Announcer' feature with real-time updates via SignalR. Please implement the following components based on the existing project context:
 
-CReate a set up for announcer
-1. Index display a table of accouncement for announcer.
- each with actions to Edit/Delete/Reannounce/hide
+1. Data Model Update/Create the Announcement entity with these specific fields:
 
-2. a page board which display the accnouncement in a list of cards.
-THe announcer can
- - mark as announced/called (which records the time and removes it from list)
- - defer an announcement (put it at the end of the list) 
- - press a details button to go to the details page.
+Standard fields (Id, Title, Content, etc.) inherit from the BaseEntity
 
-THe pages use signalr hub to update in real time
+Priority Enum (Urgent, Info, Routine) store as a string
 
-THe accouncement entity has the usual and necessary fields but also
-- a priority (urgent, info, routine)
-- a sequencingnumber (used to detrimn th eorder in which announcements are displayed to the announcer on the board)
-- FirstAnnouncementTime
-- LastAnnouncementTIme
-- RepeatCount (set the number of times the announcement should be put back in the queue when it is marked as announced)
-- AnnouncedCount
+SequencingNumber (int, used to determine display order on the Board)
 
-Maintain and display a history log for each time an announcement is called out.
+FirstAnnouncementTime (Nullable DateTime)
 
-when an announcement is created it is given a sequencingnumber.
-- at the top of the queue (below all other URGENT announcements) if it is urgent
-- at the bottom of the queue if it is not urgent.
-The same is done when Reannounce is clicked.
+LastAnnouncementTime (Nullable DateTime)
 
+RemainingRepeatCount (int: Configured number of times to repeat)
 
-If an announcement with Repeats remaining (> 0) is Called then it is put back at the end of the sequencingnumber
+AnnouncedCount (int: Actual times announced so far)
+
+IsHidden (bool: False if currently in the queue)
+
+Create a secondary entity AnnouncementHistoryLog to track every time an announcement is 'Called/Announced' (store Timestamp and AnnouncementId).
+
+Write TSQL scripts to create the database tables
+
+2. Queue Logic (Crucial) Implement a service method to handle SequencingNumber assignment using this logic:
+
+New Urgent Item: Insert immediately after the last existing not hidden Urgent item (or at the top if none exist), shifting subsequent items down if necessary.
+
+New Non-Urgent Item: Append to the very end of the queue.
+
+Defer Action: Move the item to the very end of the queue (re-sequence).
+
+Called Logic: Decrease the RemainingRepeatCount by 1
+
+Repeat Logic: If an item is 'Called' and RemainingRepeatCount h> 0, move its SequencingNumber to the end of the queue.
+
+Reannounce Action: Treat as a new queuing (Urgent goes to top section, others to bottom).
+
+3. UI Requirements
+
+View 1: Admin Index (Table)
+
+Display all announcements.
+
+Actions: Edit, Delete, Hide (toggle visibility), Reannounce (puts back in queue).
+
+View 2: Announcer Board (Card List)
+
+Order by SequencingNumber.
+
+Action - 'Call/Announce':
+
+Log to History.
+
+Update LastAnnouncementTime (and First if null).
+
+Increment AnnouncedCount.
+
+If repeats remain: Move to end of queue.
+
+If no repeats: Mark as complete/remove from board.
+
+Action - 'Defer': Move to end of queue.
+
+Action - 'Details': Navigate to details view.
+
+4. Real-Time Ensure the SignalR Hub broadcasts updates to the Board view whenever the sequence changes or items are added/removed.
