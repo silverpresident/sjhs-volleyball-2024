@@ -128,13 +128,14 @@ public class MatchService : IMatchService
         var update = new MatchUpdate
         {
             MatchId = id,
+            CreatedBy = userId,
             UpdateType = UpdateType.ScoreUpdate,
             Content = $"Score updated to {homeTeamScore}:{awayTeamScore}",
             PreviousValue = $"{match.HomeTeamScore}:{match.AwayTeamScore}",
             NewValue = $"{homeTeamScore}:{awayTeamScore}"
         };
 
-        _context.MatchUpdates.Add(update);
+        await AddMatchUpdateAsync(update);
         await _context.SaveChangesAsync();
         await _notificationService.NotifyScoreUpdateAsync(match);
         return match;
@@ -155,15 +156,14 @@ public class MatchService : IMatchService
             var update = new MatchUpdate
             {
                 MatchId = id,
+                CreatedBy = userName,
                 UpdateType = UpdateType.MatchStarted,
                 Content = $"Match started"
             };
             match.CurrentSetNumber = 1;
-            CreateBaseEntity(update, userName);
-            _context.MatchUpdates.Add(update);
             await _context.SaveChangesAsync();
+            await AddMatchUpdateAsync(update);
         }
-        await _notificationService.NotifyMatchStartedAsync(match);
         return match;
     }
 
@@ -188,10 +188,11 @@ public class MatchService : IMatchService
         var update = new MatchUpdate
         {
             MatchId = id,
+            CreatedBy = userId,
             UpdateType = UpdateType.MatchFinished,
             Content = $"Match finished by {userId}"
         };
-        _context.MatchUpdates.Add(update);
+        await AddMatchUpdateAsync(update);
         await _context.SaveChangesAsync();
         await _notificationService.NotifyMatchFinishedAsync(match);
         return match;
@@ -206,16 +207,17 @@ public class MatchService : IMatchService
         var update = new MatchUpdate
         {
             MatchId = id,
+            CreatedBy = userId,
             UpdateType = UpdateType.DisputeRaised,
             Content = $"Match disputed by {userId}"
         };
-        _context.MatchUpdates.Add(update);
+        await AddMatchUpdateAsync(update);
         await _context.SaveChangesAsync();
         await _notificationService.NotifyMatchDisputedAsync(match);
         return match;
     }
 
-    public async Task<Match> AssignRefereeAsync(Guid id, string refereeName)
+    public async Task<Match> AssignRefereeAsync(Guid id, string refereeName, string userName)
     {
         var match = await GetMatchAsync(id);
         if (match == null) throw new KeyNotFoundException("Match not found");
@@ -224,17 +226,18 @@ public class MatchService : IMatchService
         var update = new MatchUpdate
         {
             MatchId = id,
+            CreatedBy = userName,
             UpdateType = UpdateType.RefereeAssigned,
             Content = $"Referee assigned: {refereeName}"
         };
 
-        _context.MatchUpdates.Add(update);
+        await AddMatchUpdateAsync(update);
         await _context.SaveChangesAsync();
         await _notificationService.NotifyMatchUpdatedAsync(match);
         return match;
     }
 
-    public async Task<Match> AssignScorerAsync(Guid id, string scorerName)
+    public async Task<Match> AssignScorerAsync(Guid id, string scorerName, string userName)
     {
         var match = await GetMatchAsync(id);
         if (match == null) throw new KeyNotFoundException("Match not found");
@@ -243,17 +246,18 @@ public class MatchService : IMatchService
         var update = new MatchUpdate
         {
             MatchId = id,
+            CreatedBy = userName,
             UpdateType = UpdateType.ScorerAssigned,
             Content = $"Scorer assigned: {scorerName}"
         };
 
-        _context.MatchUpdates.Add(update);
+        await AddMatchUpdateAsync(update);
         await _context.SaveChangesAsync();
         await _notificationService.NotifyMatchUpdatedAsync(match);
         return match;
     }
 
-    public async Task<Match> UpdateLocationAsync(Guid id, string location)
+    public async Task<Match> UpdateLocationAsync(Guid id, string location, string userName)
     {
         var match = await GetMatchAsync(id);
         if (match == null) throw new KeyNotFoundException("Match not found");
@@ -263,19 +267,20 @@ public class MatchService : IMatchService
         var update = new MatchUpdate
         {
             MatchId = id,
+            CreatedBy = userName,
             UpdateType = UpdateType.LocationChanged,
             Content = $"Location changed from {oldLocation} to {location}",
             PreviousValue = oldLocation,
             NewValue = location
         };
 
-        _context.MatchUpdates.Add(update);
+        await AddMatchUpdateAsync(update);
         await _context.SaveChangesAsync();
         await _notificationService.NotifyMatchUpdatedAsync(match);
         return match;
     }
 
-    public async Task<Match> UpdateTimeAsync(Guid id, DateTime scheduledTime)
+    public async Task<Match> UpdateTimeAsync(Guid id, DateTime scheduledTime, string userName)
     {
         var match = await GetMatchAsync(id);
         if (match == null) throw new KeyNotFoundException("Match not found");
@@ -285,12 +290,13 @@ public class MatchService : IMatchService
         var update = new MatchUpdate
         {
             MatchId = id,
+            CreatedBy = userName,
             UpdateType = UpdateType.TimeChanged,
             Content = $"Time changed from {oldTime:g} to {scheduledTime:g}",
             PreviousValue = oldTime.ToString("g"),
             NewValue = scheduledTime.ToString("g")
         };
-        _context.MatchUpdates.Add(update);
+        await AddMatchUpdateAsync(update);
         await _context.SaveChangesAsync();
         await _notificationService.NotifyMatchUpdatedAsync(match);
         return match;
@@ -309,6 +315,7 @@ public class MatchService : IMatchService
         _context.MatchUpdates.Add(update);
         CreateBaseEntity(update, update.CreatedBy);
         await _context.SaveChangesAsync();
+        await _notificationService.NotifyAddFeedAsync(update);
         return update;
     }
 
@@ -395,10 +402,11 @@ public class MatchService : IMatchService
             var update = new MatchUpdate
             {
                 MatchId = matchId,
+                CreatedBy = userId,
                 UpdateType = UpdateType.ScoreUpdate,
                 Content = $"Set {setNumber} score updated to {homeScore}-{awayScore}"
             };
-            _context.MatchUpdates.Add(update);
+            await AddMatchUpdateAsync(update);
         }
 
         await _context.SaveChangesAsync();
@@ -426,16 +434,17 @@ public class MatchService : IMatchService
         matchSet.IsFinished = true;
         matchSet.UpdatedAt = DateTime.UtcNow;
         matchSet.UpdatedBy = userId;
+        await _context.SaveChangesAsync();
 
         var update = new MatchUpdate
         {
             MatchId = matchId,
+            CreatedBy = userId,
             UpdateType = UpdateType.MatchSetFinished,
             Content = $"Set {setNumber} finished: {matchSet.HomeTeamScore}-{matchSet.AwayTeamScore}"
         };
-        _context.MatchUpdates.Add(update);
+        await AddMatchUpdateAsync(update);
 
-        await _context.SaveChangesAsync();
 
         var match = await GetMatchAsync(matchId);
         if (match != null)
@@ -445,7 +454,8 @@ public class MatchService : IMatchService
 
             await _context.SaveChangesAsync();
             await _notificationService.NotifyMatchUpdatedAsync(match);
-        } 
+        }
+        await _context.SaveChangesAsync();
         //TODO update match with sets won v lost
         return matchSet;
     }
@@ -458,26 +468,15 @@ public class MatchService : IMatchService
 
         match.CurrentSetNumber++;
 
-        var newSet = new MatchSet
-        {
-            MatchId = matchId,
-            SetNumber = match.CurrentSetNumber,
-            HomeTeamScore = 0,
-            AwayTeamScore = 0,
-            IsFinished = false,
-            IsLocked = false
-        };
-        CreateBaseEntity(newSet, userName);
-        _context.MatchSets.Add(newSet);
-
+        var newSet = await GetOrCreateMatchSetAsync(matchId, match.CurrentSetNumber, userName);
         var update = new MatchUpdate
         {
             MatchId = matchId,
+            CreatedBy = userName,
             UpdateType = UpdateType.MatchSetStarted,
             Content = $"Set {match.CurrentSetNumber} started"
         };
-        CreateBaseEntity(update, userName);
-        _context.MatchUpdates.Add(update);
+        await AddMatchUpdateAsync(update);
 
         await _context.SaveChangesAsync();
 
@@ -525,10 +524,11 @@ public class MatchService : IMatchService
         var update = new MatchUpdate
         {
             MatchId = matchId,
+            CreatedBy = userId,
             UpdateType = UpdateType.Other,
             Content = $"Reverted to Set {match.CurrentSetNumber}"
         };
-        _context.MatchUpdates.Add(update);
+        await AddMatchUpdateAsync(update);
 
         await _context.SaveChangesAsync();
 
@@ -556,7 +556,6 @@ public class MatchService : IMatchService
         match.HomeTeamScore = homeSetsWon;
         match.AwayTeamScore = awaySetsWon;
         match.IsFinished = true;
-        match.IsLocked = true;
 
         // Lock all sets
         foreach (var set in sets)
@@ -564,17 +563,7 @@ public class MatchService : IMatchService
             set.IsLocked = true;
             set.IsFinished = true;
         }
-
-        var update = new MatchUpdate
-        {
-            MatchId = matchId,
-            UpdateType = UpdateType.MatchFinished,
-            Content = $"Match ended by {userId}. Final score: {homeSetsWon}-{awaySetsWon} sets"
-        };
-        _context.MatchUpdates.Add(update);
-
         await _context.SaveChangesAsync();
-        await _notificationService.NotifyMatchFinishedAsync(match);
 
         return match;
     }
@@ -618,10 +607,11 @@ public class MatchService : IMatchService
             var update = new MatchUpdate
             {
                 MatchId = matchId,
+                CreatedBy = userId,
                 UpdateType = UpdateType.Other,
                 Content = string.Join("; ", changes)
             };
-            _context.MatchUpdates.Add(update);
+            await AddMatchUpdateAsync(update);
 
             await _context.SaveChangesAsync();
             await _notificationService.NotifyMatchUpdatedAsync(match);

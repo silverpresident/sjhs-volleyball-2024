@@ -454,4 +454,10 @@ public class AnnouncementService : IAnnouncementService
             throw;
         }
     }
+
+    public async Task<bool> TitleExistsAsync(string title)
+    {
+        //TODO this does not work for future tournamnents as it does not check if the announcment is withing the current tournament
+        return await _context.Announcements.AnyAsync(a => a.Title == title);
+    }
 }

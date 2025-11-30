@@ -16,4 +16,5 @@ public interface IAnnouncementService
     Task<Announcement> DeferAnnouncementAsync(Guid id);
     Task<Announcement> ReannounceAsync(Guid id);
     Task<IEnumerable<AnnouncementHistoryLog>> GetHistoryForAnnouncementAsync(Guid id);
+    Task<bool> TitleExistsAsync(string title);
 }

@@ -18,10 +18,10 @@ public interface IMatchService
     Task<Match> StartMatchAsync(Guid id, string userId);
     Task<Match> FinishMatchAsync(Guid id, string userId);
     Task<Match> RaiseDisputeAsync(Guid id, string userId);
-    Task<Match> AssignRefereeAsync(Guid id, string refereeName);
-    Task<Match> AssignScorerAsync(Guid id, string scorerName);
-    Task<Match> UpdateLocationAsync(Guid id, string location);
-    Task<Match> UpdateTimeAsync(Guid id, DateTime scheduledTime);
+    Task<Match> AssignRefereeAsync(Guid id, string refereeName, string userName);
+    Task<Match> AssignScorerAsync(Guid id, string scorerName, string userName);
+    Task<Match> UpdateLocationAsync(Guid id, string location, string userName);
+    Task<Match> UpdateTimeAsync(Guid id, DateTime scheduledTime, string userName);
     Task<List<MatchUpdate>> GetMatchUpdatesAsync(Guid matchId);
     Task<MatchUpdate> AddMatchUpdateAsync(MatchUpdate update);
     Task<bool> HasTeamPlayedInRoundAsync(Guid teamId, Guid roundId);

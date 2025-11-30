@@ -1,6 +1,9 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Text.RegularExpressions;
 using VolleyballRallyManager.Lib.Hubs;
 using VolleyballRallyManager.Lib.Models;
 using VolleyballRallyManager.Lib.Services;
@@ -164,20 +167,34 @@ public class ScoringAutomationWorker : BackgroundService
         }
 
         // Create match update requesting support
-        var update = new MatchUpdate
+        /*var update = new MatchUpdate
         {
             MatchId = scoringEvent.MatchId,
             UpdateType = UpdateType.Other,
             Content = $"Support requested for {match.HomeTeam?.Name} vs {match.AwayTeam?.Name} on {match.CourtLocation ?? "court"}"
         };
-        await matchService.AddMatchUpdateAsync(update);
+        await matchService.AddMatchUpdateAsync(update);*/
+        //TODO this message is for admin chat only - implement when admin chat is available
 
         _logger.LogInformation("Processed CallToSupport for match {MatchId} - Admin notification should be implemented", scoringEvent.MatchId);
     }
 
     private async Task HandleMatchStartAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService, IAnnouncementService announcerService)
     {
-        await matchService.StartMatchAsync(scoringEvent.MatchId, scoringEvent.Source);
+        var match = await matchService.StartMatchAsync(scoringEvent.MatchId, scoringEvent.UserName);
+        await notificationService.NotifyMatchStartedAsync(match);
+        string title = $"Match Started #{match.MatchNumber}";
+        if (await announcerService.TitleExistsAsync(title) == false)
+        {
+            var announcement = new Announcement
+            {
+                Title = title,
+                Content = $"Match #{match.MatchNumber} between Teams {match.HomeTeam?.Name} and {match.AwayTeam?.Name} has started on {match.CourtLocation ?? "court"}.",
+                IsHidden = false,
+                CreatedBy = scoringEvent.UserName
+            };
+            await announcerService.CreateAnnouncementAsync(announcement);
+        }
         _logger.LogInformation("Processed MatchStart for match {MatchId}", scoringEvent.MatchId);
     }
 
@@ -195,14 +212,24 @@ public class ScoringAutomationWorker : BackgroundService
             _logger.LogWarning("Match not found for MatchSetStart: {MatchId}", scoringEvent.MatchId);
             return;
         }
+        if (scoringEvent.SetNumber.Value == match.CurrentSetNumber) 
+        {
+            _logger.LogWarning("Set already current SetNumber for MatchSetStart: {MatchId}, set {SetNumber}", scoringEvent.MatchId, scoringEvent.SetNumber);
+            return;
+        }
+        if (0 == match.CurrentSetNumber)
+        {
+            await HandleMatchStartAsync(scoringEvent, matchService, notificationService, announcerService);
+            return;
+        }
 
-        // Finish current set if needed
+            // Finish current set if needed
         if (match.CurrentSetNumber > 0)
         {
             var currentSet = await matchService.GetMatchSetAsync(scoringEvent.MatchId, match.CurrentSetNumber);
             if (currentSet != null && !currentSet.IsFinished)
             {
-                await matchService.FinishSetAsync(scoringEvent.MatchId, match.CurrentSetNumber, scoringEvent.Source);
+                await matchService.FinishSetAsync(scoringEvent.MatchId, match.CurrentSetNumber, scoringEvent.UserName);
             }
         }
 
@@ -218,8 +245,36 @@ public class ScoringAutomationWorker : BackgroundService
             _logger.LogWarning("SetNumber is required for MatchSetEnd event");
             return;
         }
+        var match = await matchService.GetMatchAsync(scoringEvent.MatchId);
+        if (match == null)
+        {
+            _logger.LogWarning("Match not found for MatchSetStart: {MatchId}", scoringEvent.MatchId);
+            return;
+        }
 
-        await matchService.FinishSetAsync(scoringEvent.MatchId, scoringEvent.SetNumber.Value, scoringEvent.Source);
+        var matchSet = await matchService.FinishSetAsync(scoringEvent.MatchId, scoringEvent.SetNumber.Value, scoringEvent.Source);
+        //add announcer
+        string title = $"Match #{match.MatchNumber} Set {matchSet.SetNumber} Finished ";
+        if (await announcerService.TitleExistsAsync(title) == false)
+        {
+            string winner;
+            if (matchSet.AwayTeamScore > matchSet.HomeTeamScore)
+            {
+                winner = match.AwayTeam?.Name;
+            }
+            else
+            {
+                winner = match.HomeTeam?.Name;
+            }
+            var announcement = new Announcement
+            {
+                Title = title,
+                Content = $"Match #{match.MatchNumber} between Teams {match.HomeTeam?.Name} and {match.AwayTeam?.Name} finished set {matchSet.SetNumber} with a score of {matchSet.HomeTeamScore}:{matchSet.AwayTeamScore} in favour of {winner}.",
+                IsHidden = false,
+                CreatedBy = scoringEvent.UserName
+            };
+            await announcerService.CreateAnnouncementAsync(announcement);
+        }
         _logger.LogInformation("Processed MatchSetEnd for match {MatchId}, set {SetNumber}", scoringEvent.MatchId, scoringEvent.SetNumber);
     }
 
@@ -264,6 +319,7 @@ public class ScoringAutomationWorker : BackgroundService
 
         if (currentSet.IsLocked)
         {
+            //notifiy error
             _logger.LogWarning("Cannot update score - set is locked: {MatchId}, set {SetNumber}", 
                 scoringEvent.MatchId, scoringEvent.SetNumber.Value);
             return;
@@ -300,7 +356,31 @@ public class ScoringAutomationWorker : BackgroundService
 
     private async Task HandleMatchEndAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService, IAnnouncementService announcerService)
     {
-        await matchService.EndMatchAndLockSetsAsync(scoringEvent.MatchId, scoringEvent.Source);
+        var match = await matchService.EndMatchAndLockSetsAsync(scoringEvent.MatchId, scoringEvent.Source);
+
+
+        var update = new MatchUpdate
+        {
+            MatchId = match.Id,
+            CreatedBy = scoringEvent.UserName,
+            UpdateType = UpdateType.MatchFinished,
+            Content = $"Match ended. Final score: {match.HomeTeamScore}-{match.AwayTeamScore} sets"
+        };
+        await matchService.AddMatchUpdateAsync(update);
+        string title = $"Match Finished #{match.MatchNumber}";
+        if (await announcerService.TitleExistsAsync(title) == false)
+        {
+            //TODO include score for each set in announcement
+            var announcement = new Announcement
+            {
+                Title = title,
+                Content = $"Match #{match.MatchNumber} between Teams {match.HomeTeam?.Name} and {match.AwayTeam?.Name} has ended. Final score: {match.HomeTeamScore}-{match.AwayTeamScore} sets.",
+                IsHidden = false,
+                CreatedBy = scoringEvent.UserName
+            };
+            await announcerService.CreateAnnouncementAsync(announcement);
+        }
+        await notificationService.NotifyMatchFinishedAsync(match);
         _logger.LogInformation("Processed MatchEnd for match {MatchId}", scoringEvent.MatchId);
     }
 
@@ -329,7 +409,7 @@ public class ScoringAutomationWorker : BackgroundService
             Content = isDisputed ? "Match marked as disputed" : "Dispute cleared"
         };
         await matchService.AddMatchUpdateAsync(update);
-
+        await notificationService.NotifyMatchUpdatedAsync(match);
         _logger.LogInformation("Processed MatchDisputed for match {MatchId}, disputed: {IsDisputed}", 
             scoringEvent.MatchId, isDisputed);
     }
