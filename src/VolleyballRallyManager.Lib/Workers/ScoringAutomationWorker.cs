@@ -60,44 +60,45 @@ public class ScoringAutomationWorker : BackgroundService
         using var scope = _serviceScopeFactory.CreateScope();
         var matchService = scope.ServiceProvider.GetRequiredService<IMatchService>();
         var bulletinService = scope.ServiceProvider.GetRequiredService<IBulletinService>();
+        var announcerService = scope.ServiceProvider.GetRequiredService<IAnnouncementService>();
         var notificationService = scope.ServiceProvider.GetRequiredService<ISignalRNotificationService>();
 
         switch (scoringEvent.EventType)
         {
             case ScoringEventType.CallToCourt:
-                await HandleCallToCourtAsync(scoringEvent, matchService, notificationService, bulletinService);
+                await HandleCallToCourtAsync(scoringEvent, matchService, notificationService, announcerService, bulletinService);
                 break;
 
             case ScoringEventType.CallToSupport:
-                await HandleCallToSupportAsync(scoringEvent, matchService, notificationService);
+                await HandleCallToSupportAsync(scoringEvent, matchService, notificationService, announcerService);
                 break;
 
             case ScoringEventType.MatchStart:
-                await HandleMatchStartAsync(scoringEvent, matchService, notificationService);
+                await HandleMatchStartAsync(scoringEvent, matchService, notificationService, announcerService);
                 break;
 
             case ScoringEventType.MatchSetStart:
-                await HandleMatchSetStartAsync(scoringEvent, matchService, notificationService);
+                await HandleMatchSetStartAsync(scoringEvent, matchService, notificationService, announcerService);
                 break;
 
             case ScoringEventType.MatchSetEnd:
-                await HandleMatchSetEndAsync(scoringEvent, matchService, notificationService);
+                await HandleMatchSetEndAsync(scoringEvent, matchService, notificationService, announcerService);
                 break;
 
             case ScoringEventType.MatchSetRevertToPrevious:
-                await HandleMatchSetRevertToPreviousAsync(scoringEvent, matchService, notificationService);
+                await HandleMatchSetRevertToPreviousAsync(scoringEvent, matchService, notificationService, announcerService);
                 break;
 
             case ScoringEventType.MatchSetScoreChange:
-                await HandleMatchSetScoreChangeAsync(scoringEvent, matchService, notificationService);
+                await HandleMatchSetScoreChangeAsync(scoringEvent, matchService, notificationService, announcerService);
                 break;
 
             case ScoringEventType.MatchEnd:
-                await HandleMatchEndAsync(scoringEvent, matchService, notificationService);
+                await HandleMatchEndAsync(scoringEvent, matchService, notificationService, announcerService);
                 break;
 
             case ScoringEventType.MatchDisputed:
-                await HandleMatchDisputedAsync(scoringEvent, matchService, notificationService);
+                await HandleMatchDisputedAsync(scoringEvent, matchService, notificationService, announcerService);
                 break;
 
             default:
@@ -106,7 +107,7 @@ public class ScoringAutomationWorker : BackgroundService
         }
     }
 
-    private async Task HandleCallToCourtAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService, IBulletinService bulletinService)
+    private async Task HandleCallToCourtAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService, IAnnouncementService announcerService, IBulletinService bulletinService)
     {
         var match = await matchService.GetMatchAsync(scoringEvent.MatchId);
         if (match == null)
@@ -142,11 +143,18 @@ public class ScoringAutomationWorker : BackgroundService
             CreatedBy = scoringEvent.UserName
         };
         await bulletinService.CreateBulletinAsync(bulletin);
-        //TODO notify announcer
+        var announcement = new Announcement
+        {
+            Content = $"We are ready to begin Match # {match.MatchNumber} : Teams {match.HomeTeam?.Name} and {match.AwayTeam?.Name} are called to court at {match.CourtLocation ?? "court"}.",
+            IsHidden = false,
+            CreatedBy = scoringEvent.UserName
+        };
+        await announcerService.CreateAnnouncementAsync(announcement);
+        await notificationService.NotifyAnnouncementCreatedAsync(announcement);
         _logger.LogInformation("Processed CallToCourt for match {MatchId}", scoringEvent.MatchId);
     }
 
-    private async Task HandleCallToSupportAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService)
+    private async Task HandleCallToSupportAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService, IAnnouncementService announcerService)
     {
         var match = await matchService.GetMatchAsync(scoringEvent.MatchId);
         if (match == null)
@@ -167,13 +175,13 @@ public class ScoringAutomationWorker : BackgroundService
         _logger.LogInformation("Processed CallToSupport for match {MatchId} - Admin notification should be implemented", scoringEvent.MatchId);
     }
 
-    private async Task HandleMatchStartAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService)
+    private async Task HandleMatchStartAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService, IAnnouncementService announcerService)
     {
         await matchService.StartMatchAsync(scoringEvent.MatchId, scoringEvent.Source);
         _logger.LogInformation("Processed MatchStart for match {MatchId}", scoringEvent.MatchId);
     }
 
-    private async Task HandleMatchSetStartAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService)
+    private async Task HandleMatchSetStartAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService, IAnnouncementService announcerService)
     {
         if (!scoringEvent.SetNumber.HasValue)
         {
@@ -203,7 +211,7 @@ public class ScoringAutomationWorker : BackgroundService
         _logger.LogInformation("Processed MatchSetStart for match {MatchId}, set {SetNumber}", scoringEvent.MatchId, scoringEvent.SetNumber);
     }
 
-    private async Task HandleMatchSetEndAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService)
+    private async Task HandleMatchSetEndAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService, IAnnouncementService announcerService)
     {
         if (!scoringEvent.SetNumber.HasValue)
         {
@@ -215,7 +223,7 @@ public class ScoringAutomationWorker : BackgroundService
         _logger.LogInformation("Processed MatchSetEnd for match {MatchId}, set {SetNumber}", scoringEvent.MatchId, scoringEvent.SetNumber);
     }
 
-    private async Task HandleMatchSetRevertToPreviousAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService)
+    private async Task HandleMatchSetRevertToPreviousAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService, IAnnouncementService announcerService)
     {
         if (!scoringEvent.SetNumber.HasValue)
         {
@@ -227,7 +235,7 @@ public class ScoringAutomationWorker : BackgroundService
         _logger.LogInformation("Processed MatchSetRevertToPrevious for match {MatchId}, set {SetNumber}", scoringEvent.MatchId, scoringEvent.SetNumber);
     }
 
-    private async Task HandleMatchSetScoreChangeAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService)
+    private async Task HandleMatchSetScoreChangeAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService, IAnnouncementService announcerService)
     {
         if (!scoringEvent.SetNumber.HasValue || !scoringEvent.TeamId.HasValue || !scoringEvent.ScoreChange.HasValue)
         {
@@ -290,13 +298,13 @@ public class ScoringAutomationWorker : BackgroundService
             newAwayScore);
     }
 
-    private async Task HandleMatchEndAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService)
+    private async Task HandleMatchEndAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService, IAnnouncementService announcerService)
     {
         await matchService.EndMatchAndLockSetsAsync(scoringEvent.MatchId, scoringEvent.Source);
         _logger.LogInformation("Processed MatchEnd for match {MatchId}", scoringEvent.MatchId);
     }
 
-    private async Task HandleMatchDisputedAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService)
+    private async Task HandleMatchDisputedAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService, IAnnouncementService announcerService)
     {
         var match = await matchService.GetMatchAsync(scoringEvent.MatchId);
         if (match == null)

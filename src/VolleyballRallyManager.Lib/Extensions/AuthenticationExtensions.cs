@@ -17,7 +17,8 @@ namespace VolleyballRallyManager.Lib.Extensions
                 .AddPolicy("AdminArea", policy => policy.RequireAuthenticatedUser())
                 .AddPolicy("RequireAdministrator", policy => policy.RequireRole("Administrator"))
                 .AddPolicy("RequireJudge", policy => policy.RequireRole("Administrator", "Judge"))
-                .AddPolicy("RequireScorekeeper", policy => policy.RequireRole("Administrator", "Judge", "Scorekeeper"));
+                .AddPolicy("RequireScorekeeper", policy => policy.RequireRole("Administrator", "Judge", "Scorekeeper"))
+                .AddPolicy("RequireAnnouncer", policy => policy.RequireRole("Administrator", "Announcer"));
         }
 
         public static IServiceCollection AddVolleyBallRallyAuthentication(

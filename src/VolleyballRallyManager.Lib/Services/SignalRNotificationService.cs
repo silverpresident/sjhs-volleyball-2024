@@ -111,7 +111,7 @@ public class SignalRNotificationService : ISignalRNotificationService
 
     public async Task NotifyAnnouncementCreatedAsync(Announcement announcement)
     {
-        await _matchHubContext.Clients.All.SendAsync("AnnouncementCreated", announcement);
+        await _matchHubContext.Clients.Group("announcer").SendAsync("AnnouncementCreated", announcement);
     }
 
     public async Task NotifyAnnouncementUpdatedAsync(Announcement announcement)
@@ -133,4 +133,5 @@ public class SignalRNotificationService : ISignalRNotificationService
     {
         await _matchHubContext.Clients.All.SendAsync("AnnouncementCalled", announcement);
     }
+
 }

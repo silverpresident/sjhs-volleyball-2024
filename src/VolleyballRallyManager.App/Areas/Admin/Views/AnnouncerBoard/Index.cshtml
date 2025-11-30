@@ -76,7 +76,9 @@
                                     @if (announcement.LastAnnouncementTime.HasValue)
                                     {
                                         <br />
-                                        <i class="bi bi-clock"></i> Last: @announcement.LastAnnouncementTime.Value.ToLocalTime().ToString("HH:mm:ss")
+                                        <i class="bi bi-clock"></i>                     
+                                        <text>Last: </text>
+                                        {@announcement.LastAnnouncementTime.Value.ToLocalTime().ToString("HH:mm:ss")}
                                     }
                                 </small>
                             </div>

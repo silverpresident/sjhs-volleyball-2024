@@ -15,7 +15,7 @@
                 <div class="card-body p-4">
                     <form asp-action="Create" method="post">
                         @Html.AntiForgeryToken()
-                        
+
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
                         <!-- Email Address -->
@@ -56,20 +56,31 @@
                                         @foreach (var role in (List<string>)ViewBag.AvailableRoles)
                                         {
                                             <div class="form-check mb-2">
-                                                <input class="form-check-input" type="checkbox" 
+                                                <input class="form-check-input" type="checkbox"
                                                        name="SelectedRoles" value="@role" id="role_@role">
                                                 <label class="form-check-label" for="role_@role">
                                                     <strong>@role</strong>
                                                     @switch (role)
                                                     {
                                                         case "Administrator":
-                                                            <br><small class="text-muted">Full access to all features including user management</small>
+                                                            <br>
+                                            
+                                                            <small class="text-muted">Full access to all features including user management</small>
                                                             break;
                                                         case "Judge":
-                                                            <br><small class="text-muted">Can manage matches and scores</small>
+                                                            <br>
+                                            
+                                                            <small class="text-muted">Can manage matches and scores</small>
                                                             break;
                                                         case "Scorekeeper":
-                                                            <br><small class="text-muted">Can update scores only</small>
+                                                            <br>
+
+                                                            <small class="text-muted">Can update scores only</small>
+                                                            break;
+                                                        case "Announcer":
+                                                            <br>
+
+                                                            <small class="text-muted">Can update announcements only</small>
                                                             break;
                                                     }
                                                 </label>
@@ -124,6 +135,7 @@
                         <li><strong>Administrator:</strong> Has full control over the system including user management, tournaments, and all other features</li>
                         <li><strong>Judge:</strong> Can create and manage tournaments, matches, and update scores</li>
                         <li><strong>Scorekeeper:</strong> Limited access to update match scores only</li>
+                        <li><strong>Announcer:</strong> Can update announcements only</li>
                     </ul>
                 </div>
             </div>
@@ -141,10 +153,10 @@
         border-color: #198754;
     }
 
-    .btn-success:hover {
-        background-color: #157347;
-        border-color: #146c43;
-    }
+        .btn-success:hover {
+            background-color: #157347;
+            border-color: #146c43;
+        }
 
     .card-header.bg-success {
         background-color: #198754 !important;

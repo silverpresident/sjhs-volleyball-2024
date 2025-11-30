@@ -57,7 +57,7 @@ namespace VolleyballRallyManager.Lib.Configuration
             var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            string[] roles = { "Administrator", "Judge", "Scorekeeper" };
+            string[] roles = { "Administrator", "Judge", "Scorekeeper", "Announcer" };
             string AdminRole = "Administrator";
             foreach (string role in roles)
             {
