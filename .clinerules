@@ -46,6 +46,11 @@ This is a .NET 10.0 volleyball tournament management system with three main proj
 - Do not embed script in cshtml files, where necessary create a separate js file.
 - Keep the README.md file updated
 - Document the project using *.md files in the docs folder
+- **Logging**: Use ASP.NET Core's logging framework for consistent logging throughout the application.
+
+## Logging
+- Add ILogger to all services and all controller.
+- Log caught exceptions 
 
 ### Entity Framework & Database
 - Database entities must inherit from `BaseEntity`

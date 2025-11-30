@@ -307,6 +307,7 @@ public class MatchService : IMatchService
     public async Task<MatchUpdate> AddMatchUpdateAsync(MatchUpdate update)
     {
         _context.MatchUpdates.Add(update);
+        CreateBaseEntity(update, update.CreatedBy);
         await _context.SaveChangesAsync();
         return update;
     }
@@ -655,5 +656,10 @@ public class MatchService : IMatchService
             await _context.SaveChangesAsync();
         }
         return currentSet;
+    }
+
+    public async Task<bool> IsCalledToCourt(Guid matchId)
+    {
+        return await _context.MatchUpdates.AnyAsync(mu => mu.MatchId == matchId && mu.UpdateType == UpdateType.CalledToCourt);
     }
 }

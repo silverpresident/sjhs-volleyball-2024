@@ -33,6 +33,14 @@ $(function () {
         // Receive score updates
         scorerConnection.on("ReceiveScoreUpdate", function (data) {
             console.log("Score update received:", data);
+            if (data.setNumber === matchState.currentSetNumber) {
+                if (data.homeSetsWon !== null) {
+                    matchState.homeSetsWon = data.homeSetsWon;
+                }
+                if (data.awaySetsWon !== null) {
+                    matchState.awaySetsWon = data.awaySetsWon;
+                }
+            }
             updateScoreDisplay(data.setNumber, data.homeScore, data.awayScore);
         });
 

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using VolleyballRallyManager.Lib.Models;
 using VolleyballRallyManager.Lib.Services;
+using VolleyballRallyManager.Lib.Workers;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace VolleyballRallyManager.Lib.Hubs;
@@ -10,22 +11,24 @@ namespace VolleyballRallyManager.Lib.Hubs;
 public class ScorerHub : Hub
 {
     private readonly IMatchService _matchService;
+    private readonly ScoringChannel _scoringChannel;
 
-    public ScorerHub(IMatchService matchService)
+    public ScorerHub(IMatchService matchService, ScoringChannel scoringChannel)
     {
         _matchService = matchService;
+        _scoringChannel = scoringChannel;
     }
 
     public async Task JoinMatchGroup(Guid matchId)
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, $"scorer_{matchId}");
-
         var match = await _matchService.GetMatchAsync(matchId);
         if (match == null)
         {
             await Clients.Caller.SendAsync("ReceiveError", "Match not found");
             return;
         }
+        await Groups.AddToGroupAsync(Context.ConnectionId, $"scorer_{matchId}");
+
 
         var sets = await _matchService.GetMatchSetsAsync(matchId);
         await Clients.Caller.SendAsync("ReceiveMatchState", new
@@ -82,8 +85,6 @@ public class ScorerHub : Hub
 
             var currentSet = await _matchService.GetOrCreateMatchSetAsync(matchId, setNumber, "scorer");
 
-
-            //var currentSet = await _matchService.GetCurrentSetAsync(matchId);
             if (currentSet == null || currentSet.SetNumber != setNumber)
             {
                 await Clients.Caller.SendAsync("ReceiveError", "Set not found or not current");
@@ -96,6 +97,10 @@ public class ScorerHub : Hub
                 return;
             }
 
+            // Queue the score change event
+            await _scoringChannel.QueueMatchSetScoreChangeAsync(matchId, setNumber, teamId, incrementValue, "scorer");
+
+            // Calculate new score for immediate UI feedback
             int newHomeScore = currentSet.HomeTeamScore;
             int newAwayScore = currentSet.AwayTeamScore;
 
@@ -110,16 +115,8 @@ public class ScorerHub : Hub
                 if (newAwayScore < 0) newAwayScore = 0;
             }
 
-            var updatedSet = await _matchService.UpdateSetScoreAsync(matchId, setNumber, newHomeScore, newAwayScore, "scorer");
-
-            await Clients.Group($"scorer_{matchId}").SendAsync("ReceiveScoreUpdate", new
-            {
-                MatchId = matchId,
-                SetNumber = setNumber,
-                HomeScore = updatedSet.HomeTeamScore,
-                AwayScore = updatedSet.AwayTeamScore,
-                Timestamp = DateTime.UtcNow
-            });
+            // Broadcast optimistic update (actual update will come from worker)
+            await BroadcastScoreUpdate(matchId);
         }
         catch (Exception ex)
         {
@@ -143,46 +140,28 @@ public class ScorerHub : Hub
             switch (actionType.ToLower())
             {
                 case "calltosupport":
-                    /*update = new MatchUpdate
-                    {
-                        MatchId = matchId,
-                        UpdateType = UpdateType.Other,
-                        Content = $"{match.HomeTeam?.Name} vs {match.AwayTeam?.Name} called to court"
-                    };
-                    await _matchService.AddMatchUpdateAsync(update);*/
-                    .//TODO notify admin users, use the matchId to find the court of the call
+                    await _scoringChannel.QueueCallToSupportAsync(matchId, "scorer");
                     break;
+
                 case "calltocourt":
-                    update = new MatchUpdate
-                    {
-                        MatchId = matchId,
-                        UpdateType = UpdateType.Other,
-                        Content = $"{match.HomeTeam?.Name} vs {match.AwayTeam?.Name} called to court"
-                    };
-                    await _matchService.AddMatchUpdateAsync(update);
-                    //TODO post announcement
+                    await _scoringChannel.QueueCallToCourtAsync(matchId, "scorer");
                     break;
 
                 case "matchstarted":
-                    await _matchService.StartMatchAsync(matchId, "scorer");
+                    await _scoringChannel.QueueMatchStartAsync(matchId, "scorer");
                     break;
 
                 case "matchended":
-                    await _matchService.EndMatchAndLockSetsAsync(matchId, "scorer");
+                    await _scoringChannel.QueueMatchEndAsync(matchId, "scorer");
                     break;
 
                 case "disputed":
-                    match.IsDisputed = !match.IsDisputed;
-                    await _matchService.UpdateMatchAsync(match);
-                    update = new MatchUpdate
-                    {
-                        MatchId = matchId,
-                        UpdateType = UpdateType.DisputeRaised,
-                        Content = match.IsDisputed ? "Match marked as disputed" : "Dispute cleared"
-                    };
-                    await _matchService.AddMatchUpdateAsync(update);
+                    await _scoringChannel.QueueMatchDisputedAsync(matchId, !match.IsDisputed, "scorer");
                     break;
             }
+            
+            // Refresh match state after queuing
+            match = await _matchService.GetMatchAsync(matchId);
 
             await Clients.Group($"scorer_{matchId}").SendAsync("ReceiveMatchStateChange", new
             {
@@ -233,39 +212,28 @@ public class ScorerHub : Hub
                 return;
             }
 
-            MatchSet? resultSet = null;
-
             switch (actionType.ToLower())
             {
                 case "endcurrentset":
                     if (currentSetNumber == match.CurrentSetNumber)
                     {
-                        resultSet = await _matchService.FinishSetAsync(matchId, match.CurrentSetNumber, "scorer");
+                        await _scoringChannel.QueueMatchSetEndAsync(matchId, currentSetNumber, "scorer");
                     }
                     break;
 
                 case "startnextset":
                     if (currentSetNumber == match.CurrentSetNumber)
                     {
-
-                        if (match.CurrentSetNumber > 0)
-                        {
-                            var currentSet = await _matchService.GetMatchSetAsync(matchId, match.CurrentSetNumber);
-                            if (currentSet != null && currentSet.IsFinished == false)
-                            {
-                                await _matchService.FinishSetAsync(matchId, match.CurrentSetNumber, "scorer");
-                                await BroadcastSetStateChangeAsync(matchId, "EndCurrentSet");
-                            }
-                        }
-                        resultSet = await _matchService.StartNextSetAsync(matchId, "scorer", currentSetNumber);
+                        await _scoringChannel.QueueMatchSetStartAsync(matchId, currentSetNumber + 1, "scorer");
                     }
-
                     break;
 
                 case "reverttopreviousset":
-                        resultSet = await _matchService.RevertToPreviousSetAsync(matchId, "scorer", currentSetNumber);
+                    await _scoringChannel.QueueMatchSetRevertToPreviousAsync(matchId, currentSetNumber, "scorer");
                     break;
             }
+            
+            // Broadcast optimistic state change (actual update will come from worker)
             await BroadcastSetStateChangeAsync(matchId, actionType);
         }
         catch (Exception ex)
@@ -303,6 +271,40 @@ public class ScorerHub : Hub
         });
     }
 
+    public async Task BroadcastScoreUpdate(Guid matchId)
+    {
+        try
+        {
+            var match = await _matchService.GetMatchAsync(matchId);
+            if (match == null)
+            {
+                return;
+            }
+
+            var currentSet = await _matchService.GetOrCreateMatchSetAsync(matchId, match.CurrentSetNumber, "scorer");
+
+            if (currentSet == null)
+            {
+                return;
+            }
+
+            // Broadcast optimistic update (actual update will come from worker)
+            await Clients.Group($"scorer_{matchId}").SendAsync("ReceiveScoreUpdate", new
+            {
+                MatchId = matchId,
+                SetNumber = currentSet.SetNumber,
+                HomeScore = currentSet.HomeTeamScore,
+                AwayScore = currentSet.AwayTeamScore,
+                HomeSetsWon = match.HomeTeamScore,
+                AwaySetsWon = match.AwayTeamScore,
+                Timestamp = DateTime.Now
+            });
+        }
+        catch (Exception ex)
+        {
+            await Clients.Caller.SendAsync("ReceiveError", ex.Message);
+        }
+    }
     public override async Task OnConnectedAsync()
     {
         await base.OnConnectedAsync();

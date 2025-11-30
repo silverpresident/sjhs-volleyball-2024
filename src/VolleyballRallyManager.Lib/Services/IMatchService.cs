@@ -39,4 +39,5 @@ public interface IMatchService
     Task<Match> UpdateMatchDetailsAsync(Guid matchId, DateTime? scheduledTime, string? courtLocation, string? refereeName, string? scorerName, string userId);
     Task<MatchSet?> GetMatchSetAsync(Guid matchId, int currentSetNumber);
     Task<MatchSet> GetOrCreateMatchSetAsync(Guid matchId, int setNumber, string userName);
+    Task<bool> IsCalledToCourt(Guid matchId);
 }

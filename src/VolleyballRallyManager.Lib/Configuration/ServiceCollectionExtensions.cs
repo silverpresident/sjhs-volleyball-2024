@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Services;
+using VolleyballRallyManager.Lib.Workers;
 
 namespace VolleyballRallyManager.Lib.Configuration;
 
@@ -46,6 +47,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IActiveTournamentService, ActiveTournamentService>();
         services.AddSingleton<GroupService>();
 
+        // Scoring Channel and Workers
+        services.AddSingleton<ScoringChannel>();
+        services.AddHostedService<ScoringAutomationWorker>();
 
         // SignalR
         services.AddSignalR();

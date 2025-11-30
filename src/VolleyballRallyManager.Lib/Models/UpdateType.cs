@@ -8,6 +8,7 @@ public enum UpdateType
     ScorerAssigned,
     LocationChanged,
     TimeChanged,
+    CalledToCourt,
     MatchStarted,
     MatchSetStarted,
     MatchSetFinished,

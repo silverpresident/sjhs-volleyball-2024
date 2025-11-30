@@ -21,4 +21,5 @@ public interface ISignalRNotificationService
     Task NotifyTournamentStatusAsync(string status);
     Task NotifyErrorAsync(string error);
     Task BroadcastMessageAsync(string message, string type = "info");
+    Task NotifyAddFeedAsync(MatchUpdate update);
 }
