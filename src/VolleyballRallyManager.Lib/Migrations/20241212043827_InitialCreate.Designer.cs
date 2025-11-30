@@ -158,7 +158,7 @@ namespace VolleyballRallyManager.Lib.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("VolleyballRallyManager.Lib.Models.Announcement", b =>
+            modelBuilder.Entity("VolleyballRallyManager.Lib.Models.Bulletin", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -203,9 +203,7 @@ namespace VolleyballRallyManager.Lib.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
-
-                    b.ToTable("Announcements");
+                    b.ToTable("Bulletins");
                 });
 
             modelBuilder.Entity("VolleyballRallyManager.Lib.Models.ApplicationUser", b =>
@@ -538,13 +536,6 @@ namespace VolleyballRallyManager.Lib.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("VolleyballRallyManager.Lib.Models.Announcement", b =>
-                {
-                    b.HasOne("VolleyballRallyManager.Lib.Models.ApplicationUser", null)
-                        .WithMany("Announcements")
-                        .HasForeignKey("ApplicationUserId");
-                });
-
             modelBuilder.Entity("VolleyballRallyManager.Lib.Models.Match", b =>
                 {
                     b.HasOne("VolleyballRallyManager.Lib.Models.Team", "AwayTeam")
@@ -577,13 +568,6 @@ namespace VolleyballRallyManager.Lib.Migrations
                         .IsRequired();
 
                     b.Navigation("Match");
-                });
-
-            modelBuilder.Entity("VolleyballRallyManager.Lib.Models.ApplicationUser", b =>
-                {
-                    b.Navigation("Announcements");
-
-                    b.Navigation("Updates");
                 });
 
             modelBuilder.Entity("VolleyballRallyManager.Lib.Models.Match", b =>

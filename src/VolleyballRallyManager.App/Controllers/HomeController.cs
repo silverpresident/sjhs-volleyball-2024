@@ -11,14 +11,14 @@ public class HomeController : Controller
     private readonly ApplicationDbContext _context;
     private readonly ILogger<HomeController> _logger;
     private readonly IActiveTournamentService _activeTournamentService;
-    private readonly IAnnouncementService _announcementService;
+    private readonly IBulletinService _bulletinService;
 
-    public HomeController(ApplicationDbContext context, IActiveTournamentService activeTournamentService, ILogger<HomeController> logger, IAnnouncementService announcementService)
+    public HomeController(ApplicationDbContext context, IActiveTournamentService activeTournamentService, ILogger<HomeController> logger, IBulletinService bulletinService)
     {
         _context = context;
         _logger = logger;
         _activeTournamentService = activeTournamentService;
-        _announcementService = announcementService;
+        _bulletinService = bulletinService;
     }
 
     public async Task<IActionResult> Index()
@@ -45,7 +45,7 @@ public class HomeController : Controller
             DisputedMatches = await _activeTournamentService.MatchCountAsync(MatchState.Disputed),
             MatchesFinished = await _activeTournamentService.MatchCountAsync(MatchState.Finished),
             RecentMatches = await _activeTournamentService.RecentMatchesAsync(),
-            RecentAnnouncements = await _announcementService.GetRecentAnnouncementsAsync(5),
+            RecentBulletins = await _bulletinService.GetRecentAsync(5),
             TeamsByDivision = teamsByDivision
         };
         if (activeTournament != null)

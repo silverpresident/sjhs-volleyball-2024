@@ -143,10 +143,10 @@ BEGIN
 END
 GO
 
--- Announcements
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Announcements' AND schema_id = SCHEMA_ID('dbo'))
+-- Bulletins
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Bulletins' AND schema_id = SCHEMA_ID('dbo'))
 BEGIN
-    CREATE TABLE dbo.Announcements
+    CREATE TABLE dbo.Bulletins
     (
         Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
         Content NVARCHAR(MAX) NOT NULL,
@@ -191,7 +191,7 @@ CREATE NONCLUSTERED INDEX IX_Matches_Division ON dbo.Matches(DivisionId);
 CREATE NONCLUSTERED INDEX IX_Matches_Round ON dbo.Matches(RoundId);
 CREATE NONCLUSTERED INDEX IX_Matches_Teams ON dbo.Matches(HomeTeamId, AwayTeamId);
 CREATE NONCLUSTERED INDEX IX_MatchUpdates_Match ON dbo.MatchUpdates(MatchId);
-CREATE NONCLUSTERED INDEX IX_Announcements_Priority ON dbo.Announcements(Priority);
+CREATE NONCLUSTERED INDEX IX_Bulletins_Priority ON dbo.Bulletins(Priority);
 GO
 
 -- TournamentDivisions

@@ -34,8 +34,8 @@ IF OBJECT_ID('dbo.Divisions', 'U') IS NOT NULL
     DROP TABLE dbo.Divisions;
 GO
 
-IF OBJECT_ID('dbo.Announcements', 'U') IS NOT NULL
-    DROP TABLE dbo.Announcements;
+IF OBJECT_ID('dbo.Bulletins', 'U') IS NOT NULL
+    DROP TABLE dbo.Bulletins;
 GO
 
 IF OBJECT_ID('dbo.Tournaments', 'U') IS NOT NULL
@@ -46,4 +46,4 @@ GO
 DROP TRIGGER IF EXISTS dbo.TR_Teams_UpdatedAt;
 DROP TRIGGER IF EXISTS dbo.TR_Matches_UpdatedAt;
 DROP TRIGGER IF EXISTS dbo.TR_MatchUpdates_UpdatedAt;
-DROP TRIGGER IF EXISTS dbo.TR_Announcements_UpdatedAt;
+DROP TRIGGER IF EXISTS dbo.TR_Bulletins_UpdatedAt;

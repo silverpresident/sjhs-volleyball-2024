@@ -103,7 +103,7 @@ namespace VolleyballRallyManager.Lib.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Announcements",
+                name: "Bulletins",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -121,12 +121,7 @@ namespace VolleyballRallyManager.Lib.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Announcements", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Announcements_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                    table.PrimaryKey("PK_Bulletins", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -276,22 +271,12 @@ namespace VolleyballRallyManager.Lib.Migrations
                 {
                     table.PrimaryKey("PK_MatchUpdates", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MatchUpdates_AspNetUsers_ApplicationUserId",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_MatchUpdates_Matches_MatchId",
                         column: x => x.MatchId,
                         principalTable: "Matches",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Announcements_ApplicationUserId",
-                table: "Announcements",
-                column: "ApplicationUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -343,11 +328,6 @@ namespace VolleyballRallyManager.Lib.Migrations
                 column: "HomeTeamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MatchUpdates_ApplicationUserId",
-                table: "MatchUpdates",
-                column: "ApplicationUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_MatchUpdates_MatchId",
                 table: "MatchUpdates",
                 column: "MatchId");
@@ -357,7 +337,7 @@ namespace VolleyballRallyManager.Lib.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Announcements");
+                name: "Bulletins");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");

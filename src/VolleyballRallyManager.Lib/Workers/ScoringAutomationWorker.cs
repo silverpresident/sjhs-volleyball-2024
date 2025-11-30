@@ -59,13 +59,13 @@ public class ScoringAutomationWorker : BackgroundService
         // Create a new scope for each event to get scoped services
         using var scope = _serviceScopeFactory.CreateScope();
         var matchService = scope.ServiceProvider.GetRequiredService<IMatchService>();
-        var announcementService = scope.ServiceProvider.GetRequiredService<IAnnouncementService>();
+        var bulletinService = scope.ServiceProvider.GetRequiredService<IBulletinService>();
         var notificationService = scope.ServiceProvider.GetRequiredService<ISignalRNotificationService>();
 
         switch (scoringEvent.EventType)
         {
             case ScoringEventType.CallToCourt:
-                await HandleCallToCourtAsync(scoringEvent, matchService, notificationService, announcementService);
+                await HandleCallToCourtAsync(scoringEvent, matchService, notificationService, bulletinService);
                 break;
 
             case ScoringEventType.CallToSupport:
@@ -106,7 +106,7 @@ public class ScoringAutomationWorker : BackgroundService
         }
     }
 
-    private async Task HandleCallToCourtAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService, IAnnouncementService announcementService)
+    private async Task HandleCallToCourtAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService, IBulletinService bulletinService)
     {
         var match = await matchService.GetMatchAsync(scoringEvent.MatchId);
         if (match == null)
@@ -132,16 +132,16 @@ public class ScoringAutomationWorker : BackgroundService
         await matchService.AddMatchUpdateAsync(update);
         await notificationService.NotifyAddFeedAsync(update);
 
-        // Create public announcement
-        var announcement = new Announcement
+        // Create public bulletin
+        var bulletin = new Bulletin
         {
             Content = $"**Teams Called to Court**\n\n{match.HomeTeam?.Name} vs {match.AwayTeam?.Name} - Please report to {match.CourtLocation ?? "court"}",
-            Priority = AnnouncementPriority.Warning,
+            Priority = BulletinPriority.Warning,
             UseMarkdown = true,
             IsVisible = true,
             CreatedBy = scoringEvent.UserName
         };
-        await announcementService.CreateAnnouncementAsync(announcement);
+        await bulletinService.CreateBulletinAsync(bulletin);
         //TODO notify announcer
         _logger.LogInformation("Processed CallToCourt for match {MatchId}", scoringEvent.MatchId);
     }

@@ -1,6 +1,6 @@
 @inherits StateComponentBase
 
-<div class="announcement-list">
+<div class="bulletin-list">
     <h2>Announcements</h2>
     @if (IsLoading)
     {
@@ -19,12 +19,12 @@
         <div class="announcements">
             @foreach (var announcement in AppState.Announcements.Where(a => a.IsVisible).OrderByDescending(a => a.CreatedAt))
             {
-                <div class="announcement-card @GetPriorityClass(announcement)">
-                    <div class="announcement-header">
+                <div class="bulletin-card @GetPriorityClass(announcement)">
+                    <div class="bulletin-header">
                         <span class="priority-badge">@announcement.Priority</span>
                         <span class="timestamp">@FormatDateTime(announcement.CreatedAt)</span>
                     </div>
-                    <div class="announcement-body">
+                    <div class="bulletin-body">
                         @((MarkupString)FormatMessage(announcement.Content))
                     </div>
                 </div>
@@ -53,11 +53,11 @@
 }
 
 <style>
-.announcement-list {
+.bulletin-list {
     padding: 1rem;
 }
 
-.announcement-card {
+.bulletin-card {
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -66,31 +66,31 @@
     transition: transform 0.2s;
 }
 
-.announcement-card:hover {
+.bulletin-card:hover {
     transform: translateY(-2px);
 }
 
-.announcement-card.info {
+.bulletin-card.info {
     border-left: 4px solid #3498db;
 }
 
-.announcement-card.warning {
+.bulletin-card.warning {
     border-left: 4px solid #f1c40f;
 }
 
-.announcement-card.danger {
+.bulletin-card.danger {
     border-left: 4px solid #e74c3c;
 }
 
-.announcement-card.primary {
+.bulletin-card.primary {
     border-left: 4px solid #2ecc71;
 }
 
-.announcement-card.secondary {
+.bulletin-card.secondary {
     border-left: 4px solid #95a5a6;
 }
 
-.announcement-header {
+.bulletin-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -135,7 +135,7 @@
     font-size: 0.875rem;
 }
 
-.announcement-body {
+.bulletin-body {
     color: #333;
     line-height: 1.5;
 }

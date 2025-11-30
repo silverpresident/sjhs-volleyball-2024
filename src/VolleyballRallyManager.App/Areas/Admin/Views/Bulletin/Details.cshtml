@@ -1,12 +1,12 @@
-@model VolleyballRallyManager.Lib.Models.Announcement
+@model VolleyballRallyManager.Lib.Models.Bulletin
 @using VolleyballRallyManager.Lib.Models
 
 @{
-    ViewData["Title"] = "Announcement Details";
+    ViewData["Title"] = "Bulletin Details";
 }
 
 <div class="container">
-    <h1>Announcement Details</h1>
+    <h1>Bulletin Details</h1>
 
     <div class="row">
         <div class="col-md-8">
@@ -93,8 +93,8 @@
                     <h5 class="mb-0">Preview</h5>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted">This is how the announcement appears to users:</p>
-                    <div class="announcement-preview border rounded p-3 mt-3">
+                    <p class="text-muted">This is how the bulletin appears to users:</p>
+                    <div class="bulletin-preview border rounded p-3 mt-3">
                         @if (Model.UseMarkdown)
                         {
                             <div class="markdown-content">@Html.Raw(Model.RenderedContent)</div>
@@ -112,7 +112,7 @@
 
 @section Styles {
     <style>
-        .announcement-preview {
+        .bulletin-preview {
             background-color: #f8f9fa;
         }
         .markdown-content img {

@@ -37,13 +37,13 @@ public class TeamListItemViewModel
     public int TotalPoints { get; set; }
 }
 
-public class AnnouncementListItemViewModel
+public class BulletinListItemViewModel
 {
     public Guid Id { get; set; }
     public string Content { get; set; } = string.Empty;
     public string RenderedContent { get; set; } = string.Empty;
     public bool UseMarkdown { get; set; }
-    public AnnouncementPriority Priority { get; set; }
+    public BulletinPriority Priority { get; set; }
     public bool IsVisible { get; set; }
     public DateTime CreatedAt { get; set; }
     public string CreatedBy { get; set; } = string.Empty;

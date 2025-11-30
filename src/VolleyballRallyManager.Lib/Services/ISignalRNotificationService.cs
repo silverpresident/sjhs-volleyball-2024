@@ -10,9 +10,9 @@ public interface ISignalRNotificationService
     Task NotifyMatchFinishedAsync(Match match);
     Task NotifyMatchDisputedAsync(Match match);
     Task NotifyScoreUpdateAsync(Match match);
-    Task NotifyAnnouncementCreatedAsync(Announcement announcement);
-    Task NotifyAnnouncementUpdatedAsync(Announcement announcement);
-    Task NotifyAnnouncementDeletedAsync(Guid announcementId);
+    Task NotifyBulletinCreatedAsync(Bulletin bulletin);
+    Task NotifyBulletinUpdatedAsync(Bulletin bulletin);
+    Task NotifyBulletinDeletedAsync(Guid bulletinId);
     Task NotifyTeamCreatedAsync(Team team);
     Task NotifyTeamUpdatedAsync(Team team);
     Task NotifyTeamDeletedAsync(Guid teamId);

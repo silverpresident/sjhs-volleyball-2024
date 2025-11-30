@@ -20,7 +20,7 @@ A blazor SPA web app project that hadles the ui descripted inteh section labeles
 
 PUBLIC UI
 
-On the main page without a logged in user you should be able to see a schedule of matches showing match number, round, time, court location, players, score, and whether or  not the match is finished. On this same home page there should be a partial view section for announcements. The page should automatically reload every 2 minutes.
+On the main page without a logged in user you should be able to see a schedule of matches showing match number, round, time, court location, players, score, and whether or  not the match is finished. On this same home page there should be a partial view section for Bulletins. The page should automatically reload every 2 minutes.
 On this same page there should be a partial view showing a leader board showing the list of teams and total points.
 On this same page there should be a partial view showing a update stream.
 Use signalR to push realtime update to the app.
@@ -33,7 +33,7 @@ Team receive 3 points for a win, 1 point for a draw and no points for a loss.
 Each team has a NAME, SCHOOL, COLOUR, DIVISION, URL to a image logo and should track points, point difference and total points for and against. As well as anyother property you need to compete the task.
 Each match should have match number, round, time, court location, 2 teams, score for each team, and whether or  not the match is finished. It shoulds have both a scheduled time and an acutal start time. Store also the referee name, scorer name, a a flag for a dispute.
 For each match store a record of the update including what was changed and by which user.
-There should be a list of announcements with just text body and a priority (info, warning, danger, primary, secondary) and show/hide flag.
+There should be a list of Bulletins with just text body and a priority (info, warning, danger, primary, secondary) and show/hide flag.
 A list of updates (match score updates) and the time it was created.
 Use signalR to push update to the app.
 
@@ -43,7 +43,7 @@ On the home page before logged in user  implement all the logic descried in the 
 The rest of the app is access by logging in.
 A logged in user should be able to add, edit, delete and view a list of teams. 
 A logged in user should be able to add, edit, delete and view a list of matches.
-A logged in user should be able to add, edit, delete and view a list of announcements. 
+A logged in user should be able to add, edit, delete and view a list of Bulletins. 
 A logged in user should be able to add, edit, delete and view a list of match updates.
 
 

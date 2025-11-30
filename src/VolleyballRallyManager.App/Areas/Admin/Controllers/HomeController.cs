@@ -13,20 +13,20 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
     public class HomeController : Controller
     {
         private readonly IMatchService _matchService;
-        private readonly IAnnouncementService _announcementService;
+        private readonly IBulletinService _bulletinService;
         private readonly ITeamService _teamService;
         private readonly ApplicationDbContext _context;
         private readonly IActiveTournamentService _activeTournamentService;
 
         public HomeController(
             IMatchService matchService,
-            IAnnouncementService announcementService,
+            IBulletinService bulletinService,
             ITeamService teamService,
             ApplicationDbContext context,
             IActiveTournamentService activeTournamentService)
         {
             _matchService = matchService;
-            _announcementService = announcementService;
+            _bulletinService = bulletinService;
             _teamService = teamService;
             _context = context;
             _activeTournamentService = activeTournamentService;
@@ -55,7 +55,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 DisputedMatches = await _activeTournamentService.MatchCountAsync(MatchState.Disputed),
                 MatchesFinished = await _activeTournamentService.MatchCountAsync(MatchState.Finished),
                 RecentMatches = await _activeTournamentService.RecentMatchesAsync(),
-                RecentAnnouncements = await _announcementService.GetRecentAnnouncementsAsync(5),
+                RecentBulletins = await _bulletinService.GetRecentAsync(5),
                 TeamsByDivision = teamsByDivision
             };
 

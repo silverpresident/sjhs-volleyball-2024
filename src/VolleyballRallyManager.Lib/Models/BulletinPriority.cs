@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace VolleyballRallyManager.Lib.Models;
 
-public enum AnnouncementPriority
+public enum BulletinPriority
 {
     [Display(Name = "Info")]
     Info,

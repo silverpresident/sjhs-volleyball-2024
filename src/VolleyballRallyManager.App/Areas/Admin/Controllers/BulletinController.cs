@@ -5,29 +5,29 @@ using VolleyballRallyManager.Lib.Services;
 namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class AnnouncementsController : Controller
+    public class BulletinController : Controller
     {
-        private readonly IAnnouncementService _announcementService;
+        private readonly IBulletinService _bulletinService;
 
-        public AnnouncementsController(IAnnouncementService announcementService)
+        public BulletinController(IBulletinService bulletinService)
         {
-            _announcementService = announcementService;
+            _bulletinService = bulletinService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var announcements = await _announcementService.GetAllAnnouncementsAsync();
-            return View(announcements.OrderByDescending(a => a.CreatedAt).ToList());
+            var bulletins = await _bulletinService.GetAllBulletinsAsync();
+            return View(bulletins.OrderByDescending(a => a.CreatedAt).ToList());
         }
 
         public async Task<IActionResult> Details(Guid id)
         {
-            var announcement = await _announcementService.GetAnnouncementByIdAsync(id);
-            if (announcement == null)
+            var bulletin = await _bulletinService.GetBulletinByIdAsync(id);
+            if (bulletin == null)
             {
                 return NotFound();
             }
-            return View(announcement);
+            return View(bulletin);
         }
 
         public IActionResult Create()
@@ -37,53 +37,53 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Announcement announcement)
+        public async Task<IActionResult> Create(Bulletin bulletin)
         {
             if (ModelState.IsValid)
             {
-                await _announcementService.CreateAnnouncementAsync(announcement);
+                await _bulletinService.CreateBulletinAsync(bulletin);
                 return RedirectToAction(nameof(Index));
             }
-            return View(announcement);
+            return View(bulletin);
         }
 
         public async Task<IActionResult> Edit(Guid id)
         {
-            var announcement = await _announcementService.GetAnnouncementByIdAsync(id);
-            if (announcement == null)
+            var bulletin = await _bulletinService.GetBulletinByIdAsync(id);
+            if (bulletin == null)
             {
                 return NotFound();
             }
-            return View(announcement);
+            return View(bulletin);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Announcement announcement)
+        public async Task<IActionResult> Edit(Bulletin bulletin)
         {
             if (ModelState.IsValid)
             {
-                await _announcementService.UpdateAnnouncementAsync(announcement);
+                await _bulletinService.UpdateBulletinAsync(bulletin);
                 return RedirectToAction(nameof(Index));
             }
-            return View(announcement);
+            return View(bulletin);
         }
 
         public async Task<IActionResult> Delete(Guid id)
         {
-            var announcement = await _announcementService.GetAnnouncementByIdAsync(id);
-            if (announcement == null)
+            var bulletin = await _bulletinService.GetBulletinByIdAsync(id);
+            if (bulletin == null)
             {
                 return NotFound();
             }
-            return View(announcement);
+            return View(bulletin);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            await _announcementService.DeleteAnnouncementAsync(id);
+            await _bulletinService.DeleteBulletinAsync(id);
             return RedirectToAction(nameof(Index));
         }
     }

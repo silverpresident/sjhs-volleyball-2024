@@ -15,7 +15,7 @@ namespace VolleyballRallyManager.Lib.Data
         public DbSet<Round> Rounds { get; set; }
         public DbSet<Match> Matches { get; set; }
         public DbSet<MatchSet> MatchSets { get; set; }
-        public DbSet<Announcement> Announcements { get; set; }
+        public DbSet<Bulletin> Bulletins { get; set; }
         public DbSet<MatchUpdate> MatchUpdates { get; set; }
         public DbSet<Division> Divisions { get; set; }
         public DbSet<Tournament> Tournaments { get; set; }
@@ -100,7 +100,7 @@ namespace VolleyballRallyManager.Lib.Data
                 .Property(m => m.CourtLocation)
                 .IsRequired();
 
-            builder.Entity<Announcement>()
+            builder.Entity<Bulletin>()
                 .Property(a => a.Content)
                 .IsRequired();
 
@@ -108,7 +108,7 @@ namespace VolleyballRallyManager.Lib.Data
                 .Property(u => u.Content)
                 .IsRequired();
                 
-        builder.Entity<Announcement>()
+        builder.Entity<Bulletin>()
             .Property(o => o.Priority)
             .HasConversion<string>(); // Tells EF Core to store as string
             

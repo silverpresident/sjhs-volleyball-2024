@@ -128,7 +128,7 @@
                             </a>
                         </div>
                         <div class="col-md-3 mb-2">
-                            <a asp-area="Admin" asp-controller="Announcements" asp-action="Create" class="btn btn-primary w-100">
+                            <a asp-area="Admin" asp-controller="Bulletin" asp-action="Create" class="btn btn-primary w-100">
                                 <i class="bi bi-megaphone"></i> New Announcement
                             </a>
                         </div>
@@ -237,30 +237,30 @@
             <div class="card mb-4">
                 <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="bi bi-megaphone"></i> Recent Announcements</h5>
-                    <a asp-area="Admin" asp-controller="Announcements" asp-action="Index" class="btn btn-sm btn-light">View All</a>
+                    <a asp-area="Admin" asp-controller="Bulletin" asp-action="Index" class="btn btn-sm btn-light">View All</a>
                 </div>
                 <div class="card-body">
-                    @if (Model.RecentAnnouncements.Any())
+                    @if (Model.RecentBulletins.Any())
                     {
                         <div class="list-group list-group-flush">
-                            @foreach (var announcement in Model.RecentAnnouncements)
+                            @foreach (var bulletin in Model.RecentBulletins)
                             {
                                 <div class="list-group-item px-0">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h6 class="mb-1">Announcement #@announcement.Id.ToString().Substring(0, 8)</h6>
-                                        @if (announcement.Priority == VolleyballRallyManager.Lib.Models.AnnouncementPriority.Danger)
+                                        <h6 class="mb-1">Bulletin #@bulletin.Id.ToString().Substring(0, 8)</h6>
+                                        @if (bulletin.Priority == VolleyballRallyManager.Lib.Models.BulletinPriority.Danger)
                                         {
                                             <span class="badge bg-danger">Danger</span>
                                         }
-                                        else if (announcement.Priority == VolleyballRallyManager.Lib.Models.AnnouncementPriority.Warning)
+                                        else if (bulletin.Priority == VolleyballRallyManager.Lib.Models.BulletinPriority.Warning)
                                         {
                                             <span class="badge bg-warning text-dark">Warning</span>
                                         }
-                                        else if (announcement.Priority == VolleyballRallyManager.Lib.Models.AnnouncementPriority.Primary)
+                                        else if (bulletin.Priority == VolleyballRallyManager.Lib.Models.BulletinPriority.Primary)
                                         {
                                             <span class="badge bg-primary">Primary</span>
                                         }
-                                        else if (announcement.Priority == VolleyballRallyManager.Lib.Models.AnnouncementPriority.Secondary)
+                                        else if (bulletin.Priority == VolleyballRallyManager.Lib.Models.BulletinPriority.Secondary)
                                         {
                                             <span class="badge bg-secondary">Secondary</span>
                                         }
@@ -269,15 +269,15 @@
                                             <span class="badge bg-info">Info</span>
                                         }
                                     </div>
-                                    <p class="mb-1 small">@(announcement.Content.Length > 100 ? announcement.Content.Substring(0, 100) + "..." : announcement.Content)</p>
-                                    <small class="text-muted">@announcement.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                                    <p class="mb-1 small">@(bulletin.Content.Length > 100 ? bulletin.Content.Substring(0, 100) + "..." : bulletin.Content)</p>
+                                    <small class="text-muted">@bulletin.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
                                 </div>
                             }
                         </div>
                     }
                     else
                     {
-                        <p class="text-muted mb-0">No announcements yet.</p>
+                        <p class="text-muted mb-0">No bulletins yet.</p>
                     }
                 </div>
             </div>

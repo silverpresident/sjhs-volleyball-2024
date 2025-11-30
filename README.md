@@ -18,7 +18,7 @@ The solution consists of three main projects:
    - User authentication and authorization
    - Match management
    - Team management
-   - Announcements
+   - Bulletins
    - Real-time updates
 
 3. **VolleyballRallyManager.Public**
@@ -26,7 +26,7 @@ The solution consists of three main projects:
    - Real-time match schedule
    - Live score updates
    - Leaderboard
-   - Announcements feed
+   - Bulletins feed
    - Update stream
 
 ## Prerequisites
@@ -181,7 +181,7 @@ Key configuration settings required in appsettings.json:
 
 - User authentication with Google and Microsoft accounts
 - Real-time match updates using SignalR
-- Markdown support for announcements
+- Markdown support for Bulletins
 - Responsive design for all screen sizes
 - Automatic page refresh every 2 minutes
 - Team statistics and rankings
@@ -196,7 +196,7 @@ The database includes tables for:
 - Teams
 - Matches
 - Rounds
-- Announcements
+- Bulletins
 - Match Updates
 - Divisions
 

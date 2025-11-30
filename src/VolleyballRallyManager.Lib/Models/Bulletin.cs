@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace VolleyballRallyManager.Lib.Models;
 
-public class Announcement : BaseEntity
+public class Bulletin : BaseEntity
 {
     [Display(Name = "Content")]
     public string Content { get; set; } = string.Empty;
@@ -14,7 +14,7 @@ public class Announcement : BaseEntity
     public bool UseMarkdown { get; set; } = true;
 
     [Display(Name = "Priority")]
-    public AnnouncementPriority Priority { get; set; } = AnnouncementPriority.Info;
+    public BulletinPriority Priority { get; set; } = BulletinPriority.Info;
 
 
     [Display(Name = "Is Visible")]

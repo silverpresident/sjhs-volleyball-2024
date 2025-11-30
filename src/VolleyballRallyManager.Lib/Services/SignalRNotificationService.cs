@@ -44,19 +44,19 @@ public class SignalRNotificationService : ISignalRNotificationService
         await _matchHubContext.Clients.All.SendAsync("ScoreUpdated", match);
     }
 
-    public async Task NotifyAnnouncementCreatedAsync(Announcement announcement)
+    public async Task NotifyBulletinCreatedAsync(Bulletin bulletin)
     {
-        await _matchHubContext.Clients.All.SendAsync("AnnouncementCreated", announcement);
+        await _matchHubContext.Clients.All.SendAsync("BulletinCreated", bulletin);
     }
 
-    public async Task NotifyAnnouncementUpdatedAsync(Announcement announcement)
+    public async Task NotifyBulletinUpdatedAsync(Bulletin bulletin)
     {
-        await _matchHubContext.Clients.All.SendAsync("AnnouncementUpdated", announcement);
+        await _matchHubContext.Clients.All.SendAsync("BulletinUpdated", bulletin);
     }
 
-    public async Task NotifyAnnouncementDeletedAsync(Guid announcementId)
+    public async Task NotifyBulletinDeletedAsync(Guid bulletinId)
     {
-        await _matchHubContext.Clients.All.SendAsync("AnnouncementDeleted", announcementId);
+        await _matchHubContext.Clients.All.SendAsync("BulletinDeleted", bulletinId);
     }
 
     public async Task NotifyTeamCreatedAsync(Team team)

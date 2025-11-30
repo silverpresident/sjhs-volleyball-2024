@@ -257,21 +257,21 @@ namespace VolleyballRallyManager.Lib.Configuration
                 await dbContext.Teams.AddRangeAsync(new List<Team>(teams));
             await dbContext.SaveChangesAsync();
 
-            // Add sample announcement
-            var announcement = new Announcement
+            // Add sample bulletin
+            var bulletin = new Bulletin
             {
                 Id = Guid.NewGuid(),
                 Content = "Welcome to ST JAGO VOLLEYBALL RALLY!",
-                Priority = AnnouncementPriority.Info,
+                Priority = BulletinPriority.Info,
                 IsVisible = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 CreatedBy = "System",
                 UpdatedBy = "System"
             };
-            if (!await dbContext.Announcements.AnyAsync())
+            if (!await dbContext.Bulletins.AnyAsync())
             {
-                await dbContext.Announcements.AddAsync(announcement);
+                await dbContext.Bulletins.AddAsync(bulletin);
             }
             var tournament = await dbContext.Tournaments.FirstOrDefaultAsync();
             if (tournament != null)

@@ -42,18 +42,18 @@ function initializeSignalR() {
         refreshCurrentPage();
     });
 
-    connection.on("AnnouncementCreated", announcement => {
-        showToast('success', 'New announcement created');
+    connection.on("BulletinCreated", bulletin => {
+        showToast('success', 'New bulletin created');
         refreshCurrentPage();
     });
 
-    connection.on("AnnouncementUpdated", announcement => {
-        showToast('info', 'Announcement updated');
+    connection.on("BulletinUpdated", bulletin => {
+        showToast('info', 'Bulletin updated');
         refreshCurrentPage();
     });
 
-    connection.on("AnnouncementDeleted", id => {
-        showToast('info', 'Announcement deleted');
+    connection.on("BulletinDeleted", id => {
+        showToast('info', 'Bulletin deleted');
         refreshCurrentPage();
     });
 }

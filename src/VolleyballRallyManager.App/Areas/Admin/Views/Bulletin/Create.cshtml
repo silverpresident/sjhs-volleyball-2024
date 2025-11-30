@@ -1,14 +1,14 @@
-@model VolleyballRallyManager.Lib.Models.Announcement
+@model VolleyballRallyManager.Lib.Models.Bulletin
 @using VolleyballRallyManager.Lib.Models
 
 @{
-    ViewData["Title"] = "Create Announcement";
+    ViewData["Title"] = "Create Bulletin";
 }
 
 <div class="container">
     <div class="card">
         <div class="card-header">
-            <h1>Create Announcement</h1>
+            <h1>Create Bulletin</h1>
         </div>
         <div class="card-body">
             <div class="row">
@@ -18,12 +18,12 @@
 
                         <div class="card mb-4">
                             <div class="card-header">
-                                <h5 class="mb-0">Announcement Content</h5>
+                                <h5 class="mb-0">Content</h5>
                             </div>
                             <div class="card-body">
                                 <div class="form-group mb-3">
                                     <label asp-for="Content" class="control-label"></label>
-                                    <textarea asp-for="Content" class="form-control" rows="5" id="announcementContent"></textarea>
+                                    <textarea asp-for="Content" class="form-control" rows="5" id="bulletinContent"></textarea>
                                     <span asp-validation-for="Content" class="text-danger"></span>
                                 </div>
 
@@ -51,7 +51,7 @@
                             <div class="card-body">
                                 <div class="form-group mb-3">
                                     <label asp-for="Priority" class="control-label"></label>
-                                    <select asp-for="Priority" class="form-control" asp-items="Html.GetEnumSelectList<AnnouncementPriority>()">
+                                    <select asp-for="Priority" class="form-control" asp-items="Html.GetEnumSelectList<BulletinPriority>()">
                                         <option value="">-- Select Priority --</option>
                                     </select>
                                     <span asp-validation-for="Priority" class="text-danger"></span>
@@ -59,7 +59,7 @@
 
                                 <div class="form-check mb-3">
                                     <input asp-for="IsVisible" class="form-check-input" type="checkbox" checked />
-                                    <label asp-for="IsVisible" class="form-check-label">Make Announcement Visible</label>
+                                    <label asp-for="IsVisible" class="form-check-label">Make Visible</label>
                                     <span asp-validation-for="IsVisible" class="text-danger"></span>
                                 </div>
                             </div>
@@ -103,7 +103,7 @@
             function updatePreview() {
                 if ($('#useMarkdown').is(':checked')) {
                     $('#markdownPreview').removeClass('d-none');
-                    var content = $('#announcementContent').val();
+                    var content = $('#bulletinContent').val();
                     var html = marked.parse(content);
                     $('#previewContent').html(html);
                 } else {
@@ -112,7 +112,7 @@
             }
 
             $('#useMarkdown').change(updatePreview);
-            $('#announcementContent').on('input', updatePreview);
+            $('#bulletinContent').on('input', updatePreview);
         });
     </script>
 }

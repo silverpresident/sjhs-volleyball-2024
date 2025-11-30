@@ -45,14 +45,14 @@ public class MatchHub : Hub
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"team_{teamId}");
     }
 
-    public async Task SubscribeToAnnouncements()
+    public async Task SubscribeToBulletins()
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, "announcements");
+        await Groups.AddToGroupAsync(Context.ConnectionId, "bulletins");
     }
 
-    public async Task UnsubscribeFromAnnouncements()
+    public async Task UnsubscribeFromBulletins()
     {
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, "announcements");
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, "bulletins");
     }
 
     public async Task SubscribeToUpdates()
@@ -97,10 +97,10 @@ public class MatchHub : Hub
         await Clients.Group("updates").SendAsync("ReceiveScoreUpdate", update);
     }
 
-    public async Task SendAnnouncement(Announcement announcement)
+    public async Task SendBulletin(Bulletin bulletin)
     {
-        await Clients.Group("announcements").SendAsync("ReceiveAnnouncement", announcement);
-        await Clients.Group("all").SendAsync("ReceiveAnnouncement", announcement);
+        await Clients.Group("bulletins").SendAsync("ReceiveBulletin", bulletin);
+        await Clients.Group("all").SendAsync("ReceiveBulletin", bulletin);
     }
 
     public async Task SendTeamUpdate(Team team)
