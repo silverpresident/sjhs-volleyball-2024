@@ -1,0 +1,164 @@
+@model VolleyballRallyManager.App.Areas.Admin.Models.GenerateMatchesViewModel
+
+@{
+    ViewData["Title"] = "Generate Matches";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-calendar-plus"></i> Generate Matches</h1>
+        <a asp-action="Details" asp-route-id="@Model.TournamentRoundId" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Round
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0"><i class="bi bi-info-circle"></i> Match Generation Settings</h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <i class="bi bi-lightbulb"></i> <strong>Round:</strong> @Model.RoundName
+                <br />
+                <strong>Teams:</strong> @Model.TeamCount teams will compete in this round
+                <br />
+                <strong>Strategy:</strong> @Model.Strategy
+            </div>
+
+            <form asp-action="GenerateMatches" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <input type="hidden" asp-for="TournamentRoundId" />
+                <input type="hidden" asp-for="Strategy" />
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="StartTime" class="form-label">
+                                Start Time <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="StartTime" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="StartTime" class="text-danger"></span>
+                            <div class="form-text">When should the first match of this round start?</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="CourtLocation" class="form-label">
+                                Default Court Location <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="CourtLocation" class="form-control" list="courtList" placeholder="Select or enter court" />
+                            <datalist id="courtList">
+                                <option value="Court 1">Court 1</option>
+                                <option value="Court 2">Court 2</option>
+                                <option value="Court 3">Court 3</option>
+                                <option value="Court 4">Court 4</option>
+                                <option value="Court 5">Court 5</option>
+                                <option value="Court 6">Court 6</option>
+                                <option value="Court 7">Court 7</option>
+                                <option value="Court 8">Court 8</option>
+                                <option value="Court 9">Court 9</option>
+                            </datalist>
+                            <span asp-validation-for="CourtLocation" class="text-danger"></span>
+                            <div class="form-text">Default court for all matches (can be changed per match later)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card bg-light mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title"><i class="bi bi-info-circle"></i> Match Generation Strategy: @Model.Strategy</h6>
+                        @if (Model.Strategy == VolleyballRallyManager.Lib.Models.MatchGenerationStrategy.RoundRobin)
+                        {
+                            <p class="mb-0">
+                                <strong>Round Robin:</strong> All @Model.TeamCount teams will play each other once.
+                                <br />
+                                <strong>Estimated matches:</strong> @(Model.TeamCount * (Model.TeamCount - 1) / 2) matches
+                                <br />
+                                <strong>Match spacing:</strong> 15 minutes between each match
+                            </p>
+                        }
+                        else if (Model.Strategy == VolleyballRallyManager.Lib.Models.MatchGenerationStrategy.SeededBracket)
+                        {
+                            <p class="mb-0">
+                                <strong>Seeded Bracket:</strong> Standard elimination bracket with seeding.
+                                <br />
+                                <strong>Estimated matches:</strong> @(Model.TeamCount / 2) matches (first round)
+                                <br />
+                                <strong>Seeding:</strong> 1st seed vs Last seed, 2nd vs Second-to-last, etc.
+                                <br />
+                                <strong>Match spacing:</strong> 15 minutes between each match
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="mb-0">
+                                <strong>@Model.Strategy:</strong> Matches will be generated according to the selected strategy.
+                            </p>
+                        }
+                    </div>
+                </div>
+
+                <div class="card border-warning mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title text-warning"><i class="bi bi-exclamation-triangle"></i> Important Notes</h6>
+                        <ul class="mb-0">
+                            <li>Matches will be scheduled sequentially with 15-minute intervals</li>
+                            <li>All matches will be assigned the same default court location</li>
+                            <li>You can edit match times and courts individually after generation</li>
+                            <li>Match numbers will continue from the last match in the tournament</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle"></i> <strong>Ready to generate!</strong> 
+                    After generation, you'll be redirected to the round details page where you can view and manage all matches.
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Details" asp-route-id="@Model.TournamentRoundId" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-warning btn-lg">
+                        <i class="bi bi-calendar-plus"></i> Generate Matches
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (Model.Strategy == VolleyballRallyManager.Lib.Models.MatchGenerationStrategy.RoundRobin)
+    {
+        <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-calculator"></i> Round Robin Calculator</h5>
+            </div>
+            <div class="card-body">
+                <p>With <strong>@Model.TeamCount teams</strong> playing Round Robin:</p>
+                <ul>
+                    <li><strong>Total Matches:</strong> @(Model.TeamCount * (Model.TeamCount - 1) / 2)</li>
+                    <li><strong>Matches per Team:</strong> @(Model.TeamCount - 1)</li>
+                    <li><strong>Estimated Duration:</strong> ~@(Model.TeamCount * (Model.TeamCount - 1) / 2 * 30) minutes (@Math.Round((Model.TeamCount * (Model.TeamCount - 1) / 2 * 30) / 60.0, 1) hours)</li>
+                </ul>
+                <small class="text-muted">Assuming average match duration of 30 minutes</small>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Set default start time to 30 minutes from now if not set
+        document.addEventListener('DOMContentLoaded', function() {
+            var startTimeInput = document.querySelector('input[name="StartTime"]');
+            if (startTimeInput && !startTimeInput.value) {
+                var now = new Date();
+                now.setMinutes(now.getMinutes() + 30);
+                startTimeInput.value = now.toISOString().slice(0, 16);
+            }
+        });
+    </script>
+}

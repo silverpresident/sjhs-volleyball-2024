@@ -47,6 +47,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITournamentService, TournamentService>();
         services.AddScoped<IActiveTournamentService, ActiveTournamentService>();
         services.AddScoped<IRoundService, RoundService>();
+        services.AddScoped<IRanksService, RanksService>();
+        services.AddScoped<ITournamentRoundService, TournamentRoundService>();
         services.AddSingleton<GroupService>();
 
         // Scoring Channel and Workers

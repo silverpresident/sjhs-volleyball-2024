@@ -21,6 +21,8 @@ namespace VolleyballRallyManager.Lib.Data
         public DbSet<Tournament> Tournaments { get; set; }
         public DbSet<TournamentDivision> TournamentDivisions { get; set; }
         public DbSet<TournamentTeamDivision> TournamentTeamDivisions { get; set; }
+        public DbSet<TournamentRound> TournamentRounds { get; set; }
+        public DbSet<TournamentRoundTeam> TournamentRoundTeams { get; set; }
         public DbSet<Announcement> Announcements { get; set; }
         public DbSet<AnnouncementHistoryLog> AnnouncementHistoryLogs { get; set; }
 
@@ -136,6 +138,65 @@ namespace VolleyballRallyManager.Lib.Data
         builder.Entity<Announcement>()
             .Property(o => o.Priority)
             .HasConversion<string>(); // Tells EF Core to store as string
+
+            // Configure TournamentRound relationships
+            builder.Entity<TournamentRound>()
+                .HasOne(tr => tr.Tournament)
+                .WithMany()
+                .HasForeignKey(tr => tr.TournamentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<TournamentRound>()
+                .HasOne(tr => tr.Division)
+                .WithMany()
+                .HasForeignKey(tr => tr.DivisionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<TournamentRound>()
+                .HasOne(tr => tr.Round)
+                .WithMany()
+                .HasForeignKey(tr => tr.RoundId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<TournamentRound>()
+                .HasMany(tr => tr.TournamentRoundTeams)
+                .WithOne(trt => trt.TournamentRound)
+                .HasForeignKey(trt => trt.TournamentRoundId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure TournamentRound enums as strings
+            builder.Entity<TournamentRound>()
+                .Property(tr => tr.TeamSelectionMethod)
+                .HasConversion<string>();
+
+            builder.Entity<TournamentRound>()
+                .Property(tr => tr.MatchGenerationStrategy)
+                .HasConversion<string>();
+
+            // Configure TournamentRoundTeam relationships
+            builder.Entity<TournamentRoundTeam>()
+                .HasOne(trt => trt.Tournament)
+                .WithMany()
+                .HasForeignKey(trt => trt.TournamentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<TournamentRoundTeam>()
+                .HasOne(trt => trt.Division)
+                .WithMany()
+                .HasForeignKey(trt => trt.DivisionId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<TournamentRoundTeam>()
+                .HasOne(trt => trt.Round)
+                .WithMany()
+                .HasForeignKey(trt => trt.RoundId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<TournamentRoundTeam>()
+                .HasOne(trt => trt.Team)
+                .WithMany()
+                .HasForeignKey(trt => trt.TeamId)
+                .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

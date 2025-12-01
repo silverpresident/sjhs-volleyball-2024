@@ -1,0 +1,184 @@
+@model VolleyballRallyManager.App.Areas.Admin.Models.TournamentRoundsIndexViewModel
+
+@{
+    ViewData["Title"] = "Tournament Rounds";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-trophy"></i> Tournament Rounds</h1>
+        <div>
+            <a asp-action="CreateFirstRound" asp-route-tournamentId="@Model.TournamentId" asp-route-divisionId="@Model.DivisionId" 
+               class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Create First Round
+            </a>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Tournament: @Model.TournamentName</h5>
+            <h6 class="card-subtitle text-muted">Division: @Model.DivisionName</h6>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Rounds.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No rounds have been created yet. Click "Create First Round" to get started.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Round</th>
+                        <th>Teams</th>
+                        <th>Matches</th>
+                        <th>Progress</th>
+                        <th>Status</th>
+                        <th>Strategy</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var round in Model.Rounds)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@round.RoundName</strong>
+                                <br />
+                                <small class="text-muted">Round #@round.RoundNumber</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">@round.TeamCount teams</span>
+                                @if (round.TeamsAdvancing > 0)
+                                {
+                                    <br />
+                                    <small class="text-muted">@round.TeamsAdvancing qualifying</small>
+                                }
+                            </td>
+                            <td>
+                                @round.CompletedMatchCount / @round.MatchCount
+                                @if (round.MatchCount > 0)
+                                {
+                                    <br />
+                                    <small class="text-muted">
+                                        (@(Math.Round((double)round.CompletedMatchCount / round.MatchCount * 100, 1))%)
+                                    </small>
+                                }
+                            </td>
+                            <td>
+                                @if (round.MatchCount > 0)
+                                {
+                                    var progressPercent = (double)round.CompletedMatchCount / round.MatchCount * 100;
+                                    <div class="progress" style="height: 25px;">
+                                        <div class="progress-bar @(progressPercent == 100 ? "bg-success" : "bg-primary")" 
+                                             role="progressbar" 
+                                             style="width: @progressPercent%" 
+                                             aria-valuenow="@progressPercent" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                            @Math.Round(progressPercent, 0)%
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No matches</span>
+                                }
+                            </td>
+                            <td>
+                                @if (round.IsFinished)
+                                {
+                                    <span class="badge bg-success"><i class="bi bi-check-circle"></i> Finished</span>
+                                }
+                                else if (round.IsLocked)
+                                {
+                                    <span class="badge bg-warning"><i class="bi bi-lock"></i> Locked</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary"><i class="bi bi-hourglass"></i> In Progress</span>
+                                }
+                            </td>
+                            <td>
+                                <small class="text-muted">
+                                    @round.TeamSelectionMethod
+                                    <br />
+                                    @round.MatchGenerationStrategy
+                                </small>
+                            </td>
+                            <td>
+                                <div class="btn-group-vertical btn-group-sm" role="group">
+                                    <!-- Details Button: Always visible -->
+                                    <a asp-action="Details" asp-route-id="@round.Id" class="btn btn-info">
+                                        <i class="bi bi-eye"></i> Details
+                                    </a>
+
+                                    <!-- Select Teams Button -->
+                                    @if (round.CanSelectTeams)
+                                    {
+                                        <form asp-action="SelectTeams" asp-route-id="@round.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-primary w-100" 
+                                                    onclick="return confirm('Select teams for this round?');">
+                                                <i class="bi bi-people"></i> Select Teams
+                                            </button>
+                                        </form>
+                                    }
+
+                                    <!-- Generate Matches Button -->
+                                    @if (round.CanGenerateMatches)
+                                    {
+                                        <a asp-action="GenerateMatches" asp-route-id="@round.Id" class="btn btn-warning">
+                                            <i class="bi bi-calendar-plus"></i> Generate Matches
+                                        </a>
+                                    }
+
+                                    <!-- Finalize Round Button -->
+                                    @if (round.CanFinalize)
+                                    {
+                                        <form asp-action="FinalizeRound" asp-route-id="@round.Id" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-success w-100" 
+                                                    onclick="return confirm('Finalize this round? This will calculate rankings and lock the round.');">
+                                                <i class="bi bi-check-circle"></i> Finalize Round
+                                            </button>
+                                        </form>
+                                    }
+
+                                    <!-- Generate Next Round Button -->
+                                    @if (round.CanGenerateNextRound)
+                                    {
+                                        <a asp-action="GenerateNextRound" asp-route-id="@round.Id" class="btn btn-secondary">
+                                            <i class="bi bi-arrow-right-circle"></i> Generate Next Round
+                                        </a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

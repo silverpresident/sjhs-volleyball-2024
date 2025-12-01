@@ -16,7 +16,7 @@
  
                 <div class="form-group mb-3">
                     <label asp-for="RoundId" class="control-label">Round</label>
-                    <select asp-for="RoundId" class="form-control" asp-items="ViewData["Rounds"] as SelectList">
+                    <select asp-for="RoundId" class="form-control" asp-items='@((SelectList)ViewData["Rounds"])'>
                         <option value="">-- Select Round --</option>
                     </select>
                     <span asp-validation-for="RoundId" class="text-danger"></span>
@@ -26,7 +26,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="HomeTeamId" class="control-label">Home Team</label>
-                            <select asp-for="HomeTeamId" class="form-control" asp-items="ViewData["HomeTeamId"] as SelectList">
+                            <select asp-for="HomeTeamId" class="form-control" asp-items='@((SelectList)ViewData["HomeTeamId"])'>
                                 <option value="">-- Select Home Team --</option>
                             </select>
                             <span asp-validation-for="HomeTeamId" class="text-danger"></span>
@@ -35,7 +35,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="AwayTeamId" class="control-label">Away Team</label>
-                            <select asp-for="AwayTeamId" class="form-control" asp-items="ViewData["AwayTeamId"] as SelectList">
+                            <select asp-for="AwayTeamId" class="form-control" asp-items='@((SelectList)ViewData["AwayTeamId"])'>
                                 <option value="">-- Select Away Team --</option>
                             </select>
                             <span asp-validation-for="AwayTeamId" class="text-danger"></span>
