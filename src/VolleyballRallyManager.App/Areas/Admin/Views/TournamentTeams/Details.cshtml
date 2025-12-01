@@ -1,25 +1,36 @@
-@model VolleyballRallyManager.Lib.Models.TournamentTeamDivision
+@model VolleyballRallyManager.App.Areas.Admin.Models.TournamentTeamDetailsViewModel
 
 @{
     ViewData["Title"] = "Team Details";
 }
 
-<div class="container">
-    <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">@Model.Team?.Name</h5>
-            <div class="team-color" style="width: 30px; height: 30px; border-radius: 50%; background-color: @Model.Team?.Color;"></div>
+<div class="container mt-4">
+    <h2 class="mb-4">@Model.TournamentTeamDivision.Team?.Name</h2>
+
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center bg-success text-white">
+            <h5 class="mb-0">Team Information</h5>
+            <div class="team-color" style="width: 30px; height: 30px; border-radius: 50%; background-color: @Model.TournamentTeamDivision.Team?.Color; border: 2px solid white;"></div>
         </div>
         <div class="card-body">
             <dl class="row">
                 <dt class="col-sm-3">School</dt>
-                <dd class="col-sm-9">@Model.Team?.School</dd>
+                <dd class="col-sm-9">@Model.TournamentTeamDivision.Team?.School</dd>
 
-                @if (!string.IsNullOrEmpty(Model.Team?.LogoUrl))
+                <dt class="col-sm-3">Division</dt>
+                <dd class="col-sm-9">@Model.Division?.Name</dd>
+
+                <dt class="col-sm-3">Group</dt>
+                <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.TournamentTeamDivision.GroupName) ? "N/A" : Model.TournamentTeamDivision.GroupName)</dd>
+
+                <dt class="col-sm-3">Seed Number</dt>
+                <dd class="col-sm-9">@Model.TournamentTeamDivision.SeedNumber</dd>
+
+                @if (!string.IsNullOrEmpty(Model.TournamentTeamDivision.Team?.LogoUrl))
                 {
                     <dt class="col-sm-3">Logo</dt>
                     <dd class="col-sm-9">
-                        <img src="@Model.Team?.LogoUrl" alt="Team Logo" style="max-width: 100px;" />
+                        <img src="@Model.TournamentTeamDivision.Team?.LogoUrl" alt="Team Logo" class="img-fluid" style="max-width: 150px;" />
                     </dd>
                 }
             </dl>
@@ -27,72 +38,133 @@
     </div>
 
     <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">Statistics</h5>
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Tournament Statistics</h5>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-md-6">
                     <dl class="row">
                         <dt class="col-sm-6">Matches Played</dt>
-                        <dd class="col-sm-6">@Model.MatchesPlayed</dd>
+                        <dd class="col-sm-6"><strong>@Model.TournamentTeamDivision.MatchesPlayed</strong></dd>
 
                         <dt class="col-sm-6">Wins</dt>
-                        <dd class="col-sm-6">@Model.Wins</dd>
+                        <dd class="col-sm-6"><span class="badge bg-success">@Model.TournamentTeamDivision.Wins</span></dd>
 
                         <dt class="col-sm-6">Draws</dt>
-                        <dd class="col-sm-6">@Model.Draws</dd>
+                        <dd class="col-sm-6"><span class="badge bg-secondary">@Model.TournamentTeamDivision.Draws</span></dd>
 
                         <dt class="col-sm-6">Losses</dt>
-                        <dd class="col-sm-6">@Model.Losses</dd>
+                        <dd class="col-sm-6"><span class="badge bg-danger">@Model.TournamentTeamDivision.Losses</span></dd>
                     </dl>
                 </div>
                 <div class="col-md-6">
                     <dl class="row">
+                        <dt class="col-sm-6">Total Points</dt>
+                        <dd class="col-sm-6"><strong class="text-success">@Model.TournamentTeamDivision.TotalPoints</strong></dd>
+
                         <dt class="col-sm-6">Points Scored</dt>
-                        <dd class="col-sm-6">@Model.PointsScored</dd>
+                        <dd class="col-sm-6">@Model.TournamentTeamDivision.PointsScored</dd>
 
                         <dt class="col-sm-6">Points Conceded</dt>
-                        <dd class="col-sm-6">@Model.PointsConceded</dd>
+                        <dd class="col-sm-6">@Model.TournamentTeamDivision.PointsConceded</dd>
 
                         <dt class="col-sm-6">Point Difference</dt>
-                        <dd class="col-sm-6">@Model.PointDifference</dd>
-
-                        <dt class="col-sm-6">Total Points</dt>
-                        <dd class="col-sm-6">@Model.TotalPoints</dd>
+                        <dd class="col-sm-6">
+                            <span class="@(Model.TournamentTeamDivision.PointDifference >= 0 ? "text-success" : "text-danger")">
+                                @(Model.TournamentTeamDivision.PointDifference >= 0 ? "+" : "")@Model.TournamentTeamDivision.PointDifference
+                            </span>
+                        </dd>
                     </dl>
                 </div>
             </div>
         </div>
     </div>
-@*
+
     <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">Recent Matches</h5>
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Match History</h5>
         </div>
         <div class="card-body">
-            @if (Model.HomeMatches.Any() || Model.AwayMatches.Any())
+            @if (Model.Matches.Any())
             {
                 <div class="table-responsive">
-                    <table class="table table-striped">
+                    <table class="table table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>Date</th>
+                                <th>Date & Time</th>
+                                <th>Round</th>
                                 <th>Home Team</th>
                                 <th>Score</th>
                                 <th>Away Team</th>
+                                <th>Court</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var match in Model.HomeMatches.Union(Model.AwayMatches).OrderByDescending(m => m.ScheduledTime))
+                            @foreach (var match in Model.Matches)
                             {
-                                <tr>
-                                    <td>@match.ScheduledTime.ToString("dd/MM/yyyy HH:mm")</td>
-                                    <td>@match.HomeTeam.Name</td>
-                                    <td>@match.HomeTeamScore - @match.AwayTeamScore</td>
-                                    <td>@match.AwayTeam.Name</td>
-                                    <td>@(match.IsFinished ? "Finished" : "Scheduled")</td>
+                                var isHomeTeam = match.HomeTeamId == Model.TournamentTeamDivision.TeamId;
+                                var isWin = match.IsFinished && ((isHomeTeam && match.HomeTeamScore > match.AwayTeamScore) || (!isHomeTeam && match.AwayTeamScore > match.HomeTeamScore));
+                                var isLoss = match.IsFinished && ((isHomeTeam && match.HomeTeamScore < match.AwayTeamScore) || (!isHomeTeam && match.AwayTeamScore < match.HomeTeamScore));
+                                var isDraw = match.IsFinished && match.HomeTeamScore == match.AwayTeamScore;
+                                var rowClass = isWin ? "table-success" : (isLoss ? "table-danger" : (isDraw ? "table-warning" : ""));
+                                
+                                <tr class="@rowClass">
+                                    <td>@match.ScheduledTime.ToString("ddd, dd MMM yyyy HH:mm")</td>
+                                    <td>@match.Round?.Name</td>
+                                    <td>
+                                        @if (isHomeTeam)
+                                        {
+                                            <strong>@match.HomeTeam?.Name</strong>
+                                        }
+                                        else
+                                        {
+                                            @match.HomeTeam?.Name
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (match.IsFinished)
+                                        {
+                                            <strong>@match.HomeTeamScore - @match.AwayTeamScore</strong>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">vs</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!isHomeTeam)
+                                        {
+                                            <strong>@match.AwayTeam?.Name</strong>
+                                        }
+                                        else
+                                        {
+                                            @match.AwayTeam?.Name
+                                        }
+                                    </td>
+                                    <td>@match.CourtLocation</td>
+                                    <td>
+                                        @if (match.IsFinished)
+                                        {
+                                            if (isWin)
+                                            {
+                                                <span class="badge bg-success">Won</span>
+                                            }
+                                            else if (isLoss)
+                                            {
+                                                <span class="badge bg-danger">Lost</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark">Draw</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-info">Scheduled</span>
+                                        }
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -101,14 +173,17 @@
             }
             else
             {
-                <p class="text-muted">No matches found for this team.</p>
+                <p class="text-muted text-center py-4">No matches found for this team in the active tournament.</p>
             }
         </div>
     </div>
-*@
-    <div>
-       <a asp-action="Edit" asp-route-teamId="@Model.TeamId" asp-route-divisionId="@ViewBag.DivisionId" class="btn btn-primary">Edit</a>
-    <a asp-action="Index" asp-route-divisionId="@ViewBag.DivisionId" class="btn btn-secondary">Back to List</a>
- </div>
+
+    <div class="mb-4">
+        <a asp-action="Edit" asp-route-id="@Model.TournamentTeamDivision.TeamId" class="btn btn-primary">
+            <i class="bi bi-pencil"></i> Edit Team
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Teams List
+        </a>
+    </div>
 </div>
- 

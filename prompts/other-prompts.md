@@ -60,4 +60,4 @@ On the Home index page create a card above "Total Teams" to display the details 
 The Rounds index page in the Admin controller needs alot of work. Please fix the presentation and display relevant details.
 ====
 Fix the admin area TournamentTeams/Details.cshtml page and action.
-The page needs to display all relevant informaiton about the team in the current tournament.
+The page needs to display all relevant informaiton about the team in the active tournament.

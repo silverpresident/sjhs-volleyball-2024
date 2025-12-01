@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using VolleyballRallyManager.App.Areas.Admin.Models;
 using VolleyballRallyManager.App.Models;
 using VolleyballRallyManager.Lib.Services;
+using Microsoft.Extensions.Logging;
 
 namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 {
@@ -9,11 +11,16 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
     {
         private readonly IActiveTournamentService _activeTournamentService;
         private readonly ITournamentService _tournamentService;
+        private readonly ILogger<TournamentTeamsController> _logger;
 
-        public TournamentTeamsController(IActiveTournamentService activeTournamentService, ITournamentService tournamentService)
+        public TournamentTeamsController(
+            IActiveTournamentService activeTournamentService, 
+            ITournamentService tournamentService,
+            ILogger<TournamentTeamsController> logger)
         {
             _activeTournamentService = activeTournamentService;
             _tournamentService = tournamentService;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index(Guid? divisionId)
@@ -36,6 +43,43 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             var model = await _activeTournamentService.GetTournamentTeamsAsync(Guid.Empty);
             //model = model.OrderBy(ttd => ttd.GroupName);
             return View(model);
+        }
+
+        public async Task<IActionResult> Details(Guid id)
+        {
+            try
+            {
+                var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
+                if (activeTournament == null)
+                {
+                    _logger.LogWarning("No active tournament found.");
+                    return NotFound("No active tournament found.");
+                }
+
+                var tournamentTeamDivision = await _activeTournamentService.GetTeamAsync(id);
+                if (tournamentTeamDivision == null)
+                {
+                    _logger.LogWarning("Team with ID {TeamId} not found.", id);
+                    return NotFound();
+                }
+
+                // Get all matches for this team
+                var matches = await _activeTournamentService.GetMatchesAsync(teamId: id);
+
+                var model = new TournamentTeamDetailsViewModel
+                {
+                    TournamentTeamDivision = tournamentTeamDivision,
+                    Matches = matches.OrderByDescending(m => m.ScheduledTime).ToList(),
+                    Division = tournamentTeamDivision.Division
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving team details for team {TeamId}", id);
+                return StatusCode(500, "An error occurred while retrieving team details.");
+            }
         }
 
         public async Task<IActionResult> Create()
