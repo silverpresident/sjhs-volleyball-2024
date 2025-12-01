@@ -9,6 +9,12 @@ public class MatchAssignViewModel
     [Display(Name = "Match Number")]
     public int MatchNumber { get; set; }
     
+    [Display(Name = "Division")]
+    public string DivisionName { get; set; } = string.Empty;
+    
+    [Display(Name = "Round")]
+    public string RoundName { get; set; } = string.Empty;
+    
     [Display(Name = "Home Team")]
     public string HomeTeamName { get; set; } = string.Empty;
     
@@ -34,6 +40,11 @@ public class MatchAssignViewModel
         "Court 1",
         "Court 2",
         "Court 3",
-        "Court 4"
+        "Court 4",
+        "Court 5",
+        "Court 6",
+        "Court 7",
+        "Court 8",
+        "Court 9"
     };
 }

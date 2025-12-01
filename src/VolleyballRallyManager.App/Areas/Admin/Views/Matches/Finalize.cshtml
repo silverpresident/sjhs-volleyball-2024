@@ -1,0 +1,120 @@
+@model VolleyballRallyManager.App.Areas.Admin.Models.MatchFinalizeViewModel
+
+@{
+    ViewData["Title"] = "Finalize Match";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-check-circle"></i> Finalize Match #@Model.MatchNumber
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Division:</strong> @Model.DivisionName<br/>
+                                <strong>Round:</strong> @Model.RoundName<br/>
+                                <strong>Court:</strong> @Model.CourtLocation
+                            </div>
+                            <div class="col-md-6">
+                                <strong>@Model.HomeTeamName</strong> vs <strong>@Model.AwayTeamName</strong><br/>
+                                <strong>Referee:</strong> @(Model.RefereeName ?? "N/A")<br/>
+                                <strong>Scorer:</strong> @(Model.ScorerName ?? "N/A")
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Finalize" method="post">
+                        <input type="hidden" asp-for="MatchId" />
+                        <input type="hidden" asp-for="MatchNumber" />
+                        <input type="hidden" asp-for="HomeTeamName" />
+                        <input type="hidden" asp-for="AwayTeamName" />
+                        <input type="hidden" asp-for="HasSets" />
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        @if (!Model.HasSets)
+                        {
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle"></i> No sets recorded. You can enter final scores below.
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label asp-for="HomeTeamScore" class="form-label">@Model.HomeTeamName Score</label>
+                                    <input asp-for="HomeTeamScore" class="form-control" type="number" min="0" />
+                                    <span asp-validation-for="HomeTeamScore" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="AwayTeamScore" class="form-label">@Model.AwayTeamName Score</label>
+                                    <input asp-for="AwayTeamScore" class="form-control" type="number" min="0" />
+                                    <span asp-validation-for="AwayTeamScore" class="text-danger"></span>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-success">
+                                <i class="bi bi-info-circle"></i> Sets have been recorded. Scores are calculated from set results.
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <strong>@Model.HomeTeamName:</strong> @Model.HomeTeamScore sets won
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>@Model.AwayTeamName:</strong> @Model.AwayTeamScore sets won
+                                </div>
+                            </div>
+                        }
+
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="mb-0">Match Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-check mb-2">
+                                    <input asp-for="IsFinished" class="form-check-input" type="checkbox" />
+                                    <label asp-for="IsFinished" class="form-check-label">
+                                        Mark match as finished
+                                    </label>
+                                </div>
+                                
+                                <div class="form-check mb-2">
+                                    <input asp-for="IsDisputed" class="form-check-input" type="checkbox" />
+                                    <label asp-for="IsDisputed" class="form-check-label">
+                                        Mark match as disputed
+                                    </label>
+                                </div>
+                                
+                                <div class="form-check mb-2">
+                                    <input asp-for="IsLocked" class="form-check-input" type="checkbox" />
+                                    <label asp-for="IsLocked" class="form-check-label">
+                                        Lock match (prevents further editing)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Details" asp-route-id="@Model.MatchId" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg"></i> Finalize Match
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

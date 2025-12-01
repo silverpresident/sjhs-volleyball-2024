@@ -1,9 +1,8 @@
 using System.ComponentModel.DataAnnotations;
-using VolleyballRallyManager.Lib.Models;
 
 namespace VolleyballRallyManager.App.Areas.Admin.Models;
 
-public class MatchUpdateViewModel
+public class MatchFinalizeViewModel
 {
     public Guid MatchId { get; set; }
     
@@ -31,11 +30,20 @@ public class MatchUpdateViewModel
     [Display(Name = "Away Team")]
     public string AwayTeamName { get; set; } = string.Empty;
     
-    [Required]
-    [Display(Name = "Update Comment")]
-    [DataType(DataType.MultilineText)]
-    public string Comment { get; set; } = string.Empty;
+    [Display(Name = "Home Team Score")]
+    public int HomeTeamScore { get; set; }
     
-    [Display(Name = "Update Type")]
-    public UpdateType UpdateType { get; set; } = UpdateType.Other;
+    [Display(Name = "Away Team Score")]
+    public int AwayTeamScore { get; set; }
+    
+    [Display(Name = "Match Finished")]
+    public bool IsFinished { get; set; }
+    
+    [Display(Name = "Match Disputed")]
+    public bool IsDisputed { get; set; }
+    
+    [Display(Name = "Match Locked")]
+    public bool IsLocked { get; set; }
+    
+    public bool HasSets { get; set; }
 }

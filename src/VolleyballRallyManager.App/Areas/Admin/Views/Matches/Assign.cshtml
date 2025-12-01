@@ -15,7 +15,15 @@
                 </div>
                 <div class="card-body">
                     <div class="alert alert-info">
-                        <strong>@Model.HomeTeamName</strong> vs <strong>@Model.AwayTeamName</strong>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Division:</strong> @Model.DivisionName<br/>
+                                <strong>Round:</strong> @Model.RoundName
+                            </div>
+                            <div class="col-md-6">
+                                <strong>@Model.HomeTeamName</strong> vs <strong>@Model.AwayTeamName</strong>
+                            </div>
+                        </div>
                     </div>
 
                     <form asp-action="Assign" method="post">
@@ -28,15 +36,19 @@
 
                         <div class="mb-3">
                             <label asp-for="ScheduledTime" class="form-label"></label>
-                            <input asp-for="ScheduledTime" type="datetime-local" class="form-control" />
+                            <input asp-for="ScheduledTime" type="datetime-local" class="form-control" step="60" />
                             <span asp-validation-for="ScheduledTime" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="CourtLocation" class="form-label"></label>
-                            <select asp-for="CourtLocation" class="form-select" asp-items="@(new SelectList(Model.AvailableCourts))">
-                                <option value="">Select a court</option>
-                            </select>
+                            <input asp-for="CourtLocation" class="form-control" list="courtList" />
+                            <datalist id="courtList">
+                                @foreach (var court in Model.AvailableCourts)
+                                {
+                                    <option value="@court">@court</option>
+                                }
+                            </datalist>
                             <span asp-validation-for="CourtLocation" class="text-danger"></span>
                         </div>
 

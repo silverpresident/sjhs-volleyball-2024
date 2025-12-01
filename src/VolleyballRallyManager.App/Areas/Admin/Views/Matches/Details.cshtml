@@ -137,16 +137,9 @@
                                             }
                                         </td>
                                         <td>
-                                            @* @if (!set.IsLocked)
-                                            { *@
-                                                <button class="btn btn-sm btn-warning" disabled title="Edit functionality coming soon">
-                                                    <i class="bi bi-pencil"></i> Edit
-                                                </button>
-                                            @*}
-                                            else
-                                            {
-                                                <span class="text-muted">Cannot edit locked set</span>
-                                            }*@
+                                            <a asp-action="EditSet" asp-route-id="@match.Id" asp-route-setNumber="@set.SetNumber" class="btn btn-sm btn-warning">
+                                                <i class="bi bi-pencil"></i> Edit
+                                            </a>
                                         </td>
                                     </tr>
                                 }
@@ -163,7 +156,10 @@
                 <a asp-action="Update" asp-route-id="@match.Id" class="btn btn-warning">
                     <i class="bi bi-chat-left-text"></i> Add Update
                 </a>
-                <a asp-action="Scorer" asp-route-id="@match.Id" class="btn btn-primary">
+                <a asp-action="Finalize" asp-route-id="@match.Id" class="btn btn-primary">
+                    <i class="bi bi-check-circle"></i> Finalize
+                </a>
+                <a asp-action="Scorer" asp-route-id="@match.Id" class="btn btn-info">
                     <i class="bi bi-calculator"></i> Scorer Interface
                 </a>
                 <a asp-action="Edit" asp-route-id="@match.Id" class="btn btn-secondary">

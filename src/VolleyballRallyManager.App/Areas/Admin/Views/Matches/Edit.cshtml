@@ -26,13 +26,24 @@
 
                         <div class="form-group mb-3">
                             <label asp-for="ScheduledTime" class="control-label"></label>
-                            <input asp-for="ScheduledTime" class="form-control" type="datetime-local" />
+                            <input asp-for="ScheduledTime" class="form-control" type="datetime-local" step="60" />
                             <span asp-validation-for="ScheduledTime" class="text-danger"></span>
                         </div>
 
                         <div class="form-group mb-3">
                             <label asp-for="CourtLocation" class="control-label"></label>
-                            <input asp-for="CourtLocation" class="form-control" />
+                            <input asp-for="CourtLocation" class="form-control" list="courtList" />
+                            <datalist id="courtList">
+                                <option value="Court 1">Court 1</option>
+                                <option value="Court 2">Court 2</option>
+                                <option value="Court 3">Court 3</option>
+                                <option value="Court 4">Court 4</option>
+                                <option value="Court 5">Court 5</option>
+                                <option value="Court 6">Court 6</option>
+                                <option value="Court 7">Court 7</option>
+                                <option value="Court 8">Court 8</option>
+                                <option value="Court 9">Court 9</option>
+                            </datalist>
                             <span asp-validation-for="CourtLocation" class="text-danger"></span>
                         </div>
 
@@ -81,7 +92,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label asp-for="ActualStartTime" class="control-label"></label>
-                                    <input asp-for="ActualStartTime" class="form-control" type="datetime-local" />
+                                    <input asp-for="ActualStartTime" class="form-control" type="datetime-local" step="60" />
                                     <span asp-validation-for="ActualStartTime" class="text-danger"></span>
                                 </div>
                             </div>

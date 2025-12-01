@@ -3,6 +3,7 @@
 
 @{
     ViewData["Title"] = "Create Match";
+    var defaultScheduledTime = ViewData["DefaultScheduledTime"]?.ToString() ?? DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
 }
 
 <div class="container">
@@ -15,29 +16,17 @@
  
                 <div class="form-group mb-3">
                     <label asp-for="RoundId" class="control-label">Round</label>
-                    <select asp-for="RoundId" class="form-control" asp-items="ViewBag.Rounds">
+                    <select asp-for="RoundId" class="form-control" asp-items="ViewData["Rounds"] as SelectList">
                         <option value="">-- Select Round --</option>
                     </select>
                     <span asp-validation-for="RoundId" class="text-danger"></span>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label asp-for="ScheduledTime" class="control-label"></label>
-                    <input asp-for="ScheduledTime" class="form-control" type="datetime-local" />
-                    <span asp-validation-for="ScheduledTime" class="text-danger"></span>
-                </div>
-
-                <div class="form-group mb-3">
-                    <label asp-for="CourtLocation" class="control-label"></label>
-                    <input asp-for="CourtLocation" class="form-control" />
-                    <span asp-validation-for="CourtLocation" class="text-danger"></span>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="HomeTeamId" class="control-label">Home Team</label>
-                            <select asp-for="HomeTeamId" class="form-control" asp-items="ViewBag.Teams">
+                            <select asp-for="HomeTeamId" class="form-control" asp-items="ViewData["HomeTeamId"] as SelectList">
                                 <option value="">-- Select Home Team --</option>
                             </select>
                             <span asp-validation-for="HomeTeamId" class="text-danger"></span>
@@ -46,12 +35,36 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="AwayTeamId" class="control-label">Away Team</label>
-                            <select asp-for="AwayTeamId" class="form-control" asp-items="ViewBag.Teams">
+                            <select asp-for="AwayTeamId" class="form-control" asp-items="ViewData["AwayTeamId"] as SelectList">
                                 <option value="">-- Select Away Team --</option>
                             </select>
                             <span asp-validation-for="AwayTeamId" class="text-danger"></span>
                         </div>
                     </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="ScheduledTime" class="control-label"></label>
+                    <input asp-for="ScheduledTime" class="form-control" type="datetime-local" step="60" value="@defaultScheduledTime" />
+                    <span asp-validation-for="ScheduledTime" class="text-danger"></span>
+                    <small class="form-text text-muted">Default: 15 minutes after last match</small>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="CourtLocation" class="control-label"></label>
+                    <input asp-for="CourtLocation" class="form-control" list="courtList" placeholder="Select or enter court" />
+                    <datalist id="courtList">
+                        <option value="Court 1">Court 1</option>
+                        <option value="Court 2">Court 2</option>
+                        <option value="Court 3">Court 3</option>
+                        <option value="Court 4">Court 4</option>
+                        <option value="Court 5">Court 5</option>
+                        <option value="Court 6">Court 6</option>
+                        <option value="Court 7">Court 7</option>
+                        <option value="Court 8">Court 8</option>
+                        <option value="Court 9">Court 9</option>
+                    </datalist>
+                    <span asp-validation-for="CourtLocation" class="text-danger"></span>
                 </div>
 
                 <div class="row mb-3">
@@ -69,6 +82,12 @@
                             <span asp-validation-for="ScorerName" class="text-danger"></span>
                         </div>
                     </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="GroupName" class="control-label"></label>
+                    <input asp-for="GroupName" class="form-control" placeholder="e.g., Group A" />
+                    <span asp-validation-for="GroupName" class="text-danger"></span>
                 </div>
 
                 <div class="form-group mt-4">

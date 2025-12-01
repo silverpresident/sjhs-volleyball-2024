@@ -1,0 +1,80 @@
+@model VolleyballRallyManager.App.Areas.Admin.Models.MatchSetEditViewModel
+
+@{
+    ViewData["Title"] = "Edit Set";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-pencil"></i> Edit Set @Model.SetNumber
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>@Model.HomeTeamName</strong> vs <strong>@Model.AwayTeamName</strong>
+                    </div>
+
+                    <form asp-action="EditSet" method="post">
+                        <input type="hidden" asp-for="MatchId" />
+                        <input type="hidden" asp-for="SetNumber" />
+                        <input type="hidden" asp-for="HomeTeamName" />
+                        <input type="hidden" asp-for="AwayTeamName" />
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="HomeTeamScore" class="form-label">@Model.HomeTeamName Score</label>
+                                <input asp-for="HomeTeamScore" class="form-control" type="number" min="0" max="100" />
+                                <span asp-validation-for="HomeTeamScore" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="AwayTeamScore" class="form-label">@Model.AwayTeamName Score</label>
+                                <input asp-for="AwayTeamScore" class="form-control" type="number" min="0" max="100" />
+                                <span asp-validation-for="AwayTeamScore" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h6 class="mb-0">Set Status</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-check mb-2">
+                                    <input asp-for="IsFinished" class="form-check-input" type="checkbox" />
+                                    <label asp-for="IsFinished" class="form-check-label">
+                                        Set is finished
+                                    </label>
+                                </div>
+                                
+                                <div class="form-check mb-2">
+                                    <input asp-for="IsLocked" class="form-check-input" type="checkbox" />
+                                    <label asp-for="IsLocked" class="form-check-label">
+                                        Lock set (prevents further editing)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Details" asp-route-id="@Model.MatchId" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-info">
+                                <i class="bi bi-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
