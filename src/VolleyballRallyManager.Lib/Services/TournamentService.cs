@@ -13,6 +13,12 @@ namespace VolleyballRallyManager.Lib.Services
             _context = context;
         }
 
+        public async Task CreateTournamentAsync(Tournament tournament)
+        {
+            _context.Tournaments.Add(tournament);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task SetActiveTournamentAsync(Guid tournamentId)
         {
             var tournaments = await _context.Tournaments.ToListAsync();

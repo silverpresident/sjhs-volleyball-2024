@@ -56,3 +56,5 @@ Update the public Teams/Details.cshtml page
 2. Improve the display of the match results. Include the round, match number and other relevant details.
 ====
 On the Home index page create a card above "Total Teams" to display the details (date and description) of the active tournament.
+====
+The Rounds index page in the Admin controller needs alot of work. Please fix the presentation and display relevant details.

@@ -52,9 +52,10 @@ namespace VolleyballRallyManager.Lib.Extensions
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedEmail = false; // Disabled for development
             })
+            .AddRoles<IdentityRole>() 
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
-
+ 
             // Configure authentication
             services.ConfigureApplicationCookie(options =>
             {
@@ -86,10 +87,16 @@ namespace VolleyballRallyManager.Lib.Extensions
                     {
                         // Add role claims based on configuration
                         var adminEmail = configuration["VolleyBallRallyManager:AdminEmail"];
+                        var adminEmails = configuration.GetSection("VolleyBallRallyManager:DefaultAdminEmails").Get<string[]>();
                         var judgeEmails = configuration.GetSection("VolleyBallRallyManager:DefaultJudgeEmails").Get<string[]>();
                         var scorekeeperEmails = configuration.GetSection("VolleyBallRallyManager:DefaultScorekeeperEmails").Get<string[]>();
 
                         if (email == adminEmail)
+                        {
+                            context.Identity?.AddClaim(new System.Security.Claims.Claim(
+                                System.Security.Claims.ClaimTypes.Role, "Administrator"));
+                        }
+                        else if (adminEmails?.Contains(email) == true)
                         {
                             context.Identity?.AddClaim(new System.Security.Claims.Claim(
                                 System.Security.Claims.ClaimTypes.Role, "Administrator"));

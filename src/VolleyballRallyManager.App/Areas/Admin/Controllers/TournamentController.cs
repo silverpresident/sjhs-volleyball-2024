@@ -25,6 +25,23 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             return View(tournaments);
         }
 
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Tournament tournament)
+        {
+            if (ModelState.IsValid)
+            {
+                await _tournamentService.CreateTournamentAsync(tournament);
+                return RedirectToAction(nameof(Index));
+            }
+            return View(tournament);
+        }
+
         public async Task<IActionResult> Details(Guid id)
         {
             var tournament = await _tournamentService.GetTournamentByIdAsync(id);

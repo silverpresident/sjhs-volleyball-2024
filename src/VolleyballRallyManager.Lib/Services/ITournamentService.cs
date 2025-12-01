@@ -4,6 +4,7 @@ namespace VolleyballRallyManager.Lib.Services
 {
     public interface ITournamentService
     {
+        Task CreateTournamentAsync(Tournament tournament);
         Task SetActiveTournamentAsync(Guid tournamentId);
         Task<IEnumerable<Division>> GetTournamentDivisionsAsync(Guid tournamentId);
         Task<IEnumerable<Team>> GetTournamentTeamsAsync(Guid tournamentId);

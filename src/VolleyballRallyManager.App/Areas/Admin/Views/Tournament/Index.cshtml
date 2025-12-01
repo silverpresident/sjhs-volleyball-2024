@@ -4,37 +4,48 @@
     ViewData["Title"] = "Tournaments";
 }
 
+<div class="container">
 <div class="card">
     <div class="card-header">
         <h1 class="card-title">@ViewData["Title"]</h1>
     </div>
     <div class="card-body">
+        <p>
+            <a asp-action="Create" class="btn btn-primary">Create New Tournament</a>
+        </p>
         <table class="table">
             <thead>
                 <tr>
+                    <th>Actions</th>
                     <th>Name</th>
                     <th>Tournament Date</th>
                     <th>Active</th>
-                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>@Html.DisplayFor(modelItem => item.Name)
-                            <details>@Html.DisplayFor(modelItem => item.Description)</details>
-                        </td>
-                        <td>@Html.DisplayFor(modelItem => item.TournamentDate)</td>
-                        <td>@Html.DisplayFor(modelItem => item.IsActive)</td>
                         <td>
                             <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Details</a>
                             <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Edit</a>
                             <a asp-action="SetActive" asp-route-id="@item.Id" class="btn btn-sm btn-success">Set Active</a>
+                        </td>
+                        <td>@Html.DisplayFor(modelItem => item.Name)
+                            <details>@Html.DisplayFor(modelItem => item.Description)</details>
+                        </td>
+                        <td>@Html.DisplayFor(modelItem => item.TournamentDate)</td>
+                        <td> 
+                        @if (item.IsActive){
+                            <span class="badge bg-success">Active</span
+                            } else {
+                            <span class="badge bg-danger">Inactive</span>
+                        }
                         </td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
+</div>
 </div>

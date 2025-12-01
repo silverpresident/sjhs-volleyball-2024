@@ -1,20 +1,117 @@
-@model IEnumerable<VolleyballRallyManager.Lib.Models.Round>
+@model VolleyballRallyManager.App.Areas.Admin.Models.RoundsIndexViewModel
 @{
     ViewData["Title"] = "Rounds";
 }
 
-<h1>Rounds</h1>
+<link rel="stylesheet" href="~/css/rounds-index.css" />
 
-<div class="row">
-    @foreach (var round in Model)
-    {
-        <div class="col-sm-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Round @round.Name</h5>
-                    <p class="card-text">-</p>
+<div class="rounds-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1><i class="bi bi-calendar3"></i> Tournament Rounds</h1>
+        <a asp-controller="Matches" asp-action="Index" class="btn btn-light">
+            <i class="bi bi-trophy"></i> View All Matches
+        </a>
+    </div>
+</div>
+
+@if (Model.Rounds.Any())
+{
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-label">Total Rounds</div>
+            <div class="stat-value">@Model.TotalRounds</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Total Matches</div>
+            <div class="stat-value">@Model.TotalMatches</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Completed</div>
+            <div class="stat-value">@Model.TotalCompletedMatches</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Pending</div>
+            <div class="stat-value">@Model.TotalPendingMatches</div>
+        </div>
+    </div>
+
+    <div class="rounds-grid">
+        @foreach (var round in Model.Rounds)
+        {
+            <div class="round-card">
+                <div class="round-card-header">
+                    <h3>@round.Name</h3>
+                    <div class="round-sequence-badge">
+                        Sequence #@round.Sequence
+                    </div>
+                </div>
+                <div class="round-card-body">
+                    <div class="round-info-row">
+                        <span class="round-info-label">Total Matches</span>
+                        <span class="round-info-value">@round.TotalMatches</span>
+                    </div>
+                    <div class="round-info-row">
+                        <span class="round-info-label">Completed Matches</span>
+                        <span class="round-info-value text-success">@round.CompletedMatches</span>
+                    </div>
+                    <div class="round-info-row">
+                        <span class="round-info-label">Pending Matches</span>
+                        <span class="round-info-value text-warning">@round.PendingMatches</span>
+                    </div>
+                    <div class="round-info-row">
+                        <span class="round-info-label">Qualifying Teams</span>
+                        <span class="round-info-value">@round.QualifyingTeams</span>
+                    </div>
+                    <div class="round-info-row">
+                        <span class="round-info-label">Status</span>
+                        <span class="round-info-value">
+                            @if (round.IsComplete)
+                            {
+                                <span class="status-badge complete">Complete</span>
+                            }
+                            else if (round.CompletedMatches > 0)
+                            {
+                                <span class="status-badge in-progress">In Progress</span>
+                            }
+                            else
+                            {
+                                <span class="status-badge not-started">Not Started</span>
+                            }
+                        </span>
+                    </div>
+
+                    @if (round.TotalMatches > 0)
+                    {
+                        <div class="progress-section">
+                            <div class="progress-label">
+                                <span>Match Completion</span>
+                                <span class="progress-percentage">@round.CompletionPercentage.ToString("F1")%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: @(round.CompletionPercentage)%"></div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
-        </div>
-    }
-</div>
+        }
+    </div>
+}
+else
+{
+    <div class="empty-state">
+        <i class="bi bi-calendar-x"></i>
+        <h3>No Rounds Found</h3>
+        <p>There are currently no rounds configured for the tournament.</p>
+        <p class="text-muted mt-2">Rounds will be automatically created when matches are generated.</p>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // Auto-refresh every 30 seconds to keep data current
+        setTimeout(function() {
+            location.reload();
+        }, 30000);
+    </script>
+}

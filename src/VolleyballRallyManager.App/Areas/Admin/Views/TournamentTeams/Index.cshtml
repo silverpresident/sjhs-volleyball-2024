@@ -1,7 +1,7 @@
 @model IEnumerable<VolleyballRallyManager.Lib.Models.TournamentTeamDivision>
 
 @{
-    ViewData["Title"] = "Teams";
+    ViewData["Title"] = "Tournament Teams";
 }
  
 <div class="container">
@@ -40,7 +40,7 @@
                     <tbody>
                         @foreach (var item in Model)
                         {
-                            <tr data-division="@item.Division">
+                            <tr data-division="@item.Division.Name">
                                 <td>
                                     <div class="btn-group" role="group">
                                         <a asp-action="Edit" asp-route-id="@item.TeamId" class="btn btn-sm btn-outline-primary" title="Edit"><i class="bi bi-pencil"></i></a>
