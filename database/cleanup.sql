@@ -21,6 +21,12 @@ GO
 IF OBJECT_ID('dbo.TournamentTeamDivisions', 'U') IS NOT NULL
     DROP TABLE dbo.TournamentTeamDivisions;
 GO
+IF OBJECT_ID('dbo.TournamentRoundTeams', 'U') IS NOT NULL
+    DROP TABLE dbo.TournamentRoundTeams;
+GO
+IF OBJECT_ID('dbo.TournamentRounds', 'U') IS NOT NULL
+    DROP TABLE dbo.TournamentRounds;
+GO
 
 IF OBJECT_ID('dbo.Rounds', 'U') IS NOT NULL
     DROP TABLE dbo.Rounds;
