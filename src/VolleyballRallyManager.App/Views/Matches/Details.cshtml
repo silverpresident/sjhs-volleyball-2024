@@ -1,55 +1,415 @@
 @model VolleyballRallyManager.Lib.Models.Match
+@using VolleyballRallyManager.Lib.Models
 
 @{
     ViewData["Title"] = "Match Details";
+    var matchSets = ViewBag.MatchSets as List<MatchSet> ?? new List<MatchSet>();
+    var matchUpdates = ViewBag.MatchUpdates as List<MatchUpdate> ?? new List<MatchUpdate>();
+    
+    // Determine match state
+    string matchState = "Scheduled";
+    string stateBadgeClass = "bg-secondary";
+    
+    if (Model.IsDisputed)
+    {
+        matchState = "Disputed";
+        stateBadgeClass = "bg-danger";
+    }
+    else if (Model.IsFinished)
+    {
+        matchState = "Finished";
+        stateBadgeClass = "bg-success";
+    }
+    else if (Model.ActualStartTime.HasValue)
+    {
+        matchState = "In Progress";
+        stateBadgeClass = "bg-primary";
+    }
+    else if (Model.ScheduledTime <= DateTime.UtcNow)
+    {
+        matchState = "Started";
+        stateBadgeClass = "bg-info";
+    }
 }
 
-<div class="container">
-    <h1>Match Details</h1>
-    <div class="card">
-        <div class="card-body">
-            <h4>@Model.HomeTeam?.Name vs @Model.AwayTeam?.Name</h4>
-            <hr />
-            <dl class="row">
-                <dt class="col-sm-2">Division</dt>
-                <dd class="col-sm-10">@Model.Division.Name </dd>
-                <dt class="col-sm-2">Group</dt>
-                <dd class="col-sm-10">@Model.GroupName </dd>
-                <dt class="col-sm-2">Round</dt>
-                <dd class="col-sm-10">@Model.Round.Name </dd>
-                <dt class="col-sm-2">Score</dt>
-                <dd class="col-sm-10">@Model.HomeTeamScore - @Model.AwayTeamScore</dd>
-            </dl>
+<div class="container my-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Matches</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Match #@Model.MatchNumber</li>
+                </ol>
+            </nav>
         </div>
     </div>
 
-    <div class="card mt-3">
-        <div class="card-header">
-            Match Updates
-        </div>
-        <div class="card-body">
-            <ul id="updates-list"></ul>
+    <!-- Match Header Card -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="mb-3">
+                        <span class="badge @stateBadgeClass me-2">@matchState</span>
+                        Match #@Model.MatchNumber
+                    </h2>
+                    <h3 class="text-custom mb-0">
+                        <strong>@Model.HomeTeam?.Name</strong> 
+                        <span class="mx-3 text-muted">vs</span> 
+                        <strong>@Model.AwayTeam?.Name</strong>
+                    </h3>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="display-4 fw-bold text-custom">
+                        @Model.HomeTeamScore - @Model.AwayTeamScore
+                    </div>
+                    <small class="text-muted">Sets Won</small>
+                </div>
+            </div>
         </div>
     </div>
-    <div>
-        <a asp-action="Index">Back to List</a>
+
+    <!-- Match Information -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-custom text-white">
+                    <i class="bi bi-info-circle me-2"></i>Match Information
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Division:</dt>
+                        <dd class="col-sm-7">@Model.Division?.Name</dd>
+                        
+                        @if (!string.IsNullOrEmpty(Model.GroupName))
+                        {
+                            <dt class="col-sm-5">Group:</dt>
+                            <dd class="col-sm-7">@Model.GroupName</dd>
+                        }
+                        
+                        <dt class="col-sm-5">Round:</dt>
+                        <dd class="col-sm-7">@Model.Round?.Name</dd>
+                        
+                        <dt class="col-sm-5">Court:</dt>
+                        <dd class="col-sm-7">@(Model.CourtLocation ?? "Not assigned")</dd>
+                        
+                        <dt class="col-sm-5">Scheduled:</dt>
+                        <dd class="col-sm-7">@Model.ScheduledTime.ToString("MMM dd, yyyy - h:mm tt")</dd>
+                        
+                        @if (Model.ActualStartTime.HasValue)
+                        {
+                            <dt class="col-sm-5">Started:</dt>
+                            <dd class="col-sm-7">@Model.ActualStartTime.Value.ToString("h:mm tt")</dd>
+                        }
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-custom text-white">
+                    <i class="bi bi-people me-2"></i>Officials
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Referee:</dt>
+                        <dd class="col-sm-7">@(Model.RefereeName ?? "Not assigned")</dd>
+                        
+                        <dt class="col-sm-5">Scorer:</dt>
+                        <dd class="col-sm-7">@(Model.ScorerName ?? "Not assigned")</dd>
+                        
+                        <dt class="col-sm-5">Current Set:</dt>
+                        <dd class="col-sm-7">
+                            @if (Model.CurrentSetNumber > 0 && !Model.IsFinished)
+                            {
+                                <span class="badge bg-primary">Set @Model.CurrentSetNumber</span>
+                            }
+                            else if (Model.IsFinished)
+                            {
+                                <span class="badge bg-success">Complete</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Not Started</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Match Sets Section -->
+    @if (matchSets.Any())
+    {
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-custom text-white">
+                <i class="bi bi-list-ol me-2"></i>Set Details
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center">Set</th>
+                                <th>@Model.HomeTeam?.Name</th>
+                                <th>@Model.AwayTeam?.Name</th>
+                                <th class="text-center">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var set in matchSets.OrderBy(s => s.SetNumber))
+                            {
+                                <tr class="@(set.SetNumber == Model.CurrentSetNumber && !set.IsFinished ? "table-primary" : "")">
+                                    <td class="text-center fw-bold">Set @set.SetNumber</td>
+                                    <td>
+                                        <span class="badge @(set.HomeTeamScore > set.AwayTeamScore && set.IsFinished ? "bg-success" : "bg-light text-dark") fs-6">
+                                            @set.HomeTeamScore
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge @(set.AwayTeamScore > set.HomeTeamScore && set.IsFinished ? "bg-success" : "bg-light text-dark") fs-6">
+                                            @set.AwayTeamScore
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (set.IsLocked)
+                                        {
+                                            <span class="badge bg-dark"><i class="bi bi-lock-fill"></i> Locked</span>
+                                        }
+                                        else if (set.IsFinished)
+                                        {
+                                            <span class="badge bg-success"><i class="bi bi-check-circle-fill"></i> Complete</span>
+                                        }
+                                        else if (set.SetNumber == Model.CurrentSetNumber)
+                                        {
+                                            <span class="badge bg-primary"><i class="bi bi-play-fill"></i> In Progress</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Pending</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Match Updates Section -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-custom text-white">
+            <i class="bi bi-rss-fill me-2"></i>Match Updates
+        </div>
+        <div class="card-body">
+            @if (matchUpdates.Any())
+            {
+                <div id="match-updates-list">
+                    @foreach (var update in matchUpdates.OrderByDescending(u => u.CreatedAt))
+                    {
+                        var updateType = update.UpdateType.ToString();
+                        var badgeClass = updateType switch
+                        {
+                            "ScoreUpdate" => "bg-success",
+                            "MatchStarted" => "bg-primary",
+                            "MatchFinished" => "bg-info",
+                            "MatchSetStarted" => "bg-primary",
+                            "MatchSetFinished" => "bg-success",
+                            "DisputeRaised" => "bg-danger",
+                            "CalledToCourt" => "bg-warning",
+                            _ => "bg-secondary"
+                        };
+
+                        <div class="update-item mb-3 pb-3 border-bottom" 
+                             data-update-id="@update.Id"
+                             data-content="@update.Content"
+                             data-created="@update.CreatedAt.ToString("o")">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge @badgeClass">
+                                    @update.UpdateType.ToString().Replace("Match", "").Replace("Set", " Set")
+                                </span>
+                                <small class="text-muted timestamp" data-time="@update.CreatedAt.ToString("o")">
+                                    @update.CreatedAt.ToString("MMM dd, h:mm tt")
+                                </small>
+                            </div>
+                            <div class="markdown-content">
+                                <!-- Will be rendered by JavaScript -->
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-0"><em>No updates available for this match yet.</em></p>
+            }
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Matches
+        </a>
     </div>
 </div>
 
+@section Styles {
+    <style>
+        .text-custom {
+            color: #2d5016;
+        }
+        
+        .bg-custom {
+            background-color: #2d5016 !important;
+        }
+        
+        .btn-custom {
+            background-color: #2d5016;
+            border-color: #2d5016;
+            color: #ffd700;
+        }
+        
+        .btn-custom:hover {
+            background-color: #1f3810;
+            border-color: #1f3810;
+            color: #ffd700;
+        }
+        
+        .update-item:last-child {
+            border-bottom: none !important;
+            padding-bottom: 0 !important;
+            margin-bottom: 0 !important;
+        }
+        
+        .markdown-content {
+            line-height: 1.6;
+        }
+        
+        .markdown-content p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .markdown-content code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+    </style>
+}
+
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
     <script>
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/matchhub")
-            .build();
+        (function () {
+            'use strict';
 
-        connection.on("ReceiveUpdate", (user, message) => {
-            const msg = message.replace(/&/g, "&").replace(/</g, "<").replace(/>/g, ">");
-            const encodedMsg = user + ": " + msg;
-            const li = document.createElement("li");
-            li.textContent = encodedMsg;
-            document.getElementById("updates-list").appendChild(li);
-        });
+            // Render markdown content on page load
+            document.addEventListener('DOMContentLoaded', function () {
+                renderAllUpdates();
+                startTimestampUpdates();
+                initializeSignalR();
+            });
 
-        connection.start().catch(err => console.error(err.toString()));
+            function renderAllUpdates() {
+                const updateItems = document.querySelectorAll('.update-item');
+                updateItems.forEach(item => {
+                    const content = item.dataset.content;
+                    const markdownContainer = item.querySelector('.markdown-content');
+                    if (content && markdownContainer) {
+                        markdownContainer.innerHTML = marked.parse(content);
+                    }
+                });
+            }
+
+            function startTimestampUpdates() {
+                updateTimestamps();
+                setInterval(updateTimestamps, 60000); // Update every minute
+            }
+
+            function updateTimestamps() {
+                const timestamps = document.querySelectorAll('.timestamp[data-time]');
+                timestamps.forEach(el => {
+                    const time = el.dataset.time;
+                    el.textContent = moment(time).fromNow();
+                });
+            }
+
+            function initializeSignalR() {
+                const connection = new signalR.HubConnectionBuilder()
+                    .withUrl("/hubs/match")
+                    .withAutomaticReconnect()
+                    .build();
+
+                connection.on("ReceiveMatchUpdate", function (update) {
+                    if (update.matchId === '@Model.Id') {
+                        addNewUpdate(update);
+                    }
+                });
+
+                connection.start()
+                    .then(function () {
+                        console.log("SignalR connected");
+                        connection.invoke("JoinMatch", '@Model.Id')
+                            .catch(function (err) {
+                                console.error("Error joining match group:", err);
+                            });
+                    })
+                    .catch(function (err) {
+                        console.error("SignalR connection error:", err);
+                    });
+            }
+
+            function addNewUpdate(update) {
+                const updatesList = document.getElementById('match-updates-list');
+                if (!updatesList) return;
+
+                const updateType = update.updateType || 'Other';
+                const badgeClass = getBadgeClass(updateType);
+                const renderedContent = marked.parse(update.content || '');
+                const timeAgo = moment(update.createdAt).fromNow();
+
+                const updateHtml = `
+                    <div class="update-item mb-3 pb-3 border-bottom update-fade-in" 
+                         data-update-id="${update.id}"
+                         data-content="${update.content}"
+                         data-created="${update.createdAt}">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <span class="badge ${badgeClass}">
+                                ${updateType.replace('Match', '').replace('Set', ' Set')}
+                            </span>
+                            <small class="text-muted timestamp" data-time="${update.createdAt}">
+                                ${timeAgo}
+                            </small>
+                        </div>
+                        <div class="markdown-content">
+                            ${renderedContent}
+                        </div>
+                    </div>
+                `;
+
+                updatesList.insertAdjacentHTML('afterbegin', updateHtml);
+            }
+
+            function getBadgeClass(updateType) {
+                const badges = {
+                    'ScoreUpdate': 'bg-success',
+                    'MatchStarted': 'bg-primary',
+                    'MatchFinished': 'bg-info',
+                    'MatchSetStarted': 'bg-primary',
+                    'MatchSetFinished': 'bg-success',
+                    'DisputeRaised': 'bg-danger',
+                    'CalledToCourt': 'bg-warning'
+                };
+                return badges[updateType] || 'bg-secondary';
+            }
+        })();
     </script>
 }

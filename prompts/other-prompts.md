@@ -44,3 +44,8 @@ Prepend the new card to the top of the list with a subtle fade-in animation.
 
 Remove the last item if the count exceeds 25."
 
+===
+Update the public Matches/Details.cshtml page
+1. Improve the visual presentation of the page. Also display the match number and state (scheduled, started, inprogress,finished, disputed)
+2. Display the details of each MatchSet
+3. Ensure the updates are rendered. Rember the content of the update is markdown and should be rendered accordingly.

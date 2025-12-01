@@ -30,12 +30,25 @@ namespace VolleyballRallyManager.App.Controllers
 
         public async Task<IActionResult> Details(Guid id)
         {
-            var match = await _matchService.GetMatchAsync(id);
-            if (match == null)
+            try
             {
-                return NotFound();
+                var match = await _matchService.GetMatchAsync(id);
+                if (match == null)
+                {
+                    return NotFound();
+                }
+
+                // Fetch MatchSets and Updates
+                ViewBag.MatchSets = await _matchService.GetMatchSetsAsync(id);
+                ViewBag.MatchUpdates = await _matchService.GetMatchUpdatesAsync(id);
+
+                return View(match);
             }
-            return View(match);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching match details for match {MatchId}", id);
+                return View("Error");
+            }
         }
     }
 }
