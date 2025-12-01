@@ -58,3 +58,6 @@ Update the public Teams/Details.cshtml page
 On the Home index page create a card above "Total Teams" to display the details (date and description) of the active tournament.
 ====
 The Rounds index page in the Admin controller needs alot of work. Please fix the presentation and display relevant details.
+====
+Fix the admin area TournamentTeams/Details.cshtml page and action.
+The page needs to display all relevant informaiton about the team in the current tournament.

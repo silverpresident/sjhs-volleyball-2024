@@ -30,11 +30,12 @@
                             <th>Actions</th>
                             <th>@Html.DisplayNameFor(model => model.Team.Name)</th>
                             <th>@Html.DisplayNameFor(model => model.Division)</th>
+                            <th>@Html.DisplayNameFor(model => model.SeedNumber)</th>
                             <th>@Html.DisplayNameFor(model => model.TotalPoints)</th>
                             <th>@Html.DisplayNameFor(model => model.MatchesPlayed)</th>
                             <th>@Html.DisplayNameFor(model => model.Wins)</th>
-                            <th>@Html.DisplayNameFor(model => model.Draws)</th>
                             <th>@Html.DisplayNameFor(model => model.Losses)</th>
+                            <th>@Html.DisplayNameFor(model => model.Draws)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -56,11 +57,12 @@
                                 @Html.DisplayFor(modelItem => item.Division.Name)
                                 @Html.DisplayFor(modelItem => item.GroupName, "Group")
                                 </td>
+                                <td>@Html.DisplayFor(modelItem => item.SeedNumber)</td>
                                 <td>@Html.DisplayFor(modelItem => item.TotalPoints)</td>
                                 <td>@Html.DisplayFor(modelItem => item.MatchesPlayed)</td>
                                 <td>@Html.DisplayFor(modelItem => item.Wins)</td>
-                                <td>@Html.DisplayFor(modelItem => item.Draws)</td>
                                 <td>@Html.DisplayFor(modelItem => item.Losses)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Draws)</td>
                             </tr>
                         }
                     </tbody>
