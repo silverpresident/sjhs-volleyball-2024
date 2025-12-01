@@ -7,6 +7,7 @@ BEGIN
     CREATE TABLE dbo.Announcements
     (
         Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
+        TournamentId UNIQUEIDENTIFIER NOT NULL,
         Title NVARCHAR(200) NOT NULL,
         Content NVARCHAR(MAX) NOT NULL,
         Priority NVARCHAR(20) NOT NULL DEFAULT 'Info',
@@ -61,6 +62,12 @@ IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Announcements_Sequenci
 BEGIN
     CREATE NONCLUSTERED INDEX IX_Announcements_SequencingNumber ON dbo.Announcements(SequencingNumber);
     PRINT 'Index IX_Announcements_SequencingNumber created successfully.';
+END
+GO 
+
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Announcements_Tournament' AND object_id = OBJECT_ID('dbo.Announcements'))
+BEGIN
+    CREATE NONCLUSTERED INDEX IX_Announcements_Tournament ON dbo.Announcements(TournamentId);
 END
 GO
 

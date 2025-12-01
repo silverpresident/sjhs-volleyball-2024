@@ -10,6 +10,7 @@ public class AnnouncementService : IAnnouncementService
     private readonly ApplicationDbContext _context;
     private readonly ISignalRNotificationService _signalRService;
     private readonly ILogger<AnnouncementService> _logger;
+    private Guid? _activeTournamentId = null;
 
     public AnnouncementService(
         ApplicationDbContext context,
@@ -20,12 +21,25 @@ public class AnnouncementService : IAnnouncementService
         _signalRService = signalRService;
         _logger = logger;
     }
+    private Guid ActiveTournamentId
+    {
+        get
+        {
+            if (_activeTournamentId == null)
+            {
+                _activeTournamentId = _context.Tournaments.FirstOrDefault(t => t.IsActive)?.Id;
+            }
+            // Handle what happens if it's still null (no active tournament found)
+            return _activeTournamentId ?? Guid.Empty;
+        }
+    }
+
 
     public async Task<IEnumerable<Announcement>> GetAllAnnouncementsAsync(bool includeHidden = false)
     {
         try
         {
-            var query = _context.Announcements.AsQueryable();
+            var query = _context.Announcements.Where(a => a.TournamentId == ActiveTournamentId  );
 
             if (!includeHidden)
             {
@@ -63,7 +77,7 @@ public class AnnouncementService : IAnnouncementService
         try
         {
             return await _context.Announcements
-                .Where(a => !a.IsHidden)
+                .Where(a => !a.IsHidden && a.TournamentId == ActiveTournamentId)
                 .OrderBy(a => a.SequencingNumber)
                 .ToListAsync();
         }
@@ -78,14 +92,20 @@ public class AnnouncementService : IAnnouncementService
     {
         try
         {
-            announcement.UpdatedAt = DateTime.UtcNow;
+            if (string.IsNullOrEmpty(announcement.Title)){
+                int cnt = await _context.Announcements.CountAsync(a => a.TournamentId == ActiveTournamentId);
+                announcement.Title = $"Announcement {cnt}";
+            }
+            announcement.TournamentId = ActiveTournamentId;
+            announcement.UpdatedAt = DateTime.Now;
+            announcement.UpdatedBy = announcement.CreatedBy;
 
             // Assign sequence number based on priority
             if (announcement.Priority == AnnouncementPriority.Urgent)
             {
                 // Insert after last non-hidden Urgent item
                 var lastUrgent = await _context.Announcements
-                    .Where(a => !a.IsHidden && a.Priority == AnnouncementPriority.Urgent)
+                    .Where(a => a.TournamentId == ActiveTournamentId && !a.IsHidden && a.Priority == AnnouncementPriority.Urgent)
                     .OrderByDescending(a => a.SequencingNumber)
                     .FirstOrDefaultAsync();
 
@@ -96,13 +116,13 @@ public class AnnouncementService : IAnnouncementService
 
                     // Re-sequence all items after this position
                     var itemsToResequence = await _context.Announcements
-                        .Where(a => !a.IsHidden && a.SequencingNumber >= announcement.SequencingNumber)
+                        .Where(a => a.TournamentId == ActiveTournamentId && !a.IsHidden && a.SequencingNumber >= announcement.SequencingNumber)
                         .ToListAsync();
 
                     foreach (var item in itemsToResequence)
                     {
                         item.SequencingNumber++;
-                        item.UpdatedAt = DateTime.UtcNow;
+                        item.UpdatedAt = DateTime.Now;
                     }
                 }
                 else
@@ -112,14 +132,14 @@ public class AnnouncementService : IAnnouncementService
 
                     // Re-sequence all existing items
                     var existingItems = await _context.Announcements
-                        .Where(a => !a.IsHidden)
+                        .Where(a =>  a.TournamentId == ActiveTournamentId && !a.IsHidden)
                         .OrderBy(a => a.SequencingNumber)
                         .ToListAsync();
 
                     foreach (var item in existingItems)
                     {
                         item.SequencingNumber++;
-                        item.UpdatedAt = DateTime.UtcNow;
+                        item.UpdatedAt = DateTime.Now;
                     }
                 }
             }
@@ -127,7 +147,7 @@ public class AnnouncementService : IAnnouncementService
             {
                 // Non-urgent: Append to end
                 var maxSequence = await _context.Announcements
-                    .Where(a => !a.IsHidden)
+                    .Where(a =>  a.TournamentId == ActiveTournamentId && !a.IsHidden)
                     .MaxAsync(a => (int?)a.SequencingNumber) ?? 0;
 
                 announcement.SequencingNumber = maxSequence + 1;
@@ -136,7 +156,7 @@ public class AnnouncementService : IAnnouncementService
             _context.Announcements.Add(announcement);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Created announcement {Id} with sequence number {SequenceNumber}", 
+            _logger.LogInformation("Created announcement {Id} with sequence number {SequenceNumber}",
                 announcement.Id, announcement.SequencingNumber);
 
             await _signalRService.NotifyAnnouncementCreatedAsync(announcement);
@@ -154,7 +174,7 @@ public class AnnouncementService : IAnnouncementService
     {
         try
         {
-            announcement.UpdatedAt = DateTime.UtcNow;
+            announcement.UpdatedAt = DateTime.Now;
             _context.Announcements.Update(announcement);
             await _context.SaveChangesAsync();
 
@@ -208,7 +228,7 @@ public class AnnouncementService : IAnnouncementService
             }
 
             announcement.IsHidden = true;
-            announcement.UpdatedAt = DateTime.UtcNow;
+            announcement.UpdatedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
 
@@ -236,7 +256,7 @@ public class AnnouncementService : IAnnouncementService
             }
 
             announcement.IsHidden = false;
-            announcement.UpdatedAt = DateTime.UtcNow;
+            announcement.UpdatedAt = DateTime.Now;
 
             // Assign a new sequence number at the end
             var maxSequence = await _context.Announcements
@@ -274,26 +294,26 @@ public class AnnouncementService : IAnnouncementService
             var historyLog = new AnnouncementHistoryLog
             {
                 AnnouncementId = id,
-                Timestamp = DateTime.UtcNow
+                Timestamp = DateTime.Now
             };
             _context.AnnouncementHistoryLogs.Add(historyLog);
 
             // Update announcement
             if (announcement.FirstAnnouncementTime == null)
             {
-                announcement.FirstAnnouncementTime = DateTime.UtcNow;
+                announcement.FirstAnnouncementTime = DateTime.Now;
             }
-            announcement.LastAnnouncementTime = DateTime.UtcNow;
+            announcement.LastAnnouncementTime = DateTime.Now;
             announcement.AnnouncedCount++;
             announcement.RemainingRepeatCount--;
-            announcement.UpdatedAt = DateTime.UtcNow;
+            announcement.UpdatedAt = DateTime.Now;
 
             // Check if repeats remain
             if (announcement.RemainingRepeatCount > 0)
             {
                 // Move to end of queue
                 var maxSequence = await _context.Announcements
-                    .Where(a => !a.IsHidden && a.Id != id)
+                    .Where(a =>  a.TournamentId == ActiveTournamentId && !a.IsHidden && a.Id != id)
                     .MaxAsync(a => (int?)a.SequencingNumber) ?? 0;
 
                 announcement.SequencingNumber = maxSequence + 1;
@@ -334,15 +354,15 @@ public class AnnouncementService : IAnnouncementService
 
             // Move to end of queue
             var maxSequence = await _context.Announcements
-                .Where(a => !a.IsHidden && a.Id != id)
+                .Where(a =>  a.TournamentId == ActiveTournamentId && !a.IsHidden && a.Id != id)
                 .MaxAsync(a => (int?)a.SequencingNumber) ?? 0;
 
             announcement.SequencingNumber = maxSequence + 1;
-            announcement.UpdatedAt = DateTime.UtcNow;
+            announcement.UpdatedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Deferred announcement {Id} to sequence {SequenceNumber}", 
+            _logger.LogInformation("Deferred announcement {Id} to sequence {SequenceNumber}",
                 id, announcement.SequencingNumber);
 
             await _signalRService.NotifyAnnouncementQueueChangedAsync();
@@ -369,14 +389,14 @@ public class AnnouncementService : IAnnouncementService
             // Reset announcement state (but keep history)
             announcement.RemainingRepeatCount = 1; // Or could use original value if stored
             announcement.IsHidden = false;
-            announcement.UpdatedAt = DateTime.UtcNow;
+            announcement.UpdatedAt = DateTime.Now;
 
             // Treat as new announcement for sequencing
             if (announcement.Priority == AnnouncementPriority.Urgent)
             {
                 // Insert after last non-hidden Urgent item
                 var lastUrgent = await _context.Announcements
-                    .Where(a => !a.IsHidden && a.Priority == AnnouncementPriority.Urgent && a.Id != id)
+                    .Where(a =>  a.TournamentId == ActiveTournamentId && !a.IsHidden && a.Priority == AnnouncementPriority.Urgent && a.Id != id)
                     .OrderByDescending(a => a.SequencingNumber)
                     .FirstOrDefaultAsync();
 
@@ -386,13 +406,13 @@ public class AnnouncementService : IAnnouncementService
 
                     // Re-sequence all items after this position
                     var itemsToResequence = await _context.Announcements
-                        .Where(a => !a.IsHidden && a.SequencingNumber >= announcement.SequencingNumber && a.Id != id)
+                        .Where(a =>  a.TournamentId == ActiveTournamentId && !a.IsHidden && a.SequencingNumber >= announcement.SequencingNumber && a.Id != id)
                         .ToListAsync();
 
                     foreach (var item in itemsToResequence)
                     {
                         item.SequencingNumber++;
-                        item.UpdatedAt = DateTime.UtcNow;
+                        item.UpdatedAt = DateTime.Now;
                     }
                 }
                 else
@@ -402,14 +422,14 @@ public class AnnouncementService : IAnnouncementService
 
                     // Re-sequence all existing items
                     var existingItems = await _context.Announcements
-                        .Where(a => !a.IsHidden && a.Id != id)
+                        .Where(a =>  a.TournamentId == ActiveTournamentId && !a.IsHidden && a.Id != id)
                         .OrderBy(a => a.SequencingNumber)
                         .ToListAsync();
 
                     foreach (var item in existingItems)
                     {
                         item.SequencingNumber++;
-                        item.UpdatedAt = DateTime.UtcNow;
+                        item.UpdatedAt = DateTime.Now;
                     }
                 }
             }
@@ -417,7 +437,7 @@ public class AnnouncementService : IAnnouncementService
             {
                 // Non-urgent: Append to end
                 var maxSequence = await _context.Announcements
-                    .Where(a => !a.IsHidden && a.Id != id)
+                    .Where(a =>  a.TournamentId == ActiveTournamentId && !a.IsHidden && a.Id != id)
                     .MaxAsync(a => (int?)a.SequencingNumber) ?? 0;
 
                 announcement.SequencingNumber = maxSequence + 1;
@@ -425,7 +445,7 @@ public class AnnouncementService : IAnnouncementService
 
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Reannounced announcement {Id} with sequence {SequenceNumber}", 
+            _logger.LogInformation("Reannounced announcement {Id} with sequence {SequenceNumber}",
                 id, announcement.SequencingNumber);
 
             await _signalRService.NotifyAnnouncementQueueChangedAsync();
@@ -457,7 +477,6 @@ public class AnnouncementService : IAnnouncementService
 
     public async Task<bool> TitleExistsAsync(string title)
     {
-        //TODO this does not work for future tournamnents as it does not check if the announcment is withing the current tournament
-        return await _context.Announcements.AnyAsync(a => a.Title == title);
+        return await _context.Announcements.AnyAsync(a => a.Title == title && a.TournamentId == ActiveTournamentId);
     }
 }

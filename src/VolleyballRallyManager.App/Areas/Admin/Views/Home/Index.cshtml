@@ -118,6 +118,11 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3 mb-2">
+                    <a class="btn btn-primary" asp-area="Admin" asp-controller="AnnouncerBoard" asp-action="Index">
+                        <i class="bi bi-broadcast"></i> Announcer Board
+                    </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
                             <a asp-area="Admin" asp-controller="Matches" asp-action="Create" class="btn btn-primary w-100">
                                 <i class="bi bi-plus-circle"></i> Create Match
                             </a>
@@ -128,7 +133,10 @@
                             </a>
                         </div>
                         <div class="col-md-3 mb-2">
-                            <a asp-area="Admin" asp-controller="Bulletin" asp-action="Create" class="btn btn-primary w-100">
+                            <a asp-area="Admin" asp-controller="Bulletin" asp-action="Create" class="btn btn-primary w-50">
+                                <i class="bi bi-card-list"></i> New Bulletin
+                            </a>
+                            <a asp-area="Admin" asp-controller="Announcements" asp-action="Create" class="btn btn-primary w-50">
                                 <i class="bi bi-megaphone"></i> New Announcement
                             </a>
                         </div>

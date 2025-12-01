@@ -5,77 +5,81 @@
 <ul class="navbar-nav flex-grow-1">
     @if (SignInManager.IsSignedIn(User))
     {
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Admin" asp-controller="Home" asp-action="Index"<i class="bi bi-house-fill"></i></a>
+        </li>
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="tournamentDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-list me-1"></i>
+                <i class="bi bi-list-task me-1"></i>
                 Entities
             </a>
             <ul class="dropdown-menu" aria-labelledby="tournamentDropdown">
                 <li>
-                    <a class="dropdown-item" asp-area="Admin" asp-controller="Tournament" asp-action="Index">Tournaments</a>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="Tournament" asp-action="Index"><i class="bi bi-collection-fill"></i> Tournaments</a>
                 </li>
                 <li>
-                    <a class="dropdown-item" asp-area="Admin" asp-controller="Teams" asp-action="Index">Teams</a>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="Teams" asp-action="Index"><i class="bi bi-people"></i> Teams</a>
                 </li>
                 <li>
-                    <a class="dropdown-item" asp-area="Admin" asp-controller="Divisions" asp-action="Index">Divisions</a>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="Divisions" asp-action="Index"><i class="bi bi-diagram-2-fill"></i> Divisions</a>
                 </li>
                 <li>
-                    <a class="dropdown-item" asp-area="Admin" asp-controller="Rounds" asp-action="Index">Rounds</a>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="Rounds" asp-action="Index"><i class="bi bi-diagram-3-fill"></i>Rounds</a>
                 </li>
+                <li><hr class="dropdown-divider"></li>
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Admin" asp-controller="Bulletin" asp-action="Index"><i class="bi bi-card-list"></i> Bulletins</a>
+        </li>
+                <li><hr class="dropdown-divider"></li>
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Admin" asp-controller="UserManagement" asp-action="Index"<i class="bi bi-people-fill"></i> Users</a>
+        </li>
             </ul>
         </li>
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="activeTournamentDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-sitemap me-1"></i>
+                <i class="bi bi-award-fill me-1"></i>
                 Active Tournament
             </a>
             <ul class="dropdown-menu" aria-labelledby="activeTournamentDropdown">
                 <li>
-                    <a class="dropdown-item" asp-area="Admin" asp-controller="ActiveTournament" asp-action="Index">Active Tournament</a>
-
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="ActiveTournament" asp-action="Index"><i class="bi bi-award-fill"></i> Active Tournament</a>
                 </li>
                 <li>
-                    <a class="dropdown-item" asp-area="Admin" asp-controller="ActiveTournament" asp-action="SelectDivisions">Tournament Divisions</a>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="ActiveTournament" asp-action="SelectDivisions"><i class="bi bi-diagram-2-fill"></i> Tournament Divisions</a>
                 </li>
                 <li>
-                    <a class="dropdown-item" asp-area="Admin" asp-controller="TournamentTeams" asp-action="Index">Teams</a>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="TournamentTeams" asp-action="Index"><i class="bi bi-people"></i> Teams</a>
                 </li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
-                    <a class="dropdown-item" asp-area="Admin" asp-controller="Matches" asp-action="Index">Matches</a>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="Matches" asp-action="Index"><i class="bi bi-diagram-3"></i> Matches</a>
                 </li>
                 <li>
-                    <a class="dropdown-item" asp-area="Admin" asp-controller="UPdates" asp-action="Index">Match Updates</a>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="Updates" asp-action="Index"><i class="bi bi-rss-fill"></i> Match Updates</a>
                 </li>
             </ul>
         </li>
 
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="publicDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-list me-1"></i>
+                <i class="bi bi-ul me-1"></i>
                 Public Pages
             </a>
             <ul class="dropdown-menu" aria-labelledby="publicDropdown">
                 <li>
-                    <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Index">Home Page</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Index"><i class="bi bi-house"></i>Home Page</a>
                 </li>
                 <li>
-                    <a class="dropdown-item" asp-area="" asp-controller="Bulletin" asp-action="Index">Bulletins</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="Bulletin" asp-action="Index"><i class="bi bi-card-list"></i> Bulletins</a>
                 </li>
                 <li>
-                    <a class="dropdown-item" asp-area="" asp-controller="Teams" asp-action="Index">Teams</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="Teams" asp-action="Index"><i class="bi bi-diagram-2"></i>Teams</a>
                 </li>
                 <li>
-                    <a class="dropdown-item" asp-area="" asp-controller="Matches" asp-action="Index">Matches</a>
+                    <a class="dropdown-item" asp-area="" asp-controller="Matches" asp-action="Index"><i class="bi bi-diagram-3"></i>Matches</a>
                 </li>
             </ul>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" asp-area="Admin" asp-controller="UserManagement" asp-action="Index">Users</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" asp-area="Admin" asp-controller="Bulletin" asp-action="Index">Bulletins</a>
         </li>
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="announcerDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
