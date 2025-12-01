@@ -6,7 +6,7 @@
     @if (SignInManager.IsSignedIn(User))
     {
         <li class="nav-item">
-            <a class="nav-link" asp-area="Admin" asp-controller="Home" asp-action="Index"<i class="bi bi-house-fill"></i></a>
+            <a class="nav-link" asp-area="Admin" asp-controller="Home" asp-action="Index"><i class="bi bi-house-fill"></i></a>
         </li>
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="tournamentDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -32,7 +32,7 @@
         </li>
                 <li><hr class="dropdown-divider"></li>
         <li class="nav-item">
-            <a class="nav-link" asp-area="Admin" asp-controller="UserManagement" asp-action="Index"<i class="bi bi-people-fill"></i> Users</a>
+            <a class="nav-link" asp-area="Admin" asp-controller="UserManagement" asp-action="Index"><i class="bi bi-people-fill"></i> Users</a>
         </li>
             </ul>
         </li>
@@ -79,6 +79,9 @@
                 <li>
                     <a class="dropdown-item" asp-area="" asp-controller="Matches" asp-action="Index"><i class="bi bi-diagram-3"></i>Matches</a>
                 </li>
+                <li>
+                    <a class="dropdown-item" asp-area="" asp-controller="Updates" asp-action="Index"><i class="bi bi-rss"></i>Updates</a>
+                </li>
             </ul>
         </li>
         <li class="nav-item dropdown">
@@ -111,6 +114,9 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" asp-controller="Bulletin" asp-action="Index">Bulletins</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Updates" asp-action="Index">Updates</a>
         </li>
     }
 </ul>

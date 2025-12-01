@@ -652,4 +652,18 @@ public class MatchService : IMatchService
     {
         return await _context.MatchUpdates.AnyAsync(mu => mu.MatchId == matchId && mu.UpdateType == UpdateType.CalledToCourt);
     }
+
+    public async Task<List<MatchUpdate>> GetRecentMatchUpdatesAsync(int count = 25)
+    {
+        return await _context.MatchUpdates
+            .Include(u => u.Match)
+                .ThenInclude(m => m.HomeTeam)
+            .Include(u => u.Match)
+                .ThenInclude(m => m.AwayTeam)
+            .Include(u => u.Match)
+                .ThenInclude(m => m.Round)
+            .OrderByDescending(u => u.CreatedAt)
+            .Take(count)
+            .ToListAsync();
+    }
 }

@@ -1,0 +1,39 @@
+@model IEnumerable<VolleyballRallyManager.Lib.Models.MatchUpdate>
+@using VolleyballRallyManager.Lib.Models
+
+@{
+    ViewData["Title"] = "Match Updates";
+}
+
+<div class="container">
+    <h1>Match Updates</h1>
+    <p class="text-muted">Live feed of tournament activity</p>
+
+    <div id="updates-container" class="mt-4">
+        @foreach (var update in Model)
+        {
+            <div class="update-card" 
+                 data-id="@update.Id" 
+                 data-match-id="@update.MatchId"
+                 data-type="@update.UpdateType"
+                 data-content="@update.Content"
+                 data-created="@update.CreatedAt.ToString("o")"
+                 data-home-team="@(update.Match?.HomeTeam?.Name ?? "")"
+                 data-away-team="@(update.Match?.AwayTeam?.Name ?? "")"
+                 data-court="@(update.Match?.CourtLocation ?? "")"
+                 data-round="@(update.Match?.Round?.Name ?? "")">
+                <!-- Card will be rendered by JavaScript -->
+            </div>
+        }
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/updates.css" asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <script src="~/js/updates.js" asp-append-version="true"></script>
+}
