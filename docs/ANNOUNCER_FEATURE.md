@@ -131,6 +131,7 @@ When an announcement is "Reannounced":
 - Sequence number
 - Repeat count (if > 1)
 - Title and content
+- Content is markdown text
 - Statistics (times called, last announcement time)
 
 **Actions**:
@@ -229,7 +230,7 @@ services.AddScoped<IAnnouncementService, AnnouncementService>();
 1. Navigate to **Announcer → Manage Announcements**
 2. Click **Create New**
 3. Fill in:
-   - Title (required)
+   - Title 
    - Content (required)
    - Priority (Urgent/Info/Routine)
    - Repeat Count (how many times to announce)

@@ -8,6 +8,7 @@ public class MatchUpdate : BaseEntity
     public required Guid MatchId { get; set; }
 
     [Display(Name = "Content")]
+    //Content is markdown text
     public required string Content { get; set; }
 
     [Display(Name = "Update Type")]

@@ -24,15 +24,15 @@
                     <a class="dropdown-item" asp-area="Admin" asp-controller="Divisions" asp-action="Index"><i class="bi bi-diagram-2-fill"></i> Divisions</a>
                 </li>
                 <li>
-                    <a class="dropdown-item" asp-area="Admin" asp-controller="Rounds" asp-action="Index"><i class="bi bi-diagram-3-fill"></i>Rounds</a>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="Rounds" asp-action="Index"><i class="bi bi-diagram-3-fill"></i> Rounds</a>
                 </li>
                 <li><hr class="dropdown-divider"></li>
-        <li class="nav-item">
-            <a class="nav-link" asp-area="Admin" asp-controller="Bulletin" asp-action="Index"><i class="bi bi-card-list"></i> Bulletins</a>
+        <li >
+            <a class="dropdown-link" asp-area="Admin" asp-controller="Bulletin" asp-action="Index"><i class="bi bi-card-list"></i> Bulletins</a>
         </li>
                 <li><hr class="dropdown-divider"></li>
-        <li class="nav-item">
-            <a class="nav-link" asp-area="Admin" asp-controller="UserManagement" asp-action="Index"><i class="bi bi-people-fill"></i> Users</a>
+        <li>
+            <a class="dropdown-link" asp-area="Admin" asp-controller="UserManagement" asp-action="Index"><i class="bi bi-people-fill"></i> Users</a>
         </li>
             </ul>
         </li>
@@ -56,31 +56,7 @@
                     <a class="dropdown-item" asp-area="Admin" asp-controller="Matches" asp-action="Index"><i class="bi bi-diagram-3"></i> Matches</a>
                 </li>
                 <li>
-                    <a class="dropdown-item" asp-area="Admin" asp-controller="Updates" asp-action="Index"><i class="bi bi-rss-fill"></i> Match Updates</a>
-                </li>
-            </ul>
-        </li>
-
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="publicDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="bi bi-ul me-1"></i>
-                Public Pages
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="publicDropdown">
-                <li>
-                    <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Index"><i class="bi bi-house"></i>Home Page</a>
-                </li>
-                <li>
-                    <a class="dropdown-item" asp-area="" asp-controller="Bulletin" asp-action="Index"><i class="bi bi-card-list"></i> Bulletins</a>
-                </li>
-                <li>
-                    <a class="dropdown-item" asp-area="" asp-controller="Teams" asp-action="Index"><i class="bi bi-diagram-2"></i>Teams</a>
-                </li>
-                <li>
-                    <a class="dropdown-item" asp-area="" asp-controller="Matches" asp-action="Index"><i class="bi bi-diagram-3"></i>Matches</a>
-                </li>
-                <li>
-                    <a class="dropdown-item" asp-area="" asp-controller="Updates" asp-action="Index"><i class="bi bi-rss"></i>Updates</a>
+                    <a class="dropdown-item" asp-area="Admin" asp-controller="Updates" asp-action="Index"><i class="bi bi-bell-fill"></i> Match Updates</a>
                 </li>
             </ul>
         </li>
@@ -100,6 +76,29 @@
                     <a class="dropdown-item" asp-area="Admin" asp-controller="Announcements" asp-action="Index">
                         <i class="bi bi-gear"></i> Manage Announcements
                     </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="publicDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="bi bi-bank2 me-1"></i>
+                Public Pages
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="publicDropdown">
+                <li>
+                    <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Index"><i class="bi bi-house"></i> Home Page</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-area="" asp-controller="Bulletin" asp-action="Index"><i class="bi bi-card-list"></i> Bulletins</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-area="" asp-controller="Teams" asp-action="Index"><i class="bi bi-diagram-2"></i> Teams</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-area="" asp-controller="Matches" asp-action="Index"><i class="bi bi-diagram-3"></i> Matches</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" asp-area="" asp-controller="Updates" asp-action="Index"><i class="bi bi-bell"></i> Updates</a>
                 </li>
             </ul>
         </li>

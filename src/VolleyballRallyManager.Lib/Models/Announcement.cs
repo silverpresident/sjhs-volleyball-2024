@@ -12,6 +12,7 @@ public class Announcement : BaseEntity
 
     [Required]
     [Display(Name = "Content")]
+    //Content is markdown text
     public string Content { get; set; } = string.Empty;
 
     [Display(Name = "Priority")]

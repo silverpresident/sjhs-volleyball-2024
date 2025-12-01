@@ -5,6 +5,7 @@ namespace VolleyballRallyManager.Lib.Models;
 public class Bulletin : BaseEntity
 {
     [Display(Name = "Content")]
+    //Content is markdown text
     public string Content { get; set; } = string.Empty;
 
     [Display(Name = "Rendered Content")]
