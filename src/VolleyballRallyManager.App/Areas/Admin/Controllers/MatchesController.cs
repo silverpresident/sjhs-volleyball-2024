@@ -250,8 +250,9 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                _dbContext.Add(match);
-                await _dbContext.SaveChangesAsync();
+                var tournament = await _activeTournamentService.GetActiveTournamentAsync();
+                match.TournamentId = tournament.Id;
+                await _matchService.CreateMatchAsync(match);
                 return RedirectToAction(nameof(Index));
             }
             ViewData["AwayTeamId"] = new SelectList(_dbContext.Teams, "Id", "Name", match.AwayTeamId);
@@ -273,8 +274,8 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 return NotFound();
             }
             var teams = await _activeTournamentService.GetAvailableTeamsAsync();
-            ViewData["AwayTeamId"] = new SelectList(_dbContext.Teams, "Id", "Name", match.AwayTeamId);
-            ViewData["HomeTeamId"] = new SelectList(_dbContext.Teams, "Id", "Name", match.HomeTeamId);
+            ViewData["AwayTeamId"] = new SelectList(teams, "Id", "Name", match.AwayTeamId);
+            ViewData["HomeTeamId"] = new SelectList(teams, "Id", "Name", match.HomeTeamId);
             return View(match);
         }
 
@@ -283,7 +284,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,HomeTeamId,AwayTeamId,MatchDate,Location,HomeScore,AwayScore,Notes,IsLocked,IsDisputed,IsFinished")] Match match)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,HomeTeamId,AwayTeamId,MatchDate,CourtLocation,HomeScore,AwayScore,Notes,IsLocked,IsDisputed,IsFinished")] Match match)
         {
             if (id != match.Id)
             {
@@ -294,8 +295,9 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             {
                 try
                 {
-                    _dbContext.Update(match);
-                    await _dbContext.SaveChangesAsync();
+                    await _matchService.UpdateMatchAsync(match);
+                    TempData["SuccessMessage"] = "Match updated successfully.";
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -310,8 +312,9 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AwayTeamId"] = new SelectList(_dbContext.Teams, "Id", "Name", match.AwayTeamId);
-            ViewData["HomeTeamId"] = new SelectList(_dbContext.Teams, "Id", "Name", match.HomeTeamId);
+            var teams = await _activeTournamentService.GetAvailableTeamsAsync();
+            ViewData["AwayTeamId"] = new SelectList(teams, "Id", "Name", match.AwayTeamId);
+            ViewData["HomeTeamId"] = new SelectList(teams, "Id", "Name", match.HomeTeamId);
             return View(match);
         }
 

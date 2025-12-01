@@ -40,28 +40,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
             return View(matchUpdate);
         }
-
-        // GET: Admin/Updates/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Admin/Updates/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Content,UpdateType,CreatedDate")] MatchUpdate matchUpdate)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(matchUpdate);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(matchUpdate);
-        }
+        
 
         // GET: Admin/Updates/Edit/5
         public async Task<IActionResult> Edit(Guid? id)

@@ -137,16 +137,16 @@
                                             }
                                         </td>
                                         <td>
-                                            @if (!set.IsLocked)
-                                            {
+                                            @* @if (!set.IsLocked)
+                                            { *@
                                                 <button class="btn btn-sm btn-warning" disabled title="Edit functionality coming soon">
                                                     <i class="bi bi-pencil"></i> Edit
                                                 </button>
-                                            }
+                                            @*}
                                             else
                                             {
                                                 <span class="text-muted">Cannot edit locked set</span>
-                                            }
+                                            }*@
                                         </td>
                                     </tr>
                                 }
