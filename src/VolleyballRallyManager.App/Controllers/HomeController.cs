@@ -46,7 +46,8 @@ public class HomeController : Controller
             MatchesFinished = await _activeTournamentService.MatchCountAsync(MatchState.Finished),
             RecentMatches = await _activeTournamentService.RecentMatchesAsync(),
             RecentBulletins = await _bulletinService.GetRecentAsync(5),
-            TeamsByDivision = teamsByDivision
+            TeamsByDivision = teamsByDivision,
+            ActiveTournament = activeTournament
         };
         if (activeTournament != null)
         {

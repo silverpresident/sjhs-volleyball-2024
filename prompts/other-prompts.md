@@ -48,4 +48,11 @@ Remove the last item if the count exceeds 25."
 Update the public Matches/Details.cshtml page
 1. Improve the visual presentation of the page. Also display the match number and state (scheduled, started, inprogress,finished, disputed)
 2. Display the details of each MatchSet
-3. Ensure the updates are rendered. Rember the content of the update is markdown and should be rendered accordingly.
+3. Ensure the updates are rendered. Remember the content of the update is markdown and should be rendered accordingly.
+
+====
+Update the public Teams/Details.cshtml page
+1. Improve the visual presentation of the page. Also display the match number and state (scheduled, started, inprogress,finished, disputed)
+2. Improve the display of the match results. Include the round, match number and other relevant details.
+====
+On the Home index page create a card above "Total Teams" to display the details (date and description) of the active tournament.

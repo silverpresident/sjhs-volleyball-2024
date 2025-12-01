@@ -1,54 +1,359 @@
 @model VolleyballRallyManager.Lib.Models.TournamentTeamDivision
+@using VolleyballRallyManager.Lib.Models
 
 @{
     ViewData["Title"] = "Team Details";
+    var matches = ViewBag.Matches as List<Match> ?? new List<Match>();
+    
+    // Calculate team statistics
+    var finishedMatches = matches.Where(m => m.IsFinished).ToList();
+    var wins = finishedMatches.Count(m => 
+        (m.HomeTeamId == Model.TeamId && m.HomeTeamScore > m.AwayTeamScore) ||
+        (m.AwayTeamId == Model.TeamId && m.AwayTeamScore > m.HomeTeamScore));
+    var losses = finishedMatches.Count(m => 
+        (m.HomeTeamId == Model.TeamId && m.HomeTeamScore < m.AwayTeamScore) ||
+        (m.AwayTeamId == Model.TeamId && m.AwayTeamScore < m.HomeTeamScore));
+    var draws = finishedMatches.Count(m => m.HomeTeamScore == m.AwayTeamScore);
+    
+    var totalSetsWon = 0;
+    var totalSetsLost = 0;
+    foreach (var match in finishedMatches)
+    {
+        if (match.HomeTeamId == Model.TeamId)
+        {
+            totalSetsWon += match.HomeTeamScore;
+            totalSetsLost += match.AwayTeamScore;
+        }
+        else
+        {
+            totalSetsWon += match.AwayTeamScore;
+            totalSetsLost += match.HomeTeamScore;
+        }
+    }
 }
 
-<div class="container">
-    <h1>@Model.Team.Name Details</h1>
-    <div class="card">
-        <div class="card-body">
-            <dl class="row">
-                <dt class="col-sm-2">Division</dt>
-                <dd class="col-sm-10">@Model.Division.Name</dd>
-                <dt class="col-sm-2">Group</dt>
-                <dd class="col-sm-10">@Model.GroupName</dd>
-            </dl>
+<div class="container my-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index">Teams</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@Model.Team.Name</li>
+                </ol>
+            </nav>
         </div>
     </div>
 
-    <div class="card mt-3">
-        <div class="card-header">
-            Match Results
-        </div>
-        <div class="card-body">
-            <ul id="match-results-list">
-                @foreach (Match match in ViewBag.Matches)
-                {
-                    <li>@match.HomeTeam.Name vs @match.AwayTeam.Name: @match.HomeTeamScore - @match.AwayTeamScore</li>
-                }
-            </ul>
+    <!-- Team Header Card -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-2 text-custom">
+                        <i class="bi bi-people-fill me-2"></i>@Model.Team.Name
+                    </h1>
+                    <p class="text-muted mb-0">
+                        <span class="badge bg-custom me-2">@Model.Division.Name</span>
+                        @if (!string.IsNullOrEmpty(Model.GroupName))
+                        {
+                            <span class="badge bg-secondary">Group @Model.GroupName</span>
+                        }
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="text-custom">
+                        <div class="h2 mb-0">@wins-@losses@(draws > 0 ? $"-{draws}" : "")</div>
+                        <small class="text-muted">Win-Loss@(draws > 0 ? "-Draw" : "") Record</small>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div>
-        <a asp-action="Index">Back to List</a>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card border-0 shadow-sm h-100 stat-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-trophy-fill display-4 text-success mb-2"></i>
+                    <h3 class="mb-0">@wins</h3>
+                    <small class="text-muted">Wins</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card border-0 shadow-sm h-100 stat-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-x-circle-fill display-4 text-danger mb-2"></i>
+                    <h3 class="mb-0">@losses</h3>
+                    <small class="text-muted">Losses</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card border-0 shadow-sm h-100 stat-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-arrow-up-circle-fill display-4 text-custom mb-2"></i>
+                    <h3 class="mb-0">@totalSetsWon</h3>
+                    <small class="text-muted">Sets Won</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="card border-0 shadow-sm h-100 stat-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-arrow-down-circle-fill display-4 text-warning mb-2"></i>
+                    <h3 class="mb-0">@totalSetsLost</h3>
+                    <small class="text-muted">Sets Lost</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Match Results Section -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-custom text-white">
+            <i class="bi bi-calendar-event me-2"></i>Match Results (@matches.Count)
+        </div>
+        <div class="card-body p-0">
+            @if (matches.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Match #</th>
+                                <th>Round</th>
+                                <th class="text-center">Status</th>
+                                <th>Opponent</th>
+                                <th class="text-center">Result</th>
+                                <th>Court</th>
+                                <th>Date/Time</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var match in matches.OrderByDescending(m => m.ScheduledTime))
+                            {
+                                var isHomeTeam = match.HomeTeamId == Model.TeamId;
+                                var opponent = isHomeTeam ? match.AwayTeam?.Name : match.HomeTeam?.Name;
+                                var teamScore = isHomeTeam ? match.HomeTeamScore : match.AwayTeamScore;
+                                var opponentScore = isHomeTeam ? match.AwayTeamScore : match.HomeTeamScore;
+                                
+                                // Determine match state
+                                string matchState = "Scheduled";
+                                string stateBadgeClass = "bg-secondary";
+                                
+                                if (match.IsDisputed)
+                                {
+                                    matchState = "Disputed";
+                                    stateBadgeClass = "bg-danger";
+                                }
+                                else if (match.IsFinished)
+                                {
+                                    matchState = "Finished";
+                                    stateBadgeClass = "bg-success";
+                                }
+                                else if (match.ActualStartTime.HasValue)
+                                {
+                                    matchState = "In Progress";
+                                    stateBadgeClass = "bg-primary";
+                                }
+                                else if (match.ScheduledTime <= DateTime.UtcNow)
+                                {
+                                    matchState = "Started";
+                                    stateBadgeClass = "bg-info";
+                                }
+                                
+                                // Determine result
+                                string resultClass = "";
+                                string resultText = "-";
+                                if (match.IsFinished)
+                                {
+                                    if (teamScore > opponentScore)
+                                    {
+                                        resultClass = "text-success fw-bold";
+                                        resultText = "W";
+                                    }
+                                    else if (teamScore < opponentScore)
+                                    {
+                                        resultClass = "text-danger fw-bold";
+                                        resultText = "L";
+                                    }
+                                    else
+                                    {
+                                        resultClass = "text-warning fw-bold";
+                                        resultText = "D";
+                                    }
+                                }
+
+                                <tr>
+                                    <td class="fw-bold">#@match.MatchNumber</td>
+                                    <td>@match.Round?.Name</td>
+                                    <td class="text-center">
+                                        <span class="badge @stateBadgeClass small">@matchState</span>
+                                    </td>
+                                    <td>
+                                        <strong>@(isHomeTeam ? "vs" : "@")</strong> @opponent
+                                    </td>
+                                    <td class="text-center">
+                                        @if (match.IsFinished || match.ActualStartTime.HasValue)
+                                        {
+                                            <span class="@resultClass">
+                                                @if (match.IsFinished)
+                                                {
+                                                    @resultText
+                                                    <span class="text-muted ms-1">(@teamScore-@opponentScore)</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">@teamScore-@opponentScore</span>
+                                                }
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(match.CourtLocation))
+                                        {
+                                            <small><i class="bi bi-geo-alt"></i> @match.CourtLocation</small>
+                                        }
+                                        else
+                                        {
+                                            <small class="text-muted">TBD</small>
+                                        }
+                                    </td>
+                                    <td>
+                                        <small>@match.ScheduledTime.ToString("MMM dd, h:mm tt")</small>
+                                    </td>
+                                    <td class="text-end">
+                                        <a asp-controller="Matches" asp-action="Details" asp-route-id="@match.Id" 
+                                           class="btn btn-sm btn-outline-custom">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="p-4 text-center text-muted">
+                    <i class="bi bi-inbox display-4 d-block mb-3"></i>
+                    <p class="mb-0">No matches scheduled for this team yet.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Upcoming Matches -->
+    @{
+        var upcomingMatches = matches.Where(m => !m.IsFinished && m.ScheduledTime > DateTime.UtcNow).OrderBy(m => m.ScheduledTime).Take(3).ToList();
+    }
+    @if (upcomingMatches.Any())
+    {
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-calendar-check me-2"></i>Upcoming Matches
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    @foreach (var match in upcomingMatches)
+                    {
+                        var isHomeTeam = match.HomeTeamId == Model.TeamId;
+                        var opponent = isHomeTeam ? match.AwayTeam?.Name : match.HomeTeam?.Name;
+                        
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-primary">
+                                <div class="card-body">
+                                    <h6 class="card-title text-custom">Match #@match.MatchNumber</h6>
+                                    <p class="card-text mb-2">
+                                        <strong>@(isHomeTeam ? "vs" : "@")</strong> @opponent
+                                    </p>
+                                    <small class="text-muted d-block mb-1">
+                                        <i class="bi bi-calendar"></i> @match.ScheduledTime.ToString("MMM dd, h:mm tt")
+                                    </small>
+                                    <small class="text-muted d-block mb-2">
+                                        <i class="bi bi-geo-alt"></i> @(match.CourtLocation ?? "TBD")
+                                    </small>
+                                    <a asp-controller="Matches" asp-action="Details" asp-route-id="@match.Id" 
+                                       class="btn btn-sm btn-custom w-100">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Teams
+        </a>
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/matchhub")
-            .build();
-
-        connection.on("ReceiveUpdate", (user, message) => {
-            const msg = message.replace(/&/g, "&").replace(/</g, "<").replace(/>/g, ">");
-            const encodedMsg = user + ": " + msg;
-            const li = document.createElement("li");
-            li.textContent = encodedMsg;
-            document.getElementById("match-results-list").appendChild(li);
-        });
-
-        connection.start().catch(err => console.error(err.toString()));
-    </script>
+@section Styles {
+    <style>
+        .text-custom {
+            color: #2d5016;
+        }
+        
+        .bg-custom {
+            background-color: #2d5016 !important;
+        }
+        
+        .btn-custom {
+            background-color: #2d5016;
+            border-color: #2d5016;
+            color: #ffd700;
+        }
+        
+        .btn-custom:hover {
+            background-color: #1f3810;
+            border-color: #1f3810;
+            color: #ffd700;
+        }
+        
+        .btn-outline-custom {
+            color: #2d5016;
+            border-color: #2d5016;
+        }
+        
+        .btn-outline-custom:hover {
+            background-color: #2d5016;
+            border-color: #2d5016;
+            color: #ffd700;
+        }
+        
+        .stat-card {
+            transition: transform 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .border-primary {
+            border-color: #0d6efd !important;
+        }
+        
+        .table td, .table th {
+            vertical-align: middle;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(45, 80, 22, 0.05);
+        }
+    </style>
 }
