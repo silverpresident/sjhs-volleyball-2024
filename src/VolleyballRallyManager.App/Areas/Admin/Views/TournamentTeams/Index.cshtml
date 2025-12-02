@@ -21,6 +21,14 @@
                         <button type="button" class="btn btn-outline-secondary active" data-division="all">All</button>
                         <button type="button" class="btn btn-outline-secondary" data-division="BOYS">Boys</button>
                         <button type="button" class="btn btn-outline-secondary" data-division="GIRLS">Girls</button>
+                @if(ViewBag.Divisions != null){
+                    <div class="btn-group" role="group">
+                    <button  type="button" class="btn btn-outline-secondary active" data-divisionId="">All</a>
+                        @foreach(Division division in ViewBag.Divisions){
+                        <button  type="button" class="btn btn-outline-secondary" data-divisionId="@division.Id">@division.Name</a>
+                    }
+                    </div>
+                    }
                     </div>
                 </div>
             </div>
@@ -43,7 +51,7 @@
                     <tbody>
                         @foreach (var item in Model)
                         {
-                            <tr data-division="@item.Division.Name">
+                            <tr data-divisionId="@item.Division.Id" data-division="@item.Division.Name">
                                 <td>
                                     <div class="btn-group" role="group">
                                         <a asp-action="Edit" asp-route-id="@item.TeamId" class="btn btn-sm btn-outline-primary" title="Edit"><i class="bi bi-pencil"></i></a>
@@ -80,13 +88,20 @@
             $('.btn-group button').click(function() {
                 $('.btn-group button').removeClass('active');
                 $(this).addClass('active');
-                
+                /*
                 var division = $(this).data('division');
                 if (division === 'all') {
                     $('tbody tr').show();
                 } else {
                     $('tbody tr').hide();
                     $('tbody tr[data-division="' + division + '"]').show();
+                }*/
+                var divisionId = $(this).data('divisionId');
+                if (divisionId === '') {
+                    $('tbody tr').show();
+                } else {
+                    $('tbody tr').hide();
+                    $('tbody tr[data-divisionId="' + divisionId + '"]').show();
                 }
             });
         });

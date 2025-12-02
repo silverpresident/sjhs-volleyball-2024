@@ -17,9 +17,9 @@
                 <div class="col-auto">
                 @if(ViewBag.Divisions != null){
                     <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-outline-secondary active" asp-action="Index">All</button>
+                    <a class="btn btn-outline-secondary active" asp-action="Index">All</a>
                         @foreach(Division division in ViewBag.Divisions){
-                        <button type="button" class="btn btn-outline-secondary" asp-route-DivisionId="@division.Id">@division.Name</button>
+                        <a class="btn btn-outline-secondary" asp-route-DivisionId="@division.Id">@division.Name</a>
                     }
                     </div>
                     }

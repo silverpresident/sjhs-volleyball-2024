@@ -48,6 +48,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             }
             var model = await _activeTournamentService.GetTournamentTeamsAsync(Guid.Empty);
             //model = model.OrderBy(ttd => ttd.GroupName);
+            ViewBag.Divisions = await _activeTournamentService.GetTournamentDivisionsAsync();
             return View(model);
         }
 
