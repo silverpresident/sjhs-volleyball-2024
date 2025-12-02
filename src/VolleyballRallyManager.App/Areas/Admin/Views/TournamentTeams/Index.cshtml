@@ -17,17 +17,12 @@
                     <a asp-action="AutoSeed" class="btn btn-warning"><i class="bi bi-shuffle"></i> Auto Seed Teams</a>
                 </div>
                 <div class="col-auto">
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-outline-secondary active" data-division="all">All</button>
-                        <button type="button" class="btn btn-outline-secondary" data-division="BOYS">Boys</button>
-                        <button type="button" class="btn btn-outline-secondary" data-division="GIRLS">Girls</button>
+                    <div class="btn-group divisions-filter" role="group">
                         @if(ViewBag.Divisions != null){
-                            <div class="btn-group" role="group">
                                 <button  type="button" class="btn btn-outline-secondary active" data-divisionId="">All</button>
                                 @foreach(TournamentDivision division in ViewBag.Divisions){
                                     <button  type="button" class="btn btn-outline-secondary" data-divisionId="@division.DivisionId">@division.Division.Name</button>
                                 }
-                            </div>
                         }
                     </div>
                 </div>
@@ -84,19 +79,12 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function() {
-            $('.btn-group button').click(function() {
-                $('.btn-group button').removeClass('active');
+        $(function() {
+            $('.divisions-filter').on('click','button',function() {
+                $('.divisions-filter button').removeClass('active');
                 $(this).addClass('active');
-                /*
-                var division = $(this).data('division');
-                if (division === 'all') {
-                    $('tbody tr').show();
-                } else {
-                    $('tbody tr').hide();
-                    $('tbody tr[data-division="' + division + '"]').show();
-                }*/
                 var divisionId = $(this).data('divisionId');
+                console.log("divisions-filter divisionId", divisionId);
                 if (divisionId === '') {
                     $('tbody tr').show();
                 } else {
