@@ -1,0 +1,200 @@
+@model VolleyballRallyManager.App.Areas.Admin.Models.AutoSeedViewModel
+@using VolleyballRallyManager.App.Areas.Admin.Models
+
+@{
+    ViewData["Title"] = "Auto Seed Teams";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h1><i class="bi bi-shuffle"></i> Auto Seed Teams</h1>
+                </div>
+                <div class="card-body">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form asp-action="AutoSeed" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Division Selection -->
+                        <div class="mb-4">
+                            <label asp-for="SelectedDivisionId" class="form-label fw-bold">Division Scope</label>
+                            <select asp-for="SelectedDivisionId" class="form-select">
+                                <option value="">All Divisions</option>
+                                @foreach (var division in Model.AvailableDivisions)
+                                {
+                                    <option value="@division.Id">@division.Name</option>
+                                }
+                            </select>
+                            <div class="form-text">Select a specific division or choose "All Divisions" to seed teams across all divisions.</div>
+                        </div>
+
+                        <hr />
+
+                        <!-- Seeding Method -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Seeding Method</label>
+                            <div class="form-text mb-2">Defines which teams are affected by the seeding process.</div>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" asp-for="SeedingMethod" value="@SeedingMethod.SeedUnseeded" id="seedingMethodUnseeded" checked>
+                                <label class="form-check-label" for="seedingMethodUnseeded">
+                                    <strong>Seed Unseeded Teams</strong> - Only assign seeds to teams with no current seed (SeedNumber = 0)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" asp-for="SeedingMethod" value="@SeedingMethod.ReseedAll" id="seedingMethodReseedAll">
+                                <label class="form-check-label" for="seedingMethodReseedAll">
+                                    <strong>Reseed All Teams</strong> - Replace all existing seed numbers with new sequential seeds
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <!-- Sorting Method -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Sorting Method</label>
+                            <div class="form-text mb-2">Defines the order in which teams are processed for seeding.</div>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" asp-for="SortingMethod" value="@SortingMethod.ByCreationDate" id="sortingMethodCreation" checked>
+                                <label class="form-check-label" for="sortingMethodCreation">
+                                    <strong>By Creation Date</strong> - Sort by when the team was added to the system (oldest first)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" asp-for="SortingMethod" value="@SortingMethod.ByTeamName" id="sortingMethodName">
+                                <label class="form-check-label" for="sortingMethodName">
+                                    <strong>By Team Name</strong> - Sort alphabetically by team name
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" asp-for="SortingMethod" value="@SortingMethod.Randomly" id="sortingMethodRandom">
+                                <label class="form-check-label" for="sortingMethodRandom">
+                                    <strong>Randomly</strong> - Sort in random order
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <!-- Seed Placement (only for Unseeded method) -->
+                        <div class="mb-4" id="seedPlacementSection">
+                            <label class="form-label fw-bold">Seed Placement</label>
+                            <div class="form-text mb-2">Determines where new seeds are placed relative to existing seeded teams. (Only applies to "Seed Unseeded Teams")</div>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" asp-for="SeedPlacement" value="@SeedPlacement.FillGaps" id="seedPlacementGaps" checked>
+                                <label class="form-check-label" for="seedPlacementGaps">
+                                    <strong>Fill Gaps</strong> - Use the lowest available seed numbers
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" asp-for="SeedPlacement" value="@SeedPlacement.AtTheEnd" id="seedPlacementEnd">
+                                <label class="form-check-label" for="seedPlacementEnd">
+                                    <strong>At the End</strong> - Start after the highest existing seed number
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <!-- Seed Gap Closure -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Seed Gap Closure</label>
+                            <div class="form-text mb-2">Post-seeding logic for ensuring final seed numbers are contiguous.</div>
+                            
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" asp-for="GapClosure" value="@SeedGapClosure.LetGapsRemain" id="gapClosureRemain" checked>
+                                <label class="form-check-label" for="gapClosureRemain">
+                                    <strong>Let Gaps Remain</strong> - Preserve any gaps in the final seed numbers
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" asp-for="GapClosure" value="@SeedGapClosure.CloseAllGaps" id="gapClosureClose">
+                                <label class="form-check-label" for="gapClosureClose">
+                                    <strong>Close All Gaps</strong> - Re-sequence all teams to ensure contiguous seeds (1, 2, 3, ...)
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-shuffle"></i> Execute Auto Seed
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Panel -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="bi bi-info-circle"></i> Help & Information</h5>
+                </div>
+                <div class="card-body">
+                    <h6>What does Auto Seed do?</h6>
+                    <p class="small">Auto Seed assigns seed numbers to teams based on your selected criteria. This is useful for organizing teams in tournaments.</p>
+                    
+                    <h6 class="mt-3">When to use each method?</h6>
+                    <ul class="small">
+                        <li><strong>Seed Unseeded:</strong> When you have new teams to add to an existing seeded division.</li>
+                        <li><strong>Reseed All:</strong> When you want to completely reorganize all teams from scratch.</li>
+                    </ul>
+                    
+                    <h6 class="mt-3">Sorting Tips</h6>
+                    <ul class="small">
+                        <li><strong>By Creation Date:</strong> First-come, first-served approach.</li>
+                        <li><strong>By Team Name:</strong> Alphabetical organization.</li>
+                        <li><strong>Randomly:</strong> For fair, unbiased seeding.</li>
+                    </ul>
+
+                    <div class="alert alert-warning mt-3">
+                        <small><i class="bi bi-exclamation-triangle"></i> <strong>Note:</strong> This operation modifies team seed numbers. Make sure to review the results after execution.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            // Show/hide seed placement section based on seeding method
+            function toggleSeedPlacement() {
+                if ($('#seedingMethodUnseeded').is(':checked')) {
+                    $('#seedPlacementSection').show();
+                } else {
+                    $('#seedPlacementSection').hide();
+                }
+            }
+            
+            // Initialize on page load
+            toggleSeedPlacement();
+            
+            // Update when seeding method changes
+            $('input[name="SeedingMethod"]').change(function() {
+                toggleSeedPlacement();
+            });
+        });
+    </script>
+}

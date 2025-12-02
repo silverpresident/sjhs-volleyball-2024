@@ -189,6 +189,13 @@ Key configuration settings required in appsettings.json:
   - Automatic team seeding and qualification
   - Round finalization with permanent rankings
   - Complete statistics tracking per round
+- **AutoSeed Feature** - Automated team seeding system
+  - Seed unseeded teams or reseed all teams
+  - Multiple sorting methods (by creation date, team name, or randomly)
+  - Flexible seed placement (fill gaps or append to end)
+  - Gap closure for contiguous seed numbering
+  - Transaction-based processing for data integrity
+  - Division-specific or tournament-wide seeding
 - **Announcer System** with priority-based queue management
   - Real-time announcement board with SignalR updates
   - Priority-based sequencing (Urgent, Info, Routine)
@@ -234,6 +241,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - [Tournament Rounds User Guide](docs/TOURNAMENT_ROUNDS_USER_GUIDE.md) - Complete guide to multi-stage tournament management
 - [Tournament Rounds Implementation](docs/TOURNAMENT_ROUNDS_IMPLEMENTATION.md) - Technical implementation details
+- [AutoSeed Feature Guide](docs/AUTOSEED_FEATURE.md) - Automated team seeding documentation
 - [Announcer Feature Guide](docs/ANNOUNCER_FEATURE.md) - Complete guide to the announcement queue system
 - [User Management Guide](docs/USER_MANAGEMENT_GUIDE.md) - User administration documentation
 - [Scoring Channel](docs/SCORING_CHANNEL.md) - Match scoring system documentation

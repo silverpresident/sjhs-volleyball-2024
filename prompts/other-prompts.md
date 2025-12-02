@@ -68,3 +68,4 @@ The view will list all the teams in the system
 -The purpose of this interface is a fast way to bulk select teams for the tournament.
 -The input should save via javascript.
 -Place a link to this view on the TournamentTeams Index page next to the "Add Team" button.
+====
