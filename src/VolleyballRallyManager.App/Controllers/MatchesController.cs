@@ -24,7 +24,8 @@ namespace VolleyballRallyManager.App.Controllers
         {
 
             var matches = await _activeTournamentService.GetMatchesAsync(divisionId, roundId, groupName, teamId);
-             
+            ViewBag.Divisions = await _activeTournamentService.GetTournamentDivisionsAsync();
+            
             return View(matches.ToList());
         }
 

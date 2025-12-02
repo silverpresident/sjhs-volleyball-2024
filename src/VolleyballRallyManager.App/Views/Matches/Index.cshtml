@@ -5,8 +5,24 @@
 }
 
 <div class="container">
-    <h1>Matches</h1>
     <div class="card">
+    <div class="card-header">
+            <div class="row mb-3">
+                <div class="col">
+                <h1>Matches</h1>
+                </div>
+                <div class="col-auto">
+                @if(ViewBag.Divisions != null){
+                    <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-secondary active" asp-action="Index">All</button>
+                        @foreach(Division division in ViewBag.Divisions){
+                        <button type="button" class="btn btn-outline-secondary" asp-route-DivisionId="@division.Id">@division.Name</button>
+                    }
+                    </div>
+                    }
+                </div>
+            </div>
+            </div>
         <div class="card-body">
             <table class="table">
                 <thead>

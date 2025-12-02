@@ -178,10 +178,11 @@ BEGIN
     INSERT INTO dbo.Rounds (Id, Name, Sequence, QualifyingTeams, CreatedBy, UpdatedBy) VALUES
     (NEWID(), 'Round 1', 1, 0, 'system', 'system'),
     (NEWID(), 'Round 2', 2, 0, 'system', 'system'),
-    (NEWID(), 'Quarter Finals', 3, 8, 'system', 'system'),
-    (NEWID(), 'Semi Finals', 4, 4, 'system', 'system'),
-    (NEWID(), 'Third Place Playoff', 5, 2, 'system', 'system'),
-    (NEWID(), 'Finals', 6, 2, 'system', 'system');
+    (NEWID(), 'Round 3', 3, 16, 'system', 'system'),
+    (NEWID(), 'Quarter Finals', 4, 8, 'system', 'system'),
+    (NEWID(), 'Semi Finals', 5, 4, 'system', 'system'),
+    (NEWID(), 'Third Place Playoff', 6, 2, 'system', 'system'),
+    (NEWID(), 'Finals', 7, 2, 'system', 'system');
 END
 GO
 

@@ -25,16 +25,16 @@ namespace VolleyballRallyManager.App.Controllers
         public async Task<IActionResult> Index(Guid? divisionId, String? groupName)
         {
             var teams = await _activeTournamentService.GetTournamentTeamsAsync(Guid.Empty);
-             if (divisionId.HasValue)
-             {
-                 teams = teams.Where(t => t.DivisionId == divisionId.Value);
-             }
+            if (divisionId.HasValue)
+            {
+                teams = teams.Where(t => t.DivisionId == divisionId.Value);
+            }
 
-             if (string.IsNullOrEmpty(groupName) == false)
-             {
-                 teams = teams.Where(t => t.GroupName == groupName);
-             }
- 
+            if (string.IsNullOrEmpty(groupName) == false)
+            {
+                teams = teams.Where(t => t.GroupName == groupName);
+            }
+            ViewBag.Divisions = await _activeTournamentService.GetTournamentDivisionsAsync();
             return View(teams.ToList());
         }
 

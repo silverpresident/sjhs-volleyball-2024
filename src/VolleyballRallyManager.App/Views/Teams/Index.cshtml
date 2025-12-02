@@ -5,8 +5,27 @@
 }
 
 <div class="container">
-    <h1>Teams</h1>
+    
+    
+    
     <div class="card">
+    <div class="card-header">
+            <div class="row mb-3">
+                <div class="col">
+                <h1>Teams</h1>
+                </div>
+                <div class="col-auto">
+                @if(ViewBag.Divisions != null){
+                    <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-secondary active" asp-action="Index">All</button>
+                        @foreach(Division division in ViewBag.Divisions){
+                        <button type="button" class="btn btn-outline-secondary" asp-route-DivisionId="@division.Id">@division.Name</button>
+                    }
+                    </div>
+                    }
+                </div>
+            </div>
+            </div>
         <div class="card-body">
             <table class="table">
                 <thead>
@@ -14,6 +33,7 @@
                         <th>Division</th>
                         <th>Group</th>
                         <th>Name</th>
+                        <th>W-L-D</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -35,6 +55,13 @@
                                 <a asp-action="Details" asp-route-id="@item.TeamId">
                                 @item.Team.Name
                                 </a>
+                            </td>
+                            <td>
+                                @item.Wins
+                                -
+                                @item.Losses
+                                -
+                                @item.Draws
                             </td>
                             <td>
                                 <a asp-action="Details" asp-route-id="@item.TeamId">Details</a>

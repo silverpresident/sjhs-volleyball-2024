@@ -175,11 +175,8 @@
                                         </span>
                                     </td>
                                     <td class="text-center">
-                                        @if (set.IsLocked)
-                                        {
-                                            <span class="badge bg-dark"><i class="bi bi-lock-fill"></i> Locked</span>
-                                        }
-                                        else if (set.IsFinished)
+                                        
+                                        @if (set.IsFinished)
                                         {
                                             <span class="badge bg-success"><i class="bi bi-check-circle-fill"></i> Complete</span>
                                         }
@@ -190,6 +187,10 @@
                                         else
                                         {
                                             <span class="badge bg-secondary">Pending</span>
+                                        }
+                                        @if (set.IsLocked)
+                                        {
+                                            <span class="badge bg-dark"><i class="bi bi-lock-fill"></i> Locked</span>
                                         }
                                     </td>
                                 </tr>
