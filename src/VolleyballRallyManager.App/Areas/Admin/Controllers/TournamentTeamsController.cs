@@ -240,5 +240,107 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             await _activeTournamentService.RemoveTeamAsync(id);
             return RedirectToAction(nameof(Index), new { divisionId });
         }
+
+        public async Task<IActionResult> BulkAssign()
+        {
+            try
+            {
+                var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
+                if (activeTournament == null)
+                {
+                    _logger.LogWarning("No active tournament found.");
+                    return NotFound("No active tournament found.");
+                }
+
+                // Get all teams
+                var allTeams = await _activeTournamentService.GetAvailableTeamsAsync();
+                
+                // Get currently assigned teams
+                var assignedTeams = await _activeTournamentService.GetTournamentTeamsAsync(Guid.Empty);
+                
+                // Create a dictionary for quick lookup
+                var assignedTeamsDict = assignedTeams.ToDictionary(t => t.TeamId);
+
+                // Build the team assignment items
+                var teamItems = allTeams.Select(team => new TeamAssignmentItem
+                {
+                    TeamId = team.Id,
+                    TeamName = team.Name,
+                    School = team.School,
+                    CurrentDivisionId = assignedTeamsDict.ContainsKey(team.Id) ? assignedTeamsDict[team.Id].DivisionId : null,
+                    CurrentDivisionName = assignedTeamsDict.ContainsKey(team.Id) ? assignedTeamsDict[team.Id].Division.Name : null,
+                    CurrentSeedNumber = assignedTeamsDict.ContainsKey(team.Id) ? assignedTeamsDict[team.Id].SeedNumber : 0,
+                    IsAssigned = assignedTeamsDict.ContainsKey(team.Id)
+                }).OrderBy(t => t.TeamName);
+
+                var model = new BulkTeamAssignmentViewModel
+                {
+                    ActiveTournament = activeTournament,
+                    AvailableDivisions = await _activeTournamentService.GetAvailableDivisionsAsync(),
+                    Teams = teamItems
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading bulk assignment view.");
+                return StatusCode(500, "An error occurred while loading the bulk assignment view.");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BulkAssignUpdate([FromBody] BulkTeamAssignmentUpdateModel model)
+        {
+            try
+            {
+                var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
+                if (activeTournament == null)
+                {
+                    _logger.LogWarning("No active tournament found.");
+                    return NotFound(new { success = false, message = "No active tournament found." });
+                }
+
+                // Check if team is currently assigned
+                var existingTeam = await _activeTournamentService.GetTeamAsync(model.TeamId);
+
+                if (model.DivisionId.HasValue && model.DivisionId.Value != Guid.Empty)
+                {
+                    // Assign or update team
+                    if (existingTeam != null)
+                    {
+                        // Update existing assignment
+                        await _activeTournamentService.SetTeamAsync(model.TeamId, model.DivisionId.Value, "", model.SeedNumber);
+                        _logger.LogInformation("Updated team {TeamId} to division {DivisionId} with seed {SeedNumber}", 
+                            model.TeamId, model.DivisionId.Value, model.SeedNumber);
+                    }
+                    else
+                    {
+                        // Add new assignment
+                        await _activeTournamentService.AddTeamAsync(model.TeamId, model.DivisionId.Value, "", model.SeedNumber);
+                        _logger.LogInformation("Added team {TeamId} to division {DivisionId} with seed {SeedNumber}", 
+                            model.TeamId, model.DivisionId.Value, model.SeedNumber);
+                    }
+                    
+                    return Ok(new { success = true, message = "Team assignment updated successfully." });
+                }
+                else
+                {
+                    // Remove team from tournament
+                    if (existingTeam != null)
+                    {
+                        await _activeTournamentService.RemoveTeamAsync(model.TeamId);
+                        _logger.LogInformation("Removed team {TeamId} from tournament", model.TeamId);
+                    }
+                    
+                    return Ok(new { success = true, message = "Team removed from tournament successfully." });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating team assignment for team {TeamId}", model.TeamId);
+                return StatusCode(500, new { success = false, message = "An error occurred while updating team assignment." });
+            }
+        }
     }
 }

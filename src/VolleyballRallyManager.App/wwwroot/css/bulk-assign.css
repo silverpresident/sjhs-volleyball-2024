@@ -1,0 +1,86 @@
+/* Bulk Team Assignment Styles */
+
+#bulkAssignTable tbody tr {
+    transition: background-color 0.3s ease;
+}
+
+#bulkAssignTable tbody tr.table-success {
+    background-color: #d4edda !important;
+}
+
+#bulkAssignTable tbody tr.table-danger {
+    background-color: #f8d7da !important;
+}
+
+.division-selector {
+    flex-wrap: nowrap;
+}
+
+.division-selector .btn {
+    white-space: nowrap;
+    padding: 0.375rem 0.75rem;
+}
+
+.seed-input:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.saving-indicator {
+    margin-left: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .division-selector {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .division-selector .btn {
+        width: 100%;
+        margin-bottom: 0.25rem;
+    }
+    
+    .seed-input {
+        width: 100% !important;
+    }
+}
+
+/* Green and gold theme colors */
+.btn-outline-primary:checked + label,
+.btn-outline-primary.active {
+    background-color: #1e7e34 !important;
+    border-color: #1e7e34 !important;
+    color: white !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: #1e7e34;
+    border-color: #1e7e34;
+    color: white;
+}
+
+.alert-info {
+    border-left: 4px solid #1e7e34;
+}
+
+.badge.bg-success {
+    background-color: #1e7e34 !important;
+}
+
+/* Loading animation for saving indicator */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.saving-indicator {
+    animation: spin 1s linear infinite;
+}

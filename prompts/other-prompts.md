@@ -61,3 +61,10 @@ The Rounds index page in the Admin controller needs alot of work. Please fix the
 ====
 Fix the admin area TournamentTeams/Details.cshtml page and action.
 The page needs to display all relevant informaiton about the team in the active tournament.
+====
+In the admin area, in the TournamentTeams controller create a new action and view.
+The view will list all the teams in the system
+- Beside each team we should be able to select a division (radio) and a SeedNumber. Remember an option to "remove the team" by unselecting a division
+-The purpose of this interface is a fast way to bulk select teams for the tournament.
+-The input should save via javascript.
+-Place a link to this view on the TournamentTeams Index page next to the "Add Team" button.

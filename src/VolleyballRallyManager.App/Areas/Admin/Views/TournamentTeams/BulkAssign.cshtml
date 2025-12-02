@@ -1,0 +1,114 @@
+@model VolleyballRallyManager.App.Models.BulkTeamAssignmentViewModel
+
+@{
+    ViewData["Title"] = "Bulk Team Assignment";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/bulk-assign.css" />
+}
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h1>Bulk Team Assignment</h1>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> Select a division for each team and set their seed number. Changes are saved automatically.
+                <strong>Unselect all divisions to remove a team from the tournament.</strong>
+            </div>
+
+            <div class="mb-3">
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to Teams List
+                </a>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="bulkAssignTable">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>School</th>
+                            <th>Division</th>
+                            <th>Seed #</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var team in Model.Teams)
+                        {
+                            <tr data-team-id="@team.TeamId">
+                                <td>
+                                    <strong>@team.TeamName</strong>
+                                </td>
+                                <td>@team.School</td>
+                                <td>
+                                    <div class="btn-group division-selector" role="group" aria-label="Division selection">
+                                        @foreach (var division in Model.AvailableDivisions)
+                                        {
+                                            var isChecked = team.CurrentDivisionId == division.Id;
+                                            <input type="radio" 
+                                                   class="btn-check division-radio" 
+                                                   name="division-@team.TeamId" 
+                                                   id="division-@team.TeamId-@division.Id" 
+                                                   value="@division.Id"
+                                                   autocomplete="off"
+                                                   @(isChecked ? "checked" : "")>
+                                            <label class="btn btn-outline-primary" for="division-@team.TeamId-@division.Id">
+                                                @division.Name
+                                            </label>
+                                        }
+                                        <input type="radio" 
+                                               class="btn-check division-radio" 
+                                               name="division-@team.TeamId" 
+                                               id="division-@team.TeamId-none" 
+                                               value=""
+                                               autocomplete="off"
+                                               @(!team.IsAssigned ? "checked" : "")>
+                                        <label class="btn btn-outline-secondary" for="division-@team.TeamId-none">
+                                            None
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="number" 
+                                           class="form-control seed-input" 
+                                           style="width: 80px;"
+                                           min="0" 
+                                           max="100" 
+                                           value="@team.CurrentSeedNumber"
+                                           @(!team.IsAssigned ? "disabled" : "")>
+                                </td>
+                                <td>
+                                    <span class="status-indicator">
+                                        @if (team.IsAssigned)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle"></i> Assigned
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                <i class="bi bi-dash-circle"></i> Not Assigned
+                                            </span>
+                                        }
+                                    </span>
+                                    <span class="spinner-border spinner-border-sm saving-indicator d-none" role="status">
+                                        <span class="visually-hidden">Saving...</span>
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/bulk-assign.js"></script>
+}
