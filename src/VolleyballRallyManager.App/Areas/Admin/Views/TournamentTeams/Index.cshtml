@@ -21,14 +21,14 @@
                         <button type="button" class="btn btn-outline-secondary active" data-division="all">All</button>
                         <button type="button" class="btn btn-outline-secondary" data-division="BOYS">Boys</button>
                         <button type="button" class="btn btn-outline-secondary" data-division="GIRLS">Girls</button>
-                @if(ViewBag.Divisions != null){
-                    <div class="btn-group" role="group">
-                    <button  type="button" class="btn btn-outline-secondary active" data-divisionId="">All</button>
-                        @foreach(Division division in ViewBag.Divisions){
-                        <button  type="button" class="btn btn-outline-secondary" data-divisionId="@division.Id">@division.Name</button>
-                    }
-                    </div>
-                    }
+                        @if(ViewBag.Divisions != null){
+                            <div class="btn-group" role="group">
+                                <button  type="button" class="btn btn-outline-secondary active" data-divisionId="">All</button>
+                                @foreach(TournamentDivision division in ViewBag.Divisions){
+                                    <button  type="button" class="btn btn-outline-secondary" data-divisionId="@division.DivisionId">@division.Division.Name</button>
+                                }
+                            </div>
+                        }
                     </div>
                 </div>
             </div>

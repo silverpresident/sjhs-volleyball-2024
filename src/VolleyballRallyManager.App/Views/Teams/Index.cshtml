@@ -15,13 +15,14 @@
                 <h1>Teams</h1>
                 </div>
                 <div class="col-auto">
-                @if(ViewBag.Divisions != null){
-                    <div class="btn-group" role="group">
-                    <a class="btn btn-outline-secondary active" asp-action="Index">All</a>
-                        @foreach(Division division in ViewBag.Divisions){
-                        <a class="btn btn-outline-secondary" asp-route-DivisionId="@division.Id">@division.Name</a>
-                    }
-                    </div>
+                    @if(ViewBag.Divisions != null){
+                        <div class="btn-group" role="group">
+                            <a class="btn btn-outline-secondary active" asp-action="Index">All</a>
+                            @foreach (TournamentDivision division in ViewBag.Divisions)
+                            {
+                                <a class="btn btn-outline-secondary" asp-route-DivisionId="@division.DivisionId">@division.Division.Name</a>
+                            }
+                        </div>
                     }
                 </div>
             </div>
