@@ -69,3 +69,16 @@ The view will list all the teams in the system
 -The input should save via javascript.
 -Place a link to this view on the TournamentTeams Index page next to the "Add Team" button.
 ====
+In the admin area, in the ActiveTournament controller 
+On the index Add a management card above the "Teams" card.
+Include management links for the active tournament.
+Along with other you find in the project besure to include:
+- Set Divisions
+- Select Teams (bulk assign)
+- Seed Teams (auto seed)
+- Create First Round
+
+
+In the  Rounds progress section
+Tot he headinf add a link to the TournamentRounds  index page  next to the matches page
+ To each row in the tables in the Add a link to open the TournamentRounds details page
