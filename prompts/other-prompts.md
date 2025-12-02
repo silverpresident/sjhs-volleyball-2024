@@ -82,3 +82,14 @@ Along with other you find in the project besure to include:
 In the  Rounds progress section
 Tot he headinf add a link to the TournamentRounds  index page  next to the matches page
  To each row in the tables in the Add a link to open the TournamentRounds details page
+ 
+
+====
+In the admin area, in the TournamentRounds  controller 
+On the  details page add a button to
+- Rank teams
+-Generate next round
+
+In the " Round Statistics" section display in highlighted fashion the number of disputed matches.
+Implement the Rank Teams action.
+-Generate next round action alread exists, just add the link to it.

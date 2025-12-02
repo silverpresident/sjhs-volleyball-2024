@@ -15,17 +15,20 @@ public class TournamentRoundsController : Controller
 {
     private readonly ITournamentRoundService _tournamentRoundService;
     private readonly IActiveTournamentService _activeTournamentService;
+    private readonly IRanksService _ranksService;
     private readonly ApplicationDbContext _context;
     private readonly ILogger<TournamentRoundsController> _logger;
 
     public TournamentRoundsController(
         ITournamentRoundService tournamentRoundService,
         IActiveTournamentService activeTournamentService,
+        IRanksService ranksService,
         ApplicationDbContext context,
         ILogger<TournamentRoundsController> logger)
     {
         _tournamentRoundService = tournamentRoundService;
         _activeTournamentService = activeTournamentService;
+        _ranksService = ranksService;
         _context = context;
         _logger = logger;
     }
@@ -447,6 +450,38 @@ public class TournamentRoundsController : Controller
         {
             _logger.LogError(ex, "Error finalizing round {RoundId}", id);
             TempData["ErrorMessage"] = $"Error finalizing round: {ex.Message}";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+    }
+
+    // POST: Admin/TournamentRounds/RankTeams/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RankTeams(Guid id)
+    {
+        try
+        {
+            var round = await _tournamentRoundService.GetTournamentRoundByIdAsync(id);
+            if (round == null)
+            {
+                return NotFound();
+            }
+
+            if (round.IsFinished)
+            {
+                TempData["ErrorMessage"] = "Cannot rank teams for a finalized round.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            var rankedTeams = await _ranksService.UpdateTeamRanksAsync(id);
+
+            TempData["SuccessMessage"] = $"Team rankings updated successfully. {rankedTeams.Count} teams ranked.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error ranking teams for round {RoundId}", id);
+            TempData["ErrorMessage"] = $"Error ranking teams: {ex.Message}";
             return RedirectToAction(nameof(Details), new { id });
         }
     }

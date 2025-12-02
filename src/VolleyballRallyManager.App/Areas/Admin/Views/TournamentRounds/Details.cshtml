@@ -96,6 +96,21 @@
                         <dt class="col-sm-5">Pending Matches:</dt>
                         <dd class="col-sm-7"><strong>@Model.Matches.Count(m => !m.IsFinished)</strong></dd>
 
+                        <dt class="col-sm-5">Disputed Matches:</dt>
+                        <dd class="col-sm-7">
+                            @{
+                                var disputedCount = Model.Matches.Count(m => m.IsDisputed);
+                            }
+                            @if (disputedCount > 0)
+                            {
+                                <span class="badge bg-danger fs-6"><i class="bi bi-exclamation-triangle"></i> @disputedCount</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success"><i class="bi bi-check-circle"></i> 0</span>
+                            }
+                        </dd>
+
                         <dt class="col-sm-5">Completion:</dt>
                         <dd class="col-sm-7">
                             @if (Model.Matches.Any())
@@ -139,6 +154,17 @@
                     <a asp-action="GenerateMatches" asp-route-id="@Model.Round.Id" class="btn btn-warning">
                         <i class="bi bi-calendar-plus"></i> Generate Matches
                     </a>
+                }
+
+                @if (!Model.Round.IsFinished && Model.Matches.Any())
+                {
+                    <form asp-action="RankTeams" asp-route-id="@Model.Round.Id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-info" 
+                                onclick="return confirm('Update team rankings based on current match results?');">
+                            <i class="bi bi-sort-numeric-down"></i> Rank Teams
+                        </button>
+                    </form>
                 }
 
                 @if (Model.CanFinalize)
