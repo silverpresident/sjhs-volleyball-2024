@@ -31,6 +31,15 @@
                             <div class="col-md-4 text-md-end">
                                 <div class="d-flex flex-column align-items-md-end">
                                     <div>
+                                    
+            @if (Model.ActiveTournament?.RegistrationUrl != null)
+            {
+                <div class="registration-info">
+                    <a href="@Model.ActiveTournament.RegistrationUrl" target="_blank" class="registration-link">
+                        📝 Register for Tournament
+                    </a>
+                </div>
+            }
                                         <i class="bi bi-calendar-event me-2" style="color: #ffd700;"></i>
                                         <strong>Date:</strong> @Model.ActiveTournament.TournamentDate.ToString("MMM dd, yyyy")
                                     </div>

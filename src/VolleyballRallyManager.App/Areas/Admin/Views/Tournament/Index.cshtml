@@ -19,6 +19,7 @@
                     <th>Actions</th>
                     <th>Name</th>
                     <th>Tournament Date</th>
+                    <th>Registration</th>
                     <th>Active</th>
                 </tr>
             </thead>
@@ -35,6 +36,18 @@
                             <details>@Html.DisplayFor(modelItem => item.Description)</details>
                         </td>
                         <td>@Html.DisplayFor(modelItem => item.TournamentDate)</td>
+                        <td>
+                        @if (!string.IsNullOrEmpty(item.RegistrationUrl))
+                        {
+                            <a href="@item.RegistrationUrl" target="_blank" class="btn btn-sm btn-outline-primary" title="@item.RegistrationUrl">
+                                <i class="bi bi-link-45deg"></i> Link
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                        </td>
                         <td> 
                         @if (item.IsActive){
                             <span class="badge bg-success">Active</span

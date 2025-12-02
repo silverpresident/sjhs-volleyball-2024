@@ -88,4 +88,18 @@ public class ApiService : IApiService
             return new List<Division>();
         }
     }
+
+    public async Task<Tournament?> GetActiveTournamentAsync()
+    {
+        try
+        {
+            var response = await _httpClient.GetFromJsonAsync<Tournament>("api/tournament/active", _jsonOptions);
+            return response;
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Error fetching active tournament: {ex.Message}");
+            return null;
+        }
+    }
 }

@@ -27,6 +27,12 @@
                 <input asp-for="TournamentDate" class="form-control"/>
                 <span asp-validation-for="TournamentDate" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="RegistrationUrl" class="control-label"></label>
+                <input asp-for="RegistrationUrl" class="form-control" type="url" placeholder="https://example.com/register" />
+                <span asp-validation-for="RegistrationUrl" class="text-danger"></span>
+                <small class="form-text text-muted">Optional: URL for tournament registration (will be displayed on public page)</small>
+            </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="IsActive" />

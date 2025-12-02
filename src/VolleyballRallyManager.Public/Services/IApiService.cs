@@ -9,4 +9,5 @@ public interface IApiService
     Task<List<Announcement>> GetAnnouncementsAsync();
     Task<List<MatchUpdate>> GetMatchUpdatesAsync();
     Task<List<Division>> GetDivisionsAsync();
+    Task<Tournament?> GetActiveTournamentAsync();
 }

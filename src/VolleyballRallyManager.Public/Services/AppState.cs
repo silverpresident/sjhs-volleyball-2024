@@ -12,6 +12,7 @@ public class AppState
     public List<Announcement> Announcements { get; private set; } = new();
     public List<MatchUpdate> MatchUpdates { get; private set; } = new();
     public List<Division> Divisions { get; private set; } = new();
+    public Tournament? ActiveTournament { get; private set; }
 
     public event Action? OnChange;
 
@@ -41,14 +42,16 @@ public class AppState
         var announcementsTask = _apiService.GetAnnouncementsAsync();
         var matchUpdatesTask = _apiService.GetMatchUpdatesAsync();
         var divisionsTask = _apiService.GetDivisionsAsync();
+        var tournamentTask = _apiService.GetActiveTournamentAsync();
 
-        await Task.WhenAll(matchesTask, teamsTask, announcementsTask, matchUpdatesTask, divisionsTask);
+        await Task.WhenAll(matchesTask, teamsTask, announcementsTask, matchUpdatesTask, divisionsTask, tournamentTask);
 
         Matches = (await matchesTask).OrderBy(m => m.ScheduledTime).ToList();
         Teams = (await teamsTask).OrderBy(t => t.Name).ToList();
         Announcements = (await announcementsTask).OrderByDescending(a => a.CreatedAt).ToList();
         MatchUpdates = (await matchUpdatesTask).OrderByDescending(u => u.CreatedAt).ToList();
         Divisions = (await divisionsTask).OrderBy(d => d.Name).ToList();
+        ActiveTournament = await tournamentTask;
 
         NotifyStateChanged();
     }

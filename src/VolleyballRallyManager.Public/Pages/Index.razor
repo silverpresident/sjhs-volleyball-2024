@@ -10,6 +10,14 @@
             <div class="refresh-info">
                 Auto-refreshes every @(RefreshInterval) seconds
             </div>
+            @if (AppState.ActiveTournament?.RegistrationUrl != null)
+            {
+                <div class="registration-info">
+                    <a href="@AppState.ActiveTournament.RegistrationUrl" target="_blank" class="registration-link">
+                        📝 Register for Tournament
+                    </a>
+                </div>
+            }
         </div>
     </header>
 
@@ -94,6 +102,33 @@
     margin-top: 0.5rem;
     font-size: 0.875rem;
     opacity: 0.9;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.registration-info {
+    margin-top: 0.25rem;
+}
+
+.registration-link {
+    display: inline-block;
+    padding: 0.5rem 1.25rem;
+    background: white;
+    color: var(--primary-color);
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+.registration-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    background: #f8f9fa;
 }
 
 .dashboard-grid {
