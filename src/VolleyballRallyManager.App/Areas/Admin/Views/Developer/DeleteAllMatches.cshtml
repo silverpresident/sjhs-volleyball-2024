@@ -1,0 +1,49 @@
+@{
+    ViewData["Title"] = "Delete All Matches";
+}
+
+<div class="container">
+    <div class="card border-danger">
+        <div class="card-header bg-danger text-white">
+            <h1><i class="bi bi-exclamation-triangle-fill"></i> Delete All Matches</h1>
+            <p class="mb-0"><small>⚠️ Developer Tool - DEBUG mode only</small></p>
+        </div>
+        <div class="card-body">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="alert alert-danger">
+                <h4 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> Warning</h4>
+                <p>You are about to delete <strong>ALL matches</strong> from the active tournament:</p>
+                <p class="fs-5 fw-bold">@ViewBag.TournamentName</p>
+                <hr>
+                <p class="mb-0">This action will permanently delete:</p>
+                <ul class="mb-0">
+                    <li>All matches in all rounds</li>
+                    <li>All match sets and scores</li>
+                    <li>All match updates and history</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-warning">
+                <p class="mb-0"><strong>Note:</strong> This action cannot be undone. Teams, divisions, and rounds will not be deleted, only the matches and their related data.</p>
+            </div>
+
+            <form asp-action="DeleteAllMatchesConfirmed" method="post">
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-danger btn-lg" onclick="return confirm('Are you absolutely sure you want to delete ALL matches? This cannot be undone!');">
+                        <i class="bi bi-trash-fill"></i> Yes, Delete All Matches
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary btn-lg">
+                        <i class="bi bi-arrow-left-circle"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

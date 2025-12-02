@@ -44,6 +44,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IBulletinService, BulletinService>();
         services.AddScoped<IAnnouncementService, AnnouncementService>();
         services.AddScoped<ITeamService, TeamService>();
+        services.AddScoped<ITeamGenerationService, TeamGenerationService>();
         services.AddScoped<ITournamentService, TournamentService>();
         services.AddScoped<IActiveTournamentService, ActiveTournamentService>();
         services.AddScoped<IRoundService, RoundService>();

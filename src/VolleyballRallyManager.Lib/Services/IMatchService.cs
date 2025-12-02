@@ -41,4 +41,5 @@ public interface IMatchService
     Task<MatchSet> GetOrCreateMatchSetAsync(Guid matchId, int setNumber, string userName);
     Task<bool> IsCalledToCourt(Guid matchId);
     Task<List<MatchUpdate>> GetRecentMatchUpdatesAsync(int count = 25);
+    Task<int> DeleteAllMatchesByTournamentAsync(Guid tournamentId);
 }

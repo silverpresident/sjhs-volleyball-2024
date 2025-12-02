@@ -1,0 +1,67 @@
+@{
+    ViewData["Title"] = "Developer Tools";
+}
+
+<div class="card">
+    <div class="card-header bg-warning text-dark">
+        <h1><i class="bi bi-tools"></i> Developer Tools</h1>
+        <p class="mb-0"><small>⚠️ This page is only available in DEBUG mode</small></p>
+    </div>
+    <div class="card-body">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-people-fill"></i> Generate Teams</h5>
+                        <p class="card-text">Quickly create multiple teams with randomly generated names and schools for testing purposes.</p>
+                        <a asp-action="GenerateTeams" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Generate Teams
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Placeholder for future developer tools -->
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 border-danger">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-trash-fill"></i> Delete All Matches</h5>
+                        <p class="card-text">Delete all matches from the active tournament. Useful for resetting match data during testing.</p>
+                        <a asp-action="DeleteAllMatches" class="btn btn-danger">
+                            <i class="bi bi-trash-fill"></i> Delete All Matches
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <h5 class="alert-heading"><i class="bi bi-info-circle"></i> About Developer Tools</h5>
+                    <p>These tools are designed to help developers quickly populate the database with test data during development.</p>
+                    <hr>
+                    <p class="mb-0">
+                        <strong>Note:</strong> These tools are only available when running in DEBUG mode and are automatically disabled in production builds.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

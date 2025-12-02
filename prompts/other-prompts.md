@@ -93,3 +93,11 @@ On the  details page add a button to
 In the " Round Statistics" section display in highlighted fashion the number of disputed matches.
 Implement the Rank Teams action.
 -Generate next round action alread exists, just add the link to it.
+====
+Create a developer Controller and page in the admin area.
+It should only be vailable in debug mode.
+
+It should have actions which are limited to the Active tournament.
+ Create views and actions for
+- Generate Teams ( select number of teams and add a set of team with randomly generated name and schools)
+- add an option to delete all matches  in the active tournament

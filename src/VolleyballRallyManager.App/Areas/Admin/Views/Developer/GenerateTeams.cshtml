@@ -1,0 +1,75 @@
+@model VolleyballRallyManager.App.Areas.Admin.Models.GenerateTeamsViewModel
+
+@{
+    ViewData["Title"] = "Generate Teams";
+}
+
+<div class="container">
+    <div class="card">
+        <div class="card-header bg-warning text-dark">
+            <h1><i class="bi bi-people-fill"></i> Generate Random Teams</h1>
+            <p class="mb-0"><small>⚠️ Developer Tool - DEBUG mode only</small></p>
+        </div>
+        <div class="card-body">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="row">
+                <div class="col-md-8">
+                    <form asp-action="GenerateTeams">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        
+                        <div class="alert alert-info">
+                            <h5 class="alert-heading"><i class="bi bi-info-circle"></i> About Team Generation</h5>
+                            <p>This tool will create randomly named teams with the following characteristics:</p>
+                            <ul class="mb-0">
+                                <li>Random team names (e.g., "Lightning Strikers", "Phoenix Spikers")</li>
+                                <li>Random school assignments from a predefined list of Jamaican schools</li>
+                                <li>Random team colors</li>
+                                <li>Teams are created but not automatically assigned to tournament divisions</li>
+                            </ul>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="NumberOfTeams" class="control-label h5"></label>
+                            <input asp-for="NumberOfTeams" class="form-control form-control-lg" type="number" min="1" max="50" />
+                            <span asp-validation-for="NumberOfTeams" class="text-danger"></span>
+                            <small class="form-text text-muted">Specify how many teams to generate (1-50)</small>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-plus-circle"></i> Generate Teams
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-arrow-left-circle"></i> Back to Developer Tools
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="bi bi-lightbulb"></i> Quick Tips</h5>
+                            <ul class="mb-0">
+                                <li>Generated teams will appear in the Teams list</li>
+                                <li>You can edit or delete them afterward</li>
+                                <li>Assign them to divisions in the Tournament Teams section</li>
+                                <li>Use the Auto-Seed feature to assign multiple teams at once</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

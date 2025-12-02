@@ -666,4 +666,49 @@ public class MatchService : IMatchService
             .Take(count)
             .ToListAsync();
     }
+
+    public async Task<int> DeleteAllMatchesByTournamentAsync(Guid tournamentId)
+    {
+        // Get all round IDs for the tournament via TournamentRounds
+        var roundIds = await _context.Set<TournamentRound>()
+            .Where(tr => tr.TournamentId == tournamentId)
+            .Select(tr => tr.RoundId)
+            .ToListAsync();
+
+        if (!roundIds.Any())
+        {
+            return 0;
+        }
+
+        // Get all matches for these rounds
+        var matches = await _context.Matches
+            .Where(m => roundIds.Contains(m.RoundId))
+            .ToListAsync();
+
+        if (!matches.Any())
+        {
+            return 0;
+        }
+
+        var matchIds = matches.Select(m => m.Id).ToList();
+
+        // Delete all match sets for these matches
+        var matchSets = await _context.MatchSets
+            .Where(ms => matchIds.Contains(ms.MatchId))
+            .ToListAsync();
+        _context.MatchSets.RemoveRange(matchSets);
+
+        // Delete all match updates for these matches
+        var matchUpdates = await _context.MatchUpdates
+            .Where(mu => matchIds.Contains(mu.MatchId))
+            .ToListAsync();
+        _context.MatchUpdates.RemoveRange(matchUpdates);
+
+        // Delete all matches
+        _context.Matches.RemoveRange(matches);
+
+        await _context.SaveChangesAsync();
+
+        return matches.Count();
+    }
 }
