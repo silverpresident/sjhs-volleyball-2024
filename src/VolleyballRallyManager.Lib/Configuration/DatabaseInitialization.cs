@@ -179,8 +179,8 @@ namespace VolleyballRallyManager.Lib.Configuration
                     Name = tourName,
                     IsActive = true,
                     TournamentDate = DateTime.Now.AddHours(9 - DateTime.Now.Hour),
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
                     CreatedBy = "System",
                     UpdatedBy = "System"
                 };
@@ -230,7 +230,7 @@ namespace VolleyballRallyManager.Lib.Configuration
                 }
             };*/
             char alphaStart = 'E';
-            char alphaEnd = 'V';
+            char alphaEnd = 'X';
             for (char i = alphaStart; i <= alphaEnd; i++)
             {
                 string anchorLetter = i.ToString();
@@ -265,8 +265,8 @@ namespace VolleyballRallyManager.Lib.Configuration
                 Content = "Welcome to ST JAGO VOLLEYBALL RALLY!",
                 Priority = BulletinPriority.Info,
                 IsVisible = true,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
                 CreatedBy = "System",
                 UpdatedBy = "System"
             };
@@ -297,22 +297,24 @@ namespace VolleyballRallyManager.Lib.Configuration
 
                 if (!await dbContext.TournamentTeamDivisions.AnyAsync())
                 {
+                    var rand = new Random();
                     teams = await dbContext.Teams.ToListAsync();
                     bool sel1 = true;
                     foreach (var team in teams)
                     {
+sel1 = rand.Next() % 2 == 0;
                         var division = sel1 ? divisions[0] : divisions[1];
-                        sel1 = !sel1;
-
+sel1 = rand.Next() % 2 == 0;
+                        
                         await dbContext.TournamentTeamDivisions.AddAsync(new TournamentTeamDivision
                         {
                             TournamentId = tournament.Id,
                             TeamId = team.Id,
                             DivisionId = division.Id,
                             Division = division,
-                            GroupName = "A",
-                            CreatedAt = DateTime.UtcNow,
-                            UpdatedAt = DateTime.UtcNow,
+                            GroupName = sel1 ? "A" : "B",
+                            CreatedAt = DateTime.Now,
+                            UpdatedAt = DateTime.Now,
                             CreatedBy = "System",
                             UpdatedBy = "System"
                         });
