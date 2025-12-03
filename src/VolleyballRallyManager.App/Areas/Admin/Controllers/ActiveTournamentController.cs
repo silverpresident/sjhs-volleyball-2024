@@ -45,6 +45,12 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                     DivisionName = g.Key.DivisionName,
                     GroupNames = g.Select(x => x.GroupName).Distinct().OrderBy(gn => gn).ToList(),
                     TeamCount = g.Count(),
+                    RoundsCount = _context.TournamentRounds
+                        .Count(m => m.TournamentId == tournamentId 
+                                 && m.DivisionId == g.Key.DivisionId),
+                    MatchCount = _context.Matches
+                        .Count(m => m.TournamentId == tournamentId 
+                                 && m.DivisionId == g.Key.DivisionId),
                     MatchesPlayed = _context.Matches
                         .Count(m => m.TournamentId == tournamentId 
                                  && m.DivisionId == g.Key.DivisionId 

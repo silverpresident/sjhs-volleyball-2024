@@ -73,9 +73,9 @@
                             </a>
                         </div>
                         <div class="col-md-6">
-                            @* <a class="btn btn-outline-info w-100" asp-controller="TournamentRounds" asp-action="CreateFirstRound">
-                                <i class="bi bi-play-circle"></i> Create First Round
-                            </a>*@
+                            <a class="btn btn-outline-dark w-100" asp-controller="TournamentRounds" asp-action="Index">
+                                <i class="bi bi-trophy"></i> Tournament Rounds
+                            </a>
                         </div>
                         <div class="col-md-6">
                             <a class="btn btn-outline-secondary w-100" asp-controller="Matches" asp-action="Index">
@@ -83,8 +83,8 @@
                             </a>
                         </div>
                         <div class="col-md-6">
-                            <a class="btn btn-outline-dark w-100" asp-controller="TournamentRounds" asp-action="Index">
-                                <i class="bi bi-trophy"></i> Tournament Rounds
+                            <a class="btn btn-outline-success w-100" asp-controller="TournamentTeams" asp-action="Index">
+                                <i class="bi bi-play-circle"></i> View Teams
                             </a>
                         </div>
                     </div>
@@ -118,6 +118,7 @@
                                             <span class="badge bg-secondary">@team.GroupName</span>
                                             @team.Team.Name
                                             <small>(@team.Team.School)</small>
+                                            <span class="badge badge-primary badge-pill" title="seed">@team.SeedNumber</span>
                                         </li>
                                     }
                                 </ul>

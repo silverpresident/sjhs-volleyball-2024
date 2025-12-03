@@ -40,7 +40,7 @@
             <tbody>
                 @foreach (var round in divisionGroup.OrderBy(r => r.Sequence))
                 {
-                    <tr class="clickable-row" style="cursor: pointer;" onclick="window.location.href='@Url.Action("Details", "TournamentRounds", new { id = round.RoundId })'">
+                    <tr class="clickable-row" style="cursor: pointer;" onclick="window.location.href='@Url.Action("Details", "TournamentRounds", new { id = round.Id })'">
                         <td><strong>@round.RoundName</strong></td>
                         <td>@round.TeamCount</td>
                         <td>@round.MatchesScheduled</td>
