@@ -10,7 +10,7 @@ public interface ITournamentRoundService
     /// <summary>
     /// Gets all tournament rounds for a specific tournament and division
     /// </summary>
-    Task<List<TournamentRound>> GetTournamentRoundsAsync(Guid tournamentId, Guid divisionId);
+    Task<List<TournamentRound>> GetTournamentRoundsAsync(Guid tournamentId, Guid? divisionId);
 
     /// <summary>
     /// Gets a specific tournament round by ID with all related data

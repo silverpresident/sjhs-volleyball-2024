@@ -208,7 +208,8 @@ BEGIN
         CreatedBy NVARCHAR(256),
         UpdatedBy NVARCHAR(256),
         CONSTRAINT FK_TournamentDivisions_Tournaments FOREIGN KEY (TournamentId) REFERENCES dbo.Tournaments(Id),
-        CONSTRAINT FK_TournamentDivisions_Divisions FOREIGN KEY (DivisionId) REFERENCES dbo.Divisions(Id)
+        CONSTRAINT FK_TournamentDivisions_Divisions FOREIGN KEY (DivisionId) REFERENCES dbo.Divisions(Id),
+        CONSTRAINT UQ_TournamentDivisions_TournamentId_DivisionId UNIQUE (TournamentId, DivisionId)
     );
 END
 GO

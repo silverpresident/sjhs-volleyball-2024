@@ -24,17 +24,22 @@ public class TournamentRoundService : ITournamentRoundService
         _logger = logger;
     }
 
-    public async Task<List<TournamentRound>> GetTournamentRoundsAsync(Guid tournamentId, Guid divisionId)
+    public async Task<List<TournamentRound>> GetTournamentRoundsAsync(Guid tournamentId, Guid? divisionId)
     {
         try
         {
-            return await _context.TournamentRounds
+            var qry = _context.TournamentRounds
                 .Include(tr => tr.Tournament)
                 .Include(tr => tr.Division)
                 .Include(tr => tr.Round)
                 .Include(tr => tr.TournamentRoundTeams)
                     .ThenInclude(trt => trt.Team)
-                .Where(tr => tr.TournamentId == tournamentId && tr.DivisionId == divisionId)
+                .Where(tr => tr.TournamentId == tournamentId);
+            if (divisionId.HasValue)
+            {
+                qry = qry.Where(tr => tr.DivisionId == divisionId.Value);
+            }
+            return await qry
                 .OrderBy(tr => tr.RoundNumber)
                 .ToListAsync();
         }

@@ -60,7 +60,7 @@ public class TournamentRoundsController : Controller
             var tournament = await _context.Tournaments.FindAsync(tournamentId.Value);
             var division = await _context.Divisions.FindAsync(divisionId.Value);
 
-            var rounds = await _tournamentRoundService.GetTournamentRoundsAsync(tournamentId.Value, divisionId.Value);
+            var rounds = await _tournamentRoundService.GetTournamentRoundsAsync(tournamentId.Value, divisionId);
 
             var roundViewModels = new List<TournamentRoundViewModel>();
 
