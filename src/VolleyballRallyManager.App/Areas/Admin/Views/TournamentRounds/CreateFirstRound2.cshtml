@@ -1,0 +1,115 @@
+@model VolleyballRallyManager.App.Areas.Admin.Models.CreateFirstRoundViewModel
+
+@{
+    ViewData["Title"] = "Create First Round";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-plus-circle"></i> Create First Round</h1>
+        <a asp-action="Index" asp-route-tournamentId="@Model.TournamentId" asp-route-divisionId="@Model.DivisionId" 
+           class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Rounds
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="bi bi-info-circle"></i> First Round Configuration</h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <i class="bi bi-lightbulb"></i> <strong>Info:</strong> The first round will automatically include all teams from the selected division. 
+                Teams will be seeded based on their current division seed numbers.
+            </div>
+
+            <form asp-action="CreateFirstRound" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <input type="hidden" asp-for="TournamentId" />
+                <input type="hidden" asp-for="DivisionId" />
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="RoundId" class="form-label">
+                                Round <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="RoundId" class="form-select" asp-items='@((SelectList)ViewData["Rounds"])'>
+                                <option value="">-- Select Round --</option>
+                            </select>
+                            <span asp-validation-for="RoundId" class="text-danger"></span>
+                            <div class="form-text">Select which round this will be (e.g., Round 1, Group Stage, etc.)</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="TeamsAdvancing" class="form-label">
+                                Teams Advancing <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="TeamsAdvancing" type="number" class="form-control" min="0" />
+                            <span asp-validation-for="TeamsAdvancing" class="text-danger"></span>
+                            <div class="form-text">Number of teams that will advance to the next round</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="TeamSelectionMethod" class="form-label">
+                                Team Selection Method <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="TeamSelectionMethod" class="form-select">
+                                <option value="Manual">Manual - Select teams manually</option>
+                                <option value="TopByPoints">Top By Points - Best teams overall</option>
+                                <option value="SeedTopHalf">Seed Top Half - Top 50% of teams</option>
+                                <option value="WinnersOnly">Winners Only - Only rank 1 teams</option>
+                                <option value="TopFromGroupAndNextBest">Top From Group And Next Best</option>
+                            </select>
+                            <span asp-validation-for="TeamSelectionMethod" class="text-danger"></span>
+                            <div class="form-text">How teams will be selected for subsequent rounds</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="MatchGenerationStrategy" class="form-label">
+                                Match Generation Strategy <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="MatchGenerationStrategy" class="form-select">
+                                <option value="RoundRobin">Round Robin - All teams play each other</option>
+                                <option value="SeededBracket">Seeded Bracket - Elimination format</option>
+                                <option value="Manual">Manual - Create matches manually</option>
+                                <option value="Swiss">Swiss - Swiss system</option>
+                                <option value="GroupStageKnockout">Group Stage Knockout</option>
+                            </select>
+                            <span asp-validation-for="MatchGenerationStrategy" class="text-danger"></span>
+                            <div class="form-text">How matches will be generated for this round</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> <strong>Note:</strong> After creating the first round, 
+                    you will be redirected to generate matches. Make sure all teams are properly seeded in the division before proceeding.
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" asp-route-tournamentId="@Model.TournamentId" asp-route-divisionId="@Model.DivisionId" 
+                       class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-check-circle"></i> Create First Round
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

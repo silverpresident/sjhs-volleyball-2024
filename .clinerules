@@ -144,6 +144,7 @@ This is a .NET 10.0 volleyball tournament management system with three main proj
 - Enable Azure SQL firewall rules
 - Keep all packages updated for security patches
 - Use Azure AD B2C for production authentication
+- Where appropriate POST action **must** be protected using the **Anti-Forgery Token** (`[ValidateAntiForgeryToken]`)
 
 ## File Organization
 
