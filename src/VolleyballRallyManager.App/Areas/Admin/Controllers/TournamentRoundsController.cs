@@ -117,7 +117,8 @@ public class TournamentRoundsController : Controller
                 DivisionName = division?.Name ?? "Unknown",
                 Rounds = roundViewModels
             };
-
+ ViewBag.Divisions = await _activeTournamentService.GetTournamentDivisionsAsync();
+           
             return View(viewModel);
         }
         catch (Exception ex)
