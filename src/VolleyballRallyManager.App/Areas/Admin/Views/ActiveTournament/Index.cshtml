@@ -102,6 +102,8 @@
                     </span>
                 </div>
                 <div class="card-body">
+                    <partial name="_TeamsPartial" model="Model.TeamsByDivision" />
+<hr/>
                     @if (Model.Teams != null && Model.Teams.Any())
                     {
                         var teamsByDivision = Model.Teams.GroupBy(t => t.Division.Name);

@@ -12,6 +12,7 @@ namespace VolleyballRallyManager.App.Models
         public List<TournamentDivisionViewModel> Divisions { get; set; } = new List<TournamentDivisionViewModel>();
         public List<TournamentRoundViewModel> Rounds { get; set; } = new List<TournamentRoundViewModel>();
         public List<TournamentTeamDivision> Teams { get; set; } = new List<TournamentTeamDivision>();
+        public Dictionary<Division, IEnumerable<TournamentTeamDivision>> TeamsByDivision = new();
     }
 
     /// <summary>

@@ -106,15 +106,16 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 .ThenBy(ttd => ttd.Team.Name)
                 .ToListAsync();
 
+
             var viewModel = new TournamentDetailsViewModel
             {
                 TournamentId = tournamentId,
                 Tournament = activeTournament,
                 Divisions = divisionStats,
                 Rounds = rounds,
-                Teams = teams
+                Teams = teams,
+                TeamsByDivision = teams.GroupBy(t => t.Division).ToDictionary(g => g.Key, g => g.OrderBy(t => t.GroupName).ThenBy(t => t.Team.Name).ToList());
             };
-
             return View(viewModel);
         }
 
