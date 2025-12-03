@@ -8,6 +8,7 @@
                 <th>Groups</th>
                 <th>Teams</th>
                 <th>Matches Played</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -30,6 +31,11 @@
                     </td>
                     <td>
                         <span class="badge bg-success">@division.MatchesPlayed</span>
+                    </td>
+                    <td>
+                        <a class="btn btn-info w-100" asp-controller="TournamentRounds" asp-action="CreateFirstRound" asp-route-DivisionId="@division.DivisionId">
+                            <i class="bi bi-play-circle"></i> Create First Round
+                        </a>
                     </td>
                 </tr>
             }
