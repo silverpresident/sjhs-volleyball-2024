@@ -445,7 +445,7 @@ public class TournamentRoundsController : Controller
                 {
                     if (round.RoundNumber == 1)
                     {
-                        await _tournamentRoundService.AssignFirstRoundTeamsAsync(tournamentRound.Id, userName);
+                        await _tournamentRoundService.AssignFirstRoundTeamsAsync(round.Id, userName);
                         TempData["SuccessMessage"] += $"First round teams assigned.";
                     }
                     else
