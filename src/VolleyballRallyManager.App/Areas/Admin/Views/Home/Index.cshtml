@@ -10,96 +10,143 @@
             <h1>Admin Dashboard &middot; @Model.ActiveTournamentName</h1> 
         </div>
     </div>
-
-    <!-- Statistics Cards -->
     <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-primary">
+        <!-- Quick Actions -->
+        <div class="col">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="bi bi-lightning-fill"></i> Quick Actions</h5>
+                </div>
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title text-uppercase mb-0">Total Teams</h6>
-                            <h2 class="mb-0">@Model.TotalTeams</h2>
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <a class="btn btn-primary" asp-area="Admin" asp-controller="ActiveTournament" asp-action="Index">
+                                <i class="bi bi-award-fill"></i> Tournament Dashbaord
+                            </a>
                         </div>
-                        <div>
-                            <i class="bi bi-people fs-1"></i>
+                        <div class="col-md-6">
+                            <a class="btn btn-primary" asp-area="Admin" asp-controller="AnnouncerBoard" asp-action="Index">
+                                <i class="bi bi-broadcast"></i> Announcer Board
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a asp-area="Admin" asp-controller="Matches" asp-action="Create" class="btn btn-primary w-100">
+                                <i class="bi bi-plus-circle"></i> Create Match
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a asp-area="Admin" asp-controller="Teams" asp-action="Create" class="btn btn-primary w-100">
+                                <i class="bi bi-plus-circle"></i> Add Team
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a asp-area="Admin" asp-controller="Bulletin" asp-action="Create" class="btn btn-primary w-100">
+                                <i class="bi bi-card-list"></i> New Bulletin
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a asp-area="Admin" asp-controller="Announcements" asp-action="Create" class="btn btn-primary w-100">
+                                <i class="bi bi-megaphone"></i> New Announcement
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a asp-area="Admin" asp-controller="ActiveTournament" asp-action="Index" class="btn btn-primary w-100">
+                                <i class="bi bi-gear"></i> Tournament Settings
+                            </a>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-primary bg-opacity-75 d-flex justify-content-between align-items-center">
-                    <a asp-area="Admin" asp-controller="Teams" asp-action="Index" class="text-white text-decoration-none">
-                        View All <i class="bi bi-arrow-right"></i>
-                    </a>
-                    
-                    <a asp-area="Admin" asp-controller="Teams" asp-action="Create" class="btn text-white border w-100">
-                        <i class="bi bi-plus-circle"></i> Add Team
-                    </a>
-                </div>
             </div>
-        </div>
 
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-success">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title text-uppercase mb-0">Total Matches</h6>
-                            <h2 class="mb-0">@Model.TotalMatches</h2>
-                        </div>
-                        <div>
-                            <i class="bi bi-trophy fs-1"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer bg-success bg-opacity-75">
-                    <a asp-area="Admin" asp-controller="Matches" asp-action="Index" class="text-white text-decoration-none">
-                        View All <i class="bi bi-arrow-right"></i>
-                    </a>
-                    <a asp-area="Admin" asp-controller="Matches" asp-action="Create" class="btn text-white border w-100">
-                        <i class="bi bi-plus-circle"></i> Add Match
-                    </a>
-                </div>
-            </div>
         </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-warning">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title text-uppercase mb-0">In Progress</h6>
-                            <h2 class="mb-0">@Model.MatchesInProgress</h2>
+        <!-- Statistics Cards -->
+        <div class="col">
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <div class="card text-white bg-primary">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title text-uppercase mb-0">Total Teams</h6>
+                                    <h2 class="mb-0">@Model.TotalTeams</h2>
+                                </div>
+                                <div>
+                                    <i class="bi bi-people fs-1"></i>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <i class="bi bi-play-circle fs-1"></i>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer bg-warning bg-opacity-75">
-                    <span class="text-white">Active matches</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-info">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title text-uppercase mb-0">Finished</h6>
-                            <h2 class="mb-0">@Model.MatchesFinished</h2>
-                        </div>
-                        <div>
-                            <i class="bi bi-check-circle fs-1"></i>
+                        <div class="card-footer bg-primary bg-opacity-75 d-flex justify-content-between align-items-center">
+                            <a asp-area="Admin" asp-controller="Teams" asp-action="Index" class="text-white text-decoration-none">
+                                View All <i class="bi bi-arrow-right"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-info bg-opacity-75">
-                    <span class="text-white">Completed matches</span>
+
+                <div class="col-md-3 mb-3">
+                    <div class="card text-white bg-success">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title text-uppercase mb-0">Total Matches</h6>
+                                    <h2 class="mb-0">@Model.TotalMatches</h2>
+                                </div>
+                                <div>
+                                    <i class="bi bi-trophy fs-1"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-success bg-opacity-75">
+                            <a asp-area="Admin" asp-controller="Matches" asp-action="Index" class="text-white text-decoration-none">
+                                View All <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="card text-white bg-warning">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title text-uppercase mb-0">In Progress</h6>
+                                    <h2 class="mb-0">@Model.MatchesInProgress</h2>
+                                </div>
+                                <div>
+                                    <i class="bi bi-play-circle fs-1"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-warning bg-opacity-75">
+                            <span class="text-white">Active matches</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="card text-white bg-info">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="card-title text-uppercase mb-0">Finished</h6>
+                                    <h2 class="mb-0">@Model.MatchesFinished</h2>
+                                </div>
+                                <div>
+                                    <i class="bi bi-check-circle fs-1"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-info bg-opacity-75">
+                            <span class="text-white">Completed matches</span>
+                        </div>
+                    </div>
                 </div>
             </div>
+
         </div>
     </div>
+
+    <!-- Statistics Cards -->
 
     @if (Model.DisputedMatches > 0)
     {
@@ -114,48 +161,6 @@
         </div>
     }
 
-    <!-- Quick Actions -->
-    <div class="row mb-4">
-        <div class="col">
-            <div class="card">
-                <div class="card-header bg-dark text-white">
-                    <h5 class="mb-0"><i class="bi bi-lightning-fill"></i> Quick Actions</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-3 mb-2">
-                    <a class="btn btn-primary" asp-area="Admin" asp-controller="AnnouncerBoard" asp-action="Index">
-                        <i class="bi bi-broadcast"></i> Announcer Board
-                    </a>
-                        </div>
-                        <div class="col-md-3 mb-2">
-                            <a asp-area="Admin" asp-controller="Matches" asp-action="Create" class="btn btn-primary w-100">
-                                <i class="bi bi-plus-circle"></i> Create Match
-                            </a>
-                            <a asp-area="Admin" asp-controller="Teams" asp-action="Create" class="btn btn-primary w-100">
-                                <i class="bi bi-plus-circle"></i> Add Team
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-2">
-                            <a asp-area="Admin" asp-controller="Bulletin" asp-action="Create" class="btn btn-primary w-100">
-                                <i class="bi bi-card-list"></i> New Bulletin
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-2">
-                            <a asp-area="Admin" asp-controller="Announcements" asp-action="Create" class="btn btn-primary w-100">
-                                <i class="bi bi-megaphone"></i> New Announcement
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-2">
-                            <a asp-area="Admin" asp-controller="ActiveTournament" asp-action="Index" class="btn btn-primary w-100">
-                                <i class="bi bi-gear"></i> Tournament Settings
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <div class="row">
         <!-- Recent Matches -->
