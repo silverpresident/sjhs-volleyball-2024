@@ -307,7 +307,7 @@ public class TournamentRoundsController : Controller
             // Immediate execution: Assign teams if requested
             if (model.AssignTeamsNow)
             {
-                // Teams are already assigned in CreateFirstRoundAsync
+                await _tournamentRoundService.AssignFirstRoundTeamsAsync(tournamentRound.Id, userName);
                 _logger.LogInformation("Teams assigned immediately for round {RoundId}", tournamentRound.Id);
             }
 
@@ -443,8 +443,16 @@ public class TournamentRoundsController : Controller
             {
                 try
                 {
-                    var teams = await _tournamentRoundService.SelectTeamsForRoundAsync(model.Id, userName);
-                    TempData["SuccessMessage"] += $" {teams.Count} teams assigned.";
+                    if (round.RoundNumber == 1)
+                    {
+                        await _tournamentRoundService.AssignFirstRoundTeamsAsync(tournamentRound.Id, userName);
+                        TempData["SuccessMessage"] += $"First round teams assigned.";
+                    }
+                    else
+                    {
+                        var teams = await _tournamentRoundService.SelectTeamsForRoundAsync(model.Id, userName);
+                        TempData["SuccessMessage"] += $" {teams.Count} teams assigned.";
+                    }
                 }
                 catch (Exception ex)
                 {

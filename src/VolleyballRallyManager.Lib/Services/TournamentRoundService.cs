@@ -104,7 +104,7 @@ public class TournamentRoundService : ITournamentRoundService
             await _context.SaveChangesAsync();
 
 
-            _logger.LogInformation("Created first round with {TeamCount} teams", divisionTeams.Count);
+            _logger.LogInformation("Created first round with");
 
             return tournamentRound;
         }
