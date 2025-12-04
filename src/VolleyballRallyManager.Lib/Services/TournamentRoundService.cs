@@ -290,24 +290,23 @@ public class TournamentRoundService : ITournamentRoundService
         // Order teams by seed number for consistent assignment
         var orderedTeams = roundTeams.OrderBy(t => t.SeedNumber).ToList();
         
-        int groupNumber = 1;
-        int teamIndex = 0;
-
-        while (teamIndex < orderedTeams.Count)
+        // Calculate number of groups needed
+        int groupCount = (int)Math.Ceiling((double)orderedTeams.Count / teamsPerGroup);
+        
+        // Distribute teams round-robin style: top seeds distributed across groups first
+        for (int teamIndex = 0; teamIndex < orderedTeams.Count; teamIndex++)
         {
-            string groupName = $"{(char)('A' + groupNumber - 1)}";
+            // Determine which group this team should be assigned to
+            // Team 0 -> Group 0, Team 1 -> Group 1, ..., Team groupCount -> Group 0, etc.
+            int groupIndex = teamIndex % groupCount;
+            string groupName = $"{(char)('A' + groupIndex)}";
             
-            // Assign teams to this group
-            for (int i = 0; i < teamsPerGroup && teamIndex < orderedTeams.Count; i++)
-            {
-                orderedTeams[teamIndex].GroupName = groupName;
-                orderedTeams[teamIndex].UpdatedBy = userName;
-                orderedTeams[teamIndex].UpdatedAt = DateTime.Now;
-                teamIndex++;
-            }
-
-            groupNumber++;
+            orderedTeams[teamIndex].GroupName = groupName;
+            orderedTeams[teamIndex].UpdatedBy = userName;
+            orderedTeams[teamIndex].UpdatedAt = DateTime.Now;
         }
+
+        _logger.LogInformation("Distributed teams across {GroupCount} groups with round-robin seeding", groupCount);
 
         await Task.CompletedTask;
     }
@@ -323,28 +322,24 @@ public class TournamentRoundService : ITournamentRoundService
         // Order teams by seed number for consistent assignment
         var orderedTeams = roundTeams.OrderBy(t => t.SeedNumber).ToList();
         
-        // Calculate teams per group (distribute as evenly as possible)
-        int baseTeamsPerGroup = orderedTeams.Count / groupCount;
-        int extraTeams = orderedTeams.Count % groupCount;
-
-        int teamIndex = 0;
-
-        for (int groupNumber = 1; groupNumber <= groupCount; groupNumber++)
+        // Distribute teams round-robin style: top seeds distributed across groups first
+        // Example with 12 teams and 3 groups:
+        // Group A: Seeds 1, 4, 7, 10
+        // Group B: Seeds 2, 5, 8, 11
+        // Group C: Seeds 3, 6, 9, 12
+        for (int teamIndex = 0; teamIndex < orderedTeams.Count; teamIndex++)
         {
-            string groupName = $"Group {(char)('A' + groupNumber - 1)}";
+            // Determine which group this team should be assigned to
+            // Team 0 -> Group 0, Team 1 -> Group 1, ..., Team groupCount -> Group 0, etc.
+            int groupIndex = teamIndex % groupCount;
+            string groupName = $"{(char)('A' + groupIndex)}";
             
-            // Calculate how many teams this group should have
-            int teamsForThisGroup = baseTeamsPerGroup + (groupNumber <= extraTeams ? 1 : 0);
-
-            // Assign teams to this group
-            for (int i = 0; i < teamsForThisGroup && teamIndex < orderedTeams.Count; i++)
-            {
-                orderedTeams[teamIndex].GroupName = groupName;
-                orderedTeams[teamIndex].UpdatedBy = userName;
-                orderedTeams[teamIndex].UpdatedAt = DateTime.Now;
-                teamIndex++;
-            }
+            orderedTeams[teamIndex].GroupName = groupName;
+            orderedTeams[teamIndex].UpdatedBy = userName;
+            orderedTeams[teamIndex].UpdatedAt = DateTime.Now;
         }
+
+        _logger.LogInformation("Distributed teams across {GroupCount} groups with round-robin seeding", groupCount);
 
         await Task.CompletedTask;
     }

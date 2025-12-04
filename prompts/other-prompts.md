@@ -110,3 +110,7 @@ Also consider that if mathes are already scheduled then the group assignment sho
 Look at CreateFirstRoundAsync to see how the teams are selected for the first round then assign and place them in groups.
 
 ====
+
+Fix the AssignTeamsToGroupsByTeamsPerGroupAsync method and the AssignTeamsToGroupsByGroupCountAsync.
+1. The top seeded teams should be distributed amond the available groups, then the next best seed and so on.
+====

@@ -190,6 +190,10 @@
                         <i class="bi bi-calendar-plus"></i> Generate Matches
                     </button>
                 }
+                <!-- View Matches Button -->
+                <a asp-action="Matches" asp-route-RoundId="@Model.Round.Id" class="btn btn-primary">
+                    <i class="bi bi-calendar-plus"></i> View Matches
+                </a>
 
                 <!-- Rank Teams Button -->
                 @if (!Model.Round.IsFinished && Model.Matches.Any())
