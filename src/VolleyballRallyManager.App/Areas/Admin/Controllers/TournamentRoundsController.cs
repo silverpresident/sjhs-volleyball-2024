@@ -89,7 +89,7 @@ public class TournamentRoundsController : Controller
 
                 roundViewModels.Add(new TournamentRoundViewModel
                 {
-                    Id = round.Id,
+                    RoundId = round.Id,
                     TournamentName = tournament?.Name ?? "Unknown",
                     DivisionName = division?.Name ?? "Unknown",
                     RoundName = round.Round?.Name ?? $"Round {round.RoundNumber}",

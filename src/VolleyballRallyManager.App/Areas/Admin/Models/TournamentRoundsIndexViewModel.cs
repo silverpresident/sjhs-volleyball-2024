@@ -3,32 +3,6 @@ using VolleyballRallyManager.Lib.Models;
 namespace VolleyballRallyManager.App.Areas.Admin.Models;
 
 /// <summary>
-/// ViewModel for displaying a tournament round in the index
-/// </summary>
-public class TournamentRoundViewModel
-{
-    public Guid Id { get; set; }
-    public string TournamentName { get; set; } = string.Empty;
-    public string DivisionName { get; set; } = string.Empty;
-    public string RoundName { get; set; } = string.Empty;
-    public int RoundNumber { get; set; }
-    public int TeamCount { get; set; }
-    public int MatchCount { get; set; }
-    public int CompletedMatchCount { get; set; }
-    public bool IsFinished { get; set; }
-    public bool IsLocked { get; set; }
-    public TeamSelectionMethod TeamSelectionMethod { get; set; }
-    public MatchGenerationStrategy MatchGenerationStrategy { get; set; }
-    public int TeamsAdvancing { get; set; }
-    
-    // Conditional button visibility flags
-    public bool CanFinalize { get; set; }
-    public bool CanSelectTeams { get; set; }
-    public bool CanGenerateMatches { get; set; }
-    public bool CanGenerateNextRound { get; set; }
-}
-
-/// <summary>
 /// ViewModel for the tournament rounds index page
 /// </summary>
 public class TournamentRoundsIndexViewModel

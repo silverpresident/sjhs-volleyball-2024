@@ -30,7 +30,7 @@ namespace VolleyballRallyManager.Lib.Data
         {
             base.OnModelCreating(builder);
 
-            // TournamentDivision and TournamentTeamDivision use single Id primary keys (inherited from BaseEntity)
+            // TournamentDivision and TournamentTeamDivision use single TournamentRoundId primary keys (inherited from BaseEntity)
 
             builder.Entity<TournamentTeamDivision>()
                 .HasOne(ttd => ttd.Tournament)

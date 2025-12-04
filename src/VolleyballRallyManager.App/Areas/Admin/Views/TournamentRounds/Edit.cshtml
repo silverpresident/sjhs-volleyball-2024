@@ -80,7 +80,7 @@
                         <div class="mb-3">
                             <label class="form-label">Configuration Type <span class="text-danger">*</span></label>
                             <select asp-for="GroupConfigurationType" class="form-select" id="groupConfigType" 
-                                    @(Model.IsFinished ? "disabled" : "")>
+                                    disabled="@Model.IsFinished">
                                 <option value="TeamsPerGroup">Teams per group</option>
                                 <option value="GroupsInRound">Groups in round</option>
                             </select>
@@ -95,7 +95,7 @@
                             </label>
                             <input asp-for="GroupConfigurationValue" type="number" class="form-control" 
                                    min="2" max="@(Model.TotalTeamsInDivision / 2 + 1)"
-                                   @(Model.IsFinished ? "disabled" : "") />
+                                   disabled="@Model.IsFinished" />
                             <span asp-validation-for="GroupConfigurationValue" class="text-danger"></span>
                             <div class="form-text">
                                 Minimum: 2, Maximum: @(Model.TotalTeamsInDivision / 2 + 1)
@@ -112,7 +112,7 @@
                             <label asp-for="TeamSelectionMethod" class="form-label">
                                 Team Selection Method <span class="text-danger">*</span>
                             </label>
-                            <select asp-for="TeamSelectionMethod" class="form-select" @(Model.IsFinished ? "disabled" : "")>
+                            <select asp-for="TeamSelectionMethod" class="form-select" disabled="@Model.IsFinished">
                                 <option value="Manual">Manual - Select teams manually</option>
                                 <option value="TopByPoints">Top By Points - Best teams overall</option>
                                 <option value="SeedTopHalf">Seed Top Half - Top 50% of teams</option>
@@ -129,7 +129,7 @@
                             <label asp-for="MatchGenerationStrategy" class="form-label">
                                 Match Generation Strategy <span class="text-danger">*</span>
                             </label>
-                            <select asp-for="MatchGenerationStrategy" class="form-select" @(Model.IsFinished ? "disabled" : "")>
+                            <select asp-for="MatchGenerationStrategy" class="form-select" disabled="@Model.IsFinished">
                                 <option value="RoundRobin">Round Robin - All teams play each other</option>
                                 <option value="SeededBracket">Seeded Bracket - Elimination format</option>
                                 <option value="Manual">Manual - Create matches manually</option>
@@ -149,7 +149,7 @@
                                 Teams Advancing <span class="text-danger">*</span>
                             </label>
                             <input asp-for="TeamsAdvancing" type="number" class="form-control" min="0" 
-                                   @(Model.IsFinished ? "disabled" : "") />
+                                   disabled="@Model.IsFinished" />
                             <span asp-validation-for="TeamsAdvancing" class="text-danger"></span>
                             <div class="form-text">Number of teams that will advance to the next round</div>
                         </div>

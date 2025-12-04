@@ -205,25 +205,25 @@ namespace VolleyballRallyManager.Lib.Configuration
             /*var teams = new[]
             {
                 new Team {
-                    Id = Guid.NewGuid(),
+                    TournamentRoundId = Guid.NewGuid(),
                     Name = "Team A",
                     School = "School A",
                     Color = "#FF0000"
                 },
                 new Team {
-                    Id = Guid.NewGuid(),
+                    TournamentRoundId = Guid.NewGuid(),
                     Name = "Team B",
                     School = "School B",
                     Color = "#00FF00"
                 },
                 new Team {
-                    Id = Guid.NewGuid(),
+                    TournamentRoundId = Guid.NewGuid(),
                     Name = "Team C",
                     School = "School C",
                     Color = "#0000FF"
                 },
                 new Team {
-                    Id = Guid.NewGuid(),
+                    TournamentRoundId = Guid.NewGuid(),
                     Name = "Team D",
                     School = "School D",
                     Color = "#FFFF00"

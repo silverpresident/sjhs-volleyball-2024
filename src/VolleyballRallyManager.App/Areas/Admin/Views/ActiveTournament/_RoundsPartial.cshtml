@@ -1,4 +1,4 @@
-@model List<VolleyballRallyManager.App.Models.TournamentRoundViewModel>
+@model List<VolleyballRallyManager.Lib.Models.TournamentRoundViewModel>
 @{
     var totalScheduled = Model.Sum(r => r.MatchesScheduled);
     var totalPlayed = Model.Sum(r => r.MatchesPlayed);
@@ -40,7 +40,7 @@
             <tbody>
                 @foreach (var round in divisionGroup.OrderBy(r => r.Sequence))
                 {
-                    <tr class="clickable-row" style="cursor: pointer;" onclick="window.location.href='@Url.Action("Details", "TournamentRounds", new { id = round.Id })'">
+                    <tr class="clickable-row" style="cursor: pointer;" onclick="window.location.href='@Url.Action("Details", "TournamentRounds", new { id = round.TournamentRoundId })'">
                         <td><strong>@round.RoundName</strong></td>
                         <td>@round.TeamCount</td>
                         <td>@round.MatchesScheduled</td>

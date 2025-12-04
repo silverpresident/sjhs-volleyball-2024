@@ -21,5 +21,6 @@ namespace VolleyballRallyManager.Lib.Services
         Task<IEnumerable<Team>> GetLeaderboardAsync(Guid divisionId);
         Task RecalculateTeamStatisticsAsync(Guid teamId);
         Task GetDetailsAsync(Tournament tournament);
+        Task<TournamentDetailsViewModel> GetTournamentDetailsAsync(Guid tournamentId);
     }
 }
