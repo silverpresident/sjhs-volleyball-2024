@@ -15,12 +15,10 @@ namespace VolleyballRallyManager.Lib.Models
         public string DivisionName { get; set; } = string.Empty;
         public string RoundName { get; set; } = string.Empty;
         public int RoundNumber { get; set; }
-        public int Sequence { get; set; }
         public int TeamCount { get; set; }
         public int MatchCount { get; set; }
-        public int CompletedMatchCount { get; set; }
-        public int MatchesScheduled { get; set; }
         public int MatchesPlayed { get; set; }
+        public int MatchesScheduled { get; set; }
         public bool IsFinished { get; set; }
         public bool IsLocked { get; set; }
         public TeamSelectionMethod TeamSelectionMethod { get; set; }
@@ -40,5 +38,6 @@ namespace VolleyballRallyManager.Lib.Models
             ? (int)((double)MatchesPlayed / MatchesScheduled * 100) 
             : 0;
 
+        public Guid TournamentId { get; internal set; }
     }
 }

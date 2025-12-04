@@ -129,7 +129,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var round in divisionGroup.OrderBy(r => r.Sequence))
+                                    @foreach (var round in divisionGroup.OrderBy(r => r.RoundNumber))
                                     {
                                         <tr>
                                             <td><strong>@round.RoundName</strong></td>

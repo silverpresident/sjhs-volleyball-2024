@@ -197,7 +197,40 @@ public class TournamentRoundService : ITournamentRoundService
             throw;
         }
     }
+    public async Task<TournamentRound> AssignFirstRoundTeamsAsync(Guid tournamentRoundId, string userName)
+    {
+        try
+        {
+            _logger.LogInformation("Finalizing round {TournamentRoundId}", tournamentRoundId);
 
+            var tournamentRound = await GetTournamentRoundByIdAsync(tournamentRoundId);
+            if (tournamentRound == null)
+            {
+                throw new InvalidOperationException($"Tournament round {tournamentRoundId} not found");
+            }
+
+            if (tournamentRound.IsFinished)
+            {
+                throw new InvalidOperationException("Round is already finalized");
+            }
+
+            // Verify all matches are complete
+            if (!await AreAllMatchesCompleteAsync(tournamentRoundId))
+            {
+                throw new InvalidOperationException("All matches must be complete before finalizing round");
+            }
+            //TODO assign teams based on the   tournamentRound.TeamsPerGroup  or tournamentRound.GroupsInRound  
+
+            _logger.LogInformation("Finalized round {TournamentRoundId}", tournamentRoundId);
+
+            return tournamentRound;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error finalizing round {TournamentRoundId}", tournamentRoundId);
+            throw;
+        }
+    }
     public async Task<List<TournamentRoundTeam>> SelectTeamsForRoundAsync(Guid tournamentRoundId, string userName)
     {
         try

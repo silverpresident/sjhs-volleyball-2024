@@ -35,7 +35,7 @@
                     <td>
                         @if(division.RoundsCount > 0){
                             <a class="btn btn-sm btn-dark" asp-controller="TournamentRounds" asp-action="Index" asp-route-DivisionId="@division.DivisionId">
-                            <i class="bi bi-trophy"></i> Rounds
+                                <i class="bi bi-trophy"></i> Rounds (@division.RoundsCount)
                             </a>
                         } else {
                         <a class="btn btn-info w-100" asp-controller="TournamentRounds" asp-action="CreateFirstRound" asp-route-DivisionId="@division.DivisionId">

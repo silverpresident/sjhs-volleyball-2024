@@ -96,7 +96,7 @@ public class TournamentRoundsController : Controller
                     RoundNumber = round.RoundNumber,
                     TeamCount = teams.Count,
                     MatchCount = matches.Count,
-                    CompletedMatchCount = completedMatches,
+                    MatchesPlayed = completedMatches,
                     IsFinished = round.IsFinished,
                     IsLocked = round.IsLocked,
                     TeamSelectionMethod = round.TeamSelectionMethod,
@@ -177,6 +177,7 @@ public class TournamentRoundsController : Controller
                 CanGenerateMatches = hasTeams && !hasMatches,
                 CanGenerateNextRound = round.IsFinished
             };
+            viewModel.CanSelectTeams = true;
 
             return View(viewModel);
         }
@@ -205,7 +206,7 @@ public class TournamentRoundsController : Controller
                 divisionId = firstDivision?.Id ?? Guid.Empty;
             }
 
-            // ACCESS GUARD: Check if a round with Sequence > 1 already exists
+            // ACCESS GUARD: Check if a round with RoundNumber > 1 already exists
             var existingRounds = await _context.TournamentRounds
                 .Include(tr => tr.Round)
                 .Where(tr => tr.TournamentId == tournamentId.Value && tr.DivisionId == divisionId.Value)
@@ -236,7 +237,7 @@ public class TournamentRoundsController : Controller
             var tournament = await _context.Tournaments.FindAsync(tournamentId.Value);
             var division = await _context.Divisions.FindAsync(divisionId.Value);
             
-            // Get Round with Sequence = 1
+            // Get Round with RoundNumber = 1
             var firstRoundDef = await _context.Rounds.FirstOrDefaultAsync(r => r.Sequence == 1);
             if (firstRoundDef == null)
             {
@@ -582,7 +583,7 @@ public class TournamentRoundsController : Controller
             {
                 return NotFound();
             }
-
+            //TODO if round 1 auto assign teams
             var teams = await _tournamentRoundService.GetRoundTeamsAsync(id);
 
             var model = new GenerateMatchesViewModel
@@ -616,6 +617,9 @@ public class TournamentRoundsController : Controller
             {
                 return View(model);
             }
+            //if teams per group groups assign to groups
+            //if groups in round
+
 
             var userName = User.Identity?.Name ?? "admin";
             var matches = await _tournamentRoundService.GenerateMatchesForRoundAsync(
