@@ -60,6 +60,7 @@ This is a .NET 10.0 volleyball tournament management system with three main proj
 - Connection strings must be stored in appsettings.json (never hardcoded)
 - Use `ApplicationDbContext` for all database operations
 - Apply `.AsNoTracking()` for read-only queries to improve performance
+- Use TSQL scripts for migrations and updates
 
 ### SignalR Real-Time Updates
 - Use `MatchHub` for broadcasting match updates

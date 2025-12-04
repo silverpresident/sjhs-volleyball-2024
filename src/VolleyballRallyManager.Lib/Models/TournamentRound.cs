@@ -51,6 +51,12 @@ public class TournamentRound : BaseEntity
     [Display(Name = "Teams Advancing")]
     public int TeamsAdvancing { get; set; } = 0;
 
+    [Display(Name = "Teams Per Group")]
+    public int? TeamsPerGroup { get; set; }
+
+    [Display(Name = "Groups In Round")]
+    public int? GroupsInRound { get; set; }
+
     // State Flags
     [Display(Name = "Is Finished")]
     public bool IsFinished { get; set; } = false;

@@ -85,9 +85,21 @@ public class CreateFirstRoundViewModel
     public Guid TournamentId { get; set; }
     public Guid DivisionId { get; set; }
     public Guid RoundId { get; set; }
+    public string TournamentName { get; set; } = string.Empty;
+    public string DivisionName { get; set; } = string.Empty;
+    public string RoundName { get; set; } = string.Empty;
+    public int TotalTeamsInDivision { get; set; }
     public TeamSelectionMethod TeamSelectionMethod { get; set; } = TeamSelectionMethod.Manual;
     public MatchGenerationStrategy MatchGenerationStrategy { get; set; } = MatchGenerationStrategy.RoundRobin;
     public int TeamsAdvancing { get; set; } = 4;
+    
+    // Group Configuration
+    public string GroupConfigurationType { get; set; } = "TeamsPerGroup"; // "TeamsPerGroup" or "GroupsInRound"
+    public int GroupConfigurationValue { get; set; } = 2;
+    
+    // Post-action flags
+    public bool AssignTeamsNow { get; set; } = true;
+    public bool GenerateMatchesNow { get; set; } = true;
 }
 
 /// <summary>
@@ -116,4 +128,36 @@ public class GenerateMatchesViewModel
     public string CourtLocation { get; set; } = "Court 1";
     public int TeamCount { get; set; }
     public MatchGenerationStrategy Strategy { get; set; }
+}
+
+/// <summary>
+/// ViewModel for editing a tournament round
+/// </summary>
+public class EditTournamentRoundViewModel
+{
+    public Guid Id { get; set; }
+    public Guid TournamentId { get; set; }
+    public Guid DivisionId { get; set; }
+    public Guid RoundId { get; set; }
+    public string TournamentName { get; set; } = string.Empty;
+    public string DivisionName { get; set; } = string.Empty;
+    public string RoundName { get; set; } = string.Empty;
+    public int TotalTeamsInDivision { get; set; }
+    public int RoundNumber { get; set; }
+    public TeamSelectionMethod TeamSelectionMethod { get; set; }
+    public MatchGenerationStrategy MatchGenerationStrategy { get; set; }
+    public int TeamsAdvancing { get; set; }
+    
+    // Group Configuration
+    public string GroupConfigurationType { get; set; } = "TeamsPerGroup"; // "TeamsPerGroup" or "GroupsInRound"
+    public int GroupConfigurationValue { get; set; } = 2;
+    
+    // Post-action flags
+    public bool AssignTeamsNow { get; set; } = false;
+    public bool GenerateMatchesNow { get; set; } = false;
+    
+    // State flags
+    public bool IsFinished { get; set; }
+    public bool HasTeams { get; set; }
+    public bool HasMatches { get; set; }
 }
