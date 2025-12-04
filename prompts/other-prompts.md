@@ -101,3 +101,12 @@ It should have actions which are limited to the Active tournament.
  Create views and actions for
 - Generate Teams ( select number of teams and add a set of team with randomly generated name and schools)
 - add an option to delete all matches  in the active tournament
+
+====
+In the open service file, AssignFirstRoundTeamsAsync method needs to be implemented .
+Ensure the round is a first round, and assign teams based on the   tournamentRound.TeamsPerGroup  or tournamentRound.GroupsInRound  
+Also consider that if mathes are already scheduled then the group assignment should not be changed but if there afre no matches then everything may be reassigned.
+
+Look at CreateFirstRoundAsync to see how the teams are selected for the first round then assign and place them in groups.
+
+====
