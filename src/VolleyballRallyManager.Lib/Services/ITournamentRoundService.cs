@@ -65,7 +65,7 @@ public interface ITournamentRoundService
     /// <param name="tournamentRoundId">Tournament round ID</param>
     /// <param name="userName">User performing the action</param>
     /// <returns>List of selected and seeded teams</returns>
-    Task<TournamentRound> AssignFirstRoundTeamsAsync(Guid tournamentRoundId, string userName);
+    Task<List<TournamentRoundTeam>> AssignFirstRoundTeamsAsync(Guid tournamentRoundId, string userName);
 
     /// <summary>
     /// Selects and seeds teams for a tournament round

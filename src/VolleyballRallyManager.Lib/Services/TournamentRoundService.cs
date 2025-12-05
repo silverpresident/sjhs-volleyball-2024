@@ -170,7 +170,7 @@ public class TournamentRoundService : ITournamentRoundService
             throw;
         }
     }
-    public async Task<TournamentRound> AssignFirstRoundTeamsAsync(Guid tournamentRoundId, string userName)
+    public async Task<List<TournamentRoundTeam>> AssignFirstRoundTeamsAsync(Guid tournamentRoundId, string userName)
     {
         try
         {
@@ -270,7 +270,7 @@ public class TournamentRoundService : ITournamentRoundService
             _logger.LogInformation("Successfully assigned {TeamCount} teams to groups for round {TournamentRoundId}", 
                 roundTeams.Count, tournamentRoundId);
 
-            return tournamentRound;
+            return roundTeams;
         }
         catch (Exception ex)
         {
@@ -353,6 +353,10 @@ public class TournamentRoundService : ITournamentRoundService
             if (tournamentRound == null)
             {
                 throw new InvalidOperationException($"Tournament round {tournamentRoundId} not found");
+            }
+
+            if (tournamentRound.RoundNumber == 1){
+                return await AssignFirstRoundTeamsAsync(tournamentRound.Id, userName);
             }
 
             if (!tournamentRound.PreviousTournamentRoundId.HasValue)
