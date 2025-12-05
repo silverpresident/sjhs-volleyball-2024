@@ -407,13 +407,13 @@ public class TournamentRoundsController : Controller
                 return View(model);
             }
 
-            var round = await _tournamentRoundService.GetTournamentRoundByIdAsync(model.Id);
-            if (round == null)
+            var tournamentRound = await _tournamentRoundService.GetTournamentRoundByIdAsync(model.Id);
+            if (tournamentRound == null)
             {
                 return NotFound();
             }
 
-            if (round.IsFinished)
+            if (tournamentRound.IsFinished)
             {
                 TempData["ErrorMessage"] = "Cannot edit a finalized round.";
                 return RedirectToAction(nameof(Details), new { id = model.Id });
@@ -422,18 +422,18 @@ public class TournamentRoundsController : Controller
             var userName = User.Identity?.Name ?? "admin";
 
             // Update round properties
-            round.TeamSelectionMethod = model.TeamSelectionMethod;
-            round.MatchGenerationStrategy = model.MatchGenerationStrategy;
-            round.TeamsAdvancing = model.TeamsAdvancing;
+            tournamentRound.TeamSelectionMethod = model.TeamSelectionMethod;
+            tournamentRound.MatchGenerationStrategy = model.MatchGenerationStrategy;
+            tournamentRound.TeamsAdvancing = model.TeamsAdvancing;
             
             // Update group configuration
-            round.TeamsPerGroup = model.GroupConfigurationType == "TeamsPerGroup" ? model.GroupConfigurationValue : null;
-            round.GroupsInRound = model.GroupConfigurationType == "GroupsInRound" ? model.GroupConfigurationValue : null;
+            tournamentRound.TeamsPerGroup = model.GroupConfigurationType == "TeamsPerGroup" ? model.GroupConfigurationValue : null;
+            tournamentRound.GroupsInRound = model.GroupConfigurationType == "GroupsInRound" ? model.GroupConfigurationValue : null;
             
-            round.UpdatedAt = DateTime.UtcNow;
-            round.UpdatedBy = userName;
+            tournamentRound.UpdatedAt = DateTime.UtcNow;
+            tournamentRound.UpdatedBy = userName;
 
-            _context.TournamentRounds.Update(round);
+            _context.TournamentRounds.Update(tournamentRound);
             await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Round updated successfully.";
@@ -443,9 +443,9 @@ public class TournamentRoundsController : Controller
             {
                 try
                 {
-                    if (round.RoundNumber == 1)
+                    if (tournamentRound.RoundNumber == 1)
                     {
-                        await _tournamentRoundService.AssignFirstRoundTeamsAsync(round.Id, userName);
+                        await _tournamentRoundService.AssignFirstRoundTeamsAsync(tournamentRound.Id, userName);
                         TempData["SuccessMessage"] += $"First round teams assigned.";
                     }
                     else

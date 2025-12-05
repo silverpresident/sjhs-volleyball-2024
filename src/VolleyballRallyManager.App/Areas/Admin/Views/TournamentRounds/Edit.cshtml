@@ -161,31 +161,27 @@
                     <h6 class="border-bottom pb-2 mb-3 mt-4"><i class="bi bi-lightning"></i> Immediate Actions</h6>
 
                     <div class="row">
-                        @if (!Model.HasTeams)
-                        {
+                      
                             <div class="col-md-6">
                                 <div class="form-check mb-3">
-                                    <input asp-for="AssignTeamsNow" type="checkbox" class="form-check-input" id="assignTeams" />
+                                    <input asp-for="AssignTeamsNow" type="checkbox" class="form-check-input" id="assignTeams" checked="@Model.HasTeams"/>
                                     <label class="form-check-label" for="assignTeams">
                                         <strong>Assign teams now</strong>
                                         <div class="form-text">Execute team selection immediately after saving</div>
                                     </label>
                                 </div>
                             </div>
-                        }
-
-                        @if (!Model.HasMatches)
-                        {
+                        
                             <div class="col-md-6">
                                 <div class="form-check mb-3">
-                                    <input asp-for="GenerateMatchesNow" type="checkbox" class="form-check-input" id="generateMatches" />
+                                    <input asp-for="GenerateMatchesNow" type="checkbox" class="form-check-input" id="generateMatches" checked="@Model.HasMatches"/>
                                     <label class="form-check-label" for="generateMatches">
                                         <strong>Generate matches now</strong>
                                         <div class="form-text">Redirect to match generation after saving</div>
                                     </label>
                                 </div>
                             </div>
-                        }
+                        
                     </div>
                 }
 
