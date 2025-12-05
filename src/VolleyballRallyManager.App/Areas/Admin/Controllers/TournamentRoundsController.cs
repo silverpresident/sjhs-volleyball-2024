@@ -599,7 +599,9 @@ public class TournamentRoundsController : Controller
                 TournamentRoundId = id,
                 RoundName = round.Round?.Name ?? $"Round {round.RoundNumber}",
                 StartTime = DateTime.Now.AddMinutes(30),
-                CourtLocation = "Court 1",
+                StartingCourtNumber = 1,
+                NumberOfCourts = 1,
+                MatchTimeInterval = 10,
                 TeamCount = teams.Count,
                 Strategy = round.MatchGenerationStrategy
             };
@@ -625,15 +627,14 @@ public class TournamentRoundsController : Controller
             {
                 return View(model);
             }
-            //if teams per group groups assign to groups
-            //if groups in round
-
 
             var userName = User.Identity?.Name ?? "admin";
             var matches = await _tournamentRoundService.GenerateMatchesForRoundAsync(
                 model.TournamentRoundId,
                 model.StartTime,
-                model.CourtLocation,
+                model.StartingCourtNumber,
+                model.NumberOfCourts,
+                model.MatchTimeInterval,
                 userName);
 
             TempData["SuccessMessage"] = $"Generated {matches.Count} matches for the round.";

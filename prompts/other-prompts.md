@@ -117,3 +117,20 @@ Fix the AssignTeamsToGroupsByTeamsPerGroupAsync method and the AssignTeamsToGrou
 In the developer controller and views
 Similar to the Delete all matches, do a "delete all rounds"
 ====
+In the TournamentRounds/GenerateMatches View and action make the follwoing changes
+- Remove "Default Court Location"
+- Put an input for "Starting Court Number" (int) default 1 min 1
+- Put an input for "Number of courts" (int) default 1 min 1 max 99
+- Put an input for "Match time interval" (int) default 10, min 5 max 60
+Pass these to the match generator.
+Balance the court assignments.
+ - Try to put all matches from same group on the same court
+ - Matchs on different courts can start at the same time...factor that into the time assignment.
+- Mark the "Start Time" input time only and precise upto the minute only (with property bound)
+====
+In the developer controller and views
+Create an action and view called "Generate match results"
+For each match that is not finished in the active tournament
+- add 1 or 3 sets.
+- add scores to sets and finalzie the sets
+- finalize the match

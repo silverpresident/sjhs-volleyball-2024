@@ -80,13 +80,17 @@ public interface ITournamentRoundService
     /// </summary>
     /// <param name="tournamentRoundId">Tournament round ID</param>
     /// <param name="startTime">Starting time for matches</param>
-    /// <param name="courtLocation">Default court location</param>
+    /// <param name="startingCourtNumber">First court number to use</param>
+    /// <param name="numberOfCourts">Number of courts available</param>
+    /// <param name="matchTimeInterval">Time interval between matches on the same court (in minutes)</param>
     /// <param name="userName">User performing the action</param>
     /// <returns>List of generated matches</returns>
     Task<List<Match>> GenerateMatchesForRoundAsync(
         Guid tournamentRoundId, 
         DateTime startTime, 
-        string courtLocation,
+        int startingCourtNumber,
+        int numberOfCourts,
+        int matchTimeInterval,
         string userName);
 
     /// <summary>

@@ -464,12 +464,15 @@ public class TournamentRoundService : ITournamentRoundService
     public async Task<List<Match>> GenerateMatchesForRoundAsync(
         Guid tournamentRoundId,
         DateTime startTime,
-        string courtLocation,
+        int startingCourtNumber,
+        int numberOfCourts,
+        int matchTimeInterval,
         string userName)
     {
         try
         {
-            _logger.LogInformation("Generating matches for round {TournamentRoundId}", tournamentRoundId);
+            _logger.LogInformation("Generating matches for round {TournamentRoundId} with {NumberOfCourts} courts starting at court {StartingCourtNumber}", 
+                tournamentRoundId, numberOfCourts, startingCourtNumber);
 
             var tournamentRound = await GetTournamentRoundByIdAsync(tournamentRoundId);
             if (tournamentRound == null)
@@ -490,16 +493,17 @@ public class TournamentRoundService : ITournamentRoundService
 
             int matchNumber = lastMatchNumber + 1;
             var matches = new List<Match>();
-            DateTime currentTime = startTime;
 
             switch (tournamentRound.MatchGenerationStrategy)
             {
                 case MatchGenerationStrategy.RoundRobin:
-                    matches = GenerateRoundRobinMatches(tournamentRound, roundTeams, ref matchNumber, ref currentTime, courtLocation, userName);
+                    matches = GenerateRoundRobinMatches(tournamentRound, roundTeams, ref matchNumber, startTime, 
+                        startingCourtNumber, numberOfCourts, matchTimeInterval, userName);
                     break;
 
                 case MatchGenerationStrategy.SeededBracket:
-                    matches = GenerateSeededBracketMatches(tournamentRound, roundTeams, ref matchNumber, ref currentTime, courtLocation, userName);
+                    matches = GenerateSeededBracketMatches(tournamentRound, roundTeams, ref matchNumber, startTime, 
+                        startingCourtNumber, numberOfCourts, matchTimeInterval, userName);
                     break;
 
                 case MatchGenerationStrategy.Manual:
@@ -528,36 +532,72 @@ public class TournamentRoundService : ITournamentRoundService
         TournamentRound tournamentRound,
         List<TournamentRoundTeam> teams,
         ref int matchNumber,
-        ref DateTime currentTime,
-        string courtLocation,
+        DateTime startTime,
+        int startingCourtNumber,
+        int numberOfCourts,
+        int matchTimeInterval,
         string userName)
     {
         var matches = new List<Match>();
         var orderedTeams = teams.OrderBy(t => t.SeedNumber).ToList();
 
-        for (int i = 0; i < orderedTeams.Count; i++)
-        {
-            for (int j = i + 1; j < orderedTeams.Count; j++)
-            {
-                var match = new Match
-                {
-                    TournamentId = tournamentRound.TournamentId,
-                    DivisionId = tournamentRound.DivisionId,
-                    RoundId = tournamentRound.RoundId,
-                    MatchNumber = matchNumber++,
-                    HomeTeamId = orderedTeams[i].TeamId,
-                    AwayTeamId = orderedTeams[j].TeamId,
-                    ScheduledTime = currentTime,
-                    CourtLocation = courtLocation,
-                    GroupName = orderedTeams[i].GroupName,
-                    CreatedBy = userName,
-                    UpdatedBy = userName
-                };
+        // Group teams by their GroupName
+        var groupedTeams = orderedTeams.GroupBy(t => string.IsNullOrEmpty(t.GroupName) ? "NoGroup" : t.GroupName).ToList();
 
-                matches.Add(match);
-                currentTime = currentTime.AddMinutes(15); // 15 minutes between matches
+        // Track next available time for each court
+        var courtSchedule = new Dictionary<int, DateTime>();
+        for (int i = 0; i < numberOfCourts; i++)
+        {
+            courtSchedule[startingCourtNumber + i] = startTime;
+        }
+
+        // Assign each group to a court (round-robin if more groups than courts)
+        var groupToCourtMap = new Dictionary<string, int>();
+        int courtIndex = 0;
+        foreach (var group in groupedTeams)
+        {
+            int assignedCourt = startingCourtNumber + (courtIndex % numberOfCourts);
+            groupToCourtMap[group.Key] = assignedCourt;
+            courtIndex++;
+        }
+
+        // Generate matches for each group
+        foreach (var group in groupedTeams)
+        {
+            var groupTeams = group.ToList();
+            int assignedCourt = groupToCourtMap[group.Key];
+            string groupName = group.Key == "NoGroup" ? string.Empty : group.Key;
+
+            // Generate round-robin matches within the group
+            for (int i = 0; i < groupTeams.Count; i++)
+            {
+                for (int j = i + 1; j < groupTeams.Count; j++)
+                {
+                    var match = new Match
+                    {
+                        TournamentId = tournamentRound.TournamentId,
+                        DivisionId = tournamentRound.DivisionId,
+                        RoundId = tournamentRound.RoundId,
+                        MatchNumber = matchNumber++,
+                        HomeTeamId = groupTeams[i].TeamId,
+                        AwayTeamId = groupTeams[j].TeamId,
+                        ScheduledTime = courtSchedule[assignedCourt],
+                        CourtLocation = $"Court {assignedCourt}",
+                        GroupName = groupName,
+                        CreatedBy = userName,
+                        UpdatedBy = userName
+                    };
+
+                    matches.Add(match);
+                    
+                    // Advance time for this court
+                    courtSchedule[assignedCourt] = courtSchedule[assignedCourt].AddMinutes(matchTimeInterval);
+                }
             }
         }
+
+        _logger.LogInformation("Generated {MatchCount} round-robin matches across {CourtCount} courts", 
+            matches.Count, numberOfCourts);
 
         return matches;
     }
@@ -566,17 +606,31 @@ public class TournamentRoundService : ITournamentRoundService
         TournamentRound tournamentRound,
         List<TournamentRoundTeam> teams,
         ref int matchNumber,
-        ref DateTime currentTime,
-        string courtLocation,
+        DateTime startTime,
+        int startingCourtNumber,
+        int numberOfCourts,
+        int matchTimeInterval,
         string userName)
     {
         var matches = new List<Match>();
         var orderedTeams = teams.OrderBy(t => t.SeedNumber).ToList();
 
+        // Track next available time for each court
+        var courtSchedule = new Dictionary<int, DateTime>();
+        for (int i = 0; i < numberOfCourts; i++)
+        {
+            courtSchedule[startingCourtNumber + i] = startTime;
+        }
+
         // Standard tournament seeding: 1 vs Last, 2 vs Second-to-last, etc.
         int teamCount = orderedTeams.Count;
+        int courtIndex = 0;
+
         for (int i = 0; i < teamCount / 2; i++)
         {
+            // Assign to courts in round-robin fashion
+            int assignedCourt = startingCourtNumber + (courtIndex % numberOfCourts);
+
             var match = new Match
             {
                 TournamentId = tournamentRound.TournamentId,
@@ -585,16 +639,22 @@ public class TournamentRoundService : ITournamentRoundService
                 MatchNumber = matchNumber++,
                 HomeTeamId = orderedTeams[i].TeamId,
                 AwayTeamId = orderedTeams[teamCount - 1 - i].TeamId,
-                ScheduledTime = currentTime,
-                CourtLocation = courtLocation,
+                ScheduledTime = courtSchedule[assignedCourt],
+                CourtLocation = $"Court {assignedCourt}",
                 GroupName = string.Empty,
                 CreatedBy = userName,
                 UpdatedBy = userName
             };
 
             matches.Add(match);
-            currentTime = currentTime.AddMinutes(15);
+            
+            // Advance time for this court
+            courtSchedule[assignedCourt] = courtSchedule[assignedCourt].AddMinutes(matchTimeInterval);
+            courtIndex++;
         }
+
+        _logger.LogInformation("Generated {MatchCount} seeded bracket matches across {CourtCount} courts", 
+            matches.Count, numberOfCourts);
 
         return matches;
     }

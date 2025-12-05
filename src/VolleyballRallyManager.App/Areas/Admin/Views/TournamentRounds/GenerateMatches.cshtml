@@ -37,31 +37,44 @@
                             <label asp-for="StartTime" class="form-label">
                                 Start Time <span class="text-danger">*</span>
                             </label>
-                            <input asp-for="StartTime" type="datetime-local" class="form-control" />
+                            <input asp-for="StartTime" type="time" step="60" class="form-control" />
                             <span asp-validation-for="StartTime" class="text-danger"></span>
-                            <div class="form-text">When should the first match of this round start?</div>
+                            <div class="form-text">When should the first match of this round start? (Time only)</div>
                         </div>
                     </div>
 
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label asp-for="CourtLocation" class="form-label">
-                                Default Court Location <span class="text-danger">*</span>
+                            <label asp-for="StartingCourtNumber" class="form-label">
+                                Starting Court Number <span class="text-danger">*</span>
                             </label>
-                            <input asp-for="CourtLocation" class="form-control" list="courtList" placeholder="Select or enter court" />
-                            <datalist id="courtList">
-                                <option value="Court 1">Court 1</option>
-                                <option value="Court 2">Court 2</option>
-                                <option value="Court 3">Court 3</option>
-                                <option value="Court 4">Court 4</option>
-                                <option value="Court 5">Court 5</option>
-                                <option value="Court 6">Court 6</option>
-                                <option value="Court 7">Court 7</option>
-                                <option value="Court 8">Court 8</option>
-                                <option value="Court 9">Court 9</option>
-                            </datalist>
-                            <span asp-validation-for="CourtLocation" class="text-danger"></span>
-                            <div class="form-text">Default court for all matches (can be changed per match later)</div>
+                            <input asp-for="StartingCourtNumber" type="number" min="1" class="form-control" />
+                            <span asp-validation-for="StartingCourtNumber" class="text-danger"></span>
+                            <div class="form-text">First court number to use (e.g., 1 for Court 1)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="NumberOfCourts" class="form-label">
+                                Number of Courts <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="NumberOfCourts" type="number" min="1" max="99" class="form-control" />
+                            <span asp-validation-for="NumberOfCourts" class="text-danger"></span>
+                            <div class="form-text">How many courts are available for matches?</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="MatchTimeInterval" class="form-label">
+                                Match Time Interval (minutes) <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="MatchTimeInterval" type="number" min="5" max="60" class="form-control" />
+                            <span asp-validation-for="MatchTimeInterval" class="text-danger"></span>
+                            <div class="form-text">Time between matches on the same court</div>
                         </div>
                     </div>
                 </div>
@@ -76,7 +89,7 @@
                                 <br />
                                 <strong>Estimated matches:</strong> @(Model.TeamCount * (Model.TeamCount - 1) / 2) matches
                                 <br />
-                                <strong>Match spacing:</strong> 15 minutes between each match
+                                <strong>Court Assignment:</strong> Matches from same groups will be assigned to the same court
                             </p>
                         }
                         else if (Model.Strategy == VolleyballRallyManager.Lib.Models.MatchGenerationStrategy.SeededBracket)
@@ -88,7 +101,7 @@
                                 <br />
                                 <strong>Seeding:</strong> 1st seed vs Last seed, 2nd vs Second-to-last, etc.
                                 <br />
-                                <strong>Match spacing:</strong> 15 minutes between each match
+                                <strong>Court Assignment:</strong> Matches will be distributed across available courts
                             </p>
                         }
                         else
@@ -104,8 +117,9 @@
                     <div class="card-body">
                         <h6 class="card-title text-warning"><i class="bi bi-exclamation-triangle"></i> Important Notes</h6>
                         <ul class="mb-0">
-                            <li>Matches will be scheduled sequentially with 15-minute intervals</li>
-                            <li>All matches will be assigned the same default court location</li>
+                            <li>Matches on different courts can start at the same time for parallel play</li>
+                            <li>Groups will be kept together on the same court when possible</li>
+                            <li>Time intervals apply between matches on the same court</li>
                             <li>You can edit match times and courts individually after generation</li>
                             <li>Match numbers will continue from the last match in the tournament</li>
                         </ul>
@@ -157,7 +171,9 @@
             if (startTimeInput && !startTimeInput.value) {
                 var now = new Date();
                 now.setMinutes(now.getMinutes() + 30);
-                startTimeInput.value = now.toISOString().slice(0, 16);
+                var hours = String(now.getHours()).padStart(2, '0');
+                var minutes = String(now.getMinutes()).padStart(2, '0');
+                startTimeInput.value = hours + ':' + minutes;
             }
         });
     </script>

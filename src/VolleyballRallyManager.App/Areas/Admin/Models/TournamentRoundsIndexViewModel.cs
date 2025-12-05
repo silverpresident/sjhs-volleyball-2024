@@ -99,7 +99,9 @@ public class GenerateMatchesViewModel
     public Guid TournamentRoundId { get; set; }
     public string RoundName { get; set; } = string.Empty;
     public DateTime StartTime { get; set; } = DateTime.Now;
-    public string CourtLocation { get; set; } = "Court 1";
+    public int StartingCourtNumber { get; set; } = 1;
+    public int NumberOfCourts { get; set; } = 1;
+    public int MatchTimeInterval { get; set; } = 10;
     public int TeamCount { get; set; }
     public MatchGenerationStrategy Strategy { get; set; }
 }
