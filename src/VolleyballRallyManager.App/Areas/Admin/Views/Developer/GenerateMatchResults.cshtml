@@ -1,0 +1,51 @@
+@{
+    ViewData["Title"] = "Generate Match Results";
+}
+
+<div class="container">
+    <div class="card border-warning">
+        <div class="card-header bg-warning text-dark">
+            <h1><i class="bi bi-clipboard-data"></i> Generate Match Results</h1>
+            <p class="mb-0"><small>⚠️ Developer Tool - DEBUG mode only</small></p>
+        </div>
+        <div class="card-body">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="alert alert-info">
+                <h4 class="alert-heading"><i class="bi bi-info-circle-fill"></i> What This Does</h4>
+                <p>This tool will automatically generate results for <strong>all unfinished matches</strong> in the active tournament:</p>
+                <p class="fs-5 fw-bold">@ViewBag.TournamentName</p>
+                <hr>
+                <p class="mb-0">For each unfinished match, the tool will:</p>
+                <ul class="mb-0">
+                    <li>Create 2 or 3 sets randomly (simulating realistic match outcomes)</li>
+                    <li>Generate realistic volleyball scores (25-point sets with deuce rules)</li>
+                    <li>Finalize all sets</li>
+                    <li>Mark the match as finished</li>
+                </ul>
+            </div>
+
+            <div class="alert alert-warning">
+                <p class="mb-0"><strong>Note:</strong> This is a testing tool to quickly populate match results for development purposes. The scores will be randomly generated but will follow realistic volleyball scoring patterns.</p>
+            </div>
+
+            <form asp-action="GenerateMatchResultsConfirmed" method="post">
+                @Html.AntiForgeryToken()
+                <div class="form-group mt-4">
+                    <button type="submit" class="btn btn-warning btn-lg" onclick="return confirm('Are you sure you want to generate results for all unfinished matches?');">
+                        <i class="bi bi-clipboard-data"></i> Generate Match Results
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary btn-lg">
+                        <i class="bi bi-arrow-left-circle"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

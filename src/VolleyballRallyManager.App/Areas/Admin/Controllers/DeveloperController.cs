@@ -205,5 +205,137 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
+
+        // GET: Admin/Developer/GenerateMatchResults
+        public async Task<IActionResult> GenerateMatchResults()
+        {
+#if !DEBUG
+            return NotFound();
+#endif
+            var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
+            if (activeTournament == null)
+            {
+                TempData["ErrorMessage"] = "No active tournament found. Please set an active tournament first.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.TournamentName = activeTournament.Name;
+            return View();
+        }
+
+        // POST: Admin/Developer/GenerateMatchResults
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GenerateMatchResultsConfirmed()
+        {
+#if !DEBUG
+            return NotFound();
+#endif
+            var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
+            if (activeTournament == null)
+            {
+                TempData["ErrorMessage"] = "No active tournament found. Please set an active tournament first.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                _logger.LogInformation("Generating match results for tournament {TournamentId}", activeTournament.Id);
+
+                // Get all unfinished matches in the active tournament
+                var allMatches = await _matchService.GetMatchesAsync();
+                var unfinishedMatches = allMatches
+                    .Where(m => m.TournamentId == activeTournament.Id && !m.IsFinished)
+                    .ToList();
+
+                if (unfinishedMatches.Count == 0)
+                {
+                    TempData["SuccessMessage"] = "No unfinished matches found in the active tournament.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                var random = new Random();
+                var systemUser = "System";
+                int matchesProcessed = 0;
+
+                foreach (var match in unfinishedMatches)
+                {
+                    // Randomly decide if match will have 2 or 3 sets (2 sets = 2-0, 3 sets = 2-1)
+                    int numberOfSets = random.Next(2, 4); // 2 or 3 sets
+                    int homeWins = 0;
+                    int awayWins = 0;
+
+                    // Start the match if not started
+                    if (match.CurrentSetNumber == 0)
+                    {
+                        await _matchService.StartMatchAsync(match.Id, systemUser);
+                    }
+
+                    // Generate sets
+                    for (int setNumber = 1; setNumber <= numberOfSets; setNumber++)
+                    {
+                        // Determine winner for this set
+                        bool homeTeamWins;
+                        if (setNumber < numberOfSets)
+                        {
+                            // For first sets, random winner
+                            homeTeamWins = random.Next(2) == 0;
+                        }
+                        else
+                        {
+                            // Last set: whoever needs to reach 2 wins
+                            homeTeamWins = homeWins < 2;
+                        }
+
+                        if (homeTeamWins)
+                        {
+                            homeWins++;
+                        }
+                        else
+                        {
+                            awayWins++;
+                        }
+
+                        // Generate realistic volleyball scores
+                        int winningScore = 25; // Standard winning score
+                        int losingScore = random.Next(15, 25); // Losing team gets 15-24 points
+                        
+                        // If it's a close game, winning score might be higher (deuce)
+                        if (losingScore >= 23)
+                        {
+                            winningScore = losingScore + 2; // Must win by 2
+                        }
+
+                        int homeScore = homeTeamWins ? winningScore : losingScore;
+                        int awayScore = homeTeamWins ? losingScore : winningScore;
+
+                        // Create/update the set with scores
+                        var matchSet = await _matchService.GetOrCreateMatchSetAsync(match.Id, setNumber, systemUser);
+                        await _matchService.UpdateSetScoreAsync(match.Id, setNumber, homeScore, awayScore, systemUser);
+                        
+                        // Finalize the set
+                        await _matchService.FinishSetAsync(match.Id, setNumber, systemUser);
+                    }
+
+                    // Finalize the match
+                    await _matchService.FinishMatchAsync(match.Id, systemUser);
+                    matchesProcessed++;
+                    
+                    _logger.LogInformation("Generated results for match {MatchId}: {Home}-{Away} in {Sets} sets", 
+                        match.Id, homeWins, awayWins, numberOfSets);
+                }
+
+                TempData["SuccessMessage"] = $"Successfully generated results for {matchesProcessed} match(es)!";
+                _logger.LogInformation("Successfully generated results for {Count} matches", matchesProcessed);
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating match results");
+                TempData["ErrorMessage"] = $"Error generating match results: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
+        }
     }
 }
