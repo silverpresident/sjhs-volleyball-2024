@@ -740,4 +740,84 @@ public class TournamentRoundService : ITournamentRoundService
             throw;
         }
     }
+
+    public async Task<int> DeleteAllRoundsByTournamentAsync(Guid tournamentId)
+    {
+        try
+        {
+            _logger.LogInformation("Deleting all rounds for tournament {TournamentId}", tournamentId);
+
+            // Get all tournament rounds for this tournament
+            var tournamentRounds = await _context.TournamentRounds
+                .Where(tr => tr.TournamentId == tournamentId)
+                .ToListAsync();
+
+            if (!tournamentRounds.Any())
+            {
+                _logger.LogInformation("No rounds found for tournament {TournamentId}", tournamentId);
+                return 0;
+            }
+
+            var tournamentRoundIds = tournamentRounds.Select(tr => tr.Id).ToList();
+            var roundIds = tournamentRounds.Select(tr => tr.RoundId).Distinct().ToList();
+
+            // Delete tournament round teams
+            var tournamentRoundTeams = await _context.TournamentRoundTeams
+                .Where(trt => tournamentRoundIds.Contains(trt.TournamentRoundId))
+                .ToListAsync();
+            _context.TournamentRoundTeams.RemoveRange(tournamentRoundTeams);
+            _logger.LogInformation("Deleted {Count} tournament round teams", tournamentRoundTeams.Count);
+
+            // Get all matches for these rounds
+            var matches = await _context.Matches
+                .Where(m => roundIds.Contains(m.RoundId))
+                .ToListAsync();
+
+            if (matches.Any())
+            {
+                var matchIds = matches.Select(m => m.Id).ToList();
+
+                // Delete match sets
+                var matchSets = await _context.MatchSets
+                    .Where(ms => matchIds.Contains(ms.MatchId))
+                    .ToListAsync();
+                _context.MatchSets.RemoveRange(matchSets);
+                _logger.LogInformation("Deleted {Count} match sets", matchSets.Count);
+
+                // Delete match updates
+                var matchUpdates = await _context.MatchUpdates
+                    .Where(mu => matchIds.Contains(mu.MatchId))
+                    .ToListAsync();
+                _context.MatchUpdates.RemoveRange(matchUpdates);
+                _logger.LogInformation("Deleted {Count} match updates", matchUpdates.Count);
+
+                // Delete matches
+                _context.Matches.RemoveRange(matches);
+                _logger.LogInformation("Deleted {Count} matches", matches.Count);
+            }
+
+            // Delete tournament rounds
+            _context.TournamentRounds.RemoveRange(tournamentRounds);
+            _logger.LogInformation("Deleted {Count} tournament rounds", tournamentRounds.Count);
+
+            // Delete the actual Round entities
+            var rounds = await _context.Rounds
+                .Where(r => roundIds.Contains(r.Id))
+                .ToListAsync();
+            _context.Rounds.RemoveRange(rounds);
+            _logger.LogInformation("Deleted {Count} rounds", rounds.Count);
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Successfully deleted {Count} rounds for tournament {TournamentId}", 
+                rounds.Count, tournamentId);
+
+            return rounds.Count;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting all rounds for tournament {TournamentId}", tournamentId);
+            throw;
+        }
+    }
 }

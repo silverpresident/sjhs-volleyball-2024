@@ -114,3 +114,6 @@ Look at CreateFirstRoundAsync to see how the teams are selected for the first ro
 Fix the AssignTeamsToGroupsByTeamsPerGroupAsync method and the AssignTeamsToGroupsByGroupCountAsync.
 1. The top seeded teams should be distributed amond the available groups, then the next best seed and so on.
 ====
+In the developer controller and views
+Similar to the Delete all matches, do a "delete all rounds"
+====

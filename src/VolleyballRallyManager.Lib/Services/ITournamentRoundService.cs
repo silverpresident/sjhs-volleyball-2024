@@ -121,4 +121,11 @@ public interface ITournamentRoundService
     /// Gets matches for a tournament round
     /// </summary>
     Task<List<Match>> GetRoundMatchesAsync(Guid tournamentRoundId);
+
+    /// <summary>
+    /// Deletes all rounds for a specific tournament
+    /// </summary>
+    /// <param name="tournamentId">Tournament ID</param>
+    /// <returns>Number of rounds deleted</returns>
+    Task<int> DeleteAllRoundsByTournamentAsync(Guid tournamentId);
 }

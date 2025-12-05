@@ -12,17 +12,20 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         private readonly ITeamGenerationService _teamGenerationService;
         private readonly IActiveTournamentService _activeTournamentService;
         private readonly IMatchService _matchService;
+        private readonly ITournamentRoundService _tournamentRoundService;
         private readonly ILogger<DeveloperController> _logger;
 
         public DeveloperController(
             ITeamGenerationService teamGenerationService,
             IActiveTournamentService activeTournamentService,
             IMatchService matchService,
+            ITournamentRoundService tournamentRoundService,
             ILogger<DeveloperController> logger)
         {
             _teamGenerationService = teamGenerationService;
             _activeTournamentService = activeTournamentService;
             _matchService = matchService;
+            _tournamentRoundService = tournamentRoundService;
             _logger = logger;
         }
 
@@ -148,6 +151,57 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             {
                 _logger.LogError(ex, "Error deleting matches");
                 TempData["ErrorMessage"] = $"Error deleting matches: {ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        // GET: Admin/Developer/DeleteAllRounds
+        public async Task<IActionResult> DeleteAllRounds()
+        {
+#if !DEBUG
+            return NotFound();
+#endif
+            var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
+            if (activeTournament == null)
+            {
+                TempData["ErrorMessage"] = "No active tournament found. Please set an active tournament first.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.TournamentName = activeTournament.Name;
+            return View();
+        }
+
+        // POST: Admin/Developer/DeleteAllRounds
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAllRoundsConfirmed()
+        {
+#if !DEBUG
+            return NotFound();
+#endif
+            var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
+            if (activeTournament == null)
+            {
+                TempData["ErrorMessage"] = "No active tournament found. Please set an active tournament first.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                _logger.LogInformation("Deleting all rounds for tournament {TournamentId}", activeTournament.Id);
+                
+                var deletedCount = await _tournamentRoundService.DeleteAllRoundsByTournamentAsync(activeTournament.Id);
+                
+                TempData["SuccessMessage"] = $"Successfully deleted {deletedCount} round(s) from the active tournament!";
+                _logger.LogInformation("Successfully deleted {Count} rounds", deletedCount);
+                
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting rounds");
+                TempData["ErrorMessage"] = $"Error deleting rounds: {ex.Message}";
                 return RedirectToAction(nameof(Index));
             }
         }
