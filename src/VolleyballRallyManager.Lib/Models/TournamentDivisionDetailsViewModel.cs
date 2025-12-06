@@ -10,7 +10,7 @@ namespace VolleyballRallyManager.Lib.Models
         public Tournament Tournament { get; set; } = null!;
         public Division Division { get; set; } = null!;
         public TournamentDivisionViewModel DivisionStats { get; set; } = null!;
-        public List<TournamentRoundViewModel> Rounds { get; set; } = new List<TournamentRoundViewModel>();
+        public List<TournamentRoundSummaryViewModel> Rounds { get; set; } = new List<TournamentRoundSummaryViewModel>();
         public List<TournamentTeamDivision> Teams { get; set; } = new List<TournamentTeamDivision>();
     }
 }

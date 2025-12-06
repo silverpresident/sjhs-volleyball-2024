@@ -8,7 +8,7 @@ namespace VolleyballRallyManager.Lib.Models
     /// </summary>
 
 
-    public class TournamentRoundViewModel
+    public class TournamentRoundSummaryViewModel
     {
         public Guid TournamentRoundId { get; set; }
         public Guid RoundId { get; set; }

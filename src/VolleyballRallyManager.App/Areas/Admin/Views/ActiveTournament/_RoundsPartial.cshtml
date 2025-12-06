@@ -1,4 +1,4 @@
-@model List<VolleyballRallyManager.Lib.Models.TournamentRoundViewModel>
+@model List<VolleyballRallyManager.Lib.Models.TournamentRoundSummaryViewModel>
 @{
     var totalScheduled = Model.Sum(r => r.MatchesScheduled);
     var totalPlayed = Model.Sum(r => r.MatchesPlayed);

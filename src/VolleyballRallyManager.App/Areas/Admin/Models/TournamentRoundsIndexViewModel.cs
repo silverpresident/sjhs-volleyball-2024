@@ -12,7 +12,7 @@ public class TournamentRoundsIndexViewModel
     public Guid DivisionId { get; set; }
     public string TournamentName { get; set; } = string.Empty;
     public string DivisionName { get; set; } = string.Empty;
-    public IEnumerable<TournamentRoundViewModel> Rounds { get; set; } = new List<TournamentRoundViewModel>();
+    public IEnumerable<TournamentRoundSummaryViewModel> Rounds { get; set; } = new List<TournamentRoundSummaryViewModel>();
 }
 
 /// <summary>

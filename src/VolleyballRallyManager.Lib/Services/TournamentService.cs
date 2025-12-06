@@ -298,7 +298,7 @@ namespace VolleyballRallyManager.Lib.Services
                 .Where(d => roundStats.Select(r => r.DivisionId).Contains(d.Id))
                 .ToDictionaryAsync(d => d.Id, d => d.Name);
 
-            var rounds = new List<TournamentRoundViewModel>();
+            var rounds = new List<TournamentRoundSummaryViewModel>();
 
             // Get all teams in tournament
             var teams = await _context.TournamentTeamDivisions
@@ -315,7 +315,7 @@ namespace VolleyballRallyManager.Lib.Services
 
             foreach (var tr in tournamentRounds)
             {
-                var roundView = new TournamentRoundViewModel()
+                var roundView = new TournamentRoundSummaryViewModel()
                 {
                     TournamentRoundId = tr.Id,
                     TournamentId = tournament.Id,
@@ -392,7 +392,7 @@ namespace VolleyballRallyManager.Lib.Services
         }
 
 
-        public async Task<TournamentRoundViewModel?> GetTournamentRoundDetailsAsync(Guid tournamentRoundId)
+        public async Task<TournamentRoundSummaryViewModel?> GetTournamentRoundDetailsAsync(Guid tournamentRoundId)
         {
             // Get the TournamentRound
             var tournamentRound = await _context.TournamentRounds.FindAsync(tournamentRoundId);
@@ -415,7 +415,7 @@ namespace VolleyballRallyManager.Lib.Services
             var division = await _context.Divisions.FindAsync(tournamentRound.DivisionId);
 
             // Create the view model
-            var roundView = new TournamentRoundViewModel
+            var roundView = new TournamentRoundSummaryViewModel
             {
                 TournamentRoundId = tournamentRound.Id,
                 TournamentId = tournament.Id,
@@ -582,11 +582,11 @@ namespace VolleyballRallyManager.Lib.Services
                 .OrderBy(tr => tr.RoundNumber)
                 .ToListAsync();
 
-            var roundViewModels = new List<TournamentRoundViewModel>();
+            var roundViewModels = new List<TournamentRoundSummaryViewModel>();
 
             foreach (var tr in tournamentRounds)
             {
-                var roundView = new TournamentRoundViewModel()
+                var roundView = new TournamentRoundSummaryViewModel()
                 {
                     TournamentRoundId = tr.Id,
                     TournamentId = tournament.Id,
@@ -645,7 +645,7 @@ namespace VolleyballRallyManager.Lib.Services
 
 
 
-        private async Task FixButtonState(TournamentRoundViewModel roundView, TournamentRound tr, bool hasMatches, bool allMatchesComplete)
+        private async Task FixButtonState(TournamentRoundSummaryViewModel roundView, TournamentRound tr, bool hasMatches, bool allMatchesComplete)
         {
             var hasTeams = roundView.TeamCount > 0;
             // Determine button visibility based on round state
