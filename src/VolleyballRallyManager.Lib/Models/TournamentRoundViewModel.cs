@@ -6,6 +6,8 @@ namespace VolleyballRallyManager.Lib.Models
     /// ViewModel for round statistics within a tournament division
     /// ViewModel for displaying a tournament round in the index
     /// </summary>
+
+
     public class TournamentRoundViewModel
     {
         public Guid TournamentRoundId { get; set; }

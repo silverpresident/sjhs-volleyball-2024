@@ -15,6 +15,7 @@ public class TournamentRoundsController : Controller
 {
     private readonly ITournamentRoundService _tournamentRoundService;
     private readonly IActiveTournamentService _activeTournamentService;
+    private readonly ITournamentService _tournamentService;
     private readonly IRanksService _ranksService;
     private readonly ApplicationDbContext _context;
     private readonly ILogger<TournamentRoundsController> _logger;
@@ -24,13 +25,15 @@ public class TournamentRoundsController : Controller
         IActiveTournamentService activeTournamentService,
         IRanksService ranksService,
         ApplicationDbContext context,
-        ILogger<TournamentRoundsController> logger)
+        ILogger<TournamentRoundsController> logger,
+        ITournamentService tournamentService)
     {
         _tournamentRoundService = tournamentRoundService;
         _activeTournamentService = activeTournamentService;
         _ranksService = ranksService;
         _context = context;
         _logger = logger;
+        _tournamentService = tournamentService;
     }
 
     // GET: Admin/TournamentRounds/Index?tournamentId=...&divisionId=...
@@ -60,64 +63,20 @@ public class TournamentRoundsController : Controller
             var tournament = await _context.Tournaments.FindAsync(tournamentId.Value);
             var division = await _context.Divisions.FindAsync(divisionId.Value);
 
-            var rounds = await _tournamentRoundService.GetTournamentRoundsAsync(tournamentId.Value, divisionId);
-
-            var roundViewModels = new List<TournamentRoundViewModel>();
-
-            foreach (var round in rounds)
-            {
-                var teams = await _tournamentRoundService.GetRoundTeamsAsync(round.Id);
-                var matches = await _tournamentRoundService.GetRoundMatchesAsync(round.Id);
-                var completedMatches = matches.Count(m => m.IsFinished);
-
-                var hasTeams = await _tournamentRoundService.HasTeamsAssignedAsync(round.Id);
-                var hasMatches = await _tournamentRoundService.HasMatchesGeneratedAsync(round.Id);
-                var allMatchesComplete = await _tournamentRoundService.AreAllMatchesCompleteAsync(round.Id);
-
-                // Determine button visibility based on round state
-                bool canFinalize = !round.IsFinished && hasMatches && allMatchesComplete;
-                bool canSelectTeams = !hasTeams && round.PreviousTournamentRoundId.HasValue;
-                bool canGenerateMatches = hasTeams && !hasMatches;
-                bool canGenerateNextRound = round.IsFinished;
-
-                // Check if previous round is finished for team selection
-                if (canSelectTeams && round.PreviousTournamentRoundId.HasValue)
-                {
-                    var previousRound = await _tournamentRoundService.GetTournamentRoundByIdAsync(round.PreviousTournamentRoundId.Value);
-                    canSelectTeams = previousRound != null && previousRound.IsFinished;
-                }
-
-                roundViewModels.Add(new TournamentRoundViewModel
-                {
-                    RoundId = round.Id,
-                    TournamentName = tournament?.Name ?? "Unknown",
-                    DivisionName = division?.Name ?? "Unknown",
-                    RoundName = round.Round?.Name ?? $"Round {round.RoundNumber}",
-                    RoundNumber = round.RoundNumber,
-                    TeamCount = teams.Count,
-                    MatchesScheduled = matches.Count,
-                    MatchesPlayed = completedMatches,
-                    IsFinished = round.IsFinished,
-                    IsLocked = round.IsLocked,
-                    AdvancingTeamSelectionStrategy = round.AdvancingTeamSelectionStrategy,
-                    MatchGenerationStrategy = round.MatchGenerationStrategy,
-                    AdvancingTeamsCount = round.AdvancingTeamsCount,
-                    CanFinalize = canFinalize,
-                    CanSelectTeams = canSelectTeams,
-                    CanGenerateMatches = canGenerateMatches,
-                    CanGenerateNextRound = canGenerateNextRound
-                });
-            }
-
             var viewModel = new TournamentRoundsIndexViewModel
             {
                 TournamentId = tournamentId.Value,
                 DivisionId = divisionId.Value,
                 TournamentName = tournament?.Name ?? "Unknown",
                 DivisionName = division?.Name ?? "Unknown",
-                Rounds = roundViewModels
             };
- ViewBag.Divisions = await _activeTournamentService.GetTournamentDivisionsAsync();
+            
+            var tournamentDivisionDetails = await _tournamentService.GetTournamentDivisionDetailsAsync(tournamentId.Value, divisionId.Value);
+            if (tournamentDivisionDetails != null){
+                viewModel.DivisionName = tournamentDivisionDetails.DivisionName;
+                viewModel.Rounds = tournamentDivisionDetails.Rounds;
+            }
+            ViewBag.Divisions = await _activeTournamentService.GetTournamentDivisionsAsync();
            
             return View(viewModel);
         }
@@ -167,6 +126,7 @@ public class TournamentRoundsController : Controller
             var hasMatches = await _tournamentRoundService.HasMatchesGeneratedAsync(id);
             var allMatchesComplete = await _tournamentRoundService.AreAllMatchesCompleteAsync(id);
 
+//TODO GetTournamentRoundDetailsAsync
             var viewModel = new TournamentRoundDetailsViewModel
             {
                 Round = round,
