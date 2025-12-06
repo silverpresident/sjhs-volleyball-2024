@@ -22,7 +22,8 @@ namespace VolleyballRallyManager.Lib.Services
         Task RecalculateTeamStatisticsAsync(Guid teamId);
         Task GetDetailsAsync(Tournament tournament);
         Task<TournamentDetailsViewModel> GetTournamentDetailsAsync(Guid tournamentId);
-        Task<TournamentRoundSummaryViewModel?> GetTournamentRoundDetailsAsync(Guid tournamentRoundId);
+        Task<TournamentRoundSummaryViewModel?> GetTournamentRoundSummaryAsync(Guid tournamentRoundId);
+        Task<TournamentRoundDetailsViewModel?> GetTournamentRoundDetailsAsync(Guid tournamentRoundId);
         Task<TournamentDivisionDetailsViewModel> GetTournamentDivisionDetailsAsync(Guid tournamentId, Guid divisionId);
     }
 }

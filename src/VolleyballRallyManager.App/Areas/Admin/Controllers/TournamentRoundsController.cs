@@ -99,46 +99,7 @@ public class TournamentRoundsController : Controller
                 return NotFound();
             }
 
-            var teams = await _tournamentRoundService.GetRoundTeamsAsync(id);
-            var matches = await _tournamentRoundService.GetRoundMatchesAsync(id);
-
-            var teamViewModels = teams.Select(t => new TournamentRoundTeamDetailsViewModel
-            {
-                TeamId = t.TeamId,
-                TeamName = t.Team?.Name ?? "Unknown",
-                SeedNumber = t.SeedNumber,
-                FinalRank = t.FinalRank,
-                Points = t.Points,
-                MatchesPlayed = t.MatchesPlayed,
-                Wins = t.Wins,
-                Draws = t.Draws,
-                Losses = t.Losses,
-                SetsFor = t.SetsFor,
-                SetsAgainst = t.SetsAgainst,
-                SetsDifference = t.SetsDifference,
-                ScoreFor = t.ScoreFor,
-                ScoreAgainst = t.ScoreAgainst,
-                ScoreDifference = t.ScoreDifference,
-                GroupName = t.GroupName
-            }).ToList();
-
-            var hasTeams = await _tournamentRoundService.HasTeamsAssignedAsync(id);
-            var hasMatches = await _tournamentRoundService.HasMatchesGeneratedAsync(id);
-            var allMatchesComplete = await _tournamentRoundService.AreAllMatchesCompleteAsync(id);
-
-//TODO GetTournamentRoundDetailsAsync
-            var viewModel = new TournamentRoundDetailsViewModel
-            {
-                Round = round,
-                Teams = teamViewModels,
-                Matches = matches,
-                CanFinalize = !round.IsFinished && hasMatches && allMatchesComplete,
-                CanSelectTeams = !hasTeams && round.PreviousTournamentRoundId.HasValue,
-                CanGenerateMatches = hasTeams && !hasMatches,
-                CanGenerateNextRound = round.IsFinished
-            };
-            viewModel.CanSelectTeams = true;
-
+            var viewModel = await _tournamentService.GetTournamentRoundDetailsAsync(id);
             return View(viewModel);
         }
         catch (Exception ex)
