@@ -45,7 +45,7 @@
                         <input type="hidden" asp-for="DivisionId" />
                         <input type="hidden" asp-for="RoundId" />
 
-                        <h6 class="border-bottom pb-2 mb-3"><i class="bi bi-grid-3x3"></i> Group Configuration</h6>
+                        <h6 class="border-bottom pb-2 mb-3"><i class="bi bi-grid-3x3"></i> Round Configuration</h6>
                         
                         <div class="row">
                             <div class="col-md-6">
@@ -73,9 +73,26 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="MatchGenerationStrategy" class="form-label">
+                                        Match Generation Strategy <span class="text-danger">*</span>
+                                    </label>
+                                    <select asp-for="MatchGenerationStrategy" class="form-select">
+                                        <option value="RoundRobin">Round Robin - All teams play each other</option>
+                                        <option value="SeededBracket">Seeded Bracket - Elimination format</option>
+                                        <option value="Manual">Manual - Create matches manually</option>
+                                        <option value="Swiss">Swiss - Swiss system</option>
+                                        <option value="GroupStageKnockout">Group Stage Knockout</option>
+                                    </select>
+                                    <span asp-validation-for="MatchGenerationStrategy" class="text-danger"></span>
+                                    <div class="form-text">How matches will be generated for this round</div>
+                                </div>
+                            </div>
                         </div>
 
-                        <h6 class="border-bottom pb-2 mb-3 mt-4"><i class="bi bi-gear"></i> Round Settings</h6>
+                        <h6 class="border-bottom pb-2 mb-3 mt-4"><i class="bi bi-gear"></i>Next Round Settings</h6>
 
                         <div class="row">
                             <div class="col-md-6">
@@ -95,22 +112,6 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label asp-for="MatchGenerationStrategy" class="form-label">
-                                        Match Generation Strategy <span class="text-danger">*</span>
-                                    </label>
-                                    <select asp-for="MatchGenerationStrategy" class="form-select">
-                                        <option value="RoundRobin">Round Robin - All teams play each other</option>
-                      AdvancingTeamsCount    <option value="SeededBracket">Seeded Bracket - Elimination format</option>
-                                        <option value="Manual">Manual - Create matches manually</option>
-   AdvancingTeamsCount                       <option value="Swiss">Swiss - Swiss system</option>
-                           AdvancingTeamsCountoption value="GroupStageKnockout">Group Stage Knockout</option>
-                                    </select>
-                                    <span asp-validation-for="MatchGenerationStrategy" class="text-danger"></span>
-                                    <div class="form-text">How matches will be generated for this round</div>
-                                </div>
-                            </div>
                         </div>
 
                         <div class="row">
