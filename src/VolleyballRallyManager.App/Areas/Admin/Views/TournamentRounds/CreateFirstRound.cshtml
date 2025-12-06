@@ -4,7 +4,7 @@
     ViewData["Title"] = "Create First Round";
 }
 
-<div class="container">
+<div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1><i class="bi bi-plus-circle"></i> Create First Round</h1>
         <a asp-action="Index" asp-route-tournamentId="@Model.TournamentId" asp-route-divisionId="@Model.DivisionId" 
@@ -13,158 +13,166 @@
         </a>
     </div>
 
-    <div class="card">
-        <div class="card-header bg-success text-white">
-            <h5 class="mb-0"><i class="bi bi-info-circle"></i> First Round Configuration</h5>
-        </div>
-        <div class="card-body">
-            <!-- Display Tournament and Division Info -->
-            <div class="alert alert-info">
-                <dl class="row mb-0">
-                    <dt class="col-sm-4">Tournament:</dt>
-                    <dd class="col-sm-8"><strong>@Model.TournamentName</strong></dd>
-                    
-                    <dt class="col-sm-4">Division:</dt>
-                    <dd class="col-sm-8"><strong>@Model.DivisionName</strong></dd>
-                    
-                    <dt class="col-sm-4">Round:</dt>
-                    <dd class="col-sm-8"><strong>@Model.RoundName</strong> <span class="badge bg-primary">Sequence 1</span></dd>
-                    
-                    <dt class="col-sm-4">Teams in Division:</dt>
-                    <dd class="col-sm-8"><strong>@Model.TotalTeamsInDivision</strong></dd>
-                </dl>
-            </div>
-
-            <form asp-action="CreateFirstRound" method="post">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-
-                <input type="hidden" asp-for="TournamentId" />
-                <input type="hidden" asp-for="DivisionId" />
-                <input type="hidden" asp-for="RoundId" />
-
-                <h6 class="border-bottom pb-2 mb-3"><i class="bi bi-grid-3x3"></i> Group Configuration</h6>
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Configuration Type <span class="text-danger">*</span></label>
-                            <select asp-for="GroupConfigurationType" class="form-select" id="groupConfigType">
-                                <option value="TeamsPerGroup">Teams per group</option>
-                                <option value="GroupsInRound">Groups in round</option>
-                            </select>
-                            <span asp-validation-for="GroupConfigurationType" class="text-danger"></span>
-                        </div>
+    <div class="row">
+        <!-- LEFT COLUMN: Main Form -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> First Round Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Display Tournament and Division Info -->
+                    <div class="alert alert-info">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4">Tournament:</dt>
+                            <dd class="col-sm-8"><strong>@Model.TournamentName</strong></dd>
+                            
+                            <dt class="col-sm-4">Division:</dt>
+                            <dd class="col-sm-8"><strong>@Model.DivisionName</strong></dd>
+                            
+                            <dt class="col-sm-4">Round:</dt>
+                            <dd class="col-sm-8"><strong>@Model.RoundName</strong> <span class="badge bg-primary">Sequence 1</span></dd>
+                            
+                            <dt class="col-sm-4">Teams in Division:</dt>
+                            <dd class="col-sm-8"><strong>@Model.TotalTeamsInDivision</strong></dd>
+                        </dl>
                     </div>
 
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="GroupConfigurationValue" class="form-label">
-                                <span id="configLabel">Groups in round</span> <span class="text-danger">*</span>
-                            </label>
-                            <input asp-for="GroupConfigurationValue" type="number" class="form-control" 
-                                   min="2" max="@(Model.TotalTeamsInDivision / 2 + 1)" />
-                            <span asp-validation-for="GroupConfigurationValue" class="text-danger"></span>
-                            <div class="form-text">
-                                Minimum: 2, Maximum: @(Model.TotalTeamsInDivision / 2 + 1)
+                    <form asp-action="CreateFirstRound" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <input type="hidden" asp-for="TournamentId" />
+                        <input type="hidden" asp-for="DivisionId" />
+                        <input type="hidden" asp-for="RoundId" />
+
+                        <h6 class="border-bottom pb-2 mb-3"><i class="bi bi-grid-3x3"></i> Group Configuration</h6>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Configuration Type <span class="text-danger">*</span></label>
+                                    <select asp-for="GroupConfigurationType" class="form-select" id="groupConfigType">
+                                        <option value="NoGroup">No Group</option>
+                                        <option value="TeamsPerGroup">Teams per group</option>
+                                        <option value="GroupsInRound">Groups in round</option>
+                                    </select>
+                                    <span asp-validation-for="GroupConfigurationType" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="GroupConfigurationValue" class="form-label">
+                                        <span id="configLabel">Groups in round</span> <span class="text-danger">*</span>
+                                    </label>
+                                    <input asp-for="GroupConfigurationValue" type="number" class="form-control" 
+                                           min="2" max="@(Model.TotalTeamsInDivision / 2 + 1)" id="groupConfigValue" />
+                                    <span asp-validation-for="GroupConfigurationValue" class="text-danger"></span>
+                                    <div class="form-text">
+                                        Minimum: 2, Maximum: @(Model.TotalTeamsInDivision / 2 + 1) (disabled when "No Group" is selected)
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <h6 class="border-bottom pb-2 mb-3 mt-4"><i class="bi bi-gear"></i> Round Settings</h6>
+                        <h6 class="border-bottom pb-2 mb-3 mt-4"><i class="bi bi-gear"></i> Round Settings</h6>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="TeamSelectionMethod" class="form-label">
-                                Team Selection Method <span class="text-danger">*</span>
-                            </label>
-                            <select asp-for="TeamSelectionMethod" class="form-select">
-                                <option value="Manual">Manual - Select teams manually</option>
-                                <option value="TopByPoints">Top By Points - Best teams overall</option>
-                                <option value="SeedTopHalf">Seed Top Half - Top 50% of teams</option>
-                                <option value="WinnersOnly">Winners Only - Only rank 1 teams</option>
-                                <option value="TopFromGroupAndNextBest">Top From Group And Next Best</option>
-                            </select>
-                            <span asp-validation-for="TeamSelectionMethod" class="text-danger"></span>
-                            <div class="form-text">How teams will be selected for subsequent rounds</div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="TeamSelectionMethod" class="form-label">
+                                        Team Selection Method <span class="text-danger">*</span>
+                                    </label>
+                                    <select asp-for="TeamSelectionMethod" class="form-select">
+                                        <option value="Manual">Manual - Select teams manually</option>
+                                        <option value="TopByPoints">Top By Points - Best teams overall</option>
+                                        <option value="SeedTopHalf">Seed Top Half - Top 50% of teams</option>
+                                        <option value="WinnersOnly">Winners Only - Only rank 1 teams</option>
+                                        <option value="TopFromGroupAndNextBest">Top From Group And Next Best</option>
+                                    </select>
+                                    <span asp-validation-for="TeamSelectionMethod" class="text-danger"></span>
+                                    <div class="form-text">How teams will be selected for subsequent rounds</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="MatchGenerationStrategy" class="form-label">
+                                        Match Generation Strategy <span class="text-danger">*</span>
+                                    </label>
+                                    <select asp-for="MatchGenerationStrategy" class="form-select">
+                                        <option value="RoundRobin">Round Robin - All teams play each other</option>
+                                        <option value="SeededBracket">Seeded Bracket - Elimination format</option>
+                                        <option value="Manual">Manual - Create matches manually</option>
+                                        <option value="Swiss">Swiss - Swiss system</option>
+                                        <option value="GroupStageKnockout">Group Stage Knockout</option>
+                                    </select>
+                                    <span asp-validation-for="MatchGenerationStrategy" class="text-danger"></span>
+                                    <div class="form-text">How matches will be generated for this round</div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="MatchGenerationStrategy" class="form-label">
-                                Match Generation Strategy <span class="text-danger">*</span>
-                            </label>
-                            <select asp-for="MatchGenerationStrategy" class="form-select">
-                                <option value="RoundRobin">Round Robin - All teams play each other</option>
-                                <option value="SeededBracket">Seeded Bracket - Elimination format</option>
-                                <option value="Manual">Manual - Create matches manually</option>
-                                <option value="Swiss">Swiss - Swiss system</option>
-                                <option value="GroupStageKnockout">Group Stage Knockout</option>
-                            </select>
-                            <span asp-validation-for="MatchGenerationStrategy" class="text-danger"></span>
-                            <div class="form-text">How matches will be generated for this round</div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="TeamsAdvancing" class="form-label">
+                                        Teams Advancing <span class="text-danger">*</span>
+                                    </label>
+                                    <input asp-for="TeamsAdvancing" type="number" class="form-control" min="0" />
+                                    <span asp-validation-for="TeamsAdvancing" class="text-danger"></span>
+                                    <div class="form-text">Number of teams that will advance to the next round</div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label asp-for="TeamsAdvancing" class="form-label">
-                                Teams Advancing <span class="text-danger">*</span>
-                            </label>
-                            <input asp-for="TeamsAdvancing" type="number" class="form-control" min="0" />
-                            <span asp-validation-for="TeamsAdvancing" class="text-danger"></span>
-                            <div class="form-text">Number of teams that will advance to the next round</div>
+                        <h6 class="border-bottom pb-2 mb-3 mt-4"><i class="bi bi-lightning"></i> Immediate Actions</h6>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check mb-3">
+                                    <input asp-for="AssignTeamsNow" type="checkbox" class="form-check-input" id="assignTeams" />
+                                    <label class="form-check-label" for="assignTeams">
+                                        <strong>Assign teams now</strong>
+                                        <div class="form-text">Automatically assign all teams from the division to this round</div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-check mb-3">
+                                    <input asp-for="GenerateMatchesNow" type="checkbox" class="form-check-input" id="generateMatches" />
+                                    <label class="form-check-label" for="generateMatches">
+                                        <strong>Generate matches now</strong>
+                                        <div class="form-text">Redirect to match generation after creating the round</div>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <h6 class="border-bottom pb-2 mb-3 mt-4"><i class="bi bi-lightning"></i> Immediate Actions</h6>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-check mb-3">
-                            <input asp-for="AssignTeamsNow" type="checkbox" class="form-check-input" id="assignTeams" />
-                            <label class="form-check-label" for="assignTeams">
-                                <strong>Assign teams now</strong>
-                                <div class="form-text">Automatically assign all teams from the division to this round</div>
-                            </label>
+                        <div class="alert alert-warning mt-3">
+                            <i class="bi bi-exclamation-triangle"></i> <strong>Note:</strong> 
+                            The first round will include all teams from the selected division. 
+                            Teams will be seeded based on their current division seed numbers.
                         </div>
-                    </div>
 
-                    <div class="col-md-6">
-                        <div class="form-check mb-3">
-                            <input asp-for="GenerateMatchesNow" type="checkbox" class="form-check-input" id="generateMatches" />
-                            <label class="form-check-label" for="generateMatches">
-                                <strong>Generate matches now</strong>
-                                <div class="form-text">Redirect to match generation after creating the round</div>
-                            </label>
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" asp-route-tournamentId="@Model.TournamentId" asp-route-divisionId="@Model.DivisionId" 
+                               class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle"></i> Create First Round
+                            </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
+            </div>
+        </div>
 
-                <div class="alert alert-warning mt-3">
-                    <i class="bi bi-exclamation-triangle"></i> <strong>Note:</strong> 
-                    The first round will include all teams from the selected division. 
-                    Teams will be seeded based on their current division seed numbers.
-                </div>
-
-                <!-- Round Setup Recommendations -->
-                @await Html.PartialAsync("_RoundSetupRecommendations")
-
-                <div class="d-flex justify-content-between mt-4">
-                    <a asp-action="Index" asp-route-tournamentId="@Model.TournamentId" asp-route-divisionId="@Model.DivisionId" 
-                       class="btn btn-secondary">
-                        <i class="bi bi-x-circle"></i> Cancel
-                    </a>
-                    <button type="submit" class="btn btn-success btn-lg">
-                        <i class="bi bi-check-circle"></i> Create First Round
-                    </button>
-                </div>
-            </form>
+        <!-- RIGHT COLUMN: Round Setup Recommendations -->
+        <div class="col-lg-4">
+            @await Html.PartialAsync("_RoundSetupRecommendations")
         </div>
     </div>
 </div>
@@ -177,10 +185,18 @@
             // Update label based on configuration type selection
             function updateConfigLabel() {
                 var configType = $('#groupConfigType').val();
-                if (configType === 'TeamsPerGroup') {
+                var $configValue = $('#groupConfigValue');
+                
+                if (configType === 'NoGroup') {
+                    $('#configLabel').text('Group Configuration');
+                    $configValue.prop('disabled', true);
+                    $configValue.val(0);
+                } else if (configType === 'TeamsPerGroup') {
                     $('#configLabel').text('Teams per group');
+                    $configValue.prop('disabled', false);
                 } else {
                     $('#configLabel').text('Groups in round');
+                    $configValue.prop('disabled', false);
                 }
             }
             

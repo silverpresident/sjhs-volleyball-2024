@@ -7,7 +7,7 @@
     'use strict';
 
     // Initialize when DOM is ready
-    $(document).ready(function () {
+    $(function () {
         initializeRoundSelector();
         initializeGroupConfiguration();
         initializeImmediateActions();
@@ -29,18 +29,27 @@
     /**
      * Initialize group configuration type selector
      * Updates the label dynamically based on the selected configuration type
+     * Handles "No Group" option by disabling the value input
      */
     function initializeGroupConfiguration() {
         const $groupConfigType = $('#groupConfigType');
         const $configLabel = $('#configLabel');
+        const $configValue = $('#groupConfigValue');
 
-        // Function to update the label
+        // Function to update the label and field state
         function updateConfigLabel() {
             const configType = $groupConfigType.val();
-            if (configType === 'TeamsPerGroup') {
+            
+            if (configType === 'NoGroup') {
+                $configLabel.text('Group Configuration');
+                $configValue.prop('disabled', true);
+                $configValue.val(0);
+            } else if (configType === 'TeamsPerGroup') {
                 $configLabel.text('Teams per group');
+                $configValue.prop('disabled', false);
             } else {
                 $configLabel.text('Groups in round');
+                $configValue.prop('disabled', false);
             }
         }
 
