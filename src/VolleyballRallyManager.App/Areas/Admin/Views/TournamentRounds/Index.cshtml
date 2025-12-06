@@ -76,26 +76,26 @@
                             </td>
                             <td>
                                 <span class="badge bg-info">@round.TeamCount teams</span>
-                                @if (round.TeamsAdvancing > 0)
+                                @if (round.AdvancingTeamsCount > 0)
                                 {
                                     <br />
-                                    <small class="text-muted">@round.TeamsAdvancing qualifying</small>
+                                    <small class="text-muted">@round.AdvancingTeamsCount qualifying</small>
                                 }
                             </td>
                             <td>
-                                @round.MatchesPlayed / @round.MatchCount
-                                @if (round.MatchCount > 0)
+                                @round.MatchesPlayed / @round.MatchesScheduled
+                                @if (round.MatchesScheduled > 0)
                                 {
                                     <br />
                                     <small class="text-muted">
-                                        (@(Math.Round((double)round.MatchesPlayed / round.MatchCount * 100, 1))%)
+                                        (@(Math.Round((double)round.MatchesPlayed / round.MatchesScheduled * 100, 1))%)
                                     </small>
                                 }
                             </td>
                             <td>
-                                @if (round.MatchCount > 0)
+                                @if (round.MatchesScheduled > 0)
                                 {
-                                    var progressPercent = (double)round.MatchesPlayed / round.MatchCount * 100;
+                                    var progressPercent = (double)round.MatchesPlayed / round.MatchesScheduled * 100;
                                     <div class="progress" style="height: 25px;">
                                         <div class="progress-bar @(progressPercent == 100 ? "bg-success" : "bg-primary")"
                                              role="progressbar"
@@ -128,7 +128,7 @@
                             </td>
                             <td>
                                 <small class="text-muted">
-                                    @round.TeamSelectionMethod
+                                    @round.AdvancingTeamSelectionMethodStrategy
                                     <br />
                                     @round.MatchGenerationStrategy
                                 </small>

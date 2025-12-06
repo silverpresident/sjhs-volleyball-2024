@@ -166,7 +166,7 @@ namespace VolleyballRallyManager.Lib.Data
 
             // Configure TournamentRound enums as strings
             builder.Entity<TournamentRound>()
-                .Property(tr => tr.TeamSelectionMethod)
+                .Property(tr => tr.AdvancingTeamSelectionStrategy)
                 .HasConversion<string>();
 
             builder.Entity<TournamentRound>()

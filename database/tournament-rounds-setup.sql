@@ -15,10 +15,10 @@ BEGIN
         DivisionId UNIQUEIDENTIFIER NOT NULL,
         RoundId UNIQUEIDENTIFIER NOT NULL,
         RoundNumber INT NOT NULL,
-        TeamSelectionMethod NVARCHAR(50) NOT NULL DEFAULT 'Manual',
         MatchGenerationStrategy NVARCHAR(50) NOT NULL DEFAULT 'Manual',
         PreviousTournamentRoundId UNIQUEIDENTIFIER NULL,
-        TeamsAdvancing INT NOT NULL DEFAULT 0,
+        AdvancingTeamsCount INT NOT NULL DEFAULT 0,
+        AdvancingTeamSelectionStrategy NVARCHAR(50) NOT NULL DEFAULT 'Manual',
         IsFinished BIT NOT NULL DEFAULT 0,
         IsLocked BIT NOT NULL DEFAULT 0,
         CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
@@ -37,10 +37,13 @@ BEGIN
         -- Unique Constraint: One round per tournament-division-round combination
         CONSTRAINT UQ_TournamentRounds_TournamentDivisionRound 
             UNIQUE (TournamentId, DivisionId, RoundId),
+        -- Unique Constraint: One round per tournament-division-roundNumber combination
+        CONSTRAINT UQ_TournamentRounds_TournamentDivisionRoundNumber 
+            UNIQUE (TournamentId, DivisionId, RoundNumber),
         
         -- Check Constraints
         CONSTRAINT CK_TournamentRounds_RoundNumber CHECK (RoundNumber > 0),
-        CONSTRAINT CK_TournamentRounds_TeamsAdvancing CHECK (TeamsAdvancing >= 0),
+        CONSTRAINT CK_TournamentRounds_AdvancingTeamsCount CHECK (AdvancingTeamsCount >= 0),
     );
     
     -- Create Indexes

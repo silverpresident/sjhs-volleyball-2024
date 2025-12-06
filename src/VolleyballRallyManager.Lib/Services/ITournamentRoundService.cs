@@ -23,18 +23,18 @@ public interface ITournamentRoundService
     /// <param name="tournamentId">Tournament ID</param>
     /// <param name="divisionId">Division ID</param>
     /// <param name="roundId">Round ID</param>
-    /// <param name="teamSelectionMethod">Method for selecting teams</param>
+    /// <param name="advancingTeamSelectionStrategy">Method for selecting teams</param>
     /// <param name="matchGenerationStrategy">Strategy for generating matches</param>
-    /// <param name="TeamsAdvancing">Number of Teams Advancing for next round</param>
+    /// <param name="advancingTeamsCount">Number of Teams Advancing for next round</param>
     /// <param name="userName">User creating the round</param>
     /// <returns>Created tournament round</returns>
     Task<TournamentRound> CreateFirstRoundAsync(
         Guid tournamentId, 
         Guid divisionId, 
         Guid roundId,
-        TeamSelectionMethod teamSelectionMethod,
+        int advancingTeamsCount,
+        TeamSelectionStrategy advancingTeamSelectionStrategy,
         MatchGenerationStrategy matchGenerationStrategy,
-        int TeamsAdvancing,
         string userName);
 
     /// <summary>
@@ -44,7 +44,7 @@ public interface ITournamentRoundService
     /// <param name="divisionId">Division ID</param>
     /// <param name="roundId">Round ID</param>
     /// <param name="previousTournamentRoundId">Previous round ID</param>
-    /// <param name="teamSelectionMethod">Method for selecting teams</param>
+    /// <param name="advancingTeamSelectionStrategy">Method for selecting teams</param>
     /// <param name="matchGenerationStrategy">Strategy for generating matches</param>
     /// <param name="TeamsAdvancing">Number of Teams Advancing for next round</param>
     /// <param name="userName">User creating the round</param>
@@ -54,7 +54,7 @@ public interface ITournamentRoundService
         Guid divisionId,
         Guid roundId,
         Guid previousTournamentRoundId,
-        TeamSelectionMethod teamSelectionMethod,
+        TeamSelectionStrategy advancingTeamSelectionStrategy,
         MatchGenerationStrategy matchGenerationStrategy,
         int TeamsAdvancing,
         string userName);

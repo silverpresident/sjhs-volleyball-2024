@@ -64,9 +64,9 @@ public class CreateFirstRoundViewModel
     public string DivisionName { get; set; } = string.Empty;
     public string RoundName { get; set; } = string.Empty;
     public int TotalTeamsInDivision { get; set; }
-    public TeamSelectionMethod TeamSelectionMethod { get; set; } = TeamSelectionMethod.Manual;
+    public TeamSelectionStrategy AdvancingTeamSelectionStrategy { get; set; } = TeamSelectionStrategy.Manual;
     public MatchGenerationStrategy MatchGenerationStrategy { get; set; } = MatchGenerationStrategy.RoundRobin;
-    public int TeamsAdvancing { get; set; } = 4;
+    public int AdvancingTeamsCount { get; set; } = 4;
     
     // Group Configuration
     public string GroupConfigurationType { get; set; } = "TeamsPerGroup"; // "TeamsPerGroup" or "GroupsInRound"
@@ -96,16 +96,16 @@ public class CreateNextRoundViewModel
     
     // SOURCE SECTION: Teams Coming Into This Round (Read-Only/Pre-populated)
     public int SourceTeamCount { get; set; }
-    public TeamSelectionMethod SourceSelectionMethod { get; set; }
+    public TeamSelectionStrategy SourceSelectionMethod { get; set; }
     public MatchGenerationStrategy SourceMatchStrategy { get; set; }
     
     // DESTINATION SECTION: Teams Advancing to Next Round (Editable)
     [Required]
     [Range(2, int.MaxValue, ErrorMessage = "At least 2 teams must advance")]
-    public int TeamsAdvancing { get; set; } = 4;
+    public int AdvancingTeamsCount { get; set; } = 4;
     
     [Required]
-    public TeamSelectionMethod TeamSelectionMethod { get; set; } = TeamSelectionMethod.TopByPoints;
+    public TeamSelectionStrategy AdvancingTeamSelectionStrategy { get; set; } = TeamSelectionStrategy.TopByPoints;
     
     [Required]
     public MatchGenerationStrategy MatchGenerationStrategy { get; set; } = MatchGenerationStrategy.SeededBracket;
@@ -151,9 +151,9 @@ public class EditTournamentRoundViewModel
     public string RoundName { get; set; } = string.Empty;
     public int TotalTeamsInDivision { get; set; }
     public int RoundNumber { get; set; }
-    public TeamSelectionMethod TeamSelectionMethod { get; set; }
+    public TeamSelectionStrategy AdvancingTeamSelectionStrategy { get; set; }
     public MatchGenerationStrategy MatchGenerationStrategy { get; set; }
-    public int TeamsAdvancing { get; set; }
+    public int AdvancingTeamsCount { get; set; }
     
     // Group Configuration
     public string GroupConfigurationType { get; set; } = "TeamsPerGroup"; // "TeamsPerGroup" or "GroupsInRound"

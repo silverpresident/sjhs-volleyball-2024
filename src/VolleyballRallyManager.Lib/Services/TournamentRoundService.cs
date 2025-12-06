@@ -74,9 +74,9 @@ public class TournamentRoundService : ITournamentRoundService
         Guid tournamentId,
         Guid divisionId,
         Guid roundId,
-        TeamSelectionMethod teamSelectionMethod,
+        int advancingTeamsCount,
+        TeamSelectionStrategy advancingTeamSelectionStrategy,
         MatchGenerationStrategy matchGenerationStrategy,
-        int TeamsAdvancing,
         string userName)
     {
         try
@@ -90,10 +90,10 @@ public class TournamentRoundService : ITournamentRoundService
                 DivisionId = divisionId,
                 RoundId = roundId,
                 RoundNumber = 1,
-                TeamSelectionMethod = teamSelectionMethod,
+                AdvancingTeamSelectionStrategy = advancingTeamSelectionStrategy,
                 MatchGenerationStrategy = matchGenerationStrategy,
                 PreviousTournamentRoundId = null,
-                TeamsAdvancing = TeamsAdvancing,
+                AdvancingTeamsCount = advancingTeamsCount,
                 IsFinished = false,
                 IsLocked = false,
                 CreatedBy = userName,
@@ -120,7 +120,7 @@ public class TournamentRoundService : ITournamentRoundService
         Guid divisionId,
         Guid roundId,
         Guid previousTournamentRoundId,
-        TeamSelectionMethod teamSelectionMethod,
+        TeamSelectionStrategy advancingTeamSelectionStrategy,
         MatchGenerationStrategy matchGenerationStrategy,
         int TeamsAdvancing,
         string userName)
@@ -155,10 +155,10 @@ public class TournamentRoundService : ITournamentRoundService
                 DivisionId = divisionId,
                 RoundId = roundId,
                 RoundNumber = previousRound.RoundNumber + 1,
-                TeamSelectionMethod = teamSelectionMethod,
+                AdvancingTeamSelectionStrategy = advancingTeamSelectionStrategy,
                 MatchGenerationStrategy = matchGenerationStrategy,
                 PreviousTournamentRoundId = previousTournamentRoundId,
-                TeamsAdvancing = TeamsAdvancing,
+                AdvancingTeamsCount = TeamsAdvancing,
                 IsFinished = false,
                 IsLocked = false,
                 CreatedBy = userName,
@@ -384,30 +384,30 @@ public class TournamentRoundService : ITournamentRoundService
             List<TournamentRoundTeam> qualifyingTeams = new List<TournamentRoundTeam>();
 
             // Apply selection logic based on method
-            switch (tournamentRound.TeamSelectionMethod)
+            switch (tournamentRound.AdvancingTeamSelectionStrategy)
             {
-                case TeamSelectionMethod.WinnersOnly:
+                case TeamSelectionStrategy.WinnersOnly:
                     qualifyingTeams = previousRoundTeams
                         .Where(t => t.FinalRank == 1)
-                        .Take(tournamentRound.TeamsAdvancing)
+                        .Take(tournamentRound.AdvancingTeamsCount)
                         .ToList();
                     break;
 
-                case TeamSelectionMethod.SeedTopHalf:
+                case TeamSelectionStrategy.SeedTopHalf:
                     int halfCount = previousRoundTeams.Count / 2;
-                    int teamsToSelect = Math.Min(halfCount, tournamentRound.TeamsAdvancing);
+                    int teamsToSelect = Math.Min(halfCount, tournamentRound.AdvancingTeamsCount);
                     qualifyingTeams = previousRoundTeams
                         .Take(teamsToSelect)
                         .ToList();
                     break;
 
-                case TeamSelectionMethod.TopByPoints:
+                case TeamSelectionStrategy.TopByPoints:
                     qualifyingTeams = previousRoundTeams
-                        .Take(tournamentRound.TeamsAdvancing)
+                        .Take(tournamentRound.AdvancingTeamsCount)
                         .ToList();
                     break;
 
-                case TeamSelectionMethod.TopFromGroupAndNextBest:
+                case TeamSelectionStrategy.TopFromGroupAndNextBest:
                     // Get top team from each group
                     var groupWinners = previousRoundTeams
                         .GroupBy(t => t.GroupName)
@@ -417,17 +417,17 @@ public class TournamentRoundService : ITournamentRoundService
                     // Get next best teams overall
                     var remainingTeams = previousRoundTeams
                         .Except(groupWinners)
-                        .Take(tournamentRound.TeamsAdvancing - groupWinners.Count)
+                        .Take(tournamentRound.AdvancingTeamsCount - groupWinners.Count)
                         .ToList();
 
                     qualifyingTeams = groupWinners.Concat(remainingTeams).ToList();
                     break;
 
-                case TeamSelectionMethod.Manual:
+                case TeamSelectionStrategy.Manual:
                     throw new InvalidOperationException("Manual team selection must be done through UI");
 
                 default:
-                    throw new InvalidOperationException($"Unknown team selection method: {tournamentRound.TeamSelectionMethod}");
+                    throw new InvalidOperationException($"Unknown team selection method: {tournamentRound.AdvancingTeamSelectionStrategy}");
             }
 
             // Create TournamentRoundTeam entries for qualifying teams

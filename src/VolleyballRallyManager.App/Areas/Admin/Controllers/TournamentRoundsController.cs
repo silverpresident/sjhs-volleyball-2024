@@ -95,13 +95,13 @@ public class TournamentRoundsController : Controller
                     RoundName = round.Round?.Name ?? $"Round {round.RoundNumber}",
                     RoundNumber = round.RoundNumber,
                     TeamCount = teams.Count,
-                    MatchCount = matches.Count,
+                    MatchesScheduled = matches.Count,
                     MatchesPlayed = completedMatches,
                     IsFinished = round.IsFinished,
                     IsLocked = round.IsLocked,
-                    TeamSelectionMethod = round.TeamSelectionMethod,
+                    AdvancingTeamSelectionStrategy = round.AdvancingTeamSelectionStrategy,
                     MatchGenerationStrategy = round.MatchGenerationStrategy,
-                    TeamsAdvancing = round.TeamsAdvancing,
+                    AdvancingTeamsCount = round.AdvancingTeamsCount,
                     CanFinalize = canFinalize,
                     CanSelectTeams = canSelectTeams,
                     CanGenerateMatches = canGenerateMatches,
@@ -291,9 +291,9 @@ public class TournamentRoundsController : Controller
                 model.TournamentId,
                 model.DivisionId,
                 model.RoundId,
-                model.TeamSelectionMethod,
+                model.AdvancingTeamsCount,
+                model.AdvancingTeamSelectionStrategy,
                 model.MatchGenerationStrategy,
-                model.TeamsAdvancing,
                 userName);
 
             // Save group configuration
@@ -375,9 +375,9 @@ public class TournamentRoundsController : Controller
                 RoundName = round.Round?.Name ?? $"Round {round.RoundNumber}",
                 TotalTeamsInDivision = teamsCount,
                 RoundNumber = round.RoundNumber,
-                TeamSelectionMethod = round.TeamSelectionMethod,
+                AdvancingTeamSelectionStrategy = round.AdvancingTeamSelectionStrategy,
                 MatchGenerationStrategy = round.MatchGenerationStrategy,
-                TeamsAdvancing = round.TeamsAdvancing,
+                AdvancingTeamsCount = round.AdvancingTeamsCount,
                 GroupConfigurationType = groupConfigType,
                 GroupConfigurationValue = groupConfigValue,
                 IsFinished = round.IsFinished,
@@ -422,9 +422,9 @@ public class TournamentRoundsController : Controller
             var userName = User.Identity?.Name ?? "admin";
 
             // Update round properties
-            tournamentRound.TeamSelectionMethod = model.TeamSelectionMethod;
+            tournamentRound.AdvancingTeamSelectionStrategy = model.AdvancingTeamSelectionStrategy;
             tournamentRound.MatchGenerationStrategy = model.MatchGenerationStrategy;
-            tournamentRound.TeamsAdvancing = model.TeamsAdvancing;
+            tournamentRound.AdvancingTeamsCount = model.AdvancingTeamsCount;
             
             // Update group configuration
             tournamentRound.TeamsPerGroup = model.GroupConfigurationType == "TeamsPerGroup" ? model.GroupConfigurationValue : null;
@@ -515,15 +515,15 @@ public class TournamentRoundsController : Controller
                 PreviousRoundName = currentRound.Round?.Name ?? $"Round {currentRound.RoundNumber}",
                 
                 // SOURCE: Teams coming into the NEW round (based on current round's advancing settings)
-                SourceTeamCount = currentRound.TeamsAdvancing,
-                SourceSelectionMethod = currentRound.TeamSelectionMethod,
+                SourceTeamCount = currentRound.AdvancingTeamsCount,
+                SourceSelectionMethod = currentRound.AdvancingTeamSelectionStrategy,
                 SourceMatchStrategy = currentRound.MatchGenerationStrategy,
                 
                 // DESTINATION: Default settings for teams advancing from the NEW round
-                TeamsAdvancing = Math.Max(2, currentRound.TeamsAdvancing / 2), // Default to half, minimum 2
-                TeamSelectionMethod = currentRound.TeamSelectionMethod, // Same as current
+                AdvancingTeamsCount = Math.Max(2, currentRound.AdvancingTeamsCount / 2), // Default to half, minimum 2
+                AdvancingTeamSelectionStrategy = currentRound.AdvancingTeamSelectionStrategy, // Same as current
                 MatchGenerationStrategy = currentRound.MatchGenerationStrategy, // Same as current
-                GroupConfigurationValue = Math.Max(2, currentRound.TeamsAdvancing / 4), // Default sensible groups
+                GroupConfigurationValue = Math.Max(2, currentRound.AdvancingTeamsCount / 4), // Default sensible groups
                 
                 // Default immediate actions
                 AssignTeamsNow = true,
@@ -562,9 +562,9 @@ public class TournamentRoundsController : Controller
                 model.DivisionId,
                 model.RoundId,
                 model.PreviousTournamentRoundId,
-                model.TeamSelectionMethod,
+                model.AdvancingTeamSelectionStrategy,
                 model.MatchGenerationStrategy,
-                model.TeamsAdvancing,
+                model.AdvancingTeamsCount,
                 userName);
 
             // Save group configuration

@@ -324,8 +324,8 @@ namespace VolleyballRallyManager.Lib.Services
                     IsFinished = tr.IsFinished,
                     IsLocked = tr.IsLocked,
                     RoundNumber = tr.RoundNumber,
-                    TeamsAdvancing = tr.TeamsAdvancing,
-                    TeamSelectionMethod = tr.TeamSelectionMethod,
+                    AdvancingTeamsCount = tr.AdvancingTeamsCount,
+                    AdvancingTeamSelectionStrategy = tr.AdvancingTeamSelectionStrategy,
                     MatchGenerationStrategy = tr.MatchGenerationStrategy,
                     TournamentName = tournament.Name,
                 };
@@ -344,7 +344,7 @@ namespace VolleyballRallyManager.Lib.Services
                 var roundStat = roundStats.FirstOrDefault(rs => rs.DivisionId == roundView.DivisionId && rs.RoundId == roundView.RoundId);
                 if (roundStat != null)
                 {
-                    roundView.MatchCount = roundStat.MatchesScheduled;
+                    roundView.MatchesScheduled = roundStat.MatchesScheduled;
                     roundView.MatchesPlayed = roundStat.MatchesPlayed;
                 }
                 roundView.TeamCount = await _context.TournamentRoundTeams.CountAsync(trt => trt.DivisionId == roundView.DivisionId && trt.RoundId == roundView.RoundId);
@@ -388,6 +388,7 @@ namespace VolleyballRallyManager.Lib.Services
             return viewModel;
         }
 
+
         public async Task<TournamentRoundViewModel?> GetTournamentRoundDetailsAsync(Guid tournamentRoundId)
         {
             // Get the TournamentRound
@@ -406,7 +407,7 @@ namespace VolleyballRallyManager.Lib.Services
 
             // Get the round name
             var round = await _context.Rounds.FindAsync(tournamentRound.RoundId);
-            
+
             // Get the division name
             var division = await _context.Divisions.FindAsync(tournamentRound.DivisionId);
 
@@ -420,8 +421,8 @@ namespace VolleyballRallyManager.Lib.Services
                 IsFinished = tournamentRound.IsFinished,
                 IsLocked = tournamentRound.IsLocked,
                 RoundNumber = tournamentRound.RoundNumber,
-                TeamsAdvancing = tournamentRound.TeamsAdvancing,
-                TeamSelectionMethod = tournamentRound.TeamSelectionMethod,
+                AdvancingTeamsCount = tournamentRound.AdvancingTeamsCount,
+                AdvancingTeamSelectionStrategy = tournamentRound.AdvancingTeamSelectionStrategy,
                 MatchGenerationStrategy = tournamentRound.MatchGenerationStrategy,
                 TournamentName = tournament.Name,
                 DivisionName = division?.Name ?? string.Empty,
@@ -430,8 +431,8 @@ namespace VolleyballRallyManager.Lib.Services
 
             // Get round statistics (matches scheduled, matches played)
             var matchStats = await _context.Matches
-                .Where(m => m.TournamentId == tournamentRound.TournamentId 
-                         && m.RoundId == tournamentRound.RoundId 
+                .Where(m => m.TournamentId == tournamentRound.TournamentId
+                         && m.RoundId == tournamentRound.RoundId
                          && m.DivisionId == tournamentRound.DivisionId)
                 .GroupBy(m => 1)
                 .Select(g => new
@@ -443,30 +444,29 @@ namespace VolleyballRallyManager.Lib.Services
 
             if (matchStats != null)
             {
-                roundView.MatchCount = matchStats.MatchesScheduled;
                 roundView.MatchesScheduled = matchStats.MatchesScheduled;
                 roundView.MatchesPlayed = matchStats.MatchesPlayed;
             }
 
             // Get team count
             roundView.TeamCount = await _context.TournamentRoundTeams
-                .CountAsync(trt => trt.DivisionId == tournamentRound.DivisionId 
+                .CountAsync(trt => trt.DivisionId == tournamentRound.DivisionId
                                 && trt.RoundId == tournamentRound.RoundId);
 
             // Determine button visibility based on round state
             var hasTeams = await _context.TournamentRoundTeams
-                .AnyAsync(trt => trt.DivisionId == tournamentRound.DivisionId 
+                .AnyAsync(trt => trt.DivisionId == tournamentRound.DivisionId
                               && trt.RoundId == tournamentRound.RoundId);
-            
+
             var hasMatches = await _context.Matches
-                .AnyAsync(m => m.TournamentId == tournamentRound.TournamentId 
-                            && m.DivisionId == tournamentRound.DivisionId 
+                .AnyAsync(m => m.TournamentId == tournamentRound.TournamentId
+                            && m.DivisionId == tournamentRound.DivisionId
                             && m.RoundId == tournamentRound.RoundId);
 
             var allMatchesComplete = !await _context.Matches
-                .AnyAsync(m => m.TournamentId == tournamentRound.TournamentId 
-                            && m.DivisionId == tournamentRound.DivisionId 
-                            && m.RoundId == tournamentRound.RoundId 
+                .AnyAsync(m => m.TournamentId == tournamentRound.TournamentId
+                            && m.DivisionId == tournamentRound.DivisionId
+                            && m.RoundId == tournamentRound.RoundId
                             && m.IsFinished == false);
 
             roundView.CanFinalize = !tournamentRound.IsFinished && hasMatches && allMatchesComplete;
@@ -483,5 +483,6 @@ namespace VolleyballRallyManager.Lib.Services
 
             return roundView;
         }
+
     }
 }

@@ -45,10 +45,10 @@
                         <!-- Round Selection -->
                         <div class="mb-4">
                             <label asp-for="RoundId" class="form-label">
-                                <i class="bi bi-trophy"></i> Select Round <span class="text-danger">*</span>
+                            AdvancingTeamsCountbi bi-trophy"></i> Select Round <span class="text-danger">*</span>
                             </label>
-                            <select asp-for="RoundId" class="form-select" asp-items='@((SelectList)ViewData["Rounds"])' id="roundSelector">
-                                <option value="">-- Select Round --</option>
+                            <select asp-for="RoundId" class="form-select" asp-itemsAdvancingTeamsCountt)ViewData["Rounds"])' id="roundSelector">
+                                <option value="">-- Select AdvancingTeamsCounton>
                             </select>
                             <span asp-validation-for="RoundId" class="text-danger"></span>
                             <div class="form-text">Select which round this will be (e.g., Quarter Finals, Semi Finals, etc.)</div>
@@ -138,28 +138,28 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="mb-3">
-                                            <label asp-for="TeamsAdvancing" class="form-label">
+                                            <label asp-for="AdvancingTeamsCount" class="form-label">
                                                 Number of Teams <span class="text-danger">*</span>
                                             </label>
-                                            <input asp-for="TeamsAdvancing" type="number" class="form-control" min="2" />
-                                            <span asp-validation-for="TeamsAdvancing" class="text-danger"></span>
+                                            <input asp-for="AdvancingTeamsCount" type="number" class="form-control" min="2" />
+                                            <span asp-validation-for="AdvancingTeamsCount" class="text-danger"></span>
                                             <div class="form-text">Minimum: 2 teams</div>
                                         </div>
                                     </div>
 
                                     <div class="col-md-4">
                                         <div class="mb-3">
-                                            <label asp-for="TeamSelectionMethod" class="form-label">
+                                            <label asp-for="AdvancingTeamSelectionStrategy" class="form-label">
                                                 Method of Selection <span class="text-danger">*</span>
                                             </label>
-                                            <select asp-for="TeamSelectionMethod" class="form-select">
+                                            <select asp-for="AdvancingTeamSelectionStrategy" class="form-select">
                                                 <option value="TopByPoints">Top By Points</option>
                                                 <option value="SeedTopHalf">Seed Top Half</option>
                                                 <option value="WinnersOnly">Winners Only</option>
                                                 <option value="TopFromGroupAndNextBest">Top From Group And Next Best</option>
                                                 <option value="Manual">Manual</option>
                                             </select>
-                                            <span asp-validation-for="TeamSelectionMethod" class="text-danger"></span>
+                                            <span asp-validation-for="AdvancingTeamSelectionStrategy" class="text-danger"></span>
                                             <div class="form-text">How to select teams for subsequent round</div>
                                         </div>
                                     </div>

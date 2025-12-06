@@ -3,7 +3,7 @@ namespace VolleyballRallyManager.Lib.Models;
 /// <summary>
 /// Defines the method for selecting teams to advance to the next round
 /// </summary>
-public enum TeamSelectionMethod
+public enum TeamSelectionStrategy
 {
     /// <summary>
     /// Teams are manually selected by the tournament administrator

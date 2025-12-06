@@ -38,10 +38,11 @@ public class TournamentRound : BaseEntity
 
     [Required]
     [Display(Name = "Team Selection Method")]
-    public TeamSelectionMethod TeamSelectionMethod { get; set; } = TeamSelectionMethod.Manual;
+    public TeamSelectionStrategy AdvancingTeamSelectionStrategy { get; set; } = TeamSelectionStrategy.Manual;
 
     [Required]
     [Display(Name = "Match Generation Strategy")]
+    //This is for the current round
     public MatchGenerationStrategy MatchGenerationStrategy { get; set; } = MatchGenerationStrategy.Manual;
 
     [Display(Name = "Previous Round")]
@@ -49,7 +50,7 @@ public class TournamentRound : BaseEntity
 
     [Required]
     [Display(Name = "Teams Advancing")]
-    public int TeamsAdvancing { get; set; } = 0;
+    public int AdvancingTeamsCount { get; set; } = 0;
 
     [Display(Name = "Teams Per Group")]
     public int? TeamsPerGroup { get; set; }

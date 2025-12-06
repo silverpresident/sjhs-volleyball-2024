@@ -111,17 +111,17 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label asp-for="TeamSelectionMethod" class="form-label">
+                            <label asp-for="AdvancingTeamSelectionStrategy" class="form-label">
                                 Team Selection Method <span class="text-danger">*</span>
                             </label>
-                            <select asp-for="TeamSelectionMethod" class="form-select" disabled="@Model.IsFinished">
+                            <select asp-for="AdvancingTeamSelectionStrategy" class="form-select" disabled="@Model.IsFinished">
                                 <option value="Manual">Manual - Select teams manually</option>
                                 <option value="TopByPoints">Top By Points - Best teams overall</option>
                                 <option value="SeedTopHalf">Seed Top Half - Top 50% of teams</option>
                                 <option value="WinnersOnly">Winners Only - Only rank 1 teams</option>
                                 <option value="TopFromGroupAndNextBest">Top From Group And Next Best</option>
                             </select>
-                            <span asp-validation-for="TeamSelectionMethod" class="text-danger"></span>
+                            <span asp-validation-for="AdvancingTeamSelectionStrategy" class="text-danger"></span>
                             <div class="form-text">How teams will be selected for subsequent rounds</div>
                         </div>
                     </div>
@@ -144,15 +144,13 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6">
+                <div class="rowAdvancingTeamsCount          <div class="col-md-6">
                         <div class="mb-3">
-                            <label asp-for="TeamsAdvancing" class="form-label">
-                                Teams Advancing <span class="text-danger">*</span>
+                            <label asp-for="AdvancingTeamsCount" class="form-label">
+                              AdvancingTeamsCounting <span class="text-danger">*</span>
                             </label>
-                            <input asp-for="TeamsAdvancing" type="number" class="form-control" min="0" 
-                                   disabled="@Model.IsFinished" />
-                            <span asp-validation-for="TeamsAdvancing" class="text-danger"></span>
+                            <input asp-for="AdvancingTeamsCount" type="number" class="form-contrAdvancingTeamsCount                                   disabled="@Model.IsFinished" />
+                            <span asp-validation-for="AdvancingTeamsCount" class="text-danger"></span>
                             <div class="form-text">Number of teams that will advance to the next round</div>
                         </div>
                     </div>

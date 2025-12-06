@@ -16,14 +16,13 @@ namespace VolleyballRallyManager.Lib.Models
         public string RoundName { get; set; } = string.Empty;
         public int RoundNumber { get; set; }
         public int TeamCount { get; set; }
-        public int MatchCount { get; set; }
         public int MatchesPlayed { get; set; }
         public int MatchesScheduled { get; set; }
         public bool IsFinished { get; set; }
         public bool IsLocked { get; set; }
-        public TeamSelectionMethod TeamSelectionMethod { get; set; }
+        public TeamSelectionStrategy AdvancingTeamSelectionStrategy { get; set; }
         public MatchGenerationStrategy MatchGenerationStrategy { get; set; }
-        public int TeamsAdvancing { get; set; }
+        public int AdvancingTeamsCount { get; set; }
 
         // Conditional button visibility flags
         public bool CanFinalize { get; set; }
