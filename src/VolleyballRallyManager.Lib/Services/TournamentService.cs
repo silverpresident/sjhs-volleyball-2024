@@ -387,5 +387,101 @@ namespace VolleyballRallyManager.Lib.Services
 
             return viewModel;
         }
+
+        public async Task<TournamentRoundViewModel?> GetTournamentRoundDetailsAsync(Guid tournamentRoundId)
+        {
+            // Get the TournamentRound
+            var tournamentRound = await _context.TournamentRounds.FindAsync(tournamentRoundId);
+            if (tournamentRound == null)
+            {
+                return null;
+            }
+
+            // Get the tournament
+            var tournament = await _context.Tournaments.FindAsync(tournamentRound.TournamentId);
+            if (tournament == null)
+            {
+                return null;
+            }
+
+            // Get the round name
+            var round = await _context.Rounds.FindAsync(tournamentRound.RoundId);
+            
+            // Get the division name
+            var division = await _context.Divisions.FindAsync(tournamentRound.DivisionId);
+
+            // Create the view model
+            var roundView = new TournamentRoundViewModel
+            {
+                TournamentRoundId = tournamentRound.Id,
+                TournamentId = tournament.Id,
+                RoundId = tournamentRound.RoundId,
+                DivisionId = tournamentRound.DivisionId,
+                IsFinished = tournamentRound.IsFinished,
+                IsLocked = tournamentRound.IsLocked,
+                RoundNumber = tournamentRound.RoundNumber,
+                TeamsAdvancing = tournamentRound.TeamsAdvancing,
+                TeamSelectionMethod = tournamentRound.TeamSelectionMethod,
+                MatchGenerationStrategy = tournamentRound.MatchGenerationStrategy,
+                TournamentName = tournament.Name,
+                DivisionName = division?.Name ?? string.Empty,
+                RoundName = round?.Name ?? string.Empty
+            };
+
+            // Get round statistics (matches scheduled, matches played)
+            var matchStats = await _context.Matches
+                .Where(m => m.TournamentId == tournamentRound.TournamentId 
+                         && m.RoundId == tournamentRound.RoundId 
+                         && m.DivisionId == tournamentRound.DivisionId)
+                .GroupBy(m => 1)
+                .Select(g => new
+                {
+                    MatchesScheduled = g.Count(),
+                    MatchesPlayed = g.Count(m => m.IsFinished)
+                })
+                .FirstOrDefaultAsync();
+
+            if (matchStats != null)
+            {
+                roundView.MatchCount = matchStats.MatchesScheduled;
+                roundView.MatchesScheduled = matchStats.MatchesScheduled;
+                roundView.MatchesPlayed = matchStats.MatchesPlayed;
+            }
+
+            // Get team count
+            roundView.TeamCount = await _context.TournamentRoundTeams
+                .CountAsync(trt => trt.DivisionId == tournamentRound.DivisionId 
+                                && trt.RoundId == tournamentRound.RoundId);
+
+            // Determine button visibility based on round state
+            var hasTeams = await _context.TournamentRoundTeams
+                .AnyAsync(trt => trt.DivisionId == tournamentRound.DivisionId 
+                              && trt.RoundId == tournamentRound.RoundId);
+            
+            var hasMatches = await _context.Matches
+                .AnyAsync(m => m.TournamentId == tournamentRound.TournamentId 
+                            && m.DivisionId == tournamentRound.DivisionId 
+                            && m.RoundId == tournamentRound.RoundId);
+
+            var allMatchesComplete = !await _context.Matches
+                .AnyAsync(m => m.TournamentId == tournamentRound.TournamentId 
+                            && m.DivisionId == tournamentRound.DivisionId 
+                            && m.RoundId == tournamentRound.RoundId 
+                            && m.IsFinished == false);
+
+            roundView.CanFinalize = !tournamentRound.IsFinished && hasMatches && allMatchesComplete;
+            roundView.CanGenerateNextRound = tournamentRound.IsFinished;
+            roundView.CanSelectTeams = !hasTeams && tournamentRound.PreviousTournamentRoundId.HasValue;
+            roundView.CanGenerateMatches = hasTeams && !hasMatches;
+
+            // Check if previous round is finished for team selection
+            if (roundView.CanSelectTeams && tournamentRound.PreviousTournamentRoundId.HasValue)
+            {
+                var previousRound = await _context.TournamentRounds.FindAsync(tournamentRound.PreviousTournamentRoundId.Value);
+                roundView.CanSelectTeams = previousRound != null && previousRound.IsFinished;
+            }
+
+            return roundView;
+        }
     }
 }

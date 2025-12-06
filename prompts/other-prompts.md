@@ -154,4 +154,11 @@ Teams coming in should be TOP FROM GROUP AND NEXT BEST or TOP BY POINTS, 8 Teams
 Look at the tournament service
 Create a GetTournamentRoundDetails(TournamentRoundId)
 This methods should return the details for a single TournamentRound
-The GetTournamentDetailsAsync does something similar but it returns details for all the rounds
+The GetTournamentDetailsAsync does something similar but it returns details for all the rounds int he tournament.
+====
+
+In the GenerateNextRound, for the " Teams Coming Into This Round" section those fields shouldbe editable by the user.
+For the "Configuration Type" include an option for No Group 
+Put the _RoundSetupRecommendations beside the main form
+
+Also on the CreateFirstRound, Put the _RoundSetupRecommendations beside the main form
