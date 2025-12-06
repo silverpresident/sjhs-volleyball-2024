@@ -150,3 +150,8 @@ Teams coming in should be WINNERS ONLY. 4 Teams.
 
 Recommendations for Quarter Finals
 Teams coming in should be TOP FROM GROUP AND NEXT BEST or TOP BY POINTS, 8 Teams.
+====
+Look at the tournament service
+Create a GetTournamentRoundDetails(TournamentRoundId)
+This methods should return the details for a single TournamentRound
+The GetTournamentDetailsAsync does something similar but it returns details for all the rounds
