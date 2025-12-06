@@ -37,7 +37,7 @@
                             <label asp-for="StartTime" class="form-label">
                                 Start Time <span class="text-danger">*</span>
                             </label>
-                            <input asp-for="StartTime" type="time" step="60" class="form-control" />
+                            <input asp-for="StartTime" type="time" step="60" class="form-control" value="@Model.StartTime.ToString(@"hh\:mm")"/>
                             <span asp-validation-for="StartTime" class="text-danger"></span>
                             <div class="form-text">When should the first match of this round start? (Time only)</div>
                         </div>

@@ -600,7 +600,7 @@ public class TournamentRoundsController : Controller
                 RoundName = round.Round?.Name ?? $"Round {round.RoundNumber}",
                 StartTime = DateTime.Now.AddMinutes(30),
                 StartingCourtNumber = 1,
-                NumberOfCourts = 1,
+                NumberOfCourts = 3,
                 MatchTimeInterval = 10,
                 TeamCount = teams.Count,
                 Strategy = round.MatchGenerationStrategy

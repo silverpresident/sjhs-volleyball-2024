@@ -29,9 +29,26 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         }
 
         // GET: Admin/Matches
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(Guid? RoundId, Guid? divisionId)
         {
-            var matches = await _activeTournamentService.GetMatchesAsync();
+            //ViewBag.TournamentRoundId = null;
+            List<Match> matches;
+            var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
+            if (RoundId.HasValue){
+                var round = await _dbContext.Rounds.FirstOrDefaultAsync(r => r.Id == RoundId);
+                if (round == null){
+                    var tournamentRound = await _dbContext.TournamentRounds.FirstOrDefaultAsync(tr => tr.Id == RoundId);
+                    if (tournamentRound != null)
+                    {
+                        divisionId = tournamentRound.DivisionId;
+                        RoundId = tournamentRound.RoundId;
+                    }
+                }
+                matches = await _activeTournamentService.GetMatchesAsync(divisionId, RoundId);
+            } else
+            {
+                matches = await _activeTournamentService.GetMatchesAsync();
+            }
             return View(matches);
         }
 
@@ -605,188 +622,6 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: Admin/Matches/AutoGenerateFirstRound
-        public async Task<IActionResult> AutoGenerateFirstRound()
-        {
-            var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
-            if (activeTournament == null)
-            {
-                return NotFound("No active tournament found.");
-            }
-            var tds = await _activeTournamentService.GetTournamentDivisionsAsync();
-            var divisions = tds.Select(d => new SelectListItem
-            {
-                Value = d.Division.Id.ToString(),
-                Text = d.Division.Name
-            }).ToList();
-
-            var viewModel = new AutoGenerateMatchesViewModel
-            {
-                Divisions = new List<SelectListItem>(),
-                // Groups will be populated dynamically based on selected divisions (AJAX or full postback)
-                Groups = new List<SelectListItem>()
-            };
-            viewModel.Divisions.Add(new SelectListItem { Value = Guid.Empty.ToString(), Text = "All Divisions" });
-            viewModel.Divisions.AddRange(divisions);
-            return View(viewModel);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AutoGenerateFirstRound(AutoGenerateMatchesViewModel viewModel)
-        {
-            // Process the selected divisions and groups
-            var selectedDivisionIds = viewModel.SelectedDivisionIds;
-            var selectedGroupNames = viewModel.SelectedGroupNames;
-            var removeExistingMatches = viewModel.RemoveExistingMatches;
-
-            var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
-            if (activeTournament == null)
-            {
-                return NotFound("No active tournament found.");
-            }
-            // Retrieve teams based on selected divisions and groups
-
-            var qryBaseTTD = _dbContext.TournamentTeamDivisions
-                .Where(ttd => ttd.TournamentId == activeTournament.Id);
-
-            var qry = _dbContext.TournamentTeamDivisions
-                .Include(ttd => ttd.Team)
-                .Where(ttd => ttd.TournamentId == activeTournament.Id);
-            if (selectedDivisionIds.Contains(Guid.Empty) == false && selectedDivisionIds.Count > 0)
-            {
-                qry = qry.Where(ttd => selectedDivisionIds.Contains(ttd.DivisionId));
-            }
-            if (selectedGroupNames.Contains(string.Empty) == false && selectedGroupNames.Count > 0)
-            {
-                qry = qry.Where(ttd => selectedGroupNames.Contains(ttd.GroupName));
-            }
-
-            var teams = qry.OrderBy(ttd => ttd.SeedNumber).Select(ttd => ttd.Team).ToList();
-
-            var qryTourMatches = _dbContext.Matches
-                .Where(m => m.TournamentId == activeTournament.Id);
-            if (selectedDivisionIds.Contains(Guid.Empty) == false && selectedDivisionIds.Count > 0)
-            {
-                qryTourMatches = qryTourMatches.Where(ttd => selectedDivisionIds.Contains(ttd.DivisionId));
-            }
-            if (selectedGroupNames.Contains(string.Empty) == false && selectedGroupNames.Count > 0)
-            {
-                qryTourMatches = qryTourMatches.Where(ttd => selectedGroupNames.Contains(ttd.GroupName));
-            }
-            // Remove existing matches if requested
-            if (removeExistingMatches)
-            {
-                var qryRM = qryTourMatches;
-                //var existingMatches = qryRM;
-                _dbContext.Matches.RemoveRange(qryRM);
-                await _dbContext.SaveChangesAsync();
-            }
-            var qryBase = _dbContext.TournamentTeamDivisions
-                            .Where(ttd => ttd.TournamentId == activeTournament.Id);
-            var matchesToCreate = new List<Match>();
-            if (selectedDivisionIds.Contains(Guid.Empty) == true || selectedDivisionIds.Count == 0)
-            {
-                selectedDivisionIds = qryBase
-                .Select(ttd => ttd.DivisionId).Distinct().ToList();
-            }
-
-            var nextMatchTime = activeTournament.TournamentDate.AddMinutes(15);
-
-            // Get the "First Round" round
-            var firstRound = _dbContext.Rounds.FirstOrDefault(r => r.Name == "Round 1");
-
-            if (firstRound == null)
-            {
-                return NotFound("First round not found.");
-            }
-            _logger.LogInformation($"Selected divs: {selectedDivisionIds.Count}");
-            Console.WriteLine("-----hello");
-            // Iterate through selected divisions
-            foreach (var divisionId in selectedDivisionIds)
-            {
-                var qryMatchBase = _dbContext.Matches.Where(m => m.TournamentId == activeTournament.Id && m.DivisionId == divisionId);
-
-                int matchNumber = 0;
-                if (qryMatchBase.Any())
-                {
-                    matchNumber = qryMatchBase.Max(m => m.MatchNumber);
-                }
-                List<string> actualGroups;
-                if (selectedGroupNames.Contains(string.Empty) == false || selectedGroupNames.Count == 0)
-                {
-                    var str = qryBase
-                    .Where(ttd => ttd.DivisionId == divisionId)
-                    .Select(ttd => ttd.GroupName).Distinct().ToQueryString();
-                    _logger.LogInformation($"gggg Query : {str}");
-                    actualGroups = qryBase
-                    .Where(ttd => ttd.DivisionId == divisionId)
-                    .Select(ttd => ttd.GroupName).Distinct().ToList();
-                }
-                else
-                {
-                    actualGroups = qryBase
-                    .Where(ttd => ttd.DivisionId == divisionId)
-                    .Where(ttd => selectedGroupNames.Contains(ttd.GroupName))
-                    .Select(ttd => ttd.GroupName).Distinct().ToList();
-                }
-                _logger.LogInformation($"Selected actualGroups: {actualGroups.Count}");
-                // Iterate through selected groups
-                foreach (var groupName in actualGroups)
-                {
-                    var qryMatchGroup = qryMatchBase.Where(m => m.GroupName == groupName && m.RoundId == firstRound.Id);
-                    // Get teams in the current division and current group
-                    var teamIds = qryBaseTTD
-                        .Where(ttd => ttd.DivisionId == divisionId && ttd.GroupName == groupName)
-                        .OrderBy(ttd => ttd.SeedNumber).Select(ttd => ttd.TeamId).Distinct().ToList();
-                    if (teamIds.Count() <= 1)
-                    {
-                        //TODO error not enought teams
-                        continue;
-                    }
-                    // Generate pairings (round-robin within the group)
-                    for (int i = 0; i < teamIds.Count; i++)
-                    {
-                        for (int j = i + 1; j < teamIds.Count; j++)
-                        {
-                            var homeTeamId = teamIds[i];
-                            var awayTeamId = teamIds[j];
-
-                            if (qryMatchGroup.Any(m => (m.HomeTeamId == homeTeamId && m.AwayTeamId == awayTeamId)
-                            || (m.HomeTeamId == awayTeamId && m.AwayTeamId == homeTeamId)))
-                            {
-                                continue;
-                            }
-
-                            // Create match object
-                            var match = new Match
-                            {
-                                Id = Guid.NewGuid(),
-                                TournamentId = activeTournament.Id,
-                                DivisionId = divisionId,
-                                GroupName = groupName,
-                                HomeTeamId = homeTeamId,
-                                AwayTeamId = awayTeamId,
-                                RoundId = firstRound.Id,
-                                ScheduledTime = nextMatchTime,
-                                MatchNumber = ++matchNumber,
-                                CourtLocation = "Unassigned",
-                                CreatedBy = "System",
-                                UpdatedBy = "System",
-                                UpdatedAt = DateTime.UtcNow
-                            };
-                            matchesToCreate.Add(match);
-                            nextMatchTime = nextMatchTime.AddMinutes(10);
-                        }
-                    }
-                }
-            }
-            _logger.LogInformation($"matchesToCreate: {matchesToCreate.Count}");
-            // Save generated matches to the database
-            _dbContext.Matches.AddRange(matchesToCreate);
-            await _dbContext.SaveChangesAsync();
-
-            return RedirectToAction(nameof(Index));
-        }
 
         // GET: Admin/Matches/AutoGenerateNextRound
         public IActionResult AutoGenerateNextRound()

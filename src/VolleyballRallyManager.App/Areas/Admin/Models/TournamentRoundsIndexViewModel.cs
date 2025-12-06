@@ -1,4 +1,5 @@
 using VolleyballRallyManager.Lib.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace VolleyballRallyManager.App.Areas.Admin.Models;
 
@@ -98,6 +99,9 @@ public class GenerateMatchesViewModel
 {
     public Guid TournamentRoundId { get; set; }
     public string RoundName { get; set; } = string.Empty;
+    
+    [DataType(DataType.Time)] 
+    [DisplayFormat(DataFormatString = "{0:HH\\:mm}", ApplyFormatInEditMode = true)]
     public DateTime StartTime { get; set; } = DateTime.Now;
     public int StartingCourtNumber { get; set; } = 1;
     public int NumberOfCourts { get; set; } = 1;
