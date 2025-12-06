@@ -83,6 +83,7 @@
                                     disabled="@Model.IsFinished">
                                 <option value="TeamsPerGroup">Teams per group</option>
                                 <option value="GroupsInRound">Groups in round</option>
+                                <option value="NoGroup">No Group</option>
                             </select>
                             <span asp-validation-for="GroupConfigurationType" class="text-danger"></span>
                         </div>
@@ -94,8 +95,9 @@
                                 <span id="configLabel">Value</span> <span class="text-danger">*</span>
                             </label>
                             <input asp-for="GroupConfigurationValue" type="number" class="form-control" 
-                                   min="2" max="@(Model.TotalTeamsInDivision / 2 + 1)"
-                                   disabled="@Model.IsFinished" />
+                                    id="groupConfigValue"
+                                    min="2" max="@(Model.TotalTeamsInDivision / 2 + 1)"
+                                    disabled="@Model.IsFinished" />
                             <span asp-validation-for="GroupConfigurationValue" class="text-danger"></span>
                             <div class="form-text">
                                 Minimum: 2, Maximum: @(Model.TotalTeamsInDivision / 2 + 1)
@@ -206,13 +208,22 @@
     
     <script>
         $(document).ready(function() {
+        const $groupConfigType = $('#groupConfigType');
+        const $configLabel = $('#configLabel');
+        const $configValue = $('#groupConfigValue');
             // Update label based on configuration type selection
             function updateConfigLabel() {
                 var configType = $('#groupConfigType').val();
-                if (configType === 'TeamsPerGroup') {
-                    $('#configLabel').text('Teams per group');
+                if (configType === 'NoGroup') {
+                    $configLabel.text('Group Configuration');
+                    $configValue.prop('disabled', true);
+                    $configValue.val(0);
+                } else if (configType === 'TeamsPerGroup') {
+                    $configLabel.text('Teams per group');
+                    $configValue.prop('disabled', false);
                 } else {
-                    $('#configLabel').text('Groups in round');
+                    $configLabel.text('Groups in round');
+                    $configValue.prop('disabled', false);
                 }
             }
             

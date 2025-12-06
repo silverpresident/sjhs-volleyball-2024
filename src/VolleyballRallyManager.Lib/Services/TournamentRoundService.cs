@@ -141,6 +141,14 @@ public class TournamentRoundService : ITournamentRoundService
                 throw new InvalidOperationException("Previous round must be finished before creating next round");
             }
 
+            var roundNumber = previousRound.RoundNumber + 1;
+            if (_context.TournamentRounds.Any(tr => tr.TournamentId == tournamentId && tr.DivisionId == divisionId && tr.RoundNumber == previousRound.RoundNumber + 1 )){
+                throw new InvalidOperationException($"Round {roundNumber} already exists");     
+            }
+            /*if (_context.TournamentRounds.Any(tr => tr.TournamentId == tournamentId && tr.DivisionId == divisionId && tr.RoundNumber == previousRound.RoundNumber + 1 )){
+                throw new InvalidOperationException($"Round {roundNumber} already exists");     
+            }*/
+
             var tournamentRound = new TournamentRound
             {
                 TournamentId = tournamentId,
