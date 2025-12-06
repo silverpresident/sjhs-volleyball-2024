@@ -252,8 +252,26 @@
     @if (Model.Teams.Any())
     {
         <div class="card mb-4">
-            <div class="card-header bg-dark text-white">
+            <div class="card-header bg-dark text-white d-flex justify-content-between">
                 <h5 class="mb-0"><i class="bi bi-list-ol"></i> Team Rankings</h5>
+                
+                <!-- Rank Teams Button -->
+                @if (!Model.Round.IsFinished && Model.Matches.Any())
+                {
+                    <form asp-action="RankTeams" asp-route-id="@Model.Round.Id" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-info" 
+                                onclick="return confirm('Update team rankings based on current match results?');">
+                            <i class="bi bi-sort-numeric-down"></i> Rank Teams
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-secondary" disabled title="@(Model.Round.IsFinished ? "Round is finalized" : "No matches available")">
+                        <i class="bi bi-sort-numeric-down"></i> Rank Teams
+                    </button>
+                }
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -320,8 +338,13 @@
     @if (Model.Matches.Any())
     {
         <div class="card">
-            <div class="card-header bg-primary text-white">
+            <div class="card-header bg-primary text-white d-flex justify-content-between">
                 <h5 class="mb-0"><i class="bi bi-calendar3"></i> Matches (@Model.Matches.Count)</h5>
+                
+                <!-- View Matches Button -->
+                <a asp-controller="Matches" asp-route-RoundId="@Model.Round.Id" class="btn btn-primary">
+                    <i class="bi bi-calendar-plus"></i> View Matches
+                </a>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
