@@ -162,3 +162,9 @@ For the "Configuration Type" include an option for No Group
 Put the _RoundSetupRecommendations beside the main form
 
 Also on the CreateFirstRound, Put the _RoundSetupRecommendations beside the main form
+===
+Look at the tournament service and the Index action of the TournamentRounds.
+
+Create a GetTournamentDivisionDetails(TournamentId, DivisionId)
+This methods should return the details for a single division and the details for all the rounds
+The GetTournamentDetailsAsync does something similar but it returns details for all the divsions in the tournament.

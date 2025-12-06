@@ -1,17 +1,16 @@
-using VolleyballRallyManager.Lib.Models;
-
 namespace VolleyballRallyManager.Lib.Models
 {
     /// <summary>
-    /// ViewModel for displaying comprehensive tournament details including divisions, rounds, and teams
+    /// ViewModel for displaying details for a single division within a tournament, including all rounds
     /// </summary>
-    public class TournamentDetailsViewModel
+    public class TournamentDivisionDetailsViewModel
     {
         public Guid TournamentId { get; set; }
+        public Guid DivisionId { get; set; }
         public Tournament Tournament { get; set; } = null!;
-        public List<TournamentDivisionViewModel> Divisions { get; set; } = new List<TournamentDivisionViewModel>();
+        public Division Division { get; set; } = null!;
+        public TournamentDivisionViewModel DivisionStats { get; set; } = null!;
         public List<TournamentRoundViewModel> Rounds { get; set; } = new List<TournamentRoundViewModel>();
         public List<TournamentTeamDivision> Teams { get; set; } = new List<TournamentTeamDivision>();
-        public Dictionary<Division, List<TournamentTeamDivision>> TeamsByDivision = new();
     }
 }

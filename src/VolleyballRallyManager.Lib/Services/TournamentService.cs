@@ -484,5 +484,166 @@ namespace VolleyballRallyManager.Lib.Services
             return roundView;
         }
 
+        public async Task<TournamentDivisionDetailsViewModel> GetTournamentDivisionDetailsAsync(Guid tournamentId, Guid divisionId)
+        {
+            // Get the tournament
+            var tournament = await GetTournamentByIdAsync(tournamentId);
+            if (tournament == null)
+            {
+                throw new Exception("Tournament not found");
+            }
+
+            // Get the division
+            var division = await _context.Divisions.FindAsync(divisionId);
+            if (division == null)
+            {
+                throw new Exception("Division not found");
+            }
+
+            // Get division statistics for this specific division
+            var divisionStats = await _context.TournamentTeamDivisions
+                .Where(ttd => ttd.TournamentId == tournamentId && ttd.DivisionId == divisionId)
+                .Include(ttd => ttd.Division)
+                .GroupBy(ttd => ttd.Division)
+                .Select(g => new TournamentDivisionViewModel
+                {
+                    Division = g.Key,
+                    DivisionId = g.Key.Id,
+                    DivisionName = g.Key.Name,
+                    GroupNames = g.Select(x => x.GroupName).Distinct().OrderBy(gn => gn).ToList(),
+                    TeamCount = g.Count(),
+                    RoundsCount = _context.TournamentRounds
+                        .Count(m => m.TournamentId == tournamentId
+                                 && m.DivisionId == g.Key.Id),
+                    MatchCount = _context.Matches
+                        .Count(m => m.TournamentId == tournamentId
+                                 && m.DivisionId == g.Key.Id),
+                    MatchesPlayed = _context.Matches
+                        .Count(m => m.TournamentId == tournamentId
+                                 && m.DivisionId == g.Key.Id
+                                 && m.IsFinished)
+                })
+                .FirstOrDefaultAsync();
+
+            // Create a default division stats if no teams are assigned yet
+            if (divisionStats == null)
+            {
+                divisionStats = new TournamentDivisionViewModel
+                {
+                    Division = division,
+                    DivisionId = division.Id,
+                    DivisionName = division.Name,
+                    GroupNames = new List<string>(),
+                    TeamCount = 0,
+                    RoundsCount = await _context.TournamentRounds
+                        .CountAsync(m => m.TournamentId == tournamentId && m.DivisionId == divisionId),
+                    MatchCount = await _context.Matches
+                        .CountAsync(m => m.TournamentId == tournamentId && m.DivisionId == divisionId),
+                    MatchesPlayed = await _context.Matches
+                        .CountAsync(m => m.TournamentId == tournamentId && m.DivisionId == divisionId && m.IsFinished)
+                };
+            }
+
+            // Get round statistics for this specific division
+            var roundStats = await _context.Matches
+                .Where(m => m.TournamentId == tournamentId && m.DivisionId == divisionId)
+                .Include(m => m.Round)
+                .GroupBy(m => new { m.RoundId, m.DivisionId, m.Round!.Name, m.Round.Sequence })
+                .Select(g => new
+                {
+                    RoundId = g.Key.RoundId,
+                    DivisionId = g.Key.DivisionId,
+                    RoundName = g.Key.Name,
+                    Sequence = g.Key.Sequence,
+                    TeamIds = g.Select(m => m.HomeTeamId).Union(g.Select(m => m.AwayTeamId)).Distinct().ToList(),
+                    MatchesScheduled = g.Count(),
+                    MatchesPlayed = g.Count(m => m.IsFinished)
+                })
+                .ToListAsync();
+
+            // Get all teams in this division
+            var teams = await _context.TournamentTeamDivisions
+                .Where(ttd => ttd.TournamentId == tournamentId && ttd.DivisionId == divisionId)
+                .Include(ttd => ttd.Team)
+                .Include(ttd => ttd.Division)
+                .OrderBy(ttd => ttd.GroupName)
+                .ThenBy(ttd => ttd.Team.Name)
+                .ToListAsync();
+
+            // Get TournamentRounds for this specific division
+            var tournamentRounds = await _context.TournamentRounds
+                .Where(tr => tr.TournamentId == tournamentId && tr.DivisionId == divisionId)
+                .OrderBy(tr => tr.RoundNumber)
+                .ToListAsync();
+
+            var rounds = new List<TournamentRoundViewModel>();
+
+            foreach (var tr in tournamentRounds)
+            {
+                var roundView = new TournamentRoundViewModel()
+                {
+                    TournamentRoundId = tr.Id,
+                    TournamentId = tournament.Id,
+                    RoundId = tr.RoundId,
+                    DivisionId = tr.DivisionId,
+                    IsFinished = tr.IsFinished,
+                    IsLocked = tr.IsLocked,
+                    RoundNumber = tr.RoundNumber,
+                    AdvancingTeamsCount = tr.AdvancingTeamsCount,
+                    AdvancingTeamSelectionStrategy = tr.AdvancingTeamSelectionStrategy,
+                    MatchGenerationStrategy = tr.MatchGenerationStrategy,
+                    TournamentName = tournament.Name,
+                    DivisionName = divisionStats.DivisionName,
+                };
+
+                var round = await _context.Rounds.FindAsync(tr.RoundId);
+                if (round != null)
+                {
+                    roundView.RoundName = round.Name;
+                }
+
+                var roundStat = roundStats.FirstOrDefault(rs => rs.RoundId == roundView.RoundId);
+                if (roundStat != null)
+                {
+                    roundView.MatchesScheduled = roundStat.MatchesScheduled;
+                    roundView.MatchesPlayed = roundStat.MatchesPlayed;
+                }
+
+                roundView.TeamCount = await _context.TournamentRoundTeams.CountAsync(trt => trt.DivisionId == roundView.DivisionId && trt.RoundId == roundView.RoundId);
+                var hasTeams = await _context.TournamentRoundTeams.AnyAsync(trt => trt.DivisionId == roundView.DivisionId && trt.RoundId == roundView.RoundId);
+                var hasMatches = await _context.Matches.AnyAsync(m => m.TournamentId == roundView.TournamentId && m.DivisionId == roundView.DivisionId && m.RoundId == roundView.RoundId);
+
+                var allMatchesComplete = !await _context.Matches.AnyAsync(m => m.TournamentId == roundView.TournamentId && m.DivisionId == roundView.DivisionId && m.RoundId == roundView.RoundId && m.IsFinished == false);
+
+                // Determine button visibility based on round state
+                roundView.CanFinalize = !tr.IsFinished && hasMatches && allMatchesComplete;
+                roundView.CanGenerateNextRound = tr.IsFinished;
+                roundView.CanSelectTeams = !hasTeams && tr.PreviousTournamentRoundId.HasValue;
+                roundView.CanGenerateMatches = hasTeams && !hasMatches;
+
+                // Check if previous round is finished for team selection
+                if (roundView.CanSelectTeams && tr.PreviousTournamentRoundId.HasValue)
+                {
+                    var previousRound = await _context.TournamentRounds.FindAsync(tr.PreviousTournamentRoundId.Value);
+                    roundView.CanSelectTeams = previousRound != null && previousRound.IsFinished;
+                }
+
+                rounds.Add(roundView);
+            }
+
+            var viewModel = new TournamentDivisionDetailsViewModel
+            {
+                TournamentId = tournamentId,
+                DivisionId = divisionId,
+                Tournament = tournament,
+                Division = division,
+                DivisionStats = divisionStats,
+                Rounds = rounds,
+                Teams = teams
+            };
+
+            return viewModel;
+        }
+
     }
 }

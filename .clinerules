@@ -222,3 +222,4 @@ await _signalRService.SendMatchUpdateAsync(matchId, "Score updated");
 - The Public app refreshes automatically every 2 minutes
 - Match updates should trigger immediate SignalR notifications
 - The theme colour of the project is green and gold.
+- Use DateTime.Now instead of DateTime.UtcNow

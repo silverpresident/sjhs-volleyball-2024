@@ -110,7 +110,7 @@ public class RanksService : IRanksService
                     }
                 }
 
-                roundTeam.UpdatedAt = DateTime.UtcNow;
+                roundTeam.UpdatedAt = DateTime.Now;
             }
 
             // Apply ranking with tie-breaker rules
