@@ -60,7 +60,7 @@
                             <dd class="col-sm-9">@Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")</dd>
 
                             <dt class="col-sm-3">Time</dt>
-                            <dd class="col-sm-9">@DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss UTC")</dd>
+                            <dd class="col-sm-9">@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss UTC")</dd>
 
                             <dt class="col-sm-3">Request ID</dt>
                             <dd class="col-sm-9">@Model.RequestId</dd>

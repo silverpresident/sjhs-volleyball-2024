@@ -91,7 +91,7 @@ public class MatchHub : Hub
             MatchId = matchId,
             HomeScore = homeScore,
             AwayScore = awayScore,
-            Timestamp = DateTime.UtcNow
+            Timestamp = DateTime.Now
         };
         await Clients.Group($"match_{matchId}").SendAsync("ReceiveScoreUpdate", update);
         await Clients.Group("updates").SendAsync("ReceiveScoreUpdate", update);

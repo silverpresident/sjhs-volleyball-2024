@@ -51,7 +51,7 @@ public class ScorerHub : Hub
                 s.IsFinished,
                 s.IsLocked
             }),
-            Timestamp = DateTime.UtcNow
+            Timestamp = DateTime.Now
         });
 
 
@@ -172,7 +172,7 @@ public class ScorerHub : Hub
                 IsLocked = match.IsLocked,
                 ActualStartTime = match.ActualStartTime,
                 CurrentSetNumber = match?.CurrentSetNumber ?? 0,
-                Timestamp = DateTime.UtcNow
+                Timestamp = DateTime.Now
             });
 
             // Also send feed update if an update was created
@@ -267,7 +267,7 @@ public class ScorerHub : Hub
             }),
             HomeSetsWon = homeSetsWon,
             AwaySetsWon = awaySetsWon,
-            Timestamp = DateTime.UtcNow
+            Timestamp = DateTime.Now
         });
     }
 

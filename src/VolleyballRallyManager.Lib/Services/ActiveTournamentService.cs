@@ -173,7 +173,7 @@ namespace VolleyballRallyManager.Lib.Services
             }
             tournamentTeamDivision.DivisionId = divisionId;
             tournamentTeamDivision.GroupName = groupName;
-            tournamentTeamDivision.UpdatedAt = DateTime.UtcNow;
+            tournamentTeamDivision.UpdatedAt = DateTime.Now;
             await _dbContext.SaveChangesAsync();
             return tournamentTeamDivision;
         }
@@ -206,7 +206,7 @@ namespace VolleyballRallyManager.Lib.Services
             }
             tournamentTeamDivision.DivisionId = divisionId;
             tournamentTeamDivision.GroupName = groupName;
-            tournamentTeamDivision.UpdatedAt = DateTime.UtcNow;
+            tournamentTeamDivision.UpdatedAt = DateTime.Now;
             await _dbContext.SaveChangesAsync();
             return tournamentTeamDivision;
         }

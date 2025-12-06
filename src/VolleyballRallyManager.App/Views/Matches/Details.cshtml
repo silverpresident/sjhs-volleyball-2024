@@ -25,7 +25,7 @@
         matchState = "In Progress";
         stateBadgeClass = "bg-primary";
     }
-    else if (Model.ScheduledTime <= DateTime.UtcNow)
+    else if (Model.ScheduledTime <= DateTime.Now)
     {
         matchState = "Started";
         stateBadgeClass = "bg-info";

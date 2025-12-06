@@ -97,7 +97,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                         return NotFound();
                     }
                     division.Name = model.Name;
-                    division.UpdatedAt = DateTime.UtcNow;
+                    division.UpdatedAt = DateTime.Now;
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

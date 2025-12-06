@@ -152,7 +152,7 @@ public class MatchService : IMatchService
         }
         if (match.CurrentSetNumber == 0)
         {
-            match.ActualStartTime = DateTime.UtcNow;
+            match.ActualStartTime = DateTime.Now;
             var update = new MatchUpdate
             {
                 MatchId = id,
@@ -392,7 +392,7 @@ public class MatchService : IMatchService
 
             matchSet.HomeTeamScore = homeScore;
             matchSet.AwayTeamScore = awayScore;
-            matchSet.UpdatedAt = DateTime.UtcNow;
+            matchSet.UpdatedAt = DateTime.Now;
             matchSet.UpdatedBy = userId;
         }
 
@@ -432,7 +432,7 @@ public class MatchService : IMatchService
             return matchSet;
         }
         matchSet.IsFinished = true;
-        matchSet.UpdatedAt = DateTime.UtcNow;
+        matchSet.UpdatedAt = DateTime.Now;
         matchSet.UpdatedBy = userId;
         await _context.SaveChangesAsync();
 
@@ -512,7 +512,7 @@ public class MatchService : IMatchService
         if (previousSet != null)
         {
             previousSet.IsFinished = false;
-            previousSet.UpdatedAt = DateTime.UtcNow;
+            previousSet.UpdatedAt = DateTime.Now;
             previousSet.UpdatedBy = userId;
         }
 

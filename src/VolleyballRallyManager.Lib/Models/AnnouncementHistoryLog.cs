@@ -10,7 +10,7 @@ public class AnnouncementHistoryLog : BaseEntity
     public Guid AnnouncementId { get; set; }
 
     [Display(Name = "Timestamp")]
-    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+    public DateTime Timestamp { get; set; } = DateTime.Now;
 
     // Navigation property
     [ForeignKey("AnnouncementId")]

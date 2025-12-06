@@ -411,7 +411,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 set.IsFinished = model.IsFinished;
                 set.IsLocked = model.IsLocked;
                 set.UpdatedBy = User.Identity?.Name ?? "admin";
-                set.UpdatedAt = DateTime.UtcNow;
+                set.UpdatedAt = DateTime.Now;
 
                 _dbContext.Update(set);
                 await _dbContext.SaveChangesAsync();
@@ -550,7 +550,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 try
                 {
                     match.UpdatedBy = User.Identity?.Name ?? "admin";
-                    match.UpdatedAt = DateTime.UtcNow;
+                    match.UpdatedAt = DateTime.Now;
                     
                     await _matchService.UpdateMatchAsync(match);
                     TempData["SuccessMessage"] = "Match updated successfully.";
@@ -731,7 +731,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                         ScheduledTime = activeTournament.TournamentDate.AddDays(nextRoundNumber), // Example scheduling
                         CourtLocation = "TBD",
                         CreatedBy = "System",
-                        CreatedAt = DateTime.UtcNow,
+                        CreatedAt = DateTime.Now,
                         GroupName = "TBD"
                     };
                     _dbContext.Matches.Add(match);

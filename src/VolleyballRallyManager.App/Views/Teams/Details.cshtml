@@ -160,7 +160,7 @@
                                     matchState = "In Progress";
                                     stateBadgeClass = "bg-primary";
                                 }
-                                else if (match.ScheduledTime <= DateTime.UtcNow)
+                                else if (match.ScheduledTime <= DateTime.Now)
                                 {
                                     matchState = "Started";
                                     stateBadgeClass = "bg-info";
@@ -254,7 +254,7 @@
 
     <!-- Upcoming Matches -->
     @{
-        var upcomingMatches = matches.Where(m => !m.IsFinished && m.ScheduledTime > DateTime.UtcNow).OrderBy(m => m.ScheduledTime).Take(3).ToList();
+        var upcomingMatches = matches.Where(m => !m.IsFinished && m.ScheduledTime > DateTime.Now).OrderBy(m => m.ScheduledTime).Take(3).ToList();
     }
     @if (upcomingMatches.Any())
     {

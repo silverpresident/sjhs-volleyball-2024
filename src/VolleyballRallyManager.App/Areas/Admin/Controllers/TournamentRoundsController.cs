@@ -351,7 +351,7 @@ public class TournamentRoundsController : Controller
             tournamentRound.TeamsPerGroup = model.GroupConfigurationType == "TeamsPerGroup" ? model.GroupConfigurationValue : null;
             tournamentRound.GroupsInRound = model.GroupConfigurationType == "GroupsInRound" ? model.GroupConfigurationValue : null;
             
-            tournamentRound.UpdatedAt = DateTime.UtcNow;
+            tournamentRound.UpdatedAt = DateTime.Now;
             tournamentRound.UpdatedBy = userName;
 
             _context.TournamentRounds.Update(tournamentRound);

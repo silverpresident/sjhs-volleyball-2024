@@ -51,6 +51,6 @@ public class ScoringEvent
 
     public ScoringEvent()
     {
-        Timestamp = DateTime.UtcNow;
+        Timestamp = DateTime.Now;
     }
 }
