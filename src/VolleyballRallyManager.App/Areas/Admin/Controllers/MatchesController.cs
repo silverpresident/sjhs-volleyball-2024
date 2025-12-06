@@ -44,10 +44,12 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                         RoundId = tournamentRound.RoundId;
                     }
                 }
-                matches = await _activeTournamentService.GetMatchesAsync(divisionId, RoundId);
+                var matchesEnumerable = await _activeTournamentService.GetMatchesAsync(divisionId, RoundId);
+                matches = matchesEnumerable.ToList();
             } else
             {
-                matches = await _activeTournamentService.GetMatchesAsync();
+                var matchesEnumerable = await _activeTournamentService.GetMatchesAsync();
+                matches = matchesEnumerable.ToList();
             }
             return View(matches);
         }

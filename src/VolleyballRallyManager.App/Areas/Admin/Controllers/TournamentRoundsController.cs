@@ -494,16 +494,40 @@ public class TournamentRoundsController : Controller
                 return RedirectToAction(nameof(Details), new { id });
             }
 
-            var rounds = await _context.Rounds.OrderBy(r => r.Sequence).ToListAsync();
-            ViewData["Rounds"] = new SelectList(rounds, "Id", "Name");
+            var tournament = await _context.Tournaments.FindAsync(currentRound.TournamentId);
+            var division = await _context.Divisions.FindAsync(currentRound.DivisionId);
+
+            // Get all rounds and the current round to disable it in the dropdown
+            var allRounds = await _context.Rounds.OrderBy(r => r.Sequence).ToListAsync();
+            ViewData["Rounds"] = new SelectList(allRounds, "Id", "Name");
+
+            // Get team count from current round
+            var currentTeamCount = await _tournamentRoundService.GetRoundTeamsAsync(id);
 
             var model = new CreateNextRoundViewModel
             {
                 TournamentId = currentRound.TournamentId,
                 DivisionId = currentRound.DivisionId,
                 PreviousTournamentRoundId = id,
+                CurrentRoundId = currentRound.RoundId,
+                TournamentName = tournament?.Name ?? "Unknown",
+                DivisionName = division?.Name ?? "Unknown",
                 PreviousRoundName = currentRound.Round?.Name ?? $"Round {currentRound.RoundNumber}",
-                TeamsAdvancing = currentRound.TeamsAdvancing / 2 // Default to half
+                
+                // SOURCE: Teams coming into the NEW round (based on current round's advancing settings)
+                SourceTeamCount = currentRound.TeamsAdvancing,
+                SourceSelectionMethod = currentRound.TeamSelectionMethod,
+                SourceMatchStrategy = currentRound.MatchGenerationStrategy,
+                
+                // DESTINATION: Default settings for teams advancing from the NEW round
+                TeamsAdvancing = Math.Max(2, currentRound.TeamsAdvancing / 2), // Default to half, minimum 2
+                TeamSelectionMethod = currentRound.TeamSelectionMethod, // Same as current
+                MatchGenerationStrategy = currentRound.MatchGenerationStrategy, // Same as current
+                GroupConfigurationValue = Math.Max(2, currentRound.TeamsAdvancing / 4), // Default sensible groups
+                
+                // Default immediate actions
+                AssignTeamsNow = true,
+                GenerateMatchesNow = true
             };
 
             return View(model);
@@ -532,6 +556,7 @@ public class TournamentRoundsController : Controller
 
             var userName = User.Identity?.Name ?? "admin";
 
+            // Create the next tournament round
             var tournamentRound = await _tournamentRoundService.CreateNextRoundAsync(
                 model.TournamentId,
                 model.DivisionId,
@@ -542,10 +567,38 @@ public class TournamentRoundsController : Controller
                 model.TeamsAdvancing,
                 userName);
 
+            // Save group configuration
+            tournamentRound.TeamsPerGroup = model.GroupConfigurationType == "TeamsPerGroup" ? model.GroupConfigurationValue : null;
+            tournamentRound.GroupsInRound = model.GroupConfigurationType == "GroupsInRound" ? model.GroupConfigurationValue : null;
+            _context.TournamentRounds.Update(tournamentRound);
+            await _context.SaveChangesAsync();
+
             TempData["SuccessMessage"] = "Next round created successfully.";
             
-            // Redirect to select teams
-            return RedirectToAction(nameof(SelectTeams), new { id = tournamentRound.Id });
+            // Immediate execution: Assign teams if requested (SelectTeams workflow)
+            if (model.AssignTeamsNow)
+            {
+                try
+                {
+                    var teams = await _tournamentRoundService.SelectTeamsForRoundAsync(tournamentRound.Id, userName);
+                    TempData["SuccessMessage"] += $" {teams.Count} teams selected and assigned.";
+                    _logger.LogInformation("Teams selected immediately for round {RoundId}", tournamentRound.Id);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error selecting teams during next round creation");
+                    TempData["ErrorMessage"] = $"Round created but error selecting teams: {ex.Message}";
+                    return RedirectToAction(nameof(Details), new { id = tournamentRound.Id });
+                }
+            }
+
+            // Immediate execution: Generate matches if requested
+            if (model.GenerateMatchesNow)
+            {
+                return RedirectToAction(nameof(GenerateMatches), new { id = tournamentRound.Id });
+            }
+            
+            return RedirectToAction(nameof(Details), new { id = tournamentRound.Id });
         }
         catch (Exception ex)
         {

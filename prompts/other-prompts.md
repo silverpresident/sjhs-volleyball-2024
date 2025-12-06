@@ -80,7 +80,7 @@ Along with other you find in the project besure to include:
 
 
 In the  Rounds progress section
-Tot he headinf add a link to the TournamentRounds  index page  next to the matches page
+To the heading add a link to the TournamentRounds  index page  next to the matches page
  To each row in the tables in the Add a link to open the TournamentRounds details page
  
 

@@ -82,14 +82,41 @@ public class CreateFirstRoundViewModel
 /// </summary>
 public class CreateNextRoundViewModel
 {
+    // Identification
     public Guid TournamentId { get; set; }
     public Guid DivisionId { get; set; }
     public Guid RoundId { get; set; }
     public Guid PreviousTournamentRoundId { get; set; }
+    
+    // Display Information
+    public string TournamentName { get; set; } = string.Empty;
+    public string DivisionName { get; set; } = string.Empty;
     public string PreviousRoundName { get; set; } = string.Empty;
-    public TeamSelectionMethod TeamSelectionMethod { get; set; } = TeamSelectionMethod.TopByPoints;
-    public MatchGenerationStrategy MatchGenerationStrategy { get; set; } = MatchGenerationStrategy.SeededBracket;
+    public Guid CurrentRoundId { get; set; } // To disable in dropdown
+    
+    // SOURCE SECTION: Teams Coming Into This Round (Read-Only/Pre-populated)
+    public int SourceTeamCount { get; set; }
+    public TeamSelectionMethod SourceSelectionMethod { get; set; }
+    public MatchGenerationStrategy SourceMatchStrategy { get; set; }
+    
+    // DESTINATION SECTION: Teams Advancing to Next Round (Editable)
+    [Required]
+    [Range(2, int.MaxValue, ErrorMessage = "At least 2 teams must advance")]
     public int TeamsAdvancing { get; set; } = 4;
+    
+    [Required]
+    public TeamSelectionMethod TeamSelectionMethod { get; set; } = TeamSelectionMethod.TopByPoints;
+    
+    [Required]
+    public MatchGenerationStrategy MatchGenerationStrategy { get; set; } = MatchGenerationStrategy.SeededBracket;
+    
+    // Group Configuration for the NEW round
+    public string GroupConfigurationType { get; set; } = "TeamsPerGroup";
+    public int GroupConfigurationValue { get; set; } = 2;
+    
+    // Post-action flags (Immediate Workflow Execution)
+    public bool AssignTeamsNow { get; set; } = true;
+    public bool GenerateMatchesNow { get; set; } = true;
 }
 
 /// <summary>
