@@ -176,9 +176,8 @@ GO
 IF NOT EXISTS (SELECT * FROM dbo.Rounds)
 BEGIN
     INSERT INTO dbo.Rounds (Id, Name, Sequence, QualifyingTeams, CreatedBy, UpdatedBy) VALUES
-    (NEWID(), 'Round 1', 1, 0, 'system', 'system'),
-    (NEWID(), 'Round 2', 2, 0, 'system', 'system'),
-    (NEWID(), 'Round 3', 3, 16, 'system', 'system'),
+    (NEWID(), 'Preliminary Round', 1, 0, 'system', 'system'),
+    (NEWID(), 'Seeded Round', 2, 16, 'system', 'system'),
     (NEWID(), 'Quarter Finals', 4, 8, 'system', 'system'),
     (NEWID(), 'Semi Finals', 5, 4, 'system', 'system'),
     (NEWID(), 'Third Place Playoff', 6, 2, 'system', 'system'),

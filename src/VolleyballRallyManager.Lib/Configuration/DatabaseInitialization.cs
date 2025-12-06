@@ -140,9 +140,8 @@ namespace VolleyballRallyManager.Lib.Configuration
             // Add sample rounds
             var defaultRounds = new[]
             {
-                new Round { Id = Guid.NewGuid(), Name = "Round 1", Sequence = 1, QualifyingTeams = 0 },
-                new Round { Id = Guid.NewGuid(), Name = "Round 2", Sequence = 2, QualifyingTeams = 16 },
-                new Round { Id = Guid.NewGuid(), Name = "Round 3", Sequence = 3, QualifyingTeams = 16 },
+                new Round { Id = Guid.NewGuid(), Name = "Preliminary Round", Sequence = 1, QualifyingTeams = 0 },
+                new Round { Id = Guid.NewGuid(), Name = "Seeded Round", Sequence = 2, QualifyingTeams = 16 },
                 new Round { Id = Guid.NewGuid(), Name = "Quarter Finals", Sequence = 4, QualifyingTeams = 8 },
                 new Round { Id = Guid.NewGuid(), Name = "Semi Finals", Sequence = 5, QualifyingTeams = 4 },
                 new Round { Id = Guid.NewGuid(), Name = "Third Place Playoff", Sequence = 6, QualifyingTeams = 2 },
