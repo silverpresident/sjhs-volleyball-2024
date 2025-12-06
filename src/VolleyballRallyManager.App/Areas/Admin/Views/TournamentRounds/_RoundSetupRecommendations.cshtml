@@ -1,0 +1,115 @@
+@*
+    Partial view for displaying round setup recommendations
+    This component provides best practice guidance for configuring tournament rounds
+*@
+
+<div class="card border-info mb-4">
+    <div class="card-header bg-info text-white">
+        <h6 class="mb-0">
+            <i class="bi bi-lightbulb"></i> Round Setup Recommendations
+        </h6>
+    </div>
+    <div class="card-body">
+        <p class="text-muted mb-3">
+            <i class="bi bi-info-circle"></i> Use these guidelines to configure your tournament rounds effectively.
+        </p>
+
+        <!-- Finals -->
+        <div class="recommendation-section mb-3">
+            <h6 class="text-success">
+                <i class="bi bi-trophy-fill"></i> Finals
+            </h6>
+            <ul class="small mb-0">
+                <li><strong>Teams Coming In:</strong> 2 Teams</li>
+                <li><strong>Selection Method:</strong> <span class="badge bg-success">Winners Only</span></li>
+                <li><strong>Teams Advancing:</strong> 0 (This is the final round)</li>
+                <li class="text-muted">💡 The championship match between the two best teams</li>
+            </ul>
+        </div>
+
+        <hr />
+
+        <!-- Semi Finals -->
+        <div class="recommendation-section mb-3">
+            <h6 class="text-primary">
+                <i class="bi bi-award"></i> Semi Finals
+            </h6>
+            <ul class="small mb-0">
+                <li><strong>Teams Coming In:</strong> 4 Teams</li>
+                <li><strong>Selection Method:</strong> <span class="badge bg-primary">Winners Only</span></li>
+                <li><strong>Teams Advancing:</strong> 2 Teams (to Finals)</li>
+                <li><strong>Match Strategy:</strong> Seeded Bracket</li>
+                <li class="text-muted">💡 Top 4 teams compete for championship spots</li>
+            </ul>
+        </div>
+
+        <hr />
+
+        <!-- Quarter Finals -->
+        <div class="recommendation-section mb-3">
+            <h6 class="text-warning">
+                <i class="bi bi-diagram-3"></i> Quarter Finals
+            </h6>
+            <ul class="small mb-0">
+                <li><strong>Teams Coming In:</strong> 8 Teams</li>
+                <li><strong>Selection Method:</strong> 
+                    <span class="badge bg-warning text-dark">Top From Group And Next Best</span> or 
+                    <span class="badge bg-warning text-dark">Top By Points</span>
+                </li>
+                <li><strong>Teams Advancing:</strong> 4 Teams (to Semi Finals)</li>
+                <li><strong>Match Strategy:</strong> Seeded Bracket</li>
+                <li><strong>Groups/Teams:</strong> 8 or fewer groups in previous round</li>
+                <li class="text-muted">💡 Elite 8 teams competing for semi-final berths</li>
+            </ul>
+        </div>
+
+        <hr />
+
+        <!-- Group Stage -->
+        <div class="recommendation-section mb-3">
+            <h6 class="text-secondary">
+                <i class="bi bi-grid-3x3"></i> Group Stage / First Round
+            </h6>
+            <ul class="small mb-0">
+                <li><strong>Teams Coming In:</strong> All teams in division</li>
+                <li><strong>Selection Method:</strong> <span class="badge bg-secondary">Manual</span> (all teams included)</li>
+                <li><strong>Teams Advancing:</strong> Varies (typically 50% or top performers)</li>
+                <li><strong>Match Strategy:</strong> 
+                    <span class="badge bg-secondary">Round Robin</span> or 
+                    <span class="badge bg-secondary">Group Stage Knockout</span>
+                </li>
+                <li><strong>Group Configuration:</strong> Divide teams into balanced groups (2-6 teams per group recommended)</li>
+                <li class="text-muted">💡 Initial elimination phase to identify top performers</li>
+            </ul>
+        </div>
+
+        <hr />
+
+        <!-- General Tips -->
+        <div class="alert alert-light border mb-0">
+            <h6 class="alert-heading">
+                <i class="bi bi-star"></i> General Tips
+            </h6>
+            <ul class="small mb-0">
+                <li><strong>Teams Advancing Rule:</strong> Each subsequent round should have approximately half the teams of the previous round</li>
+                <li><strong>Winner Selection:</strong> Use "Winners Only" for knockout rounds (Quarter Finals onwards)</li>
+                <li><strong>Group Selection:</strong> Use "Top From Group And Next Best" or "Top By Points" when advancing from group stages</li>
+                <li><strong>Seeded Brackets:</strong> Best for elimination rounds to ensure fairness based on performance</li>
+                <li><strong>Round Robin:</strong> Best for group stages where all teams should play each other</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    .recommendation-section h6 {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    .recommendation-section ul {
+        padding-left: 1.2rem;
+    }
+    .recommendation-section li {
+        margin-bottom: 0.25rem;
+    }
+</style>

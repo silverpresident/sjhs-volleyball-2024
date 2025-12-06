@@ -134,3 +134,19 @@ For each match that is not finished in the active tournament
 - add 1 or 3 sets.
 - add scores to sets and finalzie the sets
 - finalize the match
+====
+Create an informational partial view which will be displayed on both the GenerateNextRound.cshtml and 
+CreateFirstRound.cshtml.
+This section will display useful information for how to set up the round.
+ for example
+- If the next round is Quarter finals you should  have 8 or less groups in this round and 8 teams advancing
+- If the next round is semi finals you should  have 4 or less teams/groups in this round and 4 teams advancing 
+
+Recommendations for Finals
+Teams coming in should be WINNERS ONLY. 2 Teams.
+
+Recommendations for Semi Finals
+Teams coming in should be WINNERS ONLY. 4 Teams.
+
+Recommendations for Quarter Finals
+Teams coming in should be TOP FROM GROUP AND NEXT BEST or TOP BY POINTS, 8 Teams.

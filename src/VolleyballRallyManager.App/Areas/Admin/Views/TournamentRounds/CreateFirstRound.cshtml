@@ -152,6 +152,9 @@
                     Teams will be seeded based on their current division seed numbers.
                 </div>
 
+                <!-- Round Setup Recommendations -->
+                @await Html.PartialAsync("_RoundSetupRecommendations")
+
                 <div class="d-flex justify-content-between mt-4">
                     <a asp-action="Index" asp-route-tournamentId="@Model.TournamentId" asp-route-divisionId="@Model.DivisionId" 
                        class="btn btn-secondary">
