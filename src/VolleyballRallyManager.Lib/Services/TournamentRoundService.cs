@@ -429,19 +429,19 @@ public class TournamentRoundService : ITournamentRoundService
             List<TournamentRoundTeam> qualifyingTeams = new List<TournamentRoundTeam>();
 
             // Apply selection logic based on method
-            switch (tournamentRound.AdvancingTeamSelectionStrategy)
+            switch (previousRound.AdvancingTeamSelectionStrategy)
             {
                 case TeamSelectionStrategy.WinnersOnly:
                     //TODO should teams who won their match
                     qualifyingTeams = previousRoundTeams
-                        .Where(t => t.FinalRank == 1)
-                        .Take(tournamentRound.AdvancingTeamsCount)
+                        .Where(t => t.Wins > 0)
+                        .Take(previousRound.AdvancingTeamsCount)
                         .ToList();
                     break;
 
                 case TeamSelectionStrategy.SeedTopHalf:
                     int halfCount = previousRoundTeams.Count / 2;
-                    int teamsToSelect = Math.Min(halfCount, tournamentRound.AdvancingTeamsCount);
+                    int teamsToSelect = Math.Min(halfCount, previousRound.AdvancingTeamsCount);
                     qualifyingTeams = previousRoundTeams
                         .Take(teamsToSelect)
                         .ToList();
@@ -449,7 +449,7 @@ public class TournamentRoundService : ITournamentRoundService
 
                 case TeamSelectionStrategy.TopByPoints:
                     qualifyingTeams = previousRoundTeams
-                        .Take(tournamentRound.AdvancingTeamsCount)
+                        .Take(previousRound.AdvancingTeamsCount)
                         .ToList();
                     break;
 
@@ -463,7 +463,7 @@ public class TournamentRoundService : ITournamentRoundService
                     // Get next best teams overall
                     var remainingTeams = previousRoundTeams
                         .Except(groupWinners)
-                        .Take(tournamentRound.AdvancingTeamsCount - groupWinners.Count)
+                        .Take(previousRound.AdvancingTeamsCount - groupWinners.Count)
                         .ToList();
 
                     qualifyingTeams = groupWinners.Concat(remainingTeams).ToList();

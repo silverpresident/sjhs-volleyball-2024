@@ -653,7 +653,7 @@ namespace VolleyballRallyManager.Lib.Services
             roundView.CanFinalize = !tr.IsFinished && hasMatches && allMatchesComplete;
             roundView.CanGenerateNextRound = tr.IsFinished;
             roundView.CanSelectTeams = !hasTeams && tr.PreviousTournamentRoundId.HasValue;
-            roundView.CanGenerateMatches = hasTeams && !hasMatches;
+            roundView.CanGenerateMatches = hasTeams && !tr.IsFinished && !tr.IsLocked;
 
             // Check if previous tournamentRound is finished for team selection
             if (roundView.CanSelectTeams && tr.PreviousTournamentRoundId.HasValue)
@@ -722,6 +722,7 @@ namespace VolleyballRallyManager.Lib.Services
                 CurrentRound = tournamentRound,
                 Teams = teamViewModels,
                 Matches = matches,
+                TeamCount = teams.Count
             };
             if (tournamentRound.PreviousTournamentRoundId.HasValue)
             {

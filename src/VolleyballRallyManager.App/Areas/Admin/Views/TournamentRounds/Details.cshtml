@@ -104,11 +104,8 @@
                         <dt class="col-sm-5">Total Teams:</dt>
                         <dd class="col-sm-7"><strong>@Model.Teams.Count</strong></dd>
 
-                        <dt class="col-sm-5">Total Matches:</dt>
-                        <dd class="col-sm-7"><strong>@Model.Matches.Count</strong></dd>
-
                         <dt class="col-sm-5">Completed Matches:</dt>
-                        <dd class="col-sm-7"><strong>@Model.Matches.Count(m => m.IsFinished)</strong></dd>
+                        <dd class="col-sm-7"><strong>@Model.Matches.Count(m => m.IsFinished) / @Model.Matches.Count</strong></dd>
 
                         <dt class="col-sm-5">Pending Matches:</dt>
                         <dd class="col-sm-7"><strong>@Model.Matches.Count(m => !m.IsFinished)</strong></dd>
@@ -147,6 +144,20 @@
                             }
                         </dd>
                     </dl>
+                    <div class="row mb-0">
+                        @if (Model.PreviousRound != null)
+                {
+                    <a asp-action="Details" asp-route-id="@Model.PreviousRound.Id" class="btn btn-primary">
+                        <i class="bi bi-arrow-left"></i>  Previous Round
+                    </a>
+                }       
+                @if (Model.CurrentRound.NextTournamentRoundId != null)
+                {
+                    <a asp-action="Details" asp-route-id="@Model.CurrentRound.NextTournamentRoundId" class="btn btn-primary">
+                         Next Round <i class="bi bi-arrow-right"></i> 
+                    </a>
+                }
+                    </div>
                 </div>
             </div>
         </div>
