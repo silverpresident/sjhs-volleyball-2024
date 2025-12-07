@@ -70,6 +70,7 @@ public class RanksService : IRanksService
                 roundTeam.SetsAgainst = 0;
                 roundTeam.ScoreFor = 0;
                 roundTeam.ScoreAgainst = 0;
+                roundTeam.Points = 0;
 
                 foreach (var match in teamMatches)
                 {

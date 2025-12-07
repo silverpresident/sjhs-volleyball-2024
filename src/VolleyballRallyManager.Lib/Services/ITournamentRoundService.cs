@@ -22,10 +22,12 @@ public interface ITournamentRoundService
     /// </summary>
     /// <param name="tournamentId">Tournament ID</param>
     /// <param name="divisionId">Division ID</param>
-    /// <param name="roundId">Round ID</param>
+    /// <param name="roundId">CurrentRound ID</param>
     /// <param name="advancingTeamSelectionStrategy">Method for selecting teams</param>
     /// <param name="matchGenerationStrategy">Strategy for generating matches</param>
     /// <param name="advancingTeamsCount">Number of Teams Advancing for next round</param>
+    /// <param name="groupingStrategy">Strategy for generating groups</param>
+    /// <param name="groupingSize">Teams per group or groups per round</param>
     /// <param name="userName">User creating the round</param>
     /// <returns>Created tournament round</returns>
     Task<TournamentRound> CreateFirstRoundAsync(
@@ -35,6 +37,8 @@ public interface ITournamentRoundService
         int advancingTeamsCount,
         TeamSelectionStrategy advancingTeamSelectionStrategy,
         MatchGenerationStrategy matchGenerationStrategy,
+        GroupGenerationStrategy groupingStrategy,
+        int groupingSize,
         string userName);
 
     /// <summary>
@@ -42,11 +46,13 @@ public interface ITournamentRoundService
     /// </summary>
     /// <param name="tournamentId">Tournament ID</param>
     /// <param name="divisionId">Division ID</param>
-    /// <param name="roundId">Round ID</param>
+    /// <param name="roundId">CurrentRound ID</param>
     /// <param name="previousTournamentRoundId">Previous round ID</param>
+    /// <param name="advancingTeamsCount">Number of Teams Advancing for next round</param>
     /// <param name="advancingTeamSelectionStrategy">Method for selecting teams</param>
     /// <param name="matchGenerationStrategy">Strategy for generating matches</param>
-    /// <param name="TeamsAdvancing">Number of Teams Advancing for next round</param>
+    /// <param name="groupingStrategy">Strategy for generating groups</param>
+    /// <param name="groupingSize">Teams per group or groups per round</param>
     /// <param name="userName">User creating the round</param>
     /// <returns>Created tournament round</returns>
     Task<TournamentRound> CreateNextRoundAsync(
@@ -54,9 +60,11 @@ public interface ITournamentRoundService
         Guid divisionId,
         Guid roundId,
         Guid previousTournamentRoundId,
+        int advancingTeamsCount,
         TeamSelectionStrategy advancingTeamSelectionStrategy,
         MatchGenerationStrategy matchGenerationStrategy,
-        int TeamsAdvancing,
+        GroupGenerationStrategy groupingStrategy,
+        int groupingSize,
         string userName);
 
     /// <summary>
@@ -132,4 +140,5 @@ public interface ITournamentRoundService
     /// <param name="tournamentId">Tournament ID</param>
     /// <returns>Number of rounds deleted</returns>
     Task<int> DeleteAllRoundsByTournamentAsync(Guid tournamentId);
+    Task<TournamentRound> UnfinalizeRoundAsync(Guid id, string userName);
 }

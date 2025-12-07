@@ -126,7 +126,7 @@ public class TournamentRoundsController : Controller
                 divisionId = firstDivision?.Id ?? Guid.Empty;
             }
 
-            // ACCESS GUARD: Check if a round with RoundNumber > 1 already exists
+            // ACCESS GUARD: Check if a tournamentRound with RoundNumber > 1 already exists
             var existingRounds = await _context.TournamentRounds
                 .Include(tr => tr.Round)
                 .Where(tr => tr.TournamentId == tournamentId.Value && tr.DivisionId == divisionId.Value)
@@ -136,7 +136,7 @@ public class TournamentRoundsController : Controller
             {
                 TempData["ErrorMessage"] = "Cannot create first round. Subsequent rounds already exist for this division. Please edit Round 1 instead.";
                 
-                // Find Round 1 to redirect to edit
+                // Find CurrentRound 1 to redirect to edit
                 var firstRound = existingRounds.FirstOrDefault(tr => tr.Round != null && tr.Round.Sequence == 1);
                 if (firstRound != null)
                 {
@@ -146,7 +146,7 @@ public class TournamentRoundsController : Controller
                 return RedirectToAction(nameof(Index), new { tournamentId, divisionId });
             }
 
-            // Check if Round 1 already exists
+            // Check if CurrentRound 1 already exists
             var round1 = existingRounds.FirstOrDefault(tr => tr.Round != null && tr.Round.Sequence == 1);
             if (round1 != null)
             {
@@ -157,7 +157,7 @@ public class TournamentRoundsController : Controller
             var tournament = await _context.Tournaments.FindAsync(tournamentId.Value);
             var division = await _context.Divisions.FindAsync(divisionId.Value);
             
-            // Get Round with RoundNumber = 1
+            // Get CurrentRound with RoundNumber = 1
             var firstRoundDef = await _context.Rounds.FirstOrDefaultAsync(r => r.Sequence == 1);
             if (firstRoundDef == null)
             {
@@ -206,7 +206,7 @@ public class TournamentRoundsController : Controller
 
             var userName = User.Identity?.Name ?? "admin";
 
-            // Create the tournament round
+            // Create the tournament tournamentRound
             var tournamentRound = await _tournamentRoundService.CreateFirstRoundAsync(
                 model.TournamentId,
                 model.DivisionId,
@@ -214,11 +214,10 @@ public class TournamentRoundsController : Controller
                 model.AdvancingTeamsCount,
                 model.AdvancingTeamSelectionStrategy,
                 model.MatchGenerationStrategy,
+                model.GroupConfigurationType,
+                model.GroupConfigurationValue,
                 userName);
 
-            // Save group configuration
-            tournamentRound.TeamsPerGroup = model.GroupConfigurationType == "TeamsPerGroup" ? model.GroupConfigurationValue : null;
-            tournamentRound.GroupsInRound = model.GroupConfigurationType == "GroupsInRound" ? model.GroupConfigurationValue : null;
             _context.TournamentRounds.Update(tournamentRound);
             await _context.SaveChangesAsync();
 
@@ -252,55 +251,55 @@ public class TournamentRoundsController : Controller
     {
         try
         {
-            var round = await _tournamentRoundService.GetTournamentRoundByIdAsync(id);
-            if (round == null)
+            var tournamentRound = await _tournamentRoundService.GetTournamentRoundByIdAsync(id);
+            if (tournamentRound == null)
             {
                 return NotFound();
             }
 
-            var tournament = await _context.Tournaments.FindAsync(round.TournamentId);
-            var division = await _context.Divisions.FindAsync(round.DivisionId);
+            var tournament = await _context.Tournaments.FindAsync(tournamentRound.TournamentId);
+            var division = await _context.Divisions.FindAsync(tournamentRound.DivisionId);
             
             // Count teams in division
             var teamsCount = await _context.TournamentTeamDivisions
-                .Where(ttd => ttd.TournamentId == round.TournamentId && ttd.DivisionId == round.DivisionId)
+                .Where(ttd => ttd.TournamentId == tournamentRound.TournamentId && ttd.DivisionId == tournamentRound.DivisionId)
                 .CountAsync();
 
             var hasTeams = await _tournamentRoundService.HasTeamsAssignedAsync(id);
             var hasMatches = await _tournamentRoundService.HasMatchesGeneratedAsync(id);
 
             // Determine group configuration type and value
-            string groupConfigType = "TeamsPerGroup";
+            GroupGenerationStrategy groupConfigType = tournamentRound.GroupingStrategy;
             int groupConfigValue = 2;
             
-            if (round.GroupsInRound.HasValue && round.GroupsInRound.Value > 0)
+            if (tournamentRound.GroupsInRound.HasValue && tournamentRound.GroupsInRound.Value > 0)
             {
-                groupConfigType = "GroupsInRound";
-                groupConfigValue = round.GroupsInRound.Value;
+                groupConfigType = GroupGenerationStrategy.GroupsInRound;
+                groupConfigValue = tournamentRound.GroupsInRound.Value;
             }
-            else if (round.TeamsPerGroup.HasValue && round.TeamsPerGroup.Value > 0)
+            else if (tournamentRound.TeamsPerGroup.HasValue && tournamentRound.TeamsPerGroup.Value > 0)
             {
-                groupConfigType = "TeamsPerGroup";
-                groupConfigValue = round.TeamsPerGroup.Value;
+                groupConfigType = GroupGenerationStrategy.TeamsPerGroup;
+                groupConfigValue = tournamentRound.TeamsPerGroup.Value;
             }
 
             var model = new EditTournamentRoundViewModel
             {
-                Id = round.Id,
-                TournamentId = round.TournamentId,
-                DivisionId = round.DivisionId,
-                RoundId = round.RoundId,
+                Id = tournamentRound.Id,
+                TournamentId = tournamentRound.TournamentId,
+                DivisionId = tournamentRound.DivisionId,
+                RoundId = tournamentRound.RoundId,
                 TournamentName = tournament?.Name ?? "Unknown",
                 DivisionName = division?.Name ?? "Unknown",
-                RoundName = round.Round?.Name ?? $"Round {round.RoundNumber}",
+                RoundName = tournamentRound.Round?.Name ?? $"Round {tournamentRound.RoundNumber}",
                 TotalTeamsInDivision = teamsCount,
-                RoundNumber = round.RoundNumber,
-                AdvancingTeamSelectionStrategy = round.AdvancingTeamSelectionStrategy,
-                MatchGenerationStrategy = round.MatchGenerationStrategy,
-                AdvancingTeamsCount = round.AdvancingTeamsCount,
+                RoundNumber = tournamentRound.RoundNumber,
+                AdvancingTeamSelectionStrategy = tournamentRound.AdvancingTeamSelectionStrategy,
+                MatchGenerationStrategy = tournamentRound.MatchGenerationStrategy,
+                AdvancingTeamsCount = tournamentRound.AdvancingTeamsCount,
                 GroupConfigurationType = groupConfigType,
                 GroupConfigurationValue = groupConfigValue,
-                IsFinished = round.IsFinished,
+                IsFinished = tournamentRound.IsFinished,
                 HasTeams = hasTeams,
                 HasMatches = hasMatches
             };
@@ -341,14 +340,15 @@ public class TournamentRoundsController : Controller
 
             var userName = User.Identity?.Name ?? "admin";
 
-            // Update round properties
+            // Update tournamentRound properties
             tournamentRound.AdvancingTeamSelectionStrategy = model.AdvancingTeamSelectionStrategy;
-            tournamentRound.MatchGenerationStrategy = model.MatchGenerationStrategy;
             tournamentRound.AdvancingTeamsCount = model.AdvancingTeamsCount;
+            tournamentRound.MatchGenerationStrategy = model.MatchGenerationStrategy;
             
             // Update group configuration
-            tournamentRound.TeamsPerGroup = model.GroupConfigurationType == "TeamsPerGroup" ? model.GroupConfigurationValue : null;
-            tournamentRound.GroupsInRound = model.GroupConfigurationType == "GroupsInRound" ? model.GroupConfigurationValue : null;
+            tournamentRound.GroupingStrategy = model.GroupConfigurationType;
+            tournamentRound.TeamsPerGroup = model.GroupConfigurationType == GroupGenerationStrategy.TeamsPerGroup ? model.GroupConfigurationValue : null;
+            tournamentRound.GroupsInRound = model.GroupConfigurationType == GroupGenerationStrategy.GroupsInRound ? model.GroupConfigurationValue : null;
             
             tournamentRound.UpdatedAt = DateTime.Now;
             tournamentRound.UpdatedBy = userName;
@@ -417,11 +417,11 @@ public class TournamentRoundsController : Controller
             var tournament = await _context.Tournaments.FindAsync(currentRound.TournamentId);
             var division = await _context.Divisions.FindAsync(currentRound.DivisionId);
 
-            // Get all rounds and the current round to disable it in the dropdown
+            // Get all rounds and the current tournamentRound to disable it in the dropdown
             var allRounds = await _context.Rounds.OrderBy(r => r.Sequence).ToListAsync();
             ViewData["Rounds"] = new SelectList(allRounds, "Id", "Name");
 
-            // Get team count from current round
+            // Get team count from current tournamentRound
             var currentTeamCount = await _tournamentRoundService.GetRoundTeamsAsync(id);
 
             var model = new CreateNextRoundViewModel
@@ -434,15 +434,15 @@ public class TournamentRoundsController : Controller
                 DivisionName = division?.Name ?? "Unknown",
                 PreviousRoundName = currentRound.Round?.Name ?? $"Round {currentRound.RoundNumber}",
                 
-                // SOURCE: Teams coming into the NEW round (based on current round's advancing settings)
+                // SOURCE: Teams coming into the NEW tournamentRound (based on current tournamentRound's advancing settings)
                 SourceTeamCount = currentRound.AdvancingTeamsCount,
                 SourceSelectionMethod = currentRound.AdvancingTeamSelectionStrategy,
                 SourceMatchStrategy = currentRound.MatchGenerationStrategy,
                 
-                // DESTINATION: Default settings for teams advancing from the NEW round
+                // DESTINATION: Default settings for teams advancing from the NEW tournamentRound
                 AdvancingTeamsCount = Math.Max(2, currentRound.AdvancingTeamsCount / 2), // Default to half, minimum 2
                 AdvancingTeamSelectionStrategy = currentRound.AdvancingTeamSelectionStrategy, // Same as current
-                MatchGenerationStrategy = currentRound.MatchGenerationStrategy, // Same as current
+                MatchGenerationStrategy = MatchGenerationStrategy.SeededBracket,
                 GroupConfigurationValue = Math.Max(2, currentRound.AdvancingTeamsCount / 4), // Default sensible groups
                 
                 // Default immediate actions
@@ -476,22 +476,19 @@ public class TournamentRoundsController : Controller
 
             var userName = User.Identity?.Name ?? "admin";
 
-            // Create the next tournament round
+            // Create the next tournament tournamentRound
             var tournamentRound = await _tournamentRoundService.CreateNextRoundAsync(
                 model.TournamentId,
                 model.DivisionId,
                 model.RoundId,
                 model.PreviousTournamentRoundId,
+                model.AdvancingTeamsCount,
                 model.AdvancingTeamSelectionStrategy,
                 model.MatchGenerationStrategy,
-                model.AdvancingTeamsCount,
+                model.GroupConfigurationType,
+                model.GroupConfigurationValue,
                 userName);
 
-            // Save group configuration
-            tournamentRound.TeamsPerGroup = model.GroupConfigurationType == "TeamsPerGroup" ? model.GroupConfigurationValue : null;
-            tournamentRound.GroupsInRound = model.GroupConfigurationType == "GroupsInRound" ? model.GroupConfigurationValue : null;
-            _context.TournamentRounds.Update(tournamentRound);
-            await _context.SaveChangesAsync();
 
             TempData["SuccessMessage"] = "Next round created successfully.";
             
@@ -564,7 +561,7 @@ public class TournamentRoundsController : Controller
             {
                 return NotFound();
             }
-            //TODO if round 1 auto assign teams
+            //TODO if tournamentRound 1 auto assign teams
             var teams = await _tournamentRoundService.GetRoundTeamsAsync(id);
 
             var model = new GenerateMatchesViewModel
@@ -612,7 +609,7 @@ public class TournamentRoundsController : Controller
 
             TempData["SuccessMessage"] = $"Generated {matches.Count} matches for the round.";
             
-            // Redirect to round details
+            // Redirect to tournamentRound details
             return RedirectToAction(nameof(Details), new { id = model.TournamentRoundId });
         }
         catch (Exception ex)
@@ -631,9 +628,32 @@ public class TournamentRoundsController : Controller
         try
         {
             var userName = User.Identity?.Name ?? "admin";
+            //Done inside finalize
+            //var rankedTeams = await _ranksService.UpdateTeamRanksAsync(id);
             var round = await _tournamentRoundService.FinalizeRoundAsync(id, userName);
 
             TempData["SuccessMessage"] = "Round finalized successfully. Team rankings have been calculated.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error finalizing round {RoundId}", id);
+            TempData["ErrorMessage"] = $"Error finalizing round: {ex.Message}";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+    }
+    // POST: Admin/TournamentRounds/FinalizeRound/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UnfinalizeRound(Guid id)
+    {
+        try
+        {
+            var userName = User.Identity?.Name ?? "admin";
+            var round = await _tournamentRoundService.UnfinalizeRoundAsync(id, userName);
+            var rankedTeams = await _ranksService.UpdateTeamRanksAsync(id);
+
+            TempData["SuccessMessage"] = "Round unlocked successfully. Team rankings have been calculated.";
             return RedirectToAction(nameof(Details), new { id });
         }
         catch (Exception ex)
@@ -657,9 +677,9 @@ public class TournamentRoundsController : Controller
                 return NotFound();
             }
 
-            if (round.IsFinished)
+            if (round.IsLocked)
             {
-                TempData["ErrorMessage"] = "Cannot rank teams for a finalized round.";
+                TempData["ErrorMessage"] = "Cannot rank teams for a locked round.";
                 return RedirectToAction(nameof(Details), new { id });
             }
 

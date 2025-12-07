@@ -5,9 +5,11 @@ namespace VolleyballRallyManager.Lib.Models;
 /// </summary>
 public class TournamentRoundDetailsViewModel: ITournamentRoundButtonState
 {
-    public TournamentRound Round { get; set; } = null!;
+    public TournamentRound CurrentRound { get; set; } = null!;
+    public TournamentRound? PreviousRound { get; set; } = null!;
     public List<TournamentRoundTeamSummaryViewModel> Teams { get; set; } = new List<TournamentRoundTeamSummaryViewModel>();
     public List<Match> Matches { get; set; } = new List<Match>(); 
+    public string GroupingStrategyLabel { get; set; } = string.Empty;
     public int TeamCount { get; set; }
     public bool CanFinalize { get; set; }
     public bool CanSelectTeams { get; set; }

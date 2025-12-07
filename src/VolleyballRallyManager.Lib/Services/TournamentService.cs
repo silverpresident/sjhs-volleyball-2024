@@ -719,10 +719,27 @@ namespace VolleyballRallyManager.Lib.Services
 
             var viewModel = new TournamentRoundDetailsViewModel
             {
-                Round = tournamentRound,//TODO this property should be named TournamentROund
+                CurrentRound = tournamentRound,
                 Teams = teamViewModels,
                 Matches = matches,
             };
+            if (tournamentRound.PreviousTournamentRoundId.HasValue)
+            {
+                var previousRound = await _context.TournamentRounds.FindAsync(tournamentRound.PreviousTournamentRoundId.Value);
+                viewModel.PreviousRound = previousRound!;
+            }
+            if (tournamentRound.GroupingStrategy == GroupGenerationStrategy.GroupsInRound)
+            {
+                viewModel.GroupingStrategyLabel = $"{tournamentRound.GroupsInRound} Groups In Round";
+            }
+            else if (tournamentRound.GroupingStrategy == GroupGenerationStrategy.TeamsPerGroup)
+            {
+                viewModel.GroupingStrategyLabel = $"{tournamentRound.TeamsPerGroup} Teams Per Group";
+            }
+            else
+            {
+                viewModel.GroupingStrategyLabel = "Knockout";
+            }
 
             await FixButtonState(viewModel, tournamentRound, hasMatches, allMatchesComplete);
             viewModel.CanSelectTeams = true;

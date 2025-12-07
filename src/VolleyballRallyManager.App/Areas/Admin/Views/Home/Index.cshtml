@@ -20,23 +20,13 @@
                 <div class="card-body">
                     <div class="row g-2">
                         <div class="col-md-6">
-                            <a class="btn btn-primary" asp-area="Admin" asp-controller="ActiveTournament" asp-action="Index">
-                                <i class="bi bi-award-fill"></i> Tournament Dashbaord
+                            <a class="btn btn-primary w-100" asp-area="Admin" asp-controller="ActiveTournament" asp-action="Index">
+                                <i class="bi bi-award-fill"></i> Tournament Dashboard
                             </a>
                         </div>
                         <div class="col-md-6">
-                            <a class="btn btn-primary" asp-area="Admin" asp-controller="AnnouncerBoard" asp-action="Index">
+                            <a class="btn btn-primary w-100" asp-area="Admin" asp-controller="AnnouncerBoard" asp-action="Index">
                                 <i class="bi bi-broadcast"></i> Announcer Board
-                            </a>
-                        </div>
-                        <div class="col-md-6">
-                            <a asp-area="Admin" asp-controller="Matches" asp-action="Create" class="btn btn-primary w-100">
-                                <i class="bi bi-plus-circle"></i> Create Match
-                            </a>
-                        </div>
-                        <div class="col-md-6">
-                            <a asp-area="Admin" asp-controller="Teams" asp-action="Create" class="btn btn-primary w-100">
-                                <i class="bi bi-plus-circle"></i> Add Team
                             </a>
                         </div>
                         <div class="col-md-6">
@@ -49,8 +39,19 @@
                                 <i class="bi bi-megaphone"></i> New Announcement
                             </a>
                         </div>
+                        <!--
                         <div class="col-md-6">
-                            <a asp-area="Admin" asp-controller="ActiveTournament" asp-action="Index" class="btn btn-primary w-100">
+                            <a asp-area="Admin" asp-controller="Matches" asp-action="Create" class="btn btn-primary w-100">
+                                <i class="bi bi-plus-circle"></i> Create Match
+                            </a>
+                        </div>-->
+                        <div class="col-md-6">
+                            <a asp-area="Admin" asp-controller="Teams" asp-action="Create" class="btn btn-primary w-100">
+                                <i class="bi bi-plus-circle"></i> Add Team
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a asp-area="Admin" asp-controller="Tournament" asp-action="Details" class="btn btn-primary w-100">
                                 <i class="bi bi-gear"></i> Tournament Settings
                             </a>
                         </div>
@@ -62,7 +63,7 @@
         <!-- Statistics Cards -->
         <div class="col">
             <div class="row">
-                <div class="col-md-3 mb-3">
+                <div class="col-md-6 mb-3">
                     <div class="card text-white bg-primary">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
@@ -83,7 +84,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-3 mb-3">
+                <div class="col-md-6 mb-3">
                     <div class="card text-white bg-success">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
@@ -104,7 +105,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-3 mb-3">
+                <div class="col-md-6 mb-3">
                     <div class="card text-white bg-warning">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
@@ -123,7 +124,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-3 mb-3">
+                <div class="col-md-6 mb-3">
                     <div class="card text-white bg-info">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">

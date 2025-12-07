@@ -61,7 +61,7 @@ namespace VolleyballRallyManager.Lib.Data
             //.HasForeignKey("DivisionId")
             //.OnDelete(DeleteBehavior.Restrict);
 
-            // Configure Round relationships
+            // Configure CurrentRound relationships
             builder.Entity<Round>()
                 .HasMany(r => r.Matches)
                 .WithOne(m => m.Round)
@@ -173,6 +173,10 @@ namespace VolleyballRallyManager.Lib.Data
                 .Property(tr => tr.MatchGenerationStrategy)
                 .HasConversion<string>();
 
+            builder.Entity<TournamentRound>()
+                .Property(tr => tr.GroupingStrategy)
+                .HasConversion<string>();
+            
             // Configure TournamentRoundTeam relationships
             builder.Entity<TournamentRoundTeam>()
                 .HasOne(trt => trt.Tournament)

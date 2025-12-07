@@ -30,9 +30,9 @@ public class CreateFirstRoundViewModel
     public TeamSelectionStrategy AdvancingTeamSelectionStrategy { get; set; } = TeamSelectionStrategy.Manual;
     public MatchGenerationStrategy MatchGenerationStrategy { get; set; } = MatchGenerationStrategy.RoundRobin;
     public int AdvancingTeamsCount { get; set; } = 4;
-    
+
     // Group Configuration
-    public string GroupConfigurationType { get; set; } = "TeamsPerGroup"; // "TeamsPerGroup" or "GroupsInRound"
+    public GroupGenerationStrategy GroupConfigurationType { get; set; } = GroupGenerationStrategy.GroupsInRound;
     public int GroupConfigurationValue { get; set; } = 2;
     
     // Post-action flags
@@ -57,12 +57,12 @@ public class CreateNextRoundViewModel
     public string PreviousRoundName { get; set; } = string.Empty;
     public Guid CurrentRoundId { get; set; } // To disable in dropdown
     
-    // SOURCE SECTION: Teams Coming Into This Round (Read-Only/Pre-populated)
+    // SOURCE SECTION: Teams Coming Into This CurrentRound (Read-Only/Pre-populated)
     public int SourceTeamCount { get; set; }
     public TeamSelectionStrategy SourceSelectionMethod { get; set; }
     public MatchGenerationStrategy SourceMatchStrategy { get; set; }
     
-    // DESTINATION SECTION: Teams Advancing to Next Round (Editable)
+    // DESTINATION SECTION: Teams Advancing to Next CurrentRound (Editable)
     [Required]
     [Range(2, int.MaxValue, ErrorMessage = "At least 2 teams must advance")]
     public int AdvancingTeamsCount { get; set; } = 4;
@@ -74,7 +74,7 @@ public class CreateNextRoundViewModel
     public MatchGenerationStrategy MatchGenerationStrategy { get; set; } = MatchGenerationStrategy.SeededBracket;
     
     // Group Configuration for the NEW round
-    public string GroupConfigurationType { get; set; } = "TeamsPerGroup";
+    public GroupGenerationStrategy GroupConfigurationType { get; set; } = GroupGenerationStrategy.TeamsPerGroup;
     public int GroupConfigurationValue { get; set; } = 2;
     
     // Post-action flags (Immediate Workflow Execution)
@@ -119,7 +119,7 @@ public class EditTournamentRoundViewModel
     public int AdvancingTeamsCount { get; set; }
     
     // Group Configuration
-    public string GroupConfigurationType { get; set; } = "TeamsPerGroup"; // "TeamsPerGroup" or "GroupsInRound"
+    public GroupGenerationStrategy GroupConfigurationType { get; set; } = GroupGenerationStrategy.NoGroup; // "TeamsPerGroup" or "GroupsInRound"
     public int GroupConfigurationValue { get; set; } = 2;
     
     // Post-action flags

@@ -11,7 +11,7 @@ public enum MatchGenerationStrategy
     Manual,
     
     /// <summary>
-    /// Round-robin format where each team plays every other team once
+    /// CurrentRound-robin format where each team plays every other team once
     /// </summary>
     RoundRobin,
     

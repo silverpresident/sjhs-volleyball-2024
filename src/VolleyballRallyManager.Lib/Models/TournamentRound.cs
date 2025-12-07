@@ -31,7 +31,7 @@ public class TournamentRound : BaseEntity
     [ForeignKey("RoundId")]
     public Round Round { get; set; } = null!;
 
-    // Round Configuration
+    // CurrentRound Configuration
     [Required]
     [Display(Name = "Round Number")]
     public int RoundNumber { get; set; }
@@ -45,9 +45,16 @@ public class TournamentRound : BaseEntity
     //This is for the current round
     public MatchGenerationStrategy MatchGenerationStrategy { get; set; } = MatchGenerationStrategy.Manual;
 
+    [Required]
+    [Display(Name = "Match Generation Strategy")]
+    //This is for the current round
+    public GroupGenerationStrategy GroupingStrategy { get; set; } = GroupGenerationStrategy.NoGroup;
+     
     [Display(Name = "Previous Round")]
     public Guid? PreviousTournamentRoundId { get; set; }
-
+    [Display(Name = "Next Round")]
+    public Guid? NextTournamentRoundId { get; set; }
+    
     [Required]
     [Display(Name = "Teams Advancing")]
     public int AdvancingTeamsCount { get; set; } = 0;

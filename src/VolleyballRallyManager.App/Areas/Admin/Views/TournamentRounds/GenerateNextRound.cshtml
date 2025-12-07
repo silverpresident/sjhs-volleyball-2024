@@ -45,7 +45,7 @@
                         <!-- Round Selection -->
                         <div class="mb-4">
                             <label asp-for="RoundId" class="form-label">
-                                <i class="bi bi-trophy"></i> Select Round <span class="text-danger">*</span>
+                                <i class="bi bi-trophy"></i> Select Round Type <span class="text-danger">*</span>
                             </label>
                             <select asp-for="RoundId" class="form-select" asp-items='@((SelectList)ViewData["Rounds"])' id="roundSelector">
                                 <option value="">-- Select Round --</option>
