@@ -67,13 +67,12 @@ public class TournamentRoundsController : Controller
             {
                 TournamentId = tournamentId.Value,
                 DivisionId = divisionId.Value,
-                TournamentName = tournament?.Name ?? "Unknown",
-                DivisionName = division?.Name ?? "Unknown",
+                TournamentName = tournament?.Name ?? "Unknown Tournament",
+                DivisionName = division?.Name ?? "Unknown Division",
             };
             
             var tournamentDivisionDetails = await _tournamentService.GetTournamentDivisionDetailsAsync(tournamentId.Value, divisionId.Value);
             if (tournamentDivisionDetails != null){
-                viewModel.DivisionName = tournamentDivisionDetails.DivisionName;
                 viewModel.Rounds = tournamentDivisionDetails.Rounds;
             }
             ViewBag.Divisions = await _activeTournamentService.GetTournamentDivisionsAsync();

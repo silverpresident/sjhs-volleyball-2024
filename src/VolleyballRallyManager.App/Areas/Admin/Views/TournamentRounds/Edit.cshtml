@@ -29,13 +29,13 @@
                 <dl class="row mb-0">
                     <dt class="col-sm-4">Tournament:</dt>
                     <dd class="col-sm-8"><strong>@Model.TournamentName</strong></dd>
-                    
+
                     <dt class="col-sm-4">Division:</dt>
                     <dd class="col-sm-8"><strong>@Model.DivisionName</strong></dd>
-                    
+
                     <dt class="col-sm-4">Round:</dt>
                     <dd class="col-sm-8"><strong>@Model.RoundName</strong> <span class="badge bg-primary">Round @Model.RoundNumber</span></dd>
-                    
+
                     <dt class="col-sm-4">Teams in Division:</dt>
                     <dd class="col-sm-8"><strong>@Model.TotalTeamsInDivision</strong></dd>
 
@@ -74,12 +74,12 @@
                 <input type="hidden" asp-for="HasMatches" />
 
                 <h6 class="border-bottom pb-2 mb-3"><i class="bi bi-grid-3x3"></i> Group Configuration</h6>
-                
+
                 <div class="row">
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label class="form-label">Configuration Type <span class="text-danger">*</span></label>
-                            <select asp-for="GroupConfigurationType" class="form-select" id="groupConfigType" 
+                            <select asp-for="GroupConfigurationType" class="form-select" id="groupConfigType"
                                     disabled="@Model.IsFinished">
                                 <option value="TeamsPerGroup">Teams per group</option>
                                 <option value="GroupsInRound">Groups in round</option>
@@ -94,10 +94,10 @@
                             <label asp-for="GroupConfigurationValue" class="form-label">
                                 <span id="configLabel">Value</span> <span class="text-danger">*</span>
                             </label>
-                            <input asp-for="GroupConfigurationValue" type="number" class="form-control" 
-                                    id="groupConfigValue"
-                                    min="2" max="@(Model.TotalTeamsInDivision / 2 + 1)"
-                                    disabled="@Model.IsFinished" />
+                            <input asp-for="GroupConfigurationValue" type="number" class="form-control"
+                                   id="groupConfigValue"
+                                   min="2" max="@(Model.TotalTeamsInDivision / 2 + 1)"
+                                   disabled="@Model.IsFinished" />
                             <span asp-validation-for="GroupConfigurationValue" class="text-danger"></span>
                             <div class="form-text">
                                 Minimum: 2, Maximum: @(Model.TotalTeamsInDivision / 2 + 1)
@@ -144,12 +144,13 @@
                     </div>
                 </div>
 
-                <div class="rowAdvancingTeamsCount          <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-6">
                         <div class="mb-3">
                             <label asp-for="AdvancingTeamsCount" class="form-label">
-                              AdvancingTeamsCounting <span class="text-danger">*</span>
+                                Teams Advancing <span class="text-danger">*</span>
                             </label>
-                            <input asp-for="AdvancingTeamsCount" type="number" class="form-contrAdvancingTeamsCount                                   disabled="@Model.IsFinished" />
+                            <input asp-for="AdvancingTeamsCount" type="number" class="form-control" min="0" disabled="@Model.IsFinished" />
                             <span asp-validation-for="AdvancingTeamsCount" class="text-danger"></span>
                             <div class="form-text">Number of teams that will advance to the next round</div>
                         </div>
@@ -161,27 +162,27 @@
                     <h6 class="border-bottom pb-2 mb-3 mt-4"><i class="bi bi-lightning"></i> Immediate Actions</h6>
 
                     <div class="row">
-                      
-                            <div class="col-md-6">
-                                <div class="form-check mb-3">
-                                    <input asp-for="AssignTeamsNow" type="checkbox" class="form-check-input" id="assignTeams" checked="@Model.HasTeams"/>
-                                    <label class="form-check-label" for="assignTeams">
-                                        <strong>Assign teams now</strong>
-                                        <div class="form-text">Execute team selection immediately after saving</div>
-                                    </label>
-                                </div>
+
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                <input asp-for="AssignTeamsNow" type="checkbox" class="form-check-input" id="assignTeams" checked="@Model.HasTeams" />
+                                <label class="form-check-label" for="assignTeams">
+                                    <strong>Assign teams now</strong>
+                                    <div class="form-text">Execute team selection immediately after saving</div>
+                                </label>
                             </div>
-                        
-                            <div class="col-md-6">
-                                <div class="form-check mb-3">
-                                    <input asp-for="GenerateMatchesNow" type="checkbox" class="form-check-input" id="generateMatches" checked="@Model.HasMatches"/>
-                                    <label class="form-check-label" for="generateMatches">
-                                        <strong>Generate matches now</strong>
-                                        <div class="form-text">Redirect to match generation after saving</div>
-                                    </label>
-                                </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                <input asp-for="GenerateMatchesNow" type="checkbox" class="form-check-input" id="generateMatches" checked="@Model.HasMatches" />
+                                <label class="form-check-label" for="generateMatches">
+                                    <strong>Generate matches now</strong>
+                                    <div class="form-text">Redirect to match generation after saving</div>
+                                </label>
                             </div>
-                        
+                        </div>
+
                     </div>
                 }
 
@@ -202,10 +203,12 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
     <script>
-        $(document).ready(function() {
+        $(function() {
         const $groupConfigType = $('#groupConfigType');
         const $configLabel = $('#configLabel');
         const $configValue = $('#groupConfigValue');
@@ -224,7 +227,7 @@
                     $configValue.prop('disabled', false);
                 }
             }
-            
+
             $('#groupConfigType').on('change', updateConfigLabel);
             updateConfigLabel(); // Initialize on page load
         });

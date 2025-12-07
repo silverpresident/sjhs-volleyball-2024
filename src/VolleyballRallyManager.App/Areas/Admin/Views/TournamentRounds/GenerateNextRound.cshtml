@@ -45,10 +45,10 @@
                         <!-- Round Selection -->
                         <div class="mb-4">
                             <label asp-for="RoundId" class="form-label">
-                            AdvancingTeamsCountbi bi-trophy"></i> Select Round <span class="text-danger">*</span>
+                                <i class="bi bi-trophy"></i> Select Round <span class="text-danger">*</span>
                             </label>
-                            <select asp-for="RoundId" class="form-select" asp-itemsAdvancingTeamsCountt)ViewData["Rounds"])' id="roundSelector">
-                                <option value="">-- Select AdvancingTeamsCounton>
+                            <select asp-for="RoundId" class="form-select" asp-items='@((SelectList)ViewData["Rounds"])' id="roundSelector">
+                                <option value="">-- Select Round --</option>
                             </select>
                             <span asp-validation-for="RoundId" class="text-danger"></span>
                             <div class="form-text">Select which round this will be (e.g., Quarter Finals, Semi Finals, etc.)</div>
