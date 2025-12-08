@@ -5,14 +5,14 @@ using VolleyballRallyManager.Lib.Common;
 namespace VolleyballRallyManager.Lib.Workers;
 
 /// <summary>
-/// Thread-safe channel for queuing scoring events to be processed by the automation worker
+/// Thread-safe channel for queuing Tournament events to be processed by the automation worker
 /// </summary>
-public class ScoringChannel
+public class TournamentChannel
 {
-    private readonly Channel<ScoringEvent> _channel;
-    private readonly ILogger<ScoringChannel> _logger;
+    private readonly Channel<TournamentEvent> _channel;
+    private readonly ILogger<TournamentChannel> _logger;
 
-    public ScoringChannel(ILogger<ScoringChannel> logger)
+    public TournamentChannel(ILogger<TournamentChannel> logger)
     {
         _logger = logger;
         
@@ -22,28 +22,28 @@ public class ScoringChannel
             FullMode = BoundedChannelFullMode.Wait
         };
         
-        _channel = Channel.CreateBounded<ScoringEvent>(options);
+        _channel = Channel.CreateBounded<TournamentEvent>(options);
     }
 
     /// <summary>
     /// Gets the channel reader for consuming events
     /// </summary>
-    public ChannelReader<ScoringEvent> Reader => _channel.Reader;
-
+    public ChannelReader<TournamentEvent> Reader => _channel.Reader;
+    /*
     /// <summary>
     /// Queue a call to court event
     /// </summary>
     public async Task QueueCallToCourtAsync(Guid matchId, string source = "scorer")
     {
-        var scoringEvent = new ScoringEvent
+        var TournamentEvent = new TournamentEvent
         {
-            EventType = ScoringEventType.CallToCourt,
+            EventType = TournamentEventType.CallToCourt,
             MatchId = matchId,
             Source = source,
             UserName = source
         };
 
-        await QueueEventAsync(scoringEvent);
+        await QueueEventAsync(TournamentEvent);
     }
 
     /// <summary>
@@ -51,15 +51,15 @@ public class ScoringChannel
     /// </summary>
     public async Task QueueCallToSupportAsync(Guid matchId, string source = "scorer")
     {
-        var scoringEvent = new ScoringEvent
+        var TournamentEvent = new TournamentEvent
         {
-            EventType = ScoringEventType.CallToSupport,
+            EventType = TournamentEventType.CallToSupport,
             MatchId = matchId,
             Source = source,
             UserName = source
         };
 
-        await QueueEventAsync(scoringEvent);
+        await QueueEventAsync(TournamentEvent);
     }
 
     /// <summary>
@@ -67,15 +67,15 @@ public class ScoringChannel
     /// </summary>
     public async Task QueueMatchStartAsync(Guid matchId, string source = "scorer")
     {
-        var scoringEvent = new ScoringEvent
+        var TournamentEvent = new TournamentEvent
         {
-            EventType = ScoringEventType.MatchStart,
+            EventType = TournamentEventType.MatchStart,
             MatchId = matchId,
             Source = source,
             UserName = source
         };
 
-        await QueueEventAsync(scoringEvent);
+        await QueueEventAsync(TournamentEvent);
     }
 
     /// <summary>
@@ -83,16 +83,16 @@ public class ScoringChannel
     /// </summary>
     public async Task QueueMatchSetStartAsync(Guid matchId, int setNumber, string source = "scorer")
     {
-        var scoringEvent = new ScoringEvent
+        var TournamentEvent = new TournamentEvent
         {
-            EventType = ScoringEventType.MatchSetStart,
+            EventType = TournamentEventType.MatchSetStart,
             MatchId = matchId,
             SetNumber = setNumber,
             Source = source,
             UserName = source
         };
 
-        await QueueEventAsync(scoringEvent);
+        await QueueEventAsync(TournamentEvent);
     }
 
     /// <summary>
@@ -100,16 +100,16 @@ public class ScoringChannel
     /// </summary>
     public async Task QueueMatchSetEndAsync(Guid matchId, int setNumber, string source = "scorer")
     {
-        var scoringEvent = new ScoringEvent
+        var TournamentEvent = new TournamentEvent
         {
-            EventType = ScoringEventType.MatchSetEnd,
+            EventType = TournamentEventType.MatchSetEnd,
             MatchId = matchId,
             SetNumber = setNumber,
             Source = source,
             UserName = source
         };
 
-        await QueueEventAsync(scoringEvent);
+        await QueueEventAsync(TournamentEvent);
     }
 
     /// <summary>
@@ -117,16 +117,16 @@ public class ScoringChannel
     /// </summary>
     public async Task QueueMatchSetRevertToPreviousAsync(Guid matchId, int currentSetNumber, string source = "scorer")
     {
-        var scoringEvent = new ScoringEvent
+        var TournamentEvent = new TournamentEvent
         {
-            EventType = ScoringEventType.MatchSetRevertToPrevious,
+            EventType = TournamentEventType.MatchSetRevertToPrevious,
             MatchId = matchId,
             SetNumber = currentSetNumber,
             Source = source,
             UserName = source
         };
 
-        await QueueEventAsync(scoringEvent);
+        await QueueEventAsync(TournamentEvent);
     }
 
     /// <summary>
@@ -134,9 +134,9 @@ public class ScoringChannel
     /// </summary>
     public async Task QueueMatchSetScoreChangeAsync(Guid matchId, int setNumber, Guid teamId, int scoreChange, string source = "scorer")
     {
-        var scoringEvent = new ScoringEvent
+        var TournamentEvent = new TournamentEvent
         {
-            EventType = ScoringEventType.MatchSetScoreChange,
+            EventType = TournamentEventType.MatchSetScoreChange,
             MatchId = matchId,
             SetNumber = setNumber,
             TeamId = teamId,
@@ -145,7 +145,7 @@ public class ScoringChannel
             UserName = source
         };
 
-        await QueueEventAsync(scoringEvent);
+        await QueueEventAsync(TournamentEvent);
     }
 
     /// <summary>
@@ -153,15 +153,15 @@ public class ScoringChannel
     /// </summary>
     public async Task QueueMatchEndAsync(Guid matchId, string source = "scorer")
     {
-        var scoringEvent = new ScoringEvent
+        var TournamentEvent = new TournamentEvent
         {
-            EventType = ScoringEventType.MatchEnd,
+            EventType = TournamentEventType.MatchEnd,
             MatchId = matchId,
             Source = source,
             UserName = source
         };
 
-        await QueueEventAsync(scoringEvent);
+        await QueueEventAsync(TournamentEvent);
     }
 
     /// <summary>
@@ -169,9 +169,9 @@ public class ScoringChannel
     /// </summary>
     public async Task QueueMatchDisputedAsync(Guid matchId, bool isDisputed, string source = "scorer")
     {
-        var scoringEvent = new ScoringEvent
+        var TournamentEvent = new TournamentEvent
         {
-            EventType = ScoringEventType.MatchDisputed,
+            EventType = TournamentEventType.MatchDisputed,
             MatchId = matchId,
             Source = source,
             UserName = source,
@@ -181,29 +181,29 @@ public class ScoringChannel
             }
         };
 
-        await QueueEventAsync(scoringEvent);
+        await QueueEventAsync(TournamentEvent);
     }
-
+    */
     /// <summary>
     /// Internal method to queue an event to the channel
     /// </summary>
-    private async Task QueueEventAsync(ScoringEvent scoringEvent)
+    private async Task QueueEventAsync(TournamentEvent TournamentEvent)
     {
         try
         {
-            await _channel.Writer.WriteAsync(scoringEvent);
+            await _channel.Writer.WriteAsync(TournamentEvent);
             _logger.LogInformation(
-                "Queued scoring event: {EventType} for match {MatchId} from {Source}",
-                scoringEvent.EventType,
-                scoringEvent.MatchId,
-                scoringEvent.Source);
+                "Queued Tournament event: {EventType} for Tournament {TournamentId} from {Source}",
+                TournamentEvent.EventType,
+                TournamentEvent.TournamentId,
+                TournamentEvent.Source);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, 
-                "Failed to queue scoring event: {EventType} for match {MatchId}",
-                scoringEvent.EventType,
-                scoringEvent.MatchId);
+            _logger.LogError(ex,
+                "Failed to queue Tournament event: {EventType} for Tournament {TournamentId}",
+                TournamentEvent.EventType,
+                TournamentEvent.TournamentId);
             throw;
         }
     }

@@ -25,6 +25,10 @@ namespace VolleyballRallyManager.Lib.Services
             }
             return model;
         }
+        public async Task<Division> GetDivisionAsync(Guid divisionId)
+        {
+            return await _dbContext.Divisions.FindAsync(divisionId);
+        }
         public async Task<IEnumerable<Division>> GetAvailableDivisionsAsync()
         {
             return await _dbContext.Divisions.ToListAsync();
@@ -372,16 +376,21 @@ namespace VolleyballRallyManager.Lib.Services
             return model.OrderBy(m => m?.Division?.Name).ThenBy(m => m?.Round?.Sequence).ThenBy(m => m.ScheduledTime).ToList();
         }
 
-        public async Task<IEnumerable<Match>> RecentMatchesAsync()
+        public async Task<IEnumerable<Match>> RecentMatchesAsync(int howMany = 10)
         {
+            if (howMany < 1)
+            {
+                howMany = 10;
+            }
            return await _dbContext.Matches
                 .Include(m => m.HomeTeam)
                 .Include(m => m.AwayTeam)
                 .Include(m => m.Round)
                 .OrderByDescending(m => m.ScheduledTime)
                 .ThenBy(m => m.ScheduledTime)
-                .Take(5)
+                .Take(howMany)
                 .ToListAsync();
         }
+
     }
 }

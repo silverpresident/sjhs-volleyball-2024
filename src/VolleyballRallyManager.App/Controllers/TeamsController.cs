@@ -28,12 +28,19 @@ namespace VolleyballRallyManager.App.Controllers
             if (divisionId.HasValue)
             {
                 teams = teams.Where(t => t.DivisionId == divisionId.Value);
+                string divisionSubtitle = "";
+                var division = await _activeTournamentService.GetDivisionAsync(divisionId.Value);
+                if (division != null) {
+                    divisionSubtitle = $"{division.Name}";
+                }
+                if (string.IsNullOrEmpty(groupName) == false)
+                {
+                    teams = teams.Where(t => t.GroupName == groupName);
+                    divisionSubtitle += $" - Group {groupName}";
+                }
+                ViewBag.Subtitle = divisionSubtitle;
             }
 
-            if (string.IsNullOrEmpty(groupName) == false)
-            {
-                teams = teams.Where(t => t.GroupName == groupName);
-            }
             ViewBag.Divisions = await _activeTournamentService.GetTournamentDivisionsAsync();
             return View(teams.ToList());
         }

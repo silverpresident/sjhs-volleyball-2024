@@ -54,8 +54,10 @@ public static class ServiceCollectionExtensions
 
         // Scoring Channel and Workers
         services.AddSingleton<ScoringChannel>();
+        services.AddSingleton<TournamentChannel>();
         services.AddHostedService<ScoringAutomationWorker>();
-
+        services.AddHostedService<TournamentAutomationWorker>();
+        
         // SignalR
         services.AddSignalR();
 

@@ -1,4 +1,4 @@
-namespace VolleyballRallyManager.Lib.Models;
+namespace VolleyballRallyManager.Lib.Common;
 
 /// <summary>
 /// Represents a scoring event to be processed by the automation worker

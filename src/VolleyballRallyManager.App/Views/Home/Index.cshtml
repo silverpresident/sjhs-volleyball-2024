@@ -149,6 +149,7 @@
                             <table class="table">
                                 <thead>
                                     <tr>
+                                        <th></th>
                                         <th>Time</th>
                                         <th>Teams</th>
                                         <th>Score</th>
@@ -159,6 +160,11 @@
                                     @foreach (var match in Model.RecentMatches)
                                     {
                                         <tr>
+                                            <td>
+                                                <a asp-controller="Matches" asp-action="Details" asp-route-id="@match.Id" class="btn btn-sm btn-outline-info" title="Details">
+                                                    <i class="bi bi-info-circle"></i>
+                                                </a>
+                                            </td>
                                             <td>@match.ScheduledTime.ToString("HH:mm")</td>
                                             <td>
                                                 <div class="d-flex align-items-center">

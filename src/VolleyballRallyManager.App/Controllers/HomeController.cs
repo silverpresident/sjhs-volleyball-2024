@@ -44,7 +44,7 @@ public class HomeController : Controller
             MatchesInProgress = await _activeTournamentService.MatchCountAsync(MatchState.InProgress),
             DisputedMatches = await _activeTournamentService.MatchCountAsync(MatchState.Disputed),
             MatchesFinished = await _activeTournamentService.MatchCountAsync(MatchState.Finished),
-            RecentMatches = await _activeTournamentService.RecentMatchesAsync(),
+            RecentMatches = await _activeTournamentService.RecentMatchesAsync(12),
             RecentBulletins = await _bulletinService.GetRecentAsync(5),
             TeamsByDivision = teamsByDivision,
             ActiveTournament = activeTournament

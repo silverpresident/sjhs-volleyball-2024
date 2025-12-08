@@ -1,0 +1,13 @@
+@model int
+
+@if (Model <= 0)
+{
+    <span class="text-muted">-</span>
+    return;
+}
+<span class="badge" style="background-color: @Model">&nbsp;</span>
+ 
+<span class="badge @(Model == 1 ? "bg-warning text-dark" : Model <= 3 ? "bg-info" : "bg-secondary")">
+    @Model
+</span>
+ 

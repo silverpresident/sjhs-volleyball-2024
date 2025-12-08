@@ -307,16 +307,7 @@
                                 <tr>
                                     <td><span class="badge bg-secondary">@team.SeedNumber</span></td>
                                     <td>
-                                        @if (team.Rank > 0)
-                                        {
-                                            <span class="badge @(team.Rank == 1 ? "bg-warning text-dark" : team.Rank <= 3 ? "bg-info" : "bg-secondary")">
-                                                @team.Rank
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">-</span>
-                                        }
+                                        @Html.DisplayFor(modelItem => team.Rank, "Rank")
                                     </td>
                                     <td><strong>@team.TeamName</strong></td>
                                     <td>@team.GroupName</td>

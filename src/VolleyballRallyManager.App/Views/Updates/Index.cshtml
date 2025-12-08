@@ -6,14 +6,15 @@
 }
 
 <div class="container">
-    <h1>Match Updates</h1>
-    <p class="text-muted">Live feed of tournament activity</p>
-
+    <hgroup class="text-center">
+        <h1>Match Updates</h1>
+        <p class="text-muted small">Live feed of match activity</p>
+    </hgroup>
     <div id="updates-container" class="mt-4">
         @foreach (var update in Model)
         {
-            <div class="update-card" 
-                 data-id="@update.Id" 
+            <div class="update-card"
+                 data-id="@update.Id"
                  data-match-id="@update.MatchId"
                  data-type="@update.UpdateType"
                  data-content="@update.Content"

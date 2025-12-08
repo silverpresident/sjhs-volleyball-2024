@@ -5,19 +5,21 @@
 }
 
 <div class="container">
-    
-    
-    
     <div class="card">
-    <div class="card-header">
+        <div class="card-header">
             <div class="row mb-3">
                 <div class="col">
-                <h1>Teams</h1>
+                    <h1>Teams</h1>
+                    @if (ViewBag.Subtitle != null)
+                    {
+                        <h2>@ViewBag.Subtitle</h2>
+                    }
                 </div>
                 <div class="col-auto">
-                    @if(ViewBag.Divisions != null){
+                    @if (ViewBag.Divisions != null)
+                    {
                         <div class="btn-group" role="group">
-                            <a class="btn btn-outline-secondary active" asp-action="Index">All</a>
+                            <a class="btn btn-outline-secondary" asp-action="Index">All</a>
                             @foreach (TournamentDivision division in ViewBag.Divisions)
                             {
                                 <a class="btn btn-outline-secondary" asp-route-DivisionId="@division.DivisionId">@division.Division.Name</a>
@@ -26,22 +28,28 @@
                     }
                 </div>
             </div>
-            </div>
+        </div>
         <div class="card-body">
             <table class="table">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>Division</th>
                         <th>Group</th>
                         <th>Name</th>
                         <th>W-L-D</th>
-                        <th></th>
+                        <th>Division Rank</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
                         <tr>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@item.TeamId">
+                                    <i class="bi bi-info-circle"></i>
+                                </a>
+                            </td>
                             <td>
                                 <a class="btn btn-link" asp-route-DivisionId="@item.DivisionId">
                                     @item.Division.Name
@@ -54,8 +62,11 @@
                             </td>
                             <td>
                                 <a asp-action="Details" asp-route-id="@item.TeamId">
-                                @item.Team.Name
+                                    @Html.DisplayFor(modelItem => item.Team, "Team")
                                 </a>
+                                <small>
+                                    (@item.Team.School)
+                                </small>
                             </td>
                             <td>
                                 @item.Wins
@@ -65,7 +76,7 @@
                                 @item.Draws
                             </td>
                             <td>
-                                <a asp-action="Details" asp-route-id="@item.TeamId">Details</a>
+                                @Html.DisplayFor(modelItem => item.Rank, "Rank")
                             </td>
                         </tr>
                     }

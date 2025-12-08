@@ -1,0 +1,29 @@
+@model VolleyballRallyManager.Lib.Common.MatchState
+@using VolleyballRallyManager.Lib.Common;
+
+@{
+    string matchState = "Scheduled";
+    string stateBadgeClass = "bg-secondary";
+
+    if (Model == MatchState.Disputed)
+    {
+        matchState = "Disputed";
+        stateBadgeClass = "bg-danger";
+    }
+    else if (Model == MatchState.Finished)
+    {
+        matchState = "Finished";
+        stateBadgeClass = "bg-success";
+    }
+    else if (Model == MatchState.InProgress)
+    {
+        matchState = "In Progress";
+        stateBadgeClass = "bg-primary";
+    }
+    @* else if (Model == MatchState.)
+    {
+        matchState = "Started";
+        stateBadgeClass = "bg-info";
+    } *@
+}
+<span class="badge @stateBadgeClass small match-state-badge">@matchState</span>

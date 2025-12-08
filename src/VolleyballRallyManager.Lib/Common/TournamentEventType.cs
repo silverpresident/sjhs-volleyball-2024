@@ -1,9 +1,9 @@
-namespace VolleyballRallyManager.Lib.Models;
+namespace VolleyballRallyManager.Lib.Common;
 
 /// <summary>
 /// Represents the type of scoring event that occurred
 /// </summary>
-public enum ScoringEventType
+public enum TournamentEventType
 {
     /// <summary>
     /// Teams called to court for their match

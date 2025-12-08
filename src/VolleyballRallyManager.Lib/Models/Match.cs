@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
+using VolleyballRallyManager.Lib.Common;
 
 namespace VolleyballRallyManager.Lib.Models;
 
@@ -67,4 +69,32 @@ public class Match : BaseEntity
     public virtual Team? AwayTeam { get; set; }
     public virtual ICollection<MatchUpdate> Updates { get; set; } = new List<MatchUpdate>();
     public virtual ICollection<MatchSet> Sets { get; set; } = new List<MatchSet>();
+
+
+    public virtual MatchState MatchState
+    {
+        get
+        {
+            if (IsDisputed)
+            {
+                return MatchState.Disputed;
+            }
+            if (IsFinished)
+            {
+                return MatchState.Finished;
+            }
+            if (ActualStartTime.HasValue)
+            {
+                return MatchState.InProgress;
+            }
+            if (ScheduledTime <= DateTime.Now)
+            {
+                return MatchState.Scheduled;
+            }
+            return MatchState.None;
+
+        }
+    }
 }
+
+

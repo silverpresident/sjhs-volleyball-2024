@@ -55,9 +55,14 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center bg-${updateType.color}">
                         <div>
+                             <a class="btn btn-link" href="/Matches/Details/${update.matchId}">
+                                <i class="bi bi-info-circle"></i>
+                             </a>
                             <span class="badge bg-${updateType.badgeColor} me-2">
                                 <i class="${updateType.icon}"></i> ${updateType.label}
                             </span>
+                        </div>
+                        <div>
                             ${matchContext}
                         </div>
                         <small class="text-muted timestamp" data-time="${update.createdAt}">${timeAgo}</small>
