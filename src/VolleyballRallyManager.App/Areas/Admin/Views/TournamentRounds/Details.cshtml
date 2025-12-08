@@ -4,6 +4,7 @@
     ViewData["Title"] = $"Round Details - {Model.CurrentRound.Round?.Name}";
 }
 
+
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1><i class="bi bi-trophy"></i> @Model.CurrentRound.Round?.Name</h1>
@@ -40,39 +41,28 @@
     <div class="row mb-4">
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header bg-primary text-white d-flex justify-content-between">
+                <div class="card-header bg-primary text-white">
                     <h5 class="mb-0"><i class="bi bi-info-circle"></i> Round Information</h5>
-                    <span class="badge text-primary bg-white">@Model.CurrentRound.Tournament?.Name</span>
                 </div>
                 <div class="card-body">
                     <dl class="row mb-0">
+                        <dt class="col-sm-5">Tournament:</dt>
+                        <dd class="col-sm-7">@Model.CurrentRound.Tournament?.Name</dd>
+
                         <dt class="col-sm-5">Division:</dt>
                         <dd class="col-sm-7">@Model.CurrentRound.Division?.Name</dd>
 
                         <dt class="col-sm-5">Round Number:</dt>
                         <dd class="col-sm-7">@Model.CurrentRound.RoundNumber</dd>
 
-                        <dt class="col-sm-5">Match Strategy:</dt>
-                        <dd class="col-sm-7">
-                            <span class="badge bg-warning text-dark">@Model.CurrentRound.MatchGenerationStrategy</span>
-                            <span class="badge border-warning text-dark">
-                                @Model.GroupingStrategyLabel
-                            </span>
-                        </dd>
-                        @if (Model.PreviousRound != null)
-                        {
-                            <dt class="col-sm-5">Qualifying for this round:</dt>
-                            <dd class="col-sm-7">
-                                @Model.PreviousRound.AdvancingTeamsCount Teams
-                                <span class="badge bg-info">@Model.PreviousRound.AdvancingTeamSelectionStrategy</span>
-                             </dd>
+                        <dt class="col-sm-5">Qualifying for this round:</dt>
+                        <dd class="col-sm-7"><span class="badge bg-info">@Model.CurrentRound.AdvancingTeamSelectionStrategy</span></dd>
 
-                        }
+                        <dt class="col-sm-5">Match Strategy:</dt>
+                        <dd class="col-sm-7"><span class="badge bg-warning text-dark">@Model.CurrentRound.MatchGenerationStrategy</span></dd>
+
                         <dt class="col-sm-5">Teams Advancing:</dt>
-                        <dd class="col-sm-7">
-                            @Model.CurrentRound.AdvancingTeamsCount 
-                            <span class="badge bg-info">@Model.CurrentRound.AdvancingTeamSelectionStrategy</span>
-                        </dd>
+                        <dd class="col-sm-7">@Model.CurrentRound.AdvancingTeamsCount <span class="badge bg-info">@Model.CurrentRound.AdvancingTeamSelectionStrategy</span></dd>
 
                         <dt class="col-sm-5">Status:</dt>
                         <dd class="col-sm-7">
@@ -80,13 +70,13 @@
                             {
                                 <span class="badge bg-success"><i class="bi bi-check-circle"></i> Finished</span>
                             }
+                            else if (Model.CurrentRound.IsLocked)
+                            {
+                                <span class="badge bg-warning"><i class="bi bi-lock"></i> Locked</span>
+                            }
                             else
                             {
                                 <span class="badge bg-secondary"><i class="bi bi-hourglass"></i> In Progress</span>
-                            }
-                            @if (Model.CurrentRound.IsLocked)
-                            {
-                                <span class="badge bg-warning"><i class="bi bi-lock"></i> Locked</span>
                             }
                         </dd>
                     </dl>
@@ -104,8 +94,11 @@
                         <dt class="col-sm-5">Total Teams:</dt>
                         <dd class="col-sm-7"><strong>@Model.Teams.Count</strong></dd>
 
+                        <dt class="col-sm-5">Total Matches:</dt>
+                        <dd class="col-sm-7"><strong>@Model.Matches.Count</strong></dd>
+
                         <dt class="col-sm-5">Completed Matches:</dt>
-                        <dd class="col-sm-7"><strong>@Model.Matches.Count(m => m.IsFinished) / @Model.Matches.Count</strong></dd>
+                        <dd class="col-sm-7"><strong>@Model.Matches.Count(m => m.IsFinished)</strong></dd>
 
                         <dt class="col-sm-5">Pending Matches:</dt>
                         <dd class="col-sm-7"><strong>@Model.Matches.Count(m => !m.IsFinished)</strong></dd>
@@ -144,20 +137,6 @@
                             }
                         </dd>
                     </dl>
-                    <div class="row mb-0">
-                        @if (Model.PreviousRound != null)
-                {
-                    <a asp-action="Details" asp-route-id="@Model.PreviousRound.Id" class="btn btn-primary">
-                        <i class="bi bi-arrow-left"></i>  Previous Round
-                    </a>
-                }       
-                @if (Model.CurrentRound.NextTournamentRoundId != null)
-                {
-                    <a asp-action="Details" asp-route-id="@Model.CurrentRound.NextTournamentRoundId" class="btn btn-primary">
-                         Next Round <i class="bi bi-arrow-right"></i> 
-                    </a>
-                }
-                    </div>
                 </div>
             </div>
         </div>
@@ -323,15 +302,15 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var team in Model.Teams.OrderBy(t => t.FinalRank != 0 ? t.FinalRank : 999).ThenBy(t => t.SeedNumber))
+                            @foreach (var team in Model.Teams.OrderBy(t => t.Rank != 0 ? t.Rank : 999).ThenBy(t => t.SeedNumber))
                             {
                                 <tr>
                                     <td><span class="badge bg-secondary">@team.SeedNumber</span></td>
                                     <td>
-                                        @if (team.FinalRank > 0)
+                                        @if (team.Rank > 0)
                                         {
-                                            <span class="badge @(team.FinalRank == 1 ? "bg-warning text-dark" : team.FinalRank <= 3 ? "bg-info" : "bg-secondary")">
-                                                @team.FinalRank
+                                            <span class="badge @(team.Rank == 1 ? "bg-warning text-dark" : team.Rank <= 3 ? "bg-info" : "bg-secondary")">
+                                                @team.Rank
                                             </span>
                                         }
                                         else
@@ -346,10 +325,10 @@
                                     <td><strong>@team.Points</strong></td>
                                     <td>@team.SetsFor-@team.SetsAgainst</td>
                                     <td>
-                                        <span class="@(team.SetsDifference > 0 ? "text-success" : team.SetsDifference < 0 ? "text-danger" : "")">
+                                   <span class="@(team.SetsDifference > 0 ? "text-success" : team.SetsDifference < 0 ? "text-danger" : "")">
                                             @(team.SetsDifference > 0 ? "+" : "")@team.SetsDifference
                                         </span>
-                                    </td>
+                               </td>
                                     <td>@team.ScoreFor-@team.ScoreAgainst</td>
                                     <td>
                                         <span class="@(team.ScoreDifference > 0 ? "text-success" : team.ScoreDifference < 0 ? "text-danger" : "")">

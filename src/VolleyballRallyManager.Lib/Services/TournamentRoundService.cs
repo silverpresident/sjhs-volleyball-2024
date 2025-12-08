@@ -457,7 +457,7 @@ public class TournamentRoundService : ITournamentRoundService
                     // Get top team from each group
                     var groupWinners = previousRoundTeams
                         .GroupBy(t => t.GroupName)
-                        .Select(g => g.OrderBy(t => t.FinalRank).First())
+                        .Select(g => g.OrderBy(t => t.Rank).First())
                         .ToList();
 
                     // Get next best teams overall

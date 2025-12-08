@@ -154,8 +154,8 @@ namespace VolleyballRallyManager.Lib.Services
             .Include(ttd => ttd.Team)
             .Where(ttd => ttd.DivisionId == divisionId)
             .OrderByDescending(ttd => ttd.TotalPoints)
-            .ThenByDescending(ttd => ttd.PointDifference)
-            .ThenByDescending(ttd => ttd.PointsScored)
+            .ThenByDescending(ttd => ttd.ScoreDifference)
+            .ThenByDescending(ttd => ttd.ScoreFor)
             .Select(ttd => ttd.Team);
 
             return await query.ToListAsync();
@@ -174,8 +174,8 @@ namespace VolleyballRallyManager.Lib.Services
                 ttd.Wins = 0;
                 ttd.Draws = 0;
                 ttd.Losses = 0;
-                ttd.PointsScored = 0;
-                ttd.PointsConceded = 0;
+                ttd.ScoreFor = 0;
+                ttd.ScoreAgainst = 0;
                 ttd.TotalPoints = 0;
 
                 // Get all finished matches for this team in the specific tournament
@@ -189,8 +189,8 @@ namespace VolleyballRallyManager.Lib.Services
 
                     if (match.HomeTeamId == teamId)
                     {
-                        ttd.PointsScored += match.HomeTeamScore;
-                        ttd.PointsConceded += match.AwayTeamScore;
+                        ttd.ScoreFor += match.HomeTeamScore;
+                        ttd.ScoreAgainst += match.AwayTeamScore;
 
                         if (match.HomeTeamScore > match.AwayTeamScore)
                         {
@@ -209,8 +209,8 @@ namespace VolleyballRallyManager.Lib.Services
                     }
                     else // Away team
                     {
-                        ttd.PointsScored += match.AwayTeamScore;
-                        ttd.PointsConceded += match.HomeTeamScore;
+                        ttd.ScoreFor += match.AwayTeamScore;
+                        ttd.ScoreAgainst += match.HomeTeamScore;
 
                         if (match.AwayTeamScore > match.HomeTeamScore)
                         {
@@ -699,7 +699,8 @@ namespace VolleyballRallyManager.Lib.Services
                 TeamId = t.TeamId,
                 TeamName = t.Team?.Name ?? "Unknown",
                 SeedNumber = t.SeedNumber,
-                FinalRank = t.Rank,
+                RankingPoints = t.RankingPoints,
+                Rank = t.Rank,
                 Points = t.Points,
                 MatchesPlayed = t.MatchesPlayed,
                 Wins = t.Wins,

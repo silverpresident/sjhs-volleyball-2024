@@ -47,16 +47,28 @@ namespace VolleyballRallyManager.Lib.Models
         public int Losses { get; set; } = 0;
 
         [Display(Name = "Total Points")]
-        public int TotalPoints { get; set; } = 0; // 3/1/0 added
+        public int TotalPoints { get; set; } = 0; // 3/1/0 added u across rounds
 
-        [Display(Name = "Points Scored")]
-        public int PointsScored { get; set; } = 0;
+       
 
-        [Display(Name = "Points Conceded")]
-        public int PointsConceded { get; set; } = 0;
+        [Display(Name = "Sets For")]
+        public int SetsFor { get; set; } = 0;
 
-        [Display(Name = "Point Difference")]
-        public int PointDifference => PointsScored - PointsConceded;
+        [Display(Name = "Sets Against")]
+        public int SetsAgainst { get; set; } = 0;
+
+        [Display(Name = "Sets Difference")]
+        public int SetsDifference => SetsFor - SetsAgainst;
+
+        [Display(Name = "Score For")]
+        public int ScoreFor { get; set; } = 0;
+
+        [Display(Name = "Score Against")]
+        public int ScoreAgainst { get; set; } = 0;
+
+        [Display(Name = "Score Difference")]
+        public int ScoreDifference => ScoreFor - ScoreAgainst;
+        
 
         // Navigation properties
         // public virtual ICollection<Match> HomeMatches { get; set; } = new List<Match>();

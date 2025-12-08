@@ -33,4 +33,13 @@ public interface IRanksService
     /// <param name="tournamentRoundId">The ID of the tournament round</param>
     /// <returns>List of teams ordered by their current standings</returns>
     Task<List<TournamentRoundTeam>> GetStandingsAsync(Guid tournamentRoundId);
+
+    /// <summary>
+    /// Updates team ranks for a specific tournament division based on ranking points for each round
+    /// </summary>
+    /// <param name="tournamentId">The ID of the tournament to update rankings for</param>
+    /// <param name="divisionId">The ID of the tournament division to update rankings for</param>
+    /// <returns>Updated list of tournament division teams with calculated rankings</returns>
+
+    Task<List<TournamentTeamDivision>> UpdateDivisionRanksAsync(Guid tournamentId, Guid divisionId);
 }

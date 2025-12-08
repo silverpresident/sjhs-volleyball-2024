@@ -269,8 +269,8 @@ namespace VolleyballRallyManager.Lib.Services
             if (homeTeam != null)
             {
                 homeTeam.MatchesPlayed++;
-                homeTeam.PointsScored += match.HomeTeamScore;
-                homeTeam.PointsConceded += match.AwayTeamScore;
+                homeTeam.ScoreFor += match.HomeTeamScore;
+                homeTeam.ScoreAgainst += match.AwayTeamScore;
 
                 if (match.HomeTeamScore > match.AwayTeamScore)
                     homeTeam.Wins++;
@@ -283,8 +283,8 @@ namespace VolleyballRallyManager.Lib.Services
             if (awayTeam != null)
             {
                 awayTeam.MatchesPlayed++;
-                awayTeam.PointsScored += match.AwayTeamScore;
-                awayTeam.PointsConceded += match.HomeTeamScore;
+                awayTeam.ScoreFor += match.AwayTeamScore;
+                awayTeam.ScoreAgainst += match.HomeTeamScore;
 
                 if (match.AwayTeamScore > match.HomeTeamScore)
                     awayTeam.Wins++;

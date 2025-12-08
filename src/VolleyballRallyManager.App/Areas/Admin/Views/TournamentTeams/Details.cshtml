@@ -64,15 +64,15 @@
                         <dd class="col-sm-6"><strong class="text-success">@Model.TournamentTeamDivision.TotalPoints</strong></dd>
 
                         <dt class="col-sm-6">Points Scored</dt>
-                        <dd class="col-sm-6">@Model.TournamentTeamDivision.PointsScored</dd>
+                        <dd class="col-sm-6">@Model.TournamentTeamDivision.ScoreFor</dd>
 
                         <dt class="col-sm-6">Points Conceded</dt>
-                        <dd class="col-sm-6">@Model.TournamentTeamDivision.PointsConceded</dd>
+                        <dd class="col-sm-6">@Model.TournamentTeamDivision.ScoreAgainst</dd>
 
                         <dt class="col-sm-6">Point Difference</dt>
                         <dd class="col-sm-6">
-                            <span class="@(Model.TournamentTeamDivision.PointDifference >= 0 ? "text-success" : "text-danger")">
-                                @(Model.TournamentTeamDivision.PointDifference >= 0 ? "+" : "")@Model.TournamentTeamDivision.PointDifference
+                            <span class="@(Model.TournamentTeamDivision.ScoreDifference >= 0 ? "text-success" : "text-danger")">
+                                @(Model.TournamentTeamDivision.ScoreDifference >= 0 ? "+" : "")@Model.TournamentTeamDivision.ScoreDifference
                             </span>
                         </dd>
                     </dl>
