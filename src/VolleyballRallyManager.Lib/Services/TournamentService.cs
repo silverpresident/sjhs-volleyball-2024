@@ -699,7 +699,7 @@ namespace VolleyballRallyManager.Lib.Services
                 TeamId = t.TeamId,
                 TeamName = t.Team?.Name ?? "Unknown",
                 SeedNumber = t.SeedNumber,
-                FinalRank = t.FinalRank,
+                FinalRank = t.Rank,
                 Points = t.Points,
                 MatchesPlayed = t.MatchesPlayed,
                 Wins = t.Wins,

@@ -24,8 +24,13 @@ namespace VolleyballRallyManager.Lib.Models
 
         public string GroupName { get; set; } = null!;
 
+        [Display(Name = "Seed Number")]
         public int SeedNumber { get; set; } = 0;
 
+        [Display(Name = "Final Rank")]
+        public int Rank { get; set; } = 0;
+        [Display(Name = "Ranking Points")]
+        public int RankingPoints { get; set; } = 0;
 
 
         // Statistics

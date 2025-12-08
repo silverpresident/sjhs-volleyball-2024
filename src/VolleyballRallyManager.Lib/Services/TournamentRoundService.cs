@@ -484,7 +484,7 @@ public class TournamentRoundService : ITournamentRoundService
 
             // Create TournamentRoundTeam entries for qualifying teams
             int seedNumber = 1;
-            foreach (var qualifyingTeam in qualifyingTeams.OrderBy(t => t.FinalRank))
+            foreach (var qualifyingTeam in qualifyingTeams.OrderBy(t => t.Rank))
             {
                 var roundTeam = new TournamentRoundTeam
                 {

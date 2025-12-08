@@ -16,7 +16,7 @@ public enum TeamSelectionStrategy
     SeedTopHalf,
     
     /// <summary>
-    /// Only winners (teams with FinalRank = 1) from each group advance
+    /// Only winners (teams with Rank = 1) from each group advance
     /// </summary>
     WinnersOnly,
     

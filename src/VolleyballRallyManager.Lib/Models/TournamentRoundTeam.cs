@@ -51,7 +51,9 @@ public class TournamentRoundTeam : BaseEntity
     public int SeedNumber { get; set; } = 0;
 
     [Display(Name = "Final Rank")]
-    public int FinalRank { get; set; } = 0;
+    public int Rank { get; set; } = 0;
+    [Display(Name = "Ranking Points")]
+    public int RankingPoints { get; set; } = 0;
 
     // Statistics
     [Display(Name = "Points")]

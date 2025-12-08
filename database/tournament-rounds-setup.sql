@@ -77,7 +77,8 @@ BEGIN
         TeamId UNIQUEIDENTIFIER NOT NULL,
         TournamentRoundId UNIQUEIDENTIFIER NOT NULL,
         SeedNumber INT NOT NULL DEFAULT 0,
-        FinalRank INT NOT NULL DEFAULT 0,
+        RankingPoints INT NOT NULL DEFAULT 0,
+        Rank INT NOT NULL DEFAULT 0,
         Points INT NOT NULL DEFAULT 0,
         MatchesPlayed INT NOT NULL DEFAULT 0,
         Wins INT NOT NULL DEFAULT 0,
@@ -111,7 +112,6 @@ BEGIN
         
         -- Check Constraints
         CONSTRAINT CK_TournamentRoundTeams_SeedNumber CHECK (SeedNumber >= 0),
-        CONSTRAINT CK_TournamentRoundTeams_FinalRank CHECK (FinalRank >= 0),
         CONSTRAINT CK_TournamentRoundTeams_Points CHECK (Points >= 0),
         CONSTRAINT CK_TournamentRoundTeams_MatchesPlayed CHECK (MatchesPlayed >= 0),
         CONSTRAINT CK_TournamentRoundTeams_Wins CHECK (Wins >= 0),
