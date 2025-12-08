@@ -40,13 +40,17 @@ public enum SortingMethod
 {
     [Display(Name = "By Creation Date")]
     ByCreationDate,
-    
+
     [Display(Name = "By Team Name")]
     ByTeamName,
-    
+
+    [Display(Name = "By Rating")]
+    ByRating,
+
     [Display(Name = "Randomly")]
     Randomly
 }
+
 
 public enum SeedPlacement
 {

@@ -24,6 +24,10 @@ namespace VolleyballRallyManager.Lib.Models
 
         public string GroupName { get; set; } = null!;
 
+        [Display(Name = "Entry Rating")] 
+        //Rating points coming into competetion
+        public int Rating { get; set; } = 0;
+
         [Display(Name = "Seed Number")]
         public int SeedNumber { get; set; } = 0;
 

@@ -145,7 +145,7 @@ namespace VolleyballRallyManager.Lib.Services
             }
         }
 
-        public async Task<TournamentTeamDivision> AddTeamAsync(Guid teamId, Guid divisionId, string groupName, int seedNumber = 0)
+        public async Task<TournamentTeamDivision> AddTeamAsync(Guid teamId, Guid divisionId, string groupName, int seedNumber = 0, int rating = 0)
         {
             var activeTournament = await GetActiveTournamentAsync();
             if (activeTournament == null)
@@ -171,13 +171,14 @@ namespace VolleyballRallyManager.Lib.Services
             {
                 tournamentTeamDivision.SeedNumber = seedNumber;
             }
+            tournamentTeamDivision.Rating = rating;
             tournamentTeamDivision.DivisionId = divisionId;
             tournamentTeamDivision.GroupName = groupName;
             tournamentTeamDivision.UpdatedAt = DateTime.Now;
             await _dbContext.SaveChangesAsync();
             return tournamentTeamDivision;
         }
-        public async Task<TournamentTeamDivision> SetTeamAsync(Guid teamId, Guid divisionId, string groupName, int seedNumber = 0)
+        public async Task<TournamentTeamDivision> SetTeamAsync(Guid teamId, Guid divisionId, string groupName, int seedNumber = 0, int rating = 0)
         {
             var activeTournament = await GetActiveTournamentAsync();
             if (activeTournament == null)
@@ -204,6 +205,7 @@ namespace VolleyballRallyManager.Lib.Services
             {
                 tournamentTeamDivision.SeedNumber = await GenerateSeedNumberAsync(activeTournament.Id, divisionId);
             }
+            tournamentTeamDivision.Rating = rating;
             tournamentTeamDivision.DivisionId = divisionId;
             tournamentTeamDivision.GroupName = groupName;
             tournamentTeamDivision.UpdatedAt = DateTime.Now;

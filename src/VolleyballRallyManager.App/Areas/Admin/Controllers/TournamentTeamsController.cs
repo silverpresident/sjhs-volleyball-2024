@@ -111,7 +111,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TeamId,DivisionId,TournamentId,GroupName,SeedNumber")] TournamentTeamAddViewModel tournamentTeamDivision)
+        public async Task<IActionResult> Create([Bind("TeamId,DivisionId,TournamentId,GroupName,SeedNumber,Rating")] TournamentTeamAddViewModel tournamentTeamDivision)
         {
             var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
             if (activeTournament == null)
@@ -131,7 +131,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                await _activeTournamentService.AddTeamAsync(tournamentTeamDivision.TeamId, tournamentTeamDivision.DivisionId, tournamentTeamDivision.GroupName ?? "", tournamentTeamDivision.SeedNumber);
+                await _activeTournamentService.AddTeamAsync(tournamentTeamDivision.TeamId, tournamentTeamDivision.DivisionId, tournamentTeamDivision.GroupName ?? "", tournamentTeamDivision.SeedNumber, tournamentTeamDivision.Rating);
                 return RedirectToAction(nameof(Index));
             }
             tournamentTeamDivision.TournamentId = activeTournament.Id;
@@ -164,14 +164,15 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 TeamId = tournamentTeamDivision.TeamId,
                 DivisionId = tournamentTeamDivision.DivisionId,
                 GroupName = tournamentTeamDivision.GroupName,
-                SeedNumber = tournamentTeamDivision.SeedNumber
+                SeedNumber = tournamentTeamDivision.SeedNumber,
+                Rating = tournamentTeamDivision.Rating
             };
             return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("TeamId,DivisionId,TournamentId,GroupName,SeedNumber")] TournamentTeamAddViewModel tournamentTeamDivision)
+        public async Task<IActionResult> Edit(Guid id, [Bind("TeamId,DivisionId,TournamentId,GroupName,SeedNumber,Rating")] TournamentTeamAddViewModel tournamentTeamDivision)
         {
             if (id != tournamentTeamDivision.TeamId)
             {
@@ -196,7 +197,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             {
                 if (existingTeamDivision != null)
                 {
-                    await _activeTournamentService.SetTeamAsync(tournamentTeamDivision.TeamId, tournamentTeamDivision.DivisionId, tournamentTeamDivision.GroupName ?? "", tournamentTeamDivision.SeedNumber);
+                    await _activeTournamentService.SetTeamAsync(tournamentTeamDivision.TeamId, tournamentTeamDivision.DivisionId, tournamentTeamDivision.GroupName ?? "", tournamentTeamDivision.SeedNumber, tournamentTeamDivision.Rating);
                     return RedirectToAction(nameof(Index));
                 }
                 return NotFound();
@@ -216,7 +217,8 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 TeamId = tournamentTeamDivision.TeamId,
                 DivisionId = tournamentTeamDivision.DivisionId,
                 GroupName = tournamentTeamDivision.GroupName,
-                SeedNumber = tournamentTeamDivision.SeedNumber
+                SeedNumber = tournamentTeamDivision.SeedNumber,
+                Rating = tournamentTeamDivision.Rating
             };
             return View(model);
         }
@@ -279,6 +281,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                     CurrentDivisionId = assignedTeamsDict.ContainsKey(team.Id) ? assignedTeamsDict[team.Id].DivisionId : null,
                     CurrentDivisionName = assignedTeamsDict.ContainsKey(team.Id) ? assignedTeamsDict[team.Id].Division.Name : null,
                     CurrentSeedNumber = assignedTeamsDict.ContainsKey(team.Id) ? assignedTeamsDict[team.Id].SeedNumber : 0,
+                    CurrentRating = assignedTeamsDict.ContainsKey(team.Id) ? assignedTeamsDict[team.Id].Rating : 0,
                     IsAssigned = assignedTeamsDict.ContainsKey(team.Id)
                 }).OrderBy(t => t.TeamName);
 
@@ -319,14 +322,14 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                     if (existingTeam != null)
                     {
                         // Update existing assignment
-                        await _activeTournamentService.SetTeamAsync(model.TeamId, model.DivisionId.Value, "", model.SeedNumber);
+                        await _activeTournamentService.SetTeamAsync(model.TeamId, model.DivisionId.Value, "", model.SeedNumber, model.Rating);
                         _logger.LogInformation("Updated team {TeamId} to division {DivisionId} with seed {SeedNumber}", 
                             model.TeamId, model.DivisionId.Value, model.SeedNumber);
                     }
                     else
                     {
                         // Add new assignment
-                        await _activeTournamentService.AddTeamAsync(model.TeamId, model.DivisionId.Value, "", model.SeedNumber);
+                        await _activeTournamentService.AddTeamAsync(model.TeamId, model.DivisionId.Value, "", model.SeedNumber, model.Rating);
                         _logger.LogInformation("Added team {TeamId} to division {DivisionId} with seed {SeedNumber}", 
                             model.TeamId, model.DivisionId.Value, model.SeedNumber);
                     }
@@ -586,6 +589,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         {
             return method switch
             {
+                SortingMethod.ByRating => teams.OrderByDescending(t => t.Rating).ToList(),
                 SortingMethod.ByCreationDate => teams.OrderBy(t => t.CreatedAt).ToList(),
                 SortingMethod.ByTeamName => teams.OrderBy(t => t.Team.Name).ToList(),
                 SortingMethod.Randomly => teams.OrderBy(t => Guid.NewGuid()).ToList(),

@@ -32,6 +32,7 @@
                             <th>Team</th>
                             <th>School</th>
                             <th>Division</th>
+                            <th>Rating</th>
                             <th>Seed #</th>
                             <th>Status</th>
                         </tr>
@@ -73,11 +74,20 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <input type="number" 
-                                           class="form-control seed-input" 
+                                    <input type="number"
+                                           class="form-control rating-input"
                                            style="width: 80px;"
-                                           min="0" 
-                                           max="100" 
+                                           min="0"
+                                           max="9000"
+                                           value="@team.CurrentRating"
+                                           @(!team.IsAssigned ? "disabled" : "")>
+                                </td>
+                                <td>
+                                    <input type="number"
+                                           class="form-control seed-input"
+                                           style="width: 80px;"
+                                           min="0"
+                                           max="100"
                                            value="@team.CurrentSeedNumber"
                                            @(!team.IsAssigned ? "disabled" : "")>
                                 </td>

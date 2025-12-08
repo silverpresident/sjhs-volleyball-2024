@@ -223,6 +223,7 @@ BEGIN
         TeamId UNIQUEIDENTIFIER NOT NULL,
         DivisionId UNIQUEIDENTIFIER NOT NULL,
         GroupName NVARCHAR(50),
+        Rating INT NOT NULL DEFAULT 0,
         SeedNumber INT NOT NULL DEFAULT 0,
         RankingPoints INT NOT NULL DEFAULT 0,
         Rank INT NOT NULL DEFAULT 0,

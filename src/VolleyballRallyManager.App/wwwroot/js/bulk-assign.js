@@ -16,7 +16,7 @@
     }
 
     // Save team assignment
-    async function saveTeamAssignment(teamId, divisionId, seedNumber) {
+    async function saveTeamAssignment(teamId, divisionId, seedNumber, rating) {
         const row = document.querySelector(`tr[data-team-id="${teamId}"]`);
         const statusIndicator = row.querySelector('.status-indicator');
         const savingIndicator = row.querySelector('.saving-indicator');
@@ -33,7 +33,8 @@
                 body: JSON.stringify({
                     teamId: teamId,
                     divisionId: divisionId || null,
-                    seedNumber: parseInt(seedNumber) || 0
+                    seedNumber: parseInt(seedNumber) || 0,
+                    rating: parseInt(rating) || 0
                 })
             });
 
@@ -48,10 +49,14 @@
                 statusIndicator.innerHTML = isAssigned 
                     ? '<span class="badge bg-success"><i class="bi bi-check-circle"></i> Assigned</span>'
                     : '<span class="badge bg-secondary"><i class="bi bi-dash-circle"></i> Not Assigned</span>';
-                
+
                 // Enable/disable seed input based on assignment
                 const seedInput = row.querySelector('.seed-input');
                 seedInput.disabled = !isAssigned;
+
+                // Enable/disable rating input based on assignment
+                const ratingInput = row.querySelector('.rating-input');
+                ratingInput.disabled = !isAssigned;
                 
                 // Show success animation
                 row.classList.add('table-success');
@@ -94,32 +99,55 @@
                 const divisionId = e.target.value;
                 const seedInput = row.querySelector('.seed-input');
                 const seedNumber = seedInput.value || 0;
+                const ratingInput = row.querySelector('.rating-input');
+                const rating = ratingInput.value || 0;
                 
                 // Save immediately on division change
-                saveTeamAssignment(teamId, divisionId, seedNumber);
+                saveTeamAssignment(teamId, divisionId, seedNumber, rating);
             }
         });
 
         // Handle seed number input changes
-        table.addEventListener('input', function(e) {
+        table.addEventListener('input', function (e) {
             if (e.target.classList.contains('seed-input')) {
                 const row = e.target.closest('tr');
                 const teamId = row.dataset.teamId;
                 const seedNumber = e.target.value;
                 const divisionRadio = row.querySelector('.division-radio:checked');
                 const divisionId = divisionRadio ? divisionRadio.value : '';
-                
+                const ratingInput = row.querySelector('.rating-input');
+                const rating = ratingInput.value || 0;
+
                 // Only save if a division is selected
                 if (divisionId) {
                     // Use debounced save for seed number changes
-                    debouncedSave(teamId, divisionId, seedNumber);
+                    debouncedSave(teamId, divisionId, seedNumber, rating);
+                }
+            }
+            if (e.target.classList.contains('rating-input')) {
+                const row = e.target.closest('tr');
+                const teamId = row.dataset.teamId;
+                const rating = e.target.value;
+                const divisionRadio = row.querySelector('.division-radio:checked');
+                const divisionId = divisionRadio ? divisionRadio.value : '';
+                const seedInput = row.querySelector('.seed-input');
+                const seedNumber = seedInput.value || 0;
+
+                // Only save if a division is selected
+                if (divisionId) {
+                    // Use debounced save for seed number changes
+                    debouncedSave(teamId, divisionId, seedNumber, rating);
                 }
             }
         });
 
         // Prevent form submission on Enter key
-        table.addEventListener('keydown', function(e) {
+        table.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' && e.target.classList.contains('seed-input')) {
+                e.preventDefault();
+                e.target.blur();
+            }
+            if (e.key === 'Enter' && e.target.classList.contains('rating-input')) {
                 e.preventDefault();
                 e.target.blur();
             }

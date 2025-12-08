@@ -24,6 +24,10 @@ namespace VolleyballRallyManager.App.Models
         [MaxLength(10)]
         [Display(Name = "Group")]
         public string? GroupName { get; set; }
+        [Display(Name = "Entry Rating")]
+        [DefaultValue(0)]
+        [Range(0, 9000)]
+        public int Rating { get; set; } = 0;
         [Display(Name = "Seed Number")]
         [DefaultValue(0)]
         [Range(0, 100)]
@@ -31,7 +35,7 @@ namespace VolleyballRallyManager.App.Models
         [Display(Name = "Team")]
         [ValidateNever]
         public string? TeamName { get; set; }
-
+        
 
     }
 }

@@ -22,10 +22,18 @@
 
                 <dt class="col-sm-3">Group</dt>
                 <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.TournamentTeamDivision.GroupName) ? "N/A" : Model.TournamentTeamDivision.GroupName)</dd>
-
+                
                 <dt class="col-sm-3">Seed Number</dt>
                 <dd class="col-sm-9">@Model.TournamentTeamDivision.SeedNumber</dd>
 
+                <dt class="col-sm-3">Entry Rating</dt>
+                <dd class="col-sm-9">@Model.TournamentTeamDivision.Rating</dd>
+
+                <dt class="col-sm-3">Rank in tournament</dt>
+                <dd class="col-sm-9">@Model.TournamentTeamDivision.Rank</dd>
+
+                <dt class="col-sm-3">Ranking points in tournament</dt>
+                <dd class="col-sm-9">@Model.TournamentTeamDivision.RankingPoints</dd>
                 @if (!string.IsNullOrEmpty(Model.TournamentTeamDivision.Team?.LogoUrl))
                 {
                     <dt class="col-sm-3">Logo</dt>

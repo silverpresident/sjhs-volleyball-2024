@@ -65,9 +65,15 @@
                         <div class="mb-4">
                             <label class="form-label fw-bold">Sorting Method</label>
                             <div class="form-text mb-2">Defines the order in which teams are processed for seeding.</div>
-                            
+
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" asp-for="SortingMethod" value="@SortingMethod.ByCreationDate" id="sortingMethodCreation" checked>
+                                <input class="form-check-input" type="radio" asp-for="SortingMethod" value="@SortingMethod.ByRating" id="sortingMethodRating" checked>
+                                <label class="form-check-label" for="sortingMethodRating">
+                                    <strong>By Rating</strong> - Sort by rating value (highest first)
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" asp-for="SortingMethod" value="@SortingMethod.ByCreationDate" id="sortingMethodCreation">
                                 <label class="form-check-label" for="sortingMethodCreation">
                                     <strong>By Creation Date</strong> - Sort by when the team was added to the system (oldest first)
                                 </label>

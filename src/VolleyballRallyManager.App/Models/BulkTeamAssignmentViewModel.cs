@@ -22,6 +22,7 @@ namespace VolleyballRallyManager.App.Models
         public string School { get; set; } = string.Empty;
         public Guid? CurrentDivisionId { get; set; }
         public string? CurrentDivisionName { get; set; }
+        public int CurrentRating { get; set; }
         public int CurrentSeedNumber { get; set; }
         public bool IsAssigned { get; set; }
     }
@@ -31,5 +32,6 @@ namespace VolleyballRallyManager.App.Models
         public Guid TeamId { get; set; }
         public Guid? DivisionId { get; set; }
         public int SeedNumber { get; set; }
+        public int Rating { get; set; }
     }
 }

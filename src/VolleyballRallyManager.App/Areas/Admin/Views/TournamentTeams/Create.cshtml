@@ -31,7 +31,13 @@
                         <input asp-for="GroupName" class="form-control"/>
                         <span asp-validation-for="GroupName" class="text-danger"></span>
                     </div>
-                       <div class="form-group">
+                    <div class="form-group">
+                        <label asp-for="Rating" class="control-label"></label>
+                        <input asp-for="Rating" class="form-control" placehodler="Rating coming into tournament" />
+                        <span asp-validation-for="Rating" class="text-danger"></span>
+                        <div id="RatingHelp" class="form-text">Higher is better.</div>
+                    </div>
+                    <div class="form-group">
                         <label asp-for="SeedNumber" class="control-label"></label>
                         <input asp-for="SeedNumber" class="form-control" placehodler="Zero (0) to auto assign"/>
                         <span asp-validation-for="SeedNumber" class="text-danger"></span>
