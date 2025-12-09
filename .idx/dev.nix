@@ -15,6 +15,7 @@
     # pkgs.dotnetCorePackages.sdk_9_0
     pkgs.dotnet-sdk_10
     pkgs.sqlcmd
+    pkgs.icu
   ];
 
   # Sets environment variables in the workspace
