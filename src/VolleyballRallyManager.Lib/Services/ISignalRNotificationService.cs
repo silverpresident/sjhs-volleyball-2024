@@ -25,6 +25,7 @@ public interface ISignalRNotificationService
     Task NotifyAnnouncementCreatedAsync(Announcement announcement);
     Task NotifyAnnouncementUpdatedAsync(Announcement announcement);
     Task NotifyAnnouncementDeletedAsync(Guid announcementId);
-    Task NotifyAnnouncementQueueChangedAsync();
+    Task NotifyAnnouncementPropertyChangedAsync(Guid announcementId, string property, string value);
+    Task NotifyAnnouncementQueueChangedAsync(List<Announcement> announcement);
     Task NotifyAnnouncementCalledAsync(Announcement announcement);
 }

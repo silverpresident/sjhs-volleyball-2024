@@ -28,7 +28,7 @@ public static class SignalRConfiguration
     {
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapHub<MatchHub>("/volleyballhub", options =>
+            endpoints.MapHub<TournamentHub>("/TournamentHub", options =>
             {
                 options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets |
                                    Microsoft.AspNetCore.Http.Connections.HttpTransportType.ServerSentEvents;

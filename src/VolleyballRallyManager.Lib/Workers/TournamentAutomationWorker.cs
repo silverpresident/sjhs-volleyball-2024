@@ -114,7 +114,7 @@ public class TournamentAutomationWorker : BackgroundService
 
     private async Task HandleUpdateDivisionRanks(TournamentEvent tournamentEvent, IRanksService rankService, ISignalRNotificationService notificationService, IAnnouncementService announcerService, IBulletinService bulletinService)
     {
-        await rankService.UpdateDivisionRanksAsync(tournamentEvent.TournamentId, tournamentEvent.DivisionId);
+        await rankService.UpdateDivisionRanksAsync(tournamentEvent.TournamentId, tournamentEvent.DivisionId ?? Guid.Empty);
         _logger.LogInformation("Processed HandleUpdateDivisionRanks for Tournament {TournamentId}", tournamentEvent.TournamentId);
     }
     /*

@@ -3,7 +3,7 @@ using VolleyballRallyManager.Lib.Models;
 
 namespace VolleyballRallyManager.Lib.Hubs;
 
-public class MatchHub : Hub
+public class TournamentHub : Hub
 {
     public async Task JoinMatch(string matchId)
     {
@@ -63,6 +63,16 @@ public class MatchHub : Hub
     public async Task UnsubscribeFromUpdates()
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, "updates");
+    }
+
+    public async Task SubscribeToAnnouncer()
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, "announcer");
+    }
+
+    public async Task UnsubscribeFromAnnouncer()
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, "announcer");
     }
 
     public override async Task OnConnectedAsync()

@@ -10,7 +10,6 @@
     <div class="row mb-3">
         <div class="col">
             <a asp-action="Create" class="btn btn-secondary"><i class="bi bi-plus-circle"></i> Create New Match</a>
-            <a asp-action="AutoGenerateNextRound" class="btn btn-primary"><i class="bi bi-plus-circle"></i> Generate Next Round</a>
             <a asp-controller="ActiveTournament" asp-action="Index" class="btn btn-primary"><i class="bi bi-award"></i> Tournament Dashboard</a>
             @if (ViewBag.TournamentRoundId != null){
                 <a asp-controller="TournamentRounds" asp-action="Index" asp-route-RoundId="@ViewBag.TournamentRoundId" class="btn btn-primary"><i class="bi bi-diagram-2"></i> Round</a>

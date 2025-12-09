@@ -8,12 +8,12 @@ namespace VolleyballRallyManager.App.Controllers;
 public abstract class ApiControllerBase : ControllerBase
 {
     protected readonly ApplicationDbContext Context;
-    protected readonly IHubContext<MatchHub> _hubContext;
+    protected readonly IHubContext<TournamentHub> _hubContext;
     protected readonly ILogger _logger;
 
     protected ApiControllerBase(
         ApplicationDbContext context,
-        IHubContext<MatchHub> hubContext,
+        IHubContext<TournamentHub> hubContext,
         ILogger logger)
     {
         Context = context;

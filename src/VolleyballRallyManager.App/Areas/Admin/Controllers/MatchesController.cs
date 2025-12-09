@@ -624,7 +624,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
+        /*
         // GET: Admin/Matches/AutoGenerateNextRound
         public IActionResult AutoGenerateNextRound()
         {
@@ -741,7 +741,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
+        */
         private int CalculatePoints(int homeScore, int awayScore)
         {
             if (homeScore > awayScore)

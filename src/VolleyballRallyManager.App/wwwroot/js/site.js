@@ -4,7 +4,7 @@ let connection = null;
 // Initialize SignalR connection
 function initializeSignalR() {
     connection = new signalR.HubConnectionBuilder()
-        .withUrl("/volleyballhub")
+        .withUrl("/TournamentHub")
         .withAutomaticReconnect()
         .build();
 

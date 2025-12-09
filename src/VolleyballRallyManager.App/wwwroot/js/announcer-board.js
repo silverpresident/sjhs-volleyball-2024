@@ -3,65 +3,70 @@
     'use strict';
 
     // Initialize SignalR connection
-    const connection = new signalR.HubConnectionBuilder()
-        .withUrl("/matchHub")
+    const announcerConnection = new signalR.HubConnectionBuilder()
+        .withUrl("/TournamentHub")
         .withAutomaticReconnect()
         .build();
 
     // Start connection
-    connection.start()
+    announcerConnection.start()
         .then(() => {
             console.log('Announcer Board SignalR connected');
+
+            announcerConnection.invoke("SubscribeToAnnouncer")
+                .catch(function (err) {
+                    console.error("Error subscribing to Announcer:", err);
+                });
+            announcerConnection.invoke("RequestForAnnouncements");
         })
         .catch(err => {
             console.error('SignalR connection error:', err);
         });
 
     // Handle reconnection
-    connection.onreconnecting(() => {
+    announcerConnection.onreconnecting(() => {
         console.log('Reconnecting to SignalR...');
     });
 
-    connection.onreconnected(() => {
+    announcerConnection.onreconnected(() => {
         console.log('Reconnected to SignalR');
-        // Reload page to get latest data
-        location.reload();
+        announcerConnection.invoke("RequestForAnnouncements");
     });
 
-    connection.onclose(() => {
+    announcerConnection.onclose(() => {
         console.log('SignalR connection closed');
     });
 
     // Listen for announcement queue changes
-    connection.on("AnnouncementQueueChanged", function () {
+    announcerConnection.on("AnnouncementQueueChanged", function (announcements) {
         console.log('Announcement queue changed - reloading board');
         // Reload the page to show updated queue
         location.reload();
     });
 
     // Listen for announcement created
-    connection.on("AnnouncementCreated", function (announcement) {
+    announcerConnection.on("AnnouncementCreated", function (announcement) {
         console.log('New announcement created:', announcement);
         // Reload the page to show new announcement
-        location.reload();
+        //location.reload();
     });
 
     // Listen for announcement called
-    connection.on("AnnouncementCalled", function (announcement) {
+    announcerConnection.on("AnnouncementCalled", function (announcement) {
         console.log('Announcement called:', announcement);
         // Reload the page to show updated queue
         location.reload();
     });
 
     // Listen for announcement updated
-    connection.on("AnnouncementUpdated", function (announcement) {
+    announcerConnection.on("AnnouncementUpdated", function (announcement) {
         console.log('Announcement updated:', announcement);
         // Reload the page to show changes
         location.reload();
     });
 
     // Listen for announcement deleted
-    connection.on("AnnouncementDeleted", function (announcementId) {
+    announcerConnection.on("AnnouncementDeleted", function (announcementId) {
         console.log('Announcement deleted:', announcementId);
         // Reload the page to remove deleted announcement
         location.reload();

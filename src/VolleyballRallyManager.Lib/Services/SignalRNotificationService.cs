@@ -6,9 +6,9 @@ namespace VolleyballRallyManager.Lib.Services;
 
 public class SignalRNotificationService : ISignalRNotificationService
 {
-    private readonly IHubContext<MatchHub> _matchHubContext;
+    private readonly IHubContext<TournamentHub> _matchHubContext;
     private readonly IHubContext<ScorerHub> _scorerHubContext;
-    public SignalRNotificationService(IHubContext<MatchHub> hubContext, IHubContext<ScorerHub> scorerHubContext)
+    public SignalRNotificationService(IHubContext<TournamentHub> hubContext, IHubContext<ScorerHub> scorerHubContext)
     {
         _matchHubContext = hubContext;
         _scorerHubContext = scorerHubContext;
@@ -116,22 +116,26 @@ public class SignalRNotificationService : ISignalRNotificationService
 
     public async Task NotifyAnnouncementUpdatedAsync(Announcement announcement)
     {
-        await _matchHubContext.Clients.All.SendAsync("AnnouncementUpdated", announcement);
+        await _matchHubContext.Clients.Group("announcer").SendAsync("AnnouncementUpdated", announcement);
     }
 
     public async Task NotifyAnnouncementDeletedAsync(Guid announcementId)
     {
-        await _matchHubContext.Clients.All.SendAsync("AnnouncementDeleted", announcementId);
+        await _matchHubContext.Clients.Group("announcer").SendAsync("AnnouncementDeleted", announcementId);
     }
 
-    public async Task NotifyAnnouncementQueueChangedAsync()
+    public async Task NotifyAnnouncementQueueChangedAsync(List<Announcement> announcement)
     {
-        await _matchHubContext.Clients.All.SendAsync("AnnouncementQueueChanged");
+        await _matchHubContext.Clients.Group("announcer").SendAsync("AnnouncementQueueChanged");
     }
 
     public async Task NotifyAnnouncementCalledAsync(Announcement announcement)
     {
-        await _matchHubContext.Clients.All.SendAsync("AnnouncementCalled", announcement);
+        await _matchHubContext.Clients.Group("announcer").SendAsync("AnnouncementCalled", announcement);
     }
 
+    public async Task NotifyAnnouncementPropertyChangedAsync(Guid announcementId, string property, string value)
+    {
+        await _matchHubContext.Clients.Group("announcer").SendAsync("AnnouncementPropertyChanged", announcementId, property, value);
+    }
 }
