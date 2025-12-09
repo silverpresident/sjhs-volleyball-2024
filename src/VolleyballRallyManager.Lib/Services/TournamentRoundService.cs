@@ -255,10 +255,6 @@ public class TournamentRoundService : ITournamentRoundService
 
             // Get all teams for this round
             var roundTeams = await GetRoundTeamsAsync(tournamentRoundId);
-            if (!roundTeams.Any())
-            {
-                throw new InvalidOperationException("No teams found for this round");
-            }
             
             //Set up first found teams
 
@@ -744,7 +740,6 @@ public class TournamentRoundService : ITournamentRoundService
 
             // Update team rankings
             await _ranksService.UpdateTeamRanksAsync(tournamentRoundId);
-
             // Mark round as finished but not locked
             tournamentRound.IsFinished = true;
             tournamentRound.UpdatedBy = userName;

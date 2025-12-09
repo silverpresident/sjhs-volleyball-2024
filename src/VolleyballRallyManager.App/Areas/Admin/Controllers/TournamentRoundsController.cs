@@ -6,6 +6,7 @@ using VolleyballRallyManager.App.Areas.Admin.Models;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
 using VolleyballRallyManager.Lib.Services;
+using VolleyballRallyManager.Lib.Workers;
 
 namespace VolleyballRallyManager.App.Areas.Admin.Controllers;
 
@@ -13,6 +14,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers;
 [Authorize]
 public class TournamentRoundsController : Controller
 {
+    private readonly TournamentChannel _tournamentChannel;
     private readonly ITournamentRoundService _tournamentRoundService;
     private readonly IActiveTournamentService _activeTournamentService;
     private readonly ITournamentService _tournamentService;
@@ -26,7 +28,8 @@ public class TournamentRoundsController : Controller
         IRanksService ranksService,
         ApplicationDbContext context,
         ILogger<TournamentRoundsController> logger,
-        ITournamentService tournamentService)
+        ITournamentService tournamentService,
+        TournamentChannel tournamentChannel)
     {
         _tournamentRoundService = tournamentRoundService;
         _activeTournamentService = activeTournamentService;
@@ -34,6 +37,7 @@ public class TournamentRoundsController : Controller
         _context = context;
         _logger = logger;
         _tournamentService = tournamentService;
+        _tournamentChannel = tournamentChannel;
     }
 
     // GET: Admin/TournamentRounds/Index?tournamentId=...&divisionId=...
@@ -631,6 +635,7 @@ public class TournamentRoundsController : Controller
             //Done inside finalize
             //var rankedTeams = await _ranksService.UpdateTeamRanksAsync(id);
             var round = await _tournamentRoundService.FinalizeRoundAsync(id, userName);
+            await _tournamentChannel.UpdateDivisionRanksAsync(round.TournamentId, round.DivisionId);
 
             TempData["SuccessMessage"] = "Round finalized successfully. Team rankings have been calculated.";
             return RedirectToAction(nameof(Details), new { id });
@@ -684,7 +689,7 @@ public class TournamentRoundsController : Controller
             }
 
             var rankedTeams = await _ranksService.UpdateTeamRanksAsync(id);
-
+            await _tournamentChannel.UpdateDivisionRanksAsync(round.TournamentId, round.DivisionId);
             TempData["SuccessMessage"] = $"Team rankings updated successfully. {rankedTeams.Count} teams ranked.";
             return RedirectToAction(nameof(Details), new { id });
         }

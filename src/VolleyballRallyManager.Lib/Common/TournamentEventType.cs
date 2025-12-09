@@ -48,5 +48,6 @@ public enum TournamentEventType
     /// <summary>
     /// Match has been disputed
     /// </summary>
-    MatchDisputed
+    MatchDisputed,
+    UpdateDivisionRanks
 }
