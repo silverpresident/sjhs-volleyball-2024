@@ -11,16 +11,41 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
     public class UpdatesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<UpdatesController> _logger;
 
-        public UpdatesController(ApplicationDbContext context)
+        public UpdatesController(ApplicationDbContext context, ILogger<UpdatesController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: Admin/Updates
         public async Task<IActionResult> Index()
         {
-            return View(await _context.MatchUpdates.ToListAsync());
+            try
+            {
+                var updates = await _context.MatchUpdates
+                    .Include(m => m.Match)
+                        .ThenInclude(m => m!.HomeTeam)
+                    .Include(m => m.Match)
+                        .ThenInclude(m => m!.AwayTeam)
+                    .Include(m => m.Match)
+                        .ThenInclude(m => m!.Round)
+                    .Include(m => m.Match)
+                        .ThenInclude(m => m!.Division)
+                    .OrderByDescending(m => m.CreatedAt)
+                    .Take(100)
+                    .AsNoTracking()
+                    .ToListAsync();
+                
+                return View(updates);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading match updates");
+                TempData["ErrorMessage"] = "Error loading match updates.";
+                return View(new List<MatchUpdate>());
+            }
         }
 
         // GET: Admin/Updates/Details/5

@@ -1,44 +1,219 @@
 @model IEnumerable<VolleyballRallyManager.Lib.Models.MatchUpdate>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Match Updates";
 }
 
-<h1>Index</h1>
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1><i class="bi bi-bell-fill text-warning"></i> Match Updates</h1>
+            <p class="text-muted">View and manage all match updates and activity logs</p>
+        </div>
+        <div>
+            <a asp-area="Admin" asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-house-fill"></i> Dashboard
+            </a>
+            <a asp-area="Admin" asp-controller="Matches" asp-action="Index" class="btn btn-primary">
+                <i class="bi bi-trophy-fill"></i> Matches
+            </a>
+        </div>
+    </div>
 
-<table class="table">
-    <thead>
-        <tr> 
-            <th>
-                @Html.DisplayNameFor(model => model.Content)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdateType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProcessedAt)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Content)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdateType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProcessedAt)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" id="searchInput" class="form-control" placeholder="Search updates by content, team name, or round...">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="btn-group w-100" role="group">
+                <button type="button" class="btn btn-outline-primary active" data-filter="all">
+                    <i class="bi bi-list-ul"></i> All
+                </button>
+                <button type="button" class="btn btn-outline-success" data-filter="ScoreUpdate">
+                    <i class="bi bi-trophy"></i> Scores
+                </button>
+                <button type="button" class="btn btn-outline-info" data-filter="MatchStarted">
+                    <i class="bi bi-play-circle"></i> Started
+                </button>
+                <button type="button" class="btn btn-outline-secondary" data-filter="MatchFinished">
+                    <i class="bi bi-check-circle"></i> Finished
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox display-1 text-muted"></i>
+                    <p class="text-muted mt-3">No match updates found</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle" id="updatesTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 120px;">Time</th>
+                                <th style="width: 150px;">Type</th>
+                                <th style="width: 250px;">Match</th>
+                                <th>Content</th>
+                                <th style="width: 100px;">Status</th>
+                                <th style="width: 150px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                var updateTypeInfo = GetUpdateTypeInfo(item.UpdateType.ToString());
+                                <tr data-update-type="@item.UpdateType" data-search-content="@item.Content @item.Match?.HomeTeam?.Name @item.Match?.AwayTeam?.Name @item.Match?.Round?.Name @item.UpdateType">
+                                    <td>
+                                        <small class="text-muted">
+                                            <i class="bi bi-clock"></i>
+                                            @item.CreatedAt.ToString("dd MMM")<br/>
+                                            <strong>@item.CreatedAt.ToString("HH:mm")</strong>
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-@updateTypeInfo.Color">
+                                            <i class="bi bi-@updateTypeInfo.Icon"></i>
+                                            @updateTypeInfo.Label
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (item.Match != null)
+                                        {
+                                            <div>
+                                                <strong>@item.Match.HomeTeam?.Name</strong> vs <strong>@item.Match.AwayTeam?.Name</strong>
+                                                @if (!string.IsNullOrEmpty(item.Match.CourtLocation))
+                                                {
+                                                    <br/><small class="text-muted"><i class="bi bi-geo-alt"></i> @item.Match.CourtLocation</small>
+                                                }
+                                                @if (item.Match.Round != null)
+                                                {
+                                                    <br/><span class="badge bg-secondary">@item.Match.Round.Name</span>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="update-content">
+                                            @if (item.Content.Length > 100)
+                                            {
+                                                <span>@item.Content.Substring(0, 100)...</span>
+                                            }
+                                            else
+                                            {
+                                                <span>@item.Content</span>
+                                            }
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(item.PreviousValue) || !string.IsNullOrEmpty(item.NewValue))
+                                        {
+                                            <small class="text-muted">
+                                                @if (!string.IsNullOrEmpty(item.PreviousValue))
+                                                {
+                                                    <span class="text-decoration-line-through">@item.PreviousValue</span>
+                                                }
+                                                @if (!string.IsNullOrEmpty(item.NewValue))
+                                                {
+                                                    <span class="text-success"> → @item.NewValue</span>
+                                                }
+                                            </small>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.IsProcessed)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle"></i> Processed
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="bi bi-hourglass-split"></i> Pending
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Details">
+                                                <i class="bi bi-info-circle"></i>
+                                            </a>
+                                            @if (item.Match != null)
+                                            {
+                                                <a asp-area="Admin" asp-controller="Matches" asp-action="Details" asp-route-id="@item.MatchId" class="btn btn-sm btn-outline-primary" title="View Match">
+                                                    <i class="bi bi-trophy"></i>
+                                                </a>
+                                            }
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-3">
+                    <p class="text-muted">
+                        <i class="bi bi-info-circle"></i> Showing the last 100 match updates. 
+                        Total displayed: <strong id="displayCount">@Model.Count()</strong>
+                    </p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/admin-updates.css" asp-append-version="true" />
 }
-    </tbody>
-</table>
+
+@section Scripts {
+    <script src="~/js/admin-updates.js" asp-append-version="true"></script>
+}
+
+@functions {
+    private (string Label, string Icon, string Color) GetUpdateTypeInfo(string updateType)
+    {
+        return updateType switch
+        {
+            "ScoreUpdate" => ("Score Update", "trophy-fill", "success"),
+            "MatchStarted" => ("Match Started", "play-circle-fill", "primary"),
+            "MatchFinished" => ("Match Finished", "check-circle-fill", "info"),
+            "MatchSetStarted" => ("Set Started", "play-fill", "primary"),
+            "MatchSetFinished" => ("Set Finished", "check-circle", "success"),
+            "DisputeRaised" => ("Dispute Raised", "exclamation-triangle-fill", "danger"),
+            "RefereeAssigned" => ("Referee Assigned", "person-badge-fill", "secondary"),
+            "ScorerAssigned" => ("Scorer Assigned", "pencil-square", "secondary"),
+            "LocationChanged" => ("Location Changed", "geo-alt-fill", "info"),
+            "TimeChanged" => ("Time Changed", "clock-fill", "info"),
+            "CalledToCourt" => ("Called to Court", "megaphone-fill", "warning"),
+            _ => ("Update", "info-circle-fill", "secondary")
+        };
+    }
+}

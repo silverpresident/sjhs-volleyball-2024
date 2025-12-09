@@ -1,0 +1,275 @@
+/* Admin Updates Page Styles - Green & Gold Theme */
+
+/* Header styling */
+.container-fluid h1 {
+    color: #2d5016;
+    font-weight: 600;
+}
+
+.container-fluid h1 i {
+    margin-right: 0.5rem;
+}
+
+/* Card styling */
+.card {
+    border: none;
+    border-radius: 8px;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Table styling */
+#updatesTable {
+    font-size: 0.95rem;
+}
+
+#updatesTable thead th {
+    font-weight: 600;
+    color: #2d5016;
+    border-bottom: 2px solid #dee2e6;
+    padding: 0.75rem;
+}
+
+#updatesTable tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+#updatesTable tbody tr:hover {
+    background-color: rgba(45, 80, 22, 0.05);
+}
+
+#updatesTable tbody td {
+    vertical-align: middle;
+    padding: 0.75rem;
+}
+
+/* Update type badges */
+.badge {
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.4em 0.75em;
+}
+
+.badge i {
+    margin-right: 0.25rem;
+}
+
+/* Green & Gold theme badge colors */
+.badge.bg-success {
+    background-color: #2d5016 !important;
+    color: #ffd700;
+}
+
+.badge.bg-warning {
+    background-color: #ffd700 !important;
+    color: #2d5016;
+}
+
+/* Update content styling */
+.update-content {
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+/* Button group styling */
+.btn-group .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.btn-group .btn i {
+    font-size: 1rem;
+}
+
+/* Filter buttons */
+.btn-outline-primary.active {
+    background-color: #2d5016;
+    border-color: #2d5016;
+    color: #ffd700;
+}
+
+.btn-outline-primary:hover {
+    background-color: #2d5016;
+    border-color: #2d5016;
+    color: #ffd700;
+}
+
+.btn-outline-success:hover {
+    background-color: #2d5016;
+    border-color: #2d5016;
+    color: #ffd700;
+}
+
+/* Search input styling */
+#searchInput {
+    border-radius: 0.25rem;
+}
+
+#searchInput:focus {
+    border-color: #2d5016;
+    box-shadow: 0 0 0 0.2rem rgba(45, 80, 22, 0.25);
+}
+
+.input-group-text {
+    background-color: #f8f9fa;
+    border-right: none;
+}
+
+#searchInput {
+    border-left: none;
+}
+
+/* Navigation buttons */
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-primary {
+    background-color: #2d5016;
+    border-color: #2d5016;
+    color: #ffd700;
+}
+
+.btn-primary:hover {
+    background-color: #1f3910;
+    border-color: #1f3910;
+    color: #ffd700;
+}
+
+/* Empty state styling */
+.text-center i.display-1 {
+    font-size: 5rem;
+    opacity: 0.3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .d-flex.justify-content-between {
+        flex-direction: column;
+    }
+
+    .d-flex.justify-content-between > div {
+        margin-bottom: 1rem;
+    }
+
+    .btn-group {
+        flex-wrap: wrap;
+    }
+
+    .btn-group .btn {
+        flex: 1 1 50%;
+        margin-bottom: 0.5rem;
+    }
+
+    #updatesTable {
+        font-size: 0.85rem;
+    }
+
+    #updatesTable td,
+    #updatesTable th {
+        padding: 0.5rem;
+    }
+
+    .btn-group-vertical {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 576px) {
+    .container-fluid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .table-responsive {
+        font-size: 0.8rem;
+    }
+
+    .btn-group .btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.35rem;
+    }
+}
+
+/* Animation for filtered rows */
+tr.fade-out {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+tr.fade-in {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+/* Previous/New value styling */
+.text-decoration-line-through {
+    color: #dc3545;
+    text-decoration: line-through;
+}
+
+.text-success {
+    color: #2d5016 !important;
+    font-weight: 600;
+}
+
+/* Status badges */
+.badge.bg-success i,
+.badge.bg-warning i {
+    font-size: 0.85rem;
+}
+
+/* Shadow effects */
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    transition: box-shadow 0.3s ease;
+}
+
+/* Alert styling */
+.alert {
+    border-radius: 0.375rem;
+}
+
+.alert i {
+    margin-right: 0.5rem;
+}
+
+/* Info footer */
+.mt-3 p {
+    margin-bottom: 0;
+}
+
+#displayCount {
+    color: #2d5016;
+    font-weight: 700;
+}
+
+/* Loading state */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.spinner-border {
+    color: #2d5016;
+}

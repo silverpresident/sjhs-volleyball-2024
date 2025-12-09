@@ -65,3 +65,37 @@ Action - 'Defer': Move to end of queue.
 Action - 'Details': Navigate to details view.
 
 4. Real-Time Ensure the SignalR Hub broadcasts updates to the Board view whenever the sequence changes or items are added/removed.
+=====
+We are working on the Announcer and AnnouncerBoard in the Admin area.
+1. Look at the announcer-board.js which mainly manages signal r
+- When the Call button is pressed it should post the Call action via ajax/fetch, disable the button and hide the announcement without reloading the page.
+- Defer should send a post with the defer  without reloading the page and also hide the announcement without reloading the page.
+- React properly to the various SignalR events as indicated below, do not reload the page
+
+*AnnouncementCreated*
+Render a display for the announcement
+
+*AnnouncementCalled*
+Update the display of the announcement
+
+*AnnouncementUpdated*
+Update the display of the announcement
+
+*AnnouncementDeleted*
+Remove the display of the announcement with matching Id
+
+*AnnouncementQueueChanged*
+Process the array of announcements. UPdating existing display, render new displays and delete any existing display that is not in the list.
+
+*AnnouncementPropertyChanged*
+Update the change property. property="hide" should hide, property="show" should show, property="order" should set the order value,
+
+*Update the display*
+UPdate the displayed values, also update the style and use the order property of the announcement to set the style.order value. Use the IsHidden property to hide/display the announcment
+
+In the TournamentHub
+receive the following events and respond accordingly
+- RequestForAnnouncements   - send back all active announcements use the *AnnouncementQueueChanged*
+
+
+

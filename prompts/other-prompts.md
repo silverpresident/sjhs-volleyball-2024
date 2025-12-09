@@ -168,3 +168,6 @@ Look at the tournament service and the Index action of the TournamentRounds.
 Create a GetTournamentDivisionDetails(TournamentId, DivisionId)
 This methods should return the details for a single division and the details for all the rounds
 The GetTournamentDetailsAsync does something similar but it returns details for all the divsions in the tournament.
+====
+
+Fix the design and presentation of the Admin/Updates index page
