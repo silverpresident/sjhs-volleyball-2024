@@ -124,9 +124,9 @@ public class SignalRNotificationService : ISignalRNotificationService
         await _matchHubContext.Clients.Group("announcer").SendAsync("AnnouncementDeleted", announcementId);
     }
 
-    public async Task NotifyAnnouncementQueueChangedAsync(List<Announcement> announcement)
+    public async Task NotifyAnnouncementQueueChangedAsync(List<Announcement> announcements)
     {
-        await _matchHubContext.Clients.Group("announcer").SendAsync("AnnouncementQueueChanged");
+        await _matchHubContext.Clients.Group("announcer").SendAsync("AnnouncementQueueChanged", announcements);
     }
 
     public async Task NotifyAnnouncementCalledAsync(Announcement announcement)

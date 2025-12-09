@@ -234,7 +234,8 @@ public class AnnouncementService : IAnnouncementService
 
             _logger.LogInformation("Hidden announcement {Id}", id);
 
-            await _signalRService.NotifyAnnouncementQueueChangedAsync();
+            var queuedAnnouncements = await GetQueuedAnnouncementsAsync();
+            await _signalRService.NotifyAnnouncementQueueChangedAsync(queuedAnnouncements.ToList());
 
             return announcement;
         }
@@ -269,7 +270,8 @@ public class AnnouncementService : IAnnouncementService
 
             _logger.LogInformation("Unhidden announcement {Id}", id);
 
-            await _signalRService.NotifyAnnouncementQueueChangedAsync();
+            var queuedAnnouncements = await GetQueuedAnnouncementsAsync();
+            await _signalRService.NotifyAnnouncementQueueChangedAsync(queuedAnnouncements.ToList());
 
             return announcement;
         }
@@ -365,7 +367,8 @@ public class AnnouncementService : IAnnouncementService
             _logger.LogInformation("Deferred announcement {Id} to sequence {SequenceNumber}",
                 id, announcement.SequencingNumber);
 
-            await _signalRService.NotifyAnnouncementQueueChangedAsync();
+            var queuedAnnouncements = await GetQueuedAnnouncementsAsync();
+            await _signalRService.NotifyAnnouncementQueueChangedAsync(queuedAnnouncements.ToList());
 
             return announcement;
         }
@@ -448,7 +451,8 @@ public class AnnouncementService : IAnnouncementService
             _logger.LogInformation("Reannounced announcement {Id} with sequence {SequenceNumber}",
                 id, announcement.SequencingNumber);
 
-            await _signalRService.NotifyAnnouncementQueueChangedAsync();
+            var queuedAnnouncements = await GetQueuedAnnouncementsAsync();
+            await _signalRService.NotifyAnnouncementQueueChangedAsync(queuedAnnouncements.ToList());
 
             return announcement;
         }

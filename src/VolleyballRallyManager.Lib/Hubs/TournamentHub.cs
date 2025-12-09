@@ -1,10 +1,18 @@
 using Microsoft.AspNetCore.SignalR;
 using VolleyballRallyManager.Lib.Models;
+using VolleyballRallyManager.Lib.Services;
 
 namespace VolleyballRallyManager.Lib.Hubs;
 
 public class TournamentHub : Hub
 {
+    private readonly IAnnouncementService _announcementService;
+
+    public TournamentHub(IAnnouncementService announcementService)
+    {
+        _announcementService = announcementService;
+    }
+
     public async Task JoinMatch(string matchId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, $"match_{matchId}");
@@ -132,5 +140,11 @@ public class TournamentHub : Hub
     public async Task BroadcastMessage(string message, string type = "info")
     {
         await Clients.All.SendAsync("ReceiveBroadcast", new { message, type });
+    }
+
+    public async Task RequestForAnnouncements()
+    {
+        var announcements = await _announcementService.GetQueuedAnnouncementsAsync();
+        await Clients.Caller.SendAsync("AnnouncementQueueChanged", announcements.ToList());
     }
 }

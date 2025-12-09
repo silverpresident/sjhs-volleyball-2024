@@ -101,5 +101,48 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CallAjax(Guid id)
+        {
+            try
+            {
+                var announcement = await _announcementService.CallAnnouncementAsync(id);
+                
+                string message;
+                if (announcement.IsHidden)
+                {
+                    message = $"Announcement '{announcement.Title}' called and completed.";
+                }
+                else
+                {
+                    message = $"Announcement '{announcement.Title}' called. {announcement.RemainingRepeatCount} repeat(s) remaining.";
+                }
+
+                return Json(new { success = true, message, announcement });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error calling announcement {Id}", id);
+                return Json(new { success = false, message = "Failed to call announcement." });
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeferAjax(Guid id)
+        {
+            try
+            {
+                var announcement = await _announcementService.DeferAnnouncementAsync(id);
+                return Json(new { success = true, message = "Announcement deferred to end of queue.", announcement });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deferring announcement {Id}", id);
+                return Json(new { success = false, message = "Failed to defer announcement." });
+            }
+        }
     }
 }
