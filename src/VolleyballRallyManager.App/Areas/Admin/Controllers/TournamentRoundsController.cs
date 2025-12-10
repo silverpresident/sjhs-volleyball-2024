@@ -222,6 +222,9 @@ public class TournamentRoundsController : Controller
                 model.GroupConfigurationValue,
                 userName);
 
+            // Set IsPlayoff property
+            tournamentRound.IsPlayoff = model.IsPlayoff;
+            
             _context.TournamentRounds.Update(tournamentRound);
             await _context.SaveChangesAsync();
 
@@ -301,6 +304,9 @@ public class TournamentRoundsController : Controller
                 AdvancingTeamSelectionStrategy = tournamentRound.AdvancingTeamSelectionStrategy,
                 MatchGenerationStrategy = tournamentRound.MatchGenerationStrategy,
                 AdvancingTeamsCount = tournamentRound.AdvancingTeamsCount,
+                QualifyingTeamsCount = tournamentRound.QualifyingTeamsCount,
+                QualifyingTeamSelectionStrategy = tournamentRound.QualifyingTeamSelectionStrategy,
+                IsPlayoff = tournamentRound.IsPlayoff,
                 GroupConfigurationType = groupConfigType,
                 GroupConfigurationValue = groupConfigValue,
                 IsFinished = tournamentRound.IsFinished,
@@ -348,6 +354,9 @@ public class TournamentRoundsController : Controller
             tournamentRound.AdvancingTeamSelectionStrategy = model.AdvancingTeamSelectionStrategy;
             tournamentRound.AdvancingTeamsCount = model.AdvancingTeamsCount;
             tournamentRound.MatchGenerationStrategy = model.MatchGenerationStrategy;
+            tournamentRound.QualifyingTeamsCount = model.QualifyingTeamsCount;
+            tournamentRound.QualifyingTeamSelectionStrategy = model.QualifyingTeamSelectionStrategy;
+            tournamentRound.IsPlayoff = model.IsPlayoff;
             
             // Update group configuration
             tournamentRound.GroupingStrategy = model.GroupConfigurationType;

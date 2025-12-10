@@ -37,6 +37,28 @@
                     </select>
                     <span asp-validation-for="SelectionMethod" class="text-danger"></span>
                 </div>
+                <div class="mb-3">
+                    <label asp-for="QualifyingTeamsCount" class="form-label"></label>
+                    <input asp-for="QualifyingTeamsCount" type="number" class="form-control" min="0" />
+                    <span asp-validation-for="QualifyingTeamsCount" class="text-danger"></span>
+                    <div class="form-text">Number of teams expected to qualify for this round</div>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="QualifyingTeamSelectionStrategy" class="form-label"></label>
+                    <select asp-for="QualifyingTeamSelectionStrategy" class="form-select" asp-items="Html.GetEnumSelectList<VolleyballRallyManager.Lib.Models.TeamSelectionStrategy>()">
+                    </select>
+                    <span asp-validation-for="QualifyingTeamSelectionStrategy" class="text-danger"></span>
+                    <div class="form-text">Strategy for selecting teams that qualify for this round</div>
+                </div>
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input asp-for="IsPlayoff" type="checkbox" class="form-check-input" id="isPlayoff" />
+                        <label class="form-check-label" for="isPlayoff">
+                            Is Playoff Round
+                        </label>
+                    </div>
+                    <div class="form-text">Indicates whether this is a playoff round</div>
+                </div>
                 <button type="submit" class="btn btn-primary">Generate Next Round</button>
             </form>
         </div>

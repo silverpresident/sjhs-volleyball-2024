@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
+using VolleyballRallyManager.Lib.Models;
 
 namespace VolleyballRallyManager.App.Models
 {
@@ -30,5 +31,16 @@ namespace VolleyballRallyManager.App.Models
             new SelectListItem { Value = "TopFromGroupAndNextBest", Text = "Top from group and next best" },
             new SelectListItem { Value = "TopByPoints", Text = "Top by points" }
         };
+
+        [Required]
+        [Display(Name = "Qualifying Teams Count")]
+        public int QualifyingTeamsCount { get; set; }
+
+        [Required]
+        [Display(Name = "Qualifying Team Selection Strategy")]
+        public TeamSelectionStrategy QualifyingTeamSelectionStrategy { get; set; } = TeamSelectionStrategy.Manual;
+
+        [Display(Name = "Is Playoff Round")]
+        public bool IsPlayoff { get; set; }
     }
 }

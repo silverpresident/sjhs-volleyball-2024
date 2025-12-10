@@ -158,6 +158,45 @@
                             </div>
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="QualifyingTeamsCount" class="form-label">
+                                        Qualifying Teams Count
+                                    </label>
+                                    <input asp-for="QualifyingTeamsCount" type="number" class="form-control" min="0" disabled="@Model.IsFinished" />
+                                    <span asp-validation-for="QualifyingTeamsCount" class="text-danger"></span>
+                                    <div class="form-text">Number of teams expected to qualify for this round</div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="QualifyingTeamSelectionStrategy" class="form-label">
+                                        Qualifying Team Selection Strategy
+                                    </label>
+                                    <select asp-for="QualifyingTeamSelectionStrategy" class="form-select" disabled="@Model.IsFinished" asp-items="Html.GetEnumSelectList<VolleyballRallyManager.Lib.Models.TeamSelectionStrategy>()">
+                                    </select>
+                                    <span asp-validation-for="QualifyingTeamSelectionStrategy" class="text-danger"></span>
+                                    <div class="form-text">Strategy for selecting teams that qualify for this round</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input asp-for="IsPlayoff" type="checkbox" class="form-check-input" id="isPlayoffEdit" disabled="@Model.IsFinished" />
+                                        <label class="form-check-label" for="isPlayoffEdit">
+                                            <strong>Is Playoff Round</strong>
+                                            <div class="form-text">Indicates whether this is a playoff round</div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         @if (!Model.IsFinished)
                         {
                             <h6 class="border-bottom pb-2 mb-3 mt-4"><i class="bi bi-lightning"></i> Immediate Actions</h6>

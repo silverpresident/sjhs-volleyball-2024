@@ -13,9 +13,10 @@ This document tracks the implementation progress of the Tournament Round Managem
 - ✅ Created `TournamentRound` entity with:
   - Primary identifiers: TournamentId, DivisionId, RoundId
   - RoundNumber (sequenced within Division)
-  - TeamSelectionMethod, MatchGenerationStrategy
+  - AdvancingTeamSelectionStrategy, MatchGenerationStrategy
+  - QualifyingTeamSelectionStrategy, QualifyingTeamsCount (for team selection into this round)
   - PreviousTournamentRoundId (nullable)
-  - TeamsAdvancing, IsFinished, IsLocked flags
+  - AdvancingTeamsCount, IsFinished, IsLocked, IsPlayoff flags
 - ✅ Created `TournamentRoundTeam` entity with:
   - Foreign keys: TournamentId, DivisionId, RoundId, TeamId, TournamentRoundId
   - SeedNumber and FinalRank
@@ -168,12 +169,36 @@ To complete this feature, the recommended order is:
 
 **Total Remaining**: 12-18 hours of development time
 
+## Recent Enhancements (December 2025)
+
+### Playoff Round Support
+- ✅ Added `IsPlayoff` boolean flag to `TournamentRound` model
+  - Indicates whether a round is a playoff round
+  - Influences ranking and progression logic
+  - UI support in Create and Edit views
+
+### Qualifying Team Configuration
+- ✅ Added `QualifyingTeamsCount` property to `TournamentRound` model
+  - Specifies expected number of teams qualifying for this round
+  - Helps with validation and round planning
+  
+- ✅ Added `QualifyingTeamSelectionStrategy` property to `TournamentRound` model
+  - Defines strategy for selecting teams that qualify for this round
+  - Uses existing `TeamSelectionStrategy` enum
+  - Complements `AdvancingTeamSelectionStrategy` (for teams advancing FROM this round)
+
+### Database Migration
+- ✅ Created `database/migration-add-playoff-fields.sql`
+  - Idempotent T-SQL script
+  - Adds three new columns with appropriate defaults
+  - Safe to run multiple times
+
 ## Files Created
 
 ### Models
-- `src/VolleyballRallyManager.Lib/Models/TeamSelectionMethod.cs`
+- `src/VolleyballRallyManager.Lib/Models/TeamSelectionStrategy.cs`
 - `src/VolleyballRallyManager.Lib/Models/MatchGenerationStrategy.cs`
-- `src/VolleyballRallyManager.Lib/Models/TournamentRound.cs`
+- `src/VolleyballRallyManager.Lib/Models/TournamentRound.cs` (Enhanced)
 - `src/VolleyballRallyManager.Lib/Models/TournamentRoundTeam.cs`
 
 ### Services

@@ -16,6 +16,7 @@
     pkgs.dotnet-sdk_10
     pkgs.sqlcmd
     pkgs.icu
+    pkgs.openssl
   ];
 
   # Sets environment variables in the workspace

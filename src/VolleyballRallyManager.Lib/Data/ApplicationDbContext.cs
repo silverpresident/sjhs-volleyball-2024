@@ -170,6 +170,10 @@ namespace VolleyballRallyManager.Lib.Data
                 .HasConversion<string>();
 
             builder.Entity<TournamentRound>()
+                .Property(tr => tr.QualifyingTeamSelectionStrategy)
+                .HasConversion<string>();
+
+            builder.Entity<TournamentRound>()
                 .Property(tr => tr.MatchGenerationStrategy)
                 .HasConversion<string>();
 

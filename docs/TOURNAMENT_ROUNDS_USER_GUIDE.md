@@ -18,7 +18,11 @@ A tournament round represents a stage in the competition where a group of teams 
 ### Important Terms
 - **Seed Number**: The team's initial ranking entering a round (from previous round or division ranking)
 - **Final Rank**: The team's final position after completing all matches in a round
-- **Teams Advancing**: Number of teams that will advance to the next round
+- **Qualifying Teams Count**: Expected number of teams that will enter this round (from previous rounds or seeding)
+- **Qualifying Team Selection Strategy**: How teams are selected to enter this round
+- **Advancing Teams Count**: Number of teams that will advance to the next round
+- **Advancing Team Selection Strategy**: How teams are selected to advance from this round to the next
+- **Is Playoff**: Indicates whether this is a playoff round (affects ranking and progression)
 - **Round Status**:
   - **In Progress**: Round is active, matches being played
   - **Finished**: All matches complete, rankings calculated
@@ -32,8 +36,9 @@ A tournament round represents a stage in the competition where a group of teams 
 2. Fill in the form:
    - **Round**: Select which round this is (e.g., "Group Stage", "Round 1")
    - **Teams Advancing**: How many teams will advance (e.g., 8)
-   - **Team Selection Method**: How teams will be selected for next round
+   - **Advancing Team Selection Strategy**: How teams will be selected for next round
    - **Match Generation Strategy**: How matches will be created
+   - **Is Playoff Round** (checkbox): Check if this is a playoff round
 
 3. Click **"Create First Round"**
 
@@ -93,9 +98,12 @@ Once all matches are complete:
 1. Click **"Generate Next Round"** on a finished round
 2. Fill in the form:
    - **Round**: Select the next round (e.g., "Quarter Finals")
-   - **Teams Advancing**: How many teams advance from this round
-   - **Team Selection Method**: How teams qualify
+   - **Qualifying Teams Count**: Expected number of teams entering this round
+   - **Qualifying Team Selection Strategy**: How teams qualify for this round
+   - **Advancing Teams Count**: How many teams advance from this round to the next
+   - **Advancing Team Selection Strategy**: How teams are selected to advance
    - **Match Generation Strategy**: Match format
+   - **Is Playoff Round** (checkbox): Check if this is a playoff round
 
 3. Click **"Create Next Round"**
 
@@ -179,8 +187,12 @@ For each team in a round:
 ### Round Information Card
 - Tournament and Division
 - Round Number
-- Selection Method & Match Strategy
+- Qualifying Team Selection Strategy (how teams enter this round)
+- Advancing Team Selection Strategy (how teams advance from this round)
+- Match Generation Strategy
+- Qualifying Teams Count
 - Teams Advancing
+- Is Playoff Round indicator
 - Current Status
 
 ### Round Statistics Card
@@ -282,6 +294,34 @@ The system shows different action buttons based on round state:
 **Q: Round finalized by mistake?**
 - A: Rounds cannot be un-finalized. Contact system administrator.
 
+## Understanding Playoff Rounds
+
+### What is a Playoff Round?
+A playoff round is a special type of round where teams compete in an elimination or high-stakes format. Marking a round as "Playoff" helps:
+- Identify knockout stages in your tournament structure
+- Apply special ranking considerations
+- Organize tournament reporting and statistics
+
+### When to Mark as Playoff
+- **Quarterfinals**, **Semifinals**, **Finals**: Always mark as playoff
+- **Third Place Match**: Mark as playoff
+- **Elimination Brackets**: Mark as playoff
+- **Group Stages**: Do NOT mark as playoff
+
+### Qualifying vs. Advancing Teams
+
+Understanding the difference is crucial for complex round structures:
+
+**Qualifying Team Selection Strategy**:
+- Controls how teams ENTER this round
+- Used when creating the round to select teams from previous rounds
+- Example: "Top 8 by points from Round 1 qualify for Round 2"
+
+**Advancing Team Selection Strategy**:
+- Controls how teams LEAVE this round for the next one
+- Used when creating the NEXT round
+- Example: "Winners of Round 2 matches advance to Round 3"
+
 ## Common Tournament Formats
 
 ### Format 1: Group Stage + Knockout
@@ -289,16 +329,29 @@ The system shows different action buttons based on round state:
 1. **Round 1**: Group Stage (Round Robin)
    - All teams play in groups
    - Top 2 from each group advance
+   - Is Playoff: **No**
+   - Advancing Strategy: TopFromGroupAndNextBest
 
 2. **Round 2**: Quarter Finals (Seeded Bracket)
+   - Qualifying Count: 8 teams
+   - Qualifying Strategy: TopFromGroupAndNextBest (from Round 1)
    - 8 teams → 4 winners
    - Seed by group standings
+   - Is Playoff: **Yes**
+   - Advancing Strategy: WinnersOnly
 
 3. **Round 3**: Semi Finals (Seeded Bracket)
+   - Qualifying Count: 4 teams
+   - Qualifying Strategy: WinnersOnly (from Round 2)
    - 4 teams → 2 winners
+   - Is Playoff: **Yes**
+   - Advancing Strategy: WinnersOnly
 
 4. **Round 4**: Finals (Seeded Bracket)
+   - Qualifying Count: 2 teams
+   - Qualifying Strategy: WinnersOnly (from Round 3)
    - 2 teams → 1 champion
+   - Is Playoff: **Yes**
 
 ### Format 2: Progressive Elimination
 

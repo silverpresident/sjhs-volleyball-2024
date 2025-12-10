@@ -59,6 +59,24 @@ public class TournamentRound : BaseEntity
     [Display(Name = "Teams Advancing")]
     public int AdvancingTeamsCount { get; set; } = 0;
 
+    /// <summary>
+    /// The number of teams expected to qualify for this round from previous rounds or seeding.
+    /// </summary>
+    [Display(Name = "Qualifying Teams Count")]
+    public int QualifyingTeamsCount { get; set; } = 0;
+
+    /// <summary>
+    /// The strategy used to select teams that qualify for this round.
+    /// </summary>
+    [Display(Name = "Qualifying Team Selection Strategy")]
+    public TeamSelectionStrategy QualifyingTeamSelectionStrategy { get; set; } = TeamSelectionStrategy.Manual;
+
+    /// <summary>
+    /// Indicates whether this round is a playoff round, which may influence ranking and progression.
+    /// </summary>
+    [Display(Name = "Is Playoff")]
+    public bool IsPlayoff { get; set; } = false;
+
     [Display(Name = "Teams Per Group")]
     public int? TeamsPerGroup { get; set; }
 

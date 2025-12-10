@@ -30,6 +30,7 @@ public class CreateFirstRoundViewModel
     public TeamSelectionStrategy AdvancingTeamSelectionStrategy { get; set; } = TeamSelectionStrategy.Manual;
     public MatchGenerationStrategy MatchGenerationStrategy { get; set; } = MatchGenerationStrategy.RoundRobin;
     public int AdvancingTeamsCount { get; set; } = 4;
+    public bool IsPlayoff { get; set; } = false;
 
     // Group Configuration
     public GroupGenerationStrategy GroupConfigurationType { get; set; } = GroupGenerationStrategy.GroupsInRound;
@@ -117,6 +118,9 @@ public class EditTournamentRoundViewModel
     public TeamSelectionStrategy AdvancingTeamSelectionStrategy { get; set; }
     public MatchGenerationStrategy MatchGenerationStrategy { get; set; }
     public int AdvancingTeamsCount { get; set; }
+    public int QualifyingTeamsCount { get; set; } = 0;
+    public TeamSelectionStrategy QualifyingTeamSelectionStrategy { get; set; } = TeamSelectionStrategy.Manual;
+    public bool IsPlayoff { get; set; } = false;
     
     // Group Configuration
     public GroupGenerationStrategy GroupConfigurationType { get; set; } = GroupGenerationStrategy.NoGroup; // "TeamsPerGroup" or "GroupsInRound"
