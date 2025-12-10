@@ -141,4 +141,12 @@ public interface ITournamentRoundService
     /// <returns>Number of rounds deleted</returns>
     Task<int> DeleteAllRoundsByTournamentAsync(Guid tournamentId);
     Task<TournamentRound> UnfinalizeRoundAsync(Guid id, string userName);
+
+    /// <summary>
+    /// Gets playoff candidate teams from a previous round (best losers)
+    /// </summary>
+    /// <param name="previousRoundId">The ID of the completed round</param>
+    /// <param name="numberOfTeamsToSelect">Number of teams to select</param>
+    /// <returns>List of best performing non-advancing teams</returns>
+    Task<IEnumerable<TournamentRoundTeamSummaryViewModel>> GetPlayoffCandidateTeamsAsync(Guid previousRoundId, int numberOfTeamsToSelect);
 }

@@ -968,4 +968,139 @@ public class TournamentRoundService : ITournamentRoundService
             throw;
         }
     }
+
+    public async Task<IEnumerable<TournamentRoundTeamSummaryViewModel>> GetPlayoffCandidateTeamsAsync(Guid previousRoundId, int numberOfTeamsToSelect)
+    {
+        try
+        {
+            _logger.LogInformation("Getting playoff candidate teams from round {PreviousRoundId}", previousRoundId);
+
+            var previousRound = await GetTournamentRoundByIdAsync(previousRoundId);
+            if (previousRound == null)
+            {
+                throw new InvalidOperationException($"Previous round {previousRoundId} not found");
+            }
+
+            if (!previousRound.IsFinished)
+            {
+                throw new InvalidOperationException("Previous round must be finished to get playoff candidates");
+            }
+
+            // Get all teams that participated in the previous round with their rankings
+            var allTeamsInPreviousRound = await _ranksService.GetStandingsAsync(previousRoundId);
+
+            // Identify teams that have already advanced to the next round
+            var advancingTeamIds = new HashSet<Guid>();
+            
+            if (previousRound.NextTournamentRoundId.HasValue)
+            {
+                // Get teams that advanced to the next round
+                var nextRoundTeams = await _context.TournamentRoundTeams
+                    .Where(trt => trt.TournamentRoundId == previousRound.NextTournamentRoundId.Value)
+                    .Select(trt => trt.TeamId)
+                    .ToListAsync();
+                
+                advancingTeamIds = nextRoundTeams.ToHashSet();
+            }
+            else
+            {
+                // If there's no next round yet, identify which teams WOULD advance based on the selection strategy
+                // This uses the same logic as SelectTeamsForRoundAsync
+                switch (previousRound.AdvancingTeamSelectionStrategy)
+                {
+                    case TeamSelectionStrategy.WinnersOnly:
+                        advancingTeamIds = allTeamsInPreviousRound
+                            .Where(t => t.Wins > 0)
+                            .Take(previousRound.AdvancingTeamsCount)
+                            .Select(t => t.TeamId)
+                            .ToHashSet();
+                        break;
+
+                    case TeamSelectionStrategy.SeedTopHalf:
+                        int halfCount = allTeamsInPreviousRound.Count / 2;
+                        int teamsToSelect = Math.Min(halfCount, previousRound.AdvancingTeamsCount);
+                        advancingTeamIds = allTeamsInPreviousRound
+                            .Take(teamsToSelect)
+                            .Select(t => t.TeamId)
+                            .ToHashSet();
+                        break;
+
+                    case TeamSelectionStrategy.TopByPoints:
+                        advancingTeamIds = allTeamsInPreviousRound
+                            .Take(previousRound.AdvancingTeamsCount)
+                            .Select(t => t.TeamId)
+                            .ToHashSet();
+                        break;
+
+                    case TeamSelectionStrategy.TopFromGroupAndNextBest:
+                        // Get top team from each group
+                        var groupWinners = allTeamsInPreviousRound
+                            .GroupBy(t => t.GroupName)
+                            .Select(g => g.OrderBy(t => t.Rank).First())
+                            .ToList();
+
+                        // Get next best teams overall
+                        var remainingTeams = allTeamsInPreviousRound
+                            .Where(t => !groupWinners.Any(gw => gw.TeamId == t.TeamId))
+                            .Take(previousRound.AdvancingTeamsCount - groupWinners.Count)
+                            .ToList();
+
+                        advancingTeamIds = groupWinners.Concat(remainingTeams)
+                            .Select(t => t.TeamId)
+                            .ToHashSet();
+                        break;
+
+                    case TeamSelectionStrategy.Manual:
+                        // For manual selection, we can't determine advancing teams automatically
+                        // Return all teams as potential candidates
+                        _logger.LogWarning("Manual team selection strategy - cannot determine advancing teams automatically");
+                        break;
+
+                    default:
+                        throw new InvalidOperationException($"Unknown team selection strategy: {previousRound.AdvancingTeamSelectionStrategy}");
+                }
+            }
+
+            // Filter out the advancing teams to get the "losers" (non-advancing teams)
+            var loserTeams = allTeamsInPreviousRound
+                .Where(t => !advancingTeamIds.Contains(t.TeamId))
+                .ToList();
+
+            // Rank the losers by their performance (already ranked by GetStandingsAsync)
+            // Take the top numberOfTeamsToSelect from the losers
+            var playoffCandidates = loserTeams
+                .Take(numberOfTeamsToSelect)
+                .Select(t => new TournamentRoundTeamSummaryViewModel
+                {
+                    TeamId = t.TeamId,
+                    TeamName = t.Team?.Name ?? "Unknown",
+                    SeedNumber = t.SeedNumber,
+                    Rank = t.Rank,
+                    RankingPoints = t.RankingPoints,
+                    Points = t.Points,
+                    MatchesPlayed = t.MatchesPlayed,
+                    Wins = t.Wins,
+                    Draws = t.Draws,
+                    Losses = t.Losses,
+                    SetsFor = t.SetsFor,
+                    SetsAgainst = t.SetsAgainst,
+                    SetsDifference = t.SetsDifference,
+                    ScoreFor = t.ScoreFor,
+                    ScoreAgainst = t.ScoreAgainst,
+                    ScoreDifference = t.ScoreDifference,
+                    GroupName = t.GroupName
+                })
+                .ToList();
+
+            _logger.LogInformation("Found {CandidateCount} playoff candidate teams from {TotalLosers} non-advancing teams",
+                playoffCandidates.Count, loserTeams.Count);
+
+            return playoffCandidates;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting playoff candidate teams from round {PreviousRoundId}", previousRoundId);
+            throw;
+        }
+    }
 }

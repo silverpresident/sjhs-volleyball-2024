@@ -254,6 +254,14 @@
                         <i class="bi bi-arrow-right-circle"></i> Generate Next Round
                     </button>
                 }
+                
+                <!-- Create Playoff Round Button -->
+                @if (Model.ShowCreatePlayoffRound)
+                {
+                    <a asp-action="CreatePlayoffRound" asp-route-id="@Model.CurrentRound.Id" class="btn btn-warning">
+                        <i class="bi bi-trophy"></i> Create Playoff Round
+                    </a>
+                }
             </div>
         </div>
     </div>

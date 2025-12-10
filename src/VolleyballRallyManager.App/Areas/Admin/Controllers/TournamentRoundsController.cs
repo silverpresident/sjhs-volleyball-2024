@@ -715,4 +715,183 @@ public class TournamentRoundsController : Controller
             return RedirectToAction(nameof(Details), new { id });
         }
     }
+
+    // GET: Admin/TournamentRounds/CreatePlayoffRound/5
+    public async Task<IActionResult> CreatePlayoffRound(Guid id)
+    {
+        try
+        {
+            var previousRound = await _tournamentRoundService.GetTournamentRoundByIdAsync(id);
+            if (previousRound == null)
+            {
+                return NotFound();
+            }
+
+            if (!previousRound.IsFinished)
+            {
+                TempData["ErrorMessage"] = "Previous round must be finalized before creating a playoff round.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            if (previousRound.IsPlayoff)
+            {
+                TempData["ErrorMessage"] = "Cannot create a playoff round from another playoff round.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            var tournament = await _context.Tournaments.FindAsync(previousRound.TournamentId);
+            var division = await _context.Divisions.FindAsync(previousRound.DivisionId);
+
+            // Get all rounds for the dropdown
+            var allRounds = await _context.Rounds.OrderBy(r => r.Sequence).ToListAsync();
+            ViewData["Rounds"] = new SelectList(allRounds, "Id", "Name");
+
+            // Suggest a default number of teams (e.g., half the teams that didn't advance, minimum 4)
+            var teamsInPreviousRound = await _tournamentRoundService.GetRoundTeamsAsync(id);
+            int defaultTeamCount = Math.Max(4, (teamsInPreviousRound.Count - previousRound.AdvancingTeamsCount) / 2);
+
+            // Get playoff candidate teams
+            var candidateTeams = await _tournamentRoundService.GetPlayoffCandidateTeamsAsync(id, defaultTeamCount);
+
+            var model = new CreatePlayoffRoundViewModel
+            {
+                TournamentId = previousRound.TournamentId,
+                DivisionId = previousRound.DivisionId,
+                PreviousRoundId = id,
+                TournamentName = tournament?.Name ?? "Unknown",
+                DivisionName = division?.Name ?? "Unknown",
+                PreviousRoundName = previousRound.Round?.Name ?? $"Round {previousRound.RoundNumber}",
+                RoundName = "Playoff Round",
+                NumberOfTeamsToSelect = defaultTeamCount,
+                CandidateTeams = candidateTeams.ToList(),
+                SelectedTeamIds = candidateTeams.Select(t => t.TeamId).ToList(),
+                
+                // Default settings for the playoff round
+                AdvancingTeamsCount = Math.Max(2, defaultTeamCount / 2),
+                AdvancingTeamSelectionStrategy = TeamSelectionStrategy.TopByPoints,
+                MatchStrategy = MatchGenerationStrategy.SeededBracket,
+                GroupConfigurationType = GroupGenerationStrategy.NoGroup,
+                GroupConfigurationValue = 2,
+                
+                // Default immediate actions
+                AssignTeamsNow = true,
+                GenerateMatchesNow = true
+            };
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading create playoff round form for round {RoundId}", id);
+            TempData["ErrorMessage"] = "Error loading form.";
+            return RedirectToAction(nameof(Details), new { id });
+        }
+    }
+
+    // POST: Admin/TournamentRounds/CreatePlayoffRound
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreatePlayoffRound(CreatePlayoffRoundViewModel model)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                var rounds = await _context.Rounds.OrderBy(r => r.Sequence).ToListAsync();
+                ViewData["Rounds"] = new SelectList(rounds, "Id", "Name");
+                
+                // Reload candidate teams if validation fails
+                model.CandidateTeams = (await _tournamentRoundService.GetPlayoffCandidateTeamsAsync(
+                    model.PreviousRoundId,
+                    model.NumberOfTeamsToSelect)).ToList();
+                
+                return View(model);
+            }
+
+            var userName = User.Identity?.Name ?? "admin";
+            var previousRound = await _tournamentRoundService.GetTournamentRoundByIdAsync(model.PreviousRoundId);
+            
+            if (previousRound == null)
+            {
+                TempData["ErrorMessage"] = "Previous round not found.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Create the playoff tournament round
+            var playoffRound = await _tournamentRoundService.CreateNextRoundAsync(
+                model.TournamentId,
+                model.DivisionId,
+                model.RoundId,
+                model.PreviousRoundId,
+                model.AdvancingTeamsCount,
+                model.AdvancingTeamSelectionStrategy,
+                model.MatchStrategy,
+                model.GroupConfigurationType,
+                model.GroupConfigurationValue,
+                userName);
+
+            // CRUCIALLY set IsPlayoff = true for the playoff round
+            playoffRound.IsPlayoff = true;
+            playoffRound.QualifyingTeamsCount = model.SelectedTeamIds.Count;
+            playoffRound.QualifyingTeamSelectionStrategy = TeamSelectionStrategy.Manual;
+            
+            _context.TournamentRounds.Update(playoffRound);
+            await _context.SaveChangesAsync();
+
+            // Manually add the selected teams to the playoff round
+            int seedNumber = 1;
+            foreach (var teamId in model.SelectedTeamIds)
+            {
+                var roundTeam = new TournamentRoundTeam
+                {
+                    TournamentId = playoffRound.TournamentId,
+                    DivisionId = playoffRound.DivisionId,
+                    RoundId = playoffRound.RoundId,
+                    TeamId = teamId,
+                    TournamentRoundId = playoffRound.Id,
+                    SeedNumber = seedNumber++,
+                    GroupName = string.Empty,
+                    CreatedBy = userName,
+                    UpdatedBy = userName,
+                    CreatedAt = DateTime.Now
+                };
+
+                _context.TournamentRoundTeams.Add(roundTeam);
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"Playoff round created successfully with {model.SelectedTeamIds.Count} teams.";
+            
+            // Immediate execution: Generate matches if requested
+            if (model.GenerateMatchesNow)
+            {
+                return RedirectToAction(nameof(GenerateMatches), new { id = playoffRound.Id });
+            }
+            
+            return RedirectToAction(nameof(Details), new { id = playoffRound.Id });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating playoff round");
+            ModelState.AddModelError("", $"Error creating playoff round: {ex.Message}");
+            
+            var rounds = await _context.Rounds.OrderBy(r => r.Sequence).ToListAsync();
+            ViewData["Rounds"] = new SelectList(rounds, "Id", "Name");
+            
+            // Reload candidate teams on error
+            try
+            {
+                model.CandidateTeams = (await _tournamentRoundService.GetPlayoffCandidateTeamsAsync(
+                    model.PreviousRoundId,
+                    model.NumberOfTeamsToSelect)).ToList();
+            }
+            catch
+            {
+                model.CandidateTeams = new List<TournamentRoundTeamSummaryViewModel>();
+            }
+            
+            return View(model);
+        }
+    }
 }

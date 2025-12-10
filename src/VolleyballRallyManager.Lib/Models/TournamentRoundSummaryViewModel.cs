@@ -31,12 +31,13 @@ namespace VolleyballRallyManager.Lib.Models
         public bool CanSelectTeams { get; set; }
         public bool CanGenerateMatches { get; set; }
         public bool CanGenerateNextRound { get; set; }
+        public bool ShowCreatePlayoffRound { get; set; }
 
         /// <summary>
         /// Calculates the completion percentage for this round
         /// </summary>
-        public int CompletionPercentage => MatchesScheduled > 0 
-            ? (int)((double)MatchesPlayed / MatchesScheduled * 100) 
+        public int CompletionPercentage => MatchesScheduled > 0
+            ? (int)((double)MatchesPlayed / MatchesScheduled * 100)
             : 0;
 
         public Guid TournamentId { get; internal set; }

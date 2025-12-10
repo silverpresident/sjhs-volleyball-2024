@@ -651,7 +651,10 @@ namespace VolleyballRallyManager.Lib.Services
             var hasTeams = roundView.TeamCount > 0;
             // Determine button visibility based on tournamentRound state
             roundView.CanFinalize = !tr.IsFinished && hasMatches && allMatchesComplete;
-            roundView.CanGenerateNextRound = tr.IsFinished;
+            
+            // Generate Next Round: Only if round is finished and NOT a playoff round
+            roundView.CanGenerateNextRound = tr.IsFinished && !tr.IsPlayoff;
+            
             roundView.CanSelectTeams = !hasTeams && tr.PreviousTournamentRoundId.HasValue;
             roundView.CanGenerateMatches = hasTeams && !tr.IsFinished && !tr.IsLocked;
 
@@ -664,6 +667,11 @@ namespace VolleyballRallyManager.Lib.Services
             //TODO temp
             roundView.CanSelectTeams = true;
 
+            // Show Create Playoff Round button when:
+            // 1. Round is finished (has rankings)
+            // 2. Round is NOT already a playoff round
+            // 3. Has teams (rankings exist)
+            roundView.ShowCreatePlayoffRound = tr.IsFinished && !tr.IsPlayoff && hasTeams;
         }
 
         public async Task<TournamentRoundDetailsViewModel?> GetTournamentRoundDetailsAsync(Guid tournamentRoundId)
