@@ -1,0 +1,292 @@
+@model VolleyballRallyManager.App.Areas.Admin.Models.CreatePlayoffRoundViewModel
+
+@{
+    ViewData["Title"] = "Create Playoff Round";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-trophy"></i> Create Playoff Round</h1>
+        <a asp-action="Details" asp-route-id="@Model.PreviousRoundId" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Round
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- LEFT COLUMN: Main Form -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Playoff Round Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Display Tournament and Division Info -->
+                    <div class="alert alert-info">
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4">Tournament:</dt>
+                            <dd class="col-sm-8"><strong>@Model.TournamentName</strong></dd>
+                            
+                            <dt class="col-sm-4">Division:</dt>
+                            <dd class="col-sm-8"><strong>@Model.DivisionName</strong></dd>
+                            
+                            <dt class="col-sm-4">Previous Round:</dt>
+                            <dd class="col-sm-8"><strong>@Model.PreviousRoundName</strong> <span class="badge bg-success">Finalized</span></dd>
+                        </dl>
+                    </div>
+
+                    <form asp-action="CreatePlayoffRound" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <input type="hidden" asp-for="TournamentId" />
+                        <input type="hidden" asp-for="DivisionId" />
+                        <input type="hidden" asp-for="PreviousRoundId" />
+
+                        <!-- Round Selection -->
+                        <div class="mb-4">
+                            <label asp-for="RoundId" class="form-label">
+                                <i class="bi bi-trophy"></i> Select Round Type <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="RoundId" class="form-select" asp-items='@((SelectList)ViewData["Rounds"])'>
+                                <option value="">-- Select Round --</option>
+                            </select>
+                            <span asp-validation-for="RoundId" class="text-danger"></span>
+                            <div class="form-text">Select the round designation for this playoff (e.g., Quarter Finals, Semi Finals)</div>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <!-- TEAM SELECTION SECTION -->
+                        <div class="card mb-4 border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-people"></i> Select Best Losers for Playoff
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted mb-3">
+                                    <i class="bi bi-info-circle"></i> Select teams from the best non-advancing teams (best losers) to participate in the playoff round.
+                                </p>
+
+                                <div class="mb-3">
+                                    <label asp-for="NumberOfTeamsToSelect" class="form-label fw-bold">
+                                        Number of Teams <span class="text-danger">*</span>
+                                    </label>
+                                    <input asp-for="NumberOfTeamsToSelect" type="number" class="form-control" min="2" readonly />
+                                    <span asp-validation-for="NumberOfTeamsToSelect" class="text-danger"></span>
+                                    <div class="form-text">Teams selected from best losers</div>
+                                </div>
+
+                                @if (Model.CandidateTeams.Any())
+                                {
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-hover">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Select</th>
+                                                    <th>Rank</th>
+                                                    <th>Team</th>
+                                                    <th>Group</th>
+                                                    <th>W-D-L</th>
+                                                    <th>Points</th>
+                                                    <th>Set Diff</th>
+                                                    <th>Score Diff</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @for (int i = 0; i < Model.CandidateTeams.Count; i++)
+                                                {
+                                                    var team = Model.CandidateTeams[i];
+                                                    var isChecked = Model.SelectedTeamIds.Contains(team.TeamId);
+                                                    
+                                                    <tr>
+                                                        <td>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" 
+                                                                       name="SelectedTeamIds" 
+                                                                       value="@team.TeamId" 
+                                                                       id="team_@i"
+                                                                       @(isChecked ? "checked" : "") />
+                                                            </div>
+                                                        </td>
+                                                        <td><span class="badge bg-secondary">@team.Rank</span></td>
+                                                        <td><strong>@team.TeamName</strong></td>
+                                                        <td>@team.GroupName</td>
+                                                        <td>@team.Wins-@team.Draws-@team.Losses</td>
+                                                        <td><strong>@team.Points</strong></td>
+                                                        <td>
+                                                            <span class="@(team.SetsDifference > 0 ? "text-success" : team.SetsDifference < 0 ? "text-danger" : "")">
+                                                                @(team.SetsDifference > 0 ? "+" : "")@team.SetsDifference
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="@(team.ScoreDifference > 0 ? "text-success" : team.ScoreDifference < 0 ? "text-danger" : "")">
+                                                                @(team.ScoreDifference > 0 ? "+" : "")@team.ScoreDifference
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <span asp-validation-for="SelectedTeamIds" class="text-danger"></span>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-warning">
+                                        <i class="bi bi-exclamation-triangle"></i> No candidate teams available.
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- PLAYOFF ROUND SETTINGS -->
+                        <div class="card mb-4 border-success">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-gear"></i> Playoff Round Settings
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label asp-for="AdvancingTeamsCount" class="form-label">
+                                                Teams Advancing <span class="text-danger">*</span>
+                                            </label>
+                                            <input asp-for="AdvancingTeamsCount" type="number" class="form-control" min="2" />
+                                            <span asp-validation-for="AdvancingTeamsCount" class="text-danger"></span>
+                                            <div class="form-text">Teams advancing from playoff</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label asp-for="AdvancingTeamSelectionStrategy" class="form-label">
+                                                Selection Method <span class="text-danger">*</span>
+                                            </label>
+                                            <select asp-for="AdvancingTeamSelectionStrategy" class="form-select">
+                                                <option value="TopByPoints">Top By Points</option>
+                                                <option value="WinnersOnly">Winners Only</option>
+                                                <option value="Manual">Manual</option>
+                                            </select>
+                                            <span asp-validation-for="AdvancingTeamSelectionStrategy" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label asp-for="MatchStrategy" class="form-label">
+                                                Match Strategy <span class="text-danger">*</span>
+                                            </label>
+                                            <select asp-for="MatchStrategy" class="form-select">
+                                                <option value="SeededBracket">Seeded Bracket</option>
+                                                <option value="RoundRobin">Round Robin</option>
+                                                <option value="Manual">Manual</option>
+                                            </select>
+                                            <span asp-validation-for="MatchStrategy" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h6 class="border-bottom pb-2 mb-3 mt-3"><i class="bi bi-grid-3x3"></i> Group Configuration (Optional)</h6>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="GroupConfigurationType" class="form-label">Configuration Type</label>
+                                            <select asp-for="GroupConfigurationType" class="form-select">
+                                                <option value="NoGroup">No Group</option>
+                                                <option value="TeamsPerGroup">Teams per group</option>
+                                                <option value="GroupsInRound">Groups in round</option>
+                                            </select>
+                                            <span asp-validation-for="GroupConfigurationType" class="text-danger"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label asp-for="GroupConfigurationValue" class="form-label">Configuration Value</label>
+                                            <input asp-for="GroupConfigurationValue" type="number" class="form-control" min="2" />
+                                            <span asp-validation-for="GroupConfigurationValue" class="text-danger"></span>
+                                            <div class="form-text">Minimum: 2</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- IMMEDIATE ACTIONS -->
+                        <h6 class="border-bottom pb-2 mb-3"><i class="bi bi-lightning-fill"></i> Immediate Actions</h6>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input asp-for="AssignTeamsNow" type="checkbox" class="form-check-input" />
+                                    <label class="form-check-label" asp-for="AssignTeamsNow">
+                                        <strong>Assign teams immediately</strong>
+                                        <div class="form-text">Teams will be assigned right after creating the playoff round</div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input asp-for="GenerateMatchesNow" type="checkbox" class="form-check-input" />
+                                    <label class="form-check-label" asp-for="GenerateMatchesNow">
+                                        <strong>Generate matches immediately</strong>
+                                        <div class="form-text">Redirect to match generation after creating the round</div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Details" asp-route-id="@Model.PreviousRoundId" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="bi bi-trophy"></i> Create Playoff Round
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Information -->
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> About Playoff Rounds</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>What is a Playoff Round?</strong></p>
+                    <p class="small">
+                        A playoff round gives the best non-advancing teams (best losers) from the previous round 
+                        another chance to compete for advancement. This is useful when you want to give strong teams 
+                        that narrowly missed advancing another opportunity.
+                    </p>
+                    
+                    <p><strong>How it works:</strong></p>
+                    <ul class="small">
+                        <li>Select teams from the best losers (non-advancing teams)</li>
+                        <li>Teams are ranked by their performance in the previous round</li>
+                        <li>The playoff round winner(s) can advance to the next stage</li>
+                        <li>Playoff rounds cannot generate further playoff rounds</li>
+                    </ul>
+                    
+                    <div class="alert alert-warning mt-3">
+                        <i class="bi bi-exclamation-triangle"></i> <strong>Note:</strong> Once created, a playoff round 
+                        will have the same workflow as regular rounds (team assignment → match generation → finalization).
+                    </div>
+                </div>
+            </div>
+
+            @await Html.PartialAsync("_RoundSetupRecommendations")
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
