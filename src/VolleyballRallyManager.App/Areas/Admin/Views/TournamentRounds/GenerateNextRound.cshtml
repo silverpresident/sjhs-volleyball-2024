@@ -57,63 +57,41 @@
                         <hr class="my-4" />
 
                         <!-- ============================================= -->
-                        <!-- SECTION 1: TEAMS COMING INTO THIS ROUND (NOW EDITABLE) -->
+                        <!-- SECTION 1: TEAMS QUALIFYING FOR THIS ROUND -->
                         <!-- ============================================= -->
                         <div class="card mb-4 border-primary">
                             <div class="card-header bg-primary text-white">
                                 <h5 class="mb-0">
-                                    <i class="bi bi-arrow-down-circle"></i> Teams Coming Into This Round
-                                    <small class="float-end">Source Configuration</small>
+                                    <i class="bi bi-arrow-down-circle"></i> Teams Qualifying For This Round
+                                    <small class="float-end">Qualifying Configuration</small>
                                 </h5>
                             </div>
                             <div class="card-body">
                                 <p class="text-muted mb-3">
-                                    <i class="bi bi-info-circle"></i> Configure how teams will be selected from the previous round to participate in the NEW round.
+                                    <i class="bi bi-info-circle"></i> Configure how teams will be selected from the previous round to participate in this round.
                                 </p>
 
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label asp-for="SourceTeamCount" class="form-label fw-bold">
-                                                Number of Teams <span class="text-danger">*</span>
+                                            <label asp-for="QualifyingTeamsCount" class="form-label fw-bold">
+                                                Qualifying Teams Count <span class="text-danger">*</span>
                                             </label>
-                                            <input asp-for="SourceTeamCount" type="number" class="form-control" min="2" />
-                                            <span asp-validation-for="SourceTeamCount" class="text-danger"></span>
-                                            <div class="form-text">Teams entering this round from previous round</div>
+                                            <input asp-for="QualifyingTeamsCount" type="number" class="form-control" min="2" />
+                                            <span asp-validation-for="QualifyingTeamsCount" class="text-danger"></span>
+                                            <div class="form-text">Number of teams entering this round from previous round</div>
                                         </div>
                                     </div>
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label asp-for="SourceSelectionMethod" class="form-label fw-bold">
-                                                Method of Selection <span class="text-danger">*</span>
+                                            <label asp-for="QualifyingTeamSelectionStrategy" class="form-label fw-bold">
+                                                Qualifying Team Selection Strategy <span class="text-danger">*</span>
                                             </label>
-                                            <select asp-for="SourceSelectionMethod" class="form-select">
-                                                <option value="TopByPoints">Top By Points</option>
-                                                <option value="SeedTopHalf">Seed Top Half</option>
-                                                <option value="WinnersOnly">Winners Only</option>
-                                                <option value="TopFromGroupAndNextBest">Top From Group And Next Best</option>
-                                                <option value="Manual">Manual</option>
+                                            <select asp-for="QualifyingTeamSelectionStrategy" class="form-select" asp-items="Html.GetEnumSelectList<VolleyballRallyManager.Lib.Models.TeamSelectionStrategy>()">
                                             </select>
-                                            <span asp-validation-for="SourceSelectionMethod" class="text-danger"></span>
-                                            <div class="form-text">How teams were selected from previous round</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4">
-                                        <div class="mb-3">
-                                            <label asp-for="SourceMatchStrategy" class="form-label fw-bold">
-                                                Match Generation Strategy <span class="text-danger">*</span>
-                                            </label>
-                                            <select asp-for="SourceMatchStrategy" class="form-select">
-                                                <option value="SeededBracket">Seeded Bracket</option>
-                                                <option value="RoundRobin">Round Robin</option>
-                                                <option value="Manual">Manual</option>
-                                                <option value="Swiss">Swiss</option>
-                                                <option value="GroupStageKnockout">Group Stage Knockout</option>
-                                            </select>
-                                            <span asp-validation-for="SourceMatchStrategy" class="text-danger"></span>
-                                            <div class="form-text">Previous round's match strategy</div>
+                                            <span asp-validation-for="QualifyingTeamSelectionStrategy" class="text-danger"></span>
+                                            <div class="form-text">How teams are selected from previous round</div>
                                         </div>
                                     </div>
                                 </div>

@@ -39,8 +39,5 @@ namespace VolleyballRallyManager.App.Models
         [Required]
         [Display(Name = "Qualifying Team Selection Strategy")]
         public TeamSelectionStrategy QualifyingTeamSelectionStrategy { get; set; } = TeamSelectionStrategy.Manual;
-
-        [Display(Name = "Is Playoff Round")]
-        public bool IsPlayoff { get; set; }
     }
 }

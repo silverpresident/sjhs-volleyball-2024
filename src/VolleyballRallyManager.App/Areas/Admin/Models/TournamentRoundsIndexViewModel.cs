@@ -30,7 +30,8 @@ public class CreateFirstRoundViewModel
     public TeamSelectionStrategy AdvancingTeamSelectionStrategy { get; set; } = TeamSelectionStrategy.Manual;
     public MatchGenerationStrategy MatchGenerationStrategy { get; set; } = MatchGenerationStrategy.RoundRobin;
     public int AdvancingTeamsCount { get; set; } = 4;
-    public bool IsPlayoff { get; set; } = false;
+    public int QualifyingTeamsCount { get; set; } = 0;
+    public TeamSelectionStrategy QualifyingTeamSelectionStrategy { get; set; } = TeamSelectionStrategy.Manual;
 
     // Group Configuration
     public GroupGenerationStrategy GroupConfigurationType { get; set; } = GroupGenerationStrategy.GroupsInRound;
@@ -58,9 +59,9 @@ public class CreateNextRoundViewModel
     public string PreviousRoundName { get; set; } = string.Empty;
     public Guid CurrentRoundId { get; set; } // To disable in dropdown
     
-    // SOURCE SECTION: Teams Coming Into This CurrentRound (Read-Only/Pre-populated)
-    public int SourceTeamCount { get; set; }
-    public TeamSelectionStrategy SourceSelectionMethod { get; set; }
+    // SOURCE SECTION: Teams Coming Into This Round (Qualifying Configuration)
+    public int QualifyingTeamsCount { get; set; }
+    public TeamSelectionStrategy QualifyingTeamSelectionStrategy { get; set; }
     public MatchGenerationStrategy SourceMatchStrategy { get; set; }
     
     // DESTINATION SECTION: Teams Advancing to Next CurrentRound (Editable)
@@ -120,7 +121,6 @@ public class EditTournamentRoundViewModel
     public int AdvancingTeamsCount { get; set; }
     public int QualifyingTeamsCount { get; set; } = 0;
     public TeamSelectionStrategy QualifyingTeamSelectionStrategy { get; set; } = TeamSelectionStrategy.Manual;
-    public bool IsPlayoff { get; set; } = false;
     
     // Group Configuration
     public GroupGenerationStrategy GroupConfigurationType { get; set; } = GroupGenerationStrategy.NoGroup; // "TeamsPerGroup" or "GroupsInRound"

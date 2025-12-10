@@ -222,9 +222,10 @@ public class TournamentRoundsController : Controller
                 model.GroupConfigurationValue,
                 userName);
 
-            // Set IsPlayoff property
-            tournamentRound.IsPlayoff = model.IsPlayoff;
-            
+            // Set qualifying properties for this round
+            tournamentRound.QualifyingTeamsCount = model.QualifyingTeamsCount;
+            tournamentRound.QualifyingTeamSelectionStrategy = model.QualifyingTeamSelectionStrategy;
+
             _context.TournamentRounds.Update(tournamentRound);
             await _context.SaveChangesAsync();
 
@@ -306,7 +307,6 @@ public class TournamentRoundsController : Controller
                 AdvancingTeamsCount = tournamentRound.AdvancingTeamsCount,
                 QualifyingTeamsCount = tournamentRound.QualifyingTeamsCount,
                 QualifyingTeamSelectionStrategy = tournamentRound.QualifyingTeamSelectionStrategy,
-                IsPlayoff = tournamentRound.IsPlayoff,
                 GroupConfigurationType = groupConfigType,
                 GroupConfigurationValue = groupConfigValue,
                 IsFinished = tournamentRound.IsFinished,
@@ -356,7 +356,6 @@ public class TournamentRoundsController : Controller
             tournamentRound.MatchGenerationStrategy = model.MatchGenerationStrategy;
             tournamentRound.QualifyingTeamsCount = model.QualifyingTeamsCount;
             tournamentRound.QualifyingTeamSelectionStrategy = model.QualifyingTeamSelectionStrategy;
-            tournamentRound.IsPlayoff = model.IsPlayoff;
             
             // Update group configuration
             tournamentRound.GroupingStrategy = model.GroupConfigurationType;
@@ -447,12 +446,12 @@ public class TournamentRoundsController : Controller
                 DivisionName = division?.Name ?? "Unknown",
                 PreviousRoundName = currentRound.Round?.Name ?? $"Round {currentRound.RoundNumber}",
                 
-                // SOURCE: Teams coming into the NEW tournamentRound (based on current tournamentRound's advancing settings)
-                SourceTeamCount = currentRound.AdvancingTeamsCount,
-                SourceSelectionMethod = currentRound.AdvancingTeamSelectionStrategy,
+                // QUALIFYING: Teams coming into this NEW round (based on current round's advancing settings)
+                QualifyingTeamsCount = currentRound.AdvancingTeamsCount,
+                QualifyingTeamSelectionStrategy = currentRound.AdvancingTeamSelectionStrategy,
                 SourceMatchStrategy = currentRound.MatchGenerationStrategy,
                 
-                // DESTINATION: Default settings for teams advancing from the NEW tournamentRound
+                // ADVANCING: Default settings for teams advancing from the NEW round
                 AdvancingTeamsCount = Math.Max(2, currentRound.AdvancingTeamsCount / 2), // Default to half, minimum 2
                 AdvancingTeamSelectionStrategy = currentRound.AdvancingTeamSelectionStrategy, // Same as current
                 MatchGenerationStrategy = MatchGenerationStrategy.SeededBracket,
@@ -501,6 +500,13 @@ public class TournamentRoundsController : Controller
                 model.GroupConfigurationType,
                 model.GroupConfigurationValue,
                 userName);
+
+            // Set qualifying properties for this round
+            tournamentRound.QualifyingTeamsCount = model.QualifyingTeamsCount;
+            tournamentRound.QualifyingTeamSelectionStrategy = model.QualifyingTeamSelectionStrategy;
+            
+            _context.TournamentRounds.Update(tournamentRound);
+            await _context.SaveChangesAsync();
 
 
             TempData["SuccessMessage"] = "Next round created successfully.";
