@@ -126,18 +126,18 @@ namespace VolleyballRallyManager.Lib.Data
             builder.Entity<MatchUpdate>()
                 .Property(u => u.Content)
                 .IsRequired();
-                
-        builder.Entity<Bulletin>()
-            .Property(o => o.Priority)
-            .HasConversion<string>(); // Tells EF Core to store as string
-            
-        builder.Entity<MatchUpdate>()
-            .Property(o => o.UpdateType)
-            .HasConversion<string>(); // Tells EF Core to store as string
 
-        builder.Entity<Announcement>()
-            .Property(o => o.Priority)
-            .HasConversion<string>(); // Tells EF Core to store as string
+            builder.Entity<Bulletin>()
+                .Property(o => o.Priority)
+                .HasConversion<string>(); // Tells EF Core to store as string
+
+            builder.Entity<MatchUpdate>()
+                .Property(o => o.UpdateType)
+                .HasConversion<string>(); // Tells EF Core to store as string
+
+            builder.Entity<Announcement>()
+                .Property(o => o.Priority)
+                .HasConversion<string>(); // Tells EF Core to store as string
 
             // Configure TournamentRound relationships
             builder.Entity<TournamentRound>()
@@ -180,7 +180,7 @@ namespace VolleyballRallyManager.Lib.Data
             builder.Entity<TournamentRound>()
                 .Property(tr => tr.GroupingStrategy)
                 .HasConversion<string>();
-            
+
             // Configure TournamentRoundTeam relationships
             builder.Entity<TournamentRoundTeam>()
                 .HasOne(trt => trt.Tournament)

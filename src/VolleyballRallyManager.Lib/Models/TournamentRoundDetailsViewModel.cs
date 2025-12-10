@@ -10,6 +10,7 @@ public class TournamentRoundDetailsViewModel: ITournamentRoundButtonState
     public List<TournamentRoundTeamSummaryViewModel> Teams { get; set; } = new List<TournamentRoundTeamSummaryViewModel>();
     public List<Match> Matches { get; set; } = new List<Match>();
     public string GroupingStrategyLabel { get; set; } = string.Empty;
+    public bool ShowTeamGroup { get; set; } = true;
     public int TeamCount { get; set; }
     public bool CanFinalize { get; set; }
     public bool CanSelectTeams { get; set; }
@@ -17,3 +18,4 @@ public class TournamentRoundDetailsViewModel: ITournamentRoundButtonState
     public bool CanGenerateNextRound { get; set; }
     public bool ShowCreatePlayoffRound { get; set; }
 }
+

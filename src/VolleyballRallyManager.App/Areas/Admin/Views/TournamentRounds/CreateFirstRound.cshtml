@@ -132,7 +132,8 @@
                                     <label asp-for="QualifyingTeamsCount" class="form-label">
                                         Qualifying Teams Count
                                     </label>
-                                    <input asp-for="QualifyingTeamsCount" type="number" class="form-control" min="0" />
+                                    <output class="form-control" readonly>All in division (@Model.TotalTeamsInDivision)</output>
+                                    <input asp-for="QualifyingTeamsCount" type="hidden" class="form-control" min="0" />
                                     <span asp-validation-for="QualifyingTeamsCount" class="text-danger"></span>
                                     <div class="form-text">Expected number of teams qualifying for this round (typically equals total teams in division for first round)</div>
                                 </div>
@@ -143,8 +144,7 @@
                                     <label asp-for="QualifyingTeamSelectionStrategy" class="form-label">
                                         Qualifying Team Selection Strategy
                                     </label>
-                                    <select asp-for="QualifyingTeamSelectionStrategy" class="form-select" asp-items="Html.GetEnumSelectList<VolleyballRallyManager.Lib.Models.TeamSelectionStrategy>()">
-                                    </select>
+                                    <output class="form-control" readonly>Manual (select all registered)</output>
                                     <span asp-validation-for="QualifyingTeamSelectionStrategy" class="text-danger"></span>
                                     <div class="form-text">Strategy for selecting teams that qualify for this round</div>
                                 </div>

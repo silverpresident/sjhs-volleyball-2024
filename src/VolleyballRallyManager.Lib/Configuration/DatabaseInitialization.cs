@@ -301,10 +301,10 @@ namespace VolleyballRallyManager.Lib.Configuration
                     bool sel1 = true;
                     foreach (var team in teams)
                     {
-sel1 = rand.Next() % 2 == 0;
+                        sel1 = rand.Next() % 2 == 0;
                         var division = sel1 ? divisions[0] : divisions[1];
-sel1 = rand.Next() % 2 == 0;
-                        
+                        sel1 = rand.Next() % 2 == 0;
+
                         await dbContext.TournamentTeamDivisions.AddAsync(new TournamentTeamDivision
                         {
                             TournamentId = tournament.Id,

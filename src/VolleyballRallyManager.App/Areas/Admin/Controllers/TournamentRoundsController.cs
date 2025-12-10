@@ -222,13 +222,6 @@ public class TournamentRoundsController : Controller
                 model.GroupConfigurationValue,
                 userName);
 
-            // Set qualifying properties for this round
-            tournamentRound.QualifyingTeamsCount = model.QualifyingTeamsCount;
-            tournamentRound.QualifyingTeamSelectionStrategy = model.QualifyingTeamSelectionStrategy;
-
-            _context.TournamentRounds.Update(tournamentRound);
-            await _context.SaveChangesAsync();
-
             TempData["SuccessMessage"] = $"First round created successfully with {tournamentRound.TournamentRoundTeams.Count} teams.";
 
             // Immediate execution: Assign teams if requested
@@ -310,6 +303,8 @@ public class TournamentRoundsController : Controller
                 GroupConfigurationType = groupConfigType,
                 GroupConfigurationValue = groupConfigValue,
                 IsFinished = tournamentRound.IsFinished,
+                IsLocked = tournamentRound.IsLocked,
+                IsPlayoff = tournamentRound.IsPlayoff,
                 HasTeams = hasTeams,
                 HasMatches = hasMatches
             };
@@ -494,20 +489,15 @@ public class TournamentRoundsController : Controller
                 model.DivisionId,
                 model.RoundId,
                 model.PreviousTournamentRoundId,
+                model.QualifyingTeamsCount,
+                model.QualifyingTeamSelectionStrategy,
                 model.AdvancingTeamsCount,
                 model.AdvancingTeamSelectionStrategy,
                 model.MatchGenerationStrategy,
                 model.GroupConfigurationType,
                 model.GroupConfigurationValue,
+                false,
                 userName);
-
-            // Set qualifying properties for this round
-            tournamentRound.QualifyingTeamsCount = model.QualifyingTeamsCount;
-            tournamentRound.QualifyingTeamSelectionStrategy = model.QualifyingTeamSelectionStrategy;
-            
-            _context.TournamentRounds.Update(tournamentRound);
-            await _context.SaveChangesAsync();
-
 
             TempData["SuccessMessage"] = "Next round created successfully.";
             
@@ -594,6 +584,11 @@ public class TournamentRoundsController : Controller
                 TeamCount = teams.Count,
                 Strategy = round.MatchGenerationStrategy
             };
+            int dGroups = teams.Select(t => t.GroupName).Distinct().Count();
+            if (dGroups > 1 && dGroups < 7)
+            {
+                model.NumberOfCourts = dGroups;
+            }
 
             return View(model);
         }
@@ -823,20 +818,15 @@ public class TournamentRoundsController : Controller
                 model.DivisionId,
                 model.RoundId,
                 model.PreviousRoundId,
-                model.AdvancingTeamsCount,
-                model.AdvancingTeamSelectionStrategy,
+                model.SelectedTeamIds.Count,
+                TeamSelectionStrategy.Manual,
+                0,
+                TeamSelectionStrategy.Manual,
                 model.MatchStrategy,
                 model.GroupConfigurationType,
                 model.GroupConfigurationValue,
+                true,
                 userName);
-
-            // CRUCIALLY set IsPlayoff = true for the playoff round
-            playoffRound.IsPlayoff = true;
-            playoffRound.QualifyingTeamsCount = model.SelectedTeamIds.Count;
-            playoffRound.QualifyingTeamSelectionStrategy = TeamSelectionStrategy.Manual;
-            
-            _context.TournamentRounds.Update(playoffRound);
-            await _context.SaveChangesAsync();
 
             // Manually add the selected teams to the playoff round
             int seedNumber = 1;

@@ -47,7 +47,16 @@
     @if (!Model.Rounds.Any())
     {
         <div class="alert alert-info">
-            <i class="bi bi-info-circle"></i> No rounds have been created yet. Click "Create First Round" to get started.
+            <p>
+                <i class="bi bi-info-circle"></i>
+                No rounds have been created yet. Click
+                <a class="alert-link" asp-controller="TournamentRounds" asp-action="CreateFirstRound" asp-route-DivisionId="@Model.DivisionId">
+                    Create First Round
+                </a> to get started.
+            </p>
+            <a class="btn btn-info" asp-controller="TournamentRounds" asp-action="CreateFirstRound" asp-route-DivisionId="@Model.DivisionId">
+                <i class="bi bi-play-circle"></i> Create First Round
+            </a>
         </div>
     }
     else

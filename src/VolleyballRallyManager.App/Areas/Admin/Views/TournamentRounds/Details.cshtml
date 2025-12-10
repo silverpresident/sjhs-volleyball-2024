@@ -15,7 +15,7 @@
                     <i class="bi bi-pencil"></i> Edit Round
                 </a>
             }
-            <a asp-action="Index" asp-route-tournamentId="@Model.CurrentRound.TournamentId" asp-route-divisionId="@Model.CurrentRound.DivisionId" 
+            <a asp-action="Index" asp-route-tournamentId="@Model.CurrentRound.TournamentId" asp-route-divisionId="@Model.CurrentRound.DivisionId"
                class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i> Back to Rounds
             </a>
@@ -53,7 +53,12 @@
                         <dd class="col-sm-7">@Model.CurrentRound.Division?.Name</dd>
 
                         <dt class="col-sm-5">Round Number:</dt>
-                        <dd class="col-sm-7">@Model.CurrentRound.RoundNumber</dd>
+                        <dd class="col-sm-7">@Model.CurrentRound.RoundNumber
+                            @if (Model.CurrentRound.IsPlayoff)
+                            {
+                                <span class="badge bg-info">playoff</span>
+                            }
+                        </dd>
 
                         <dt class="col-sm-5">Qualifying for this round:</dt>
                         <dd class="col-sm-7"><span class="badge bg-info">@Model.CurrentRound.AdvancingTeamSelectionStrategy</span></dd>
@@ -124,8 +129,8 @@
                             {
                                 var percent = (double)Model.Matches.Count(m => m.IsFinished) / Model.Matches.Count * 100;
                                 <div class="progress">
-                                    <div class="progress-bar @(percent == 100 ? "bg-success" : "bg-primary")" 
-                                         role="progressbar" 
+                                    <div class="progress-bar @(percent == 100 ? "bg-success" : "bg-primary")"
+                                         role="progressbar"
                                          style="width: @percent%">
                                         @Math.Round(percent, 0)%
                                     </div>
@@ -172,7 +177,7 @@
                 }
                 else
                 {
-                    <button type="button" class="btn btn-secondary" disabled 
+                    <button type="button" class="btn btn-secondary" disabled
                             title="@(Model.CurrentRound.PreviousTournamentRoundId.HasValue ? "Previous round must be finalized first" : "Teams already assigned or not applicable")">
                         <i class="bi bi-people"></i> Select Teams
                     </button>
@@ -192,7 +197,7 @@
                     </button>
                 }
                 <!-- View Matches Button -->
-                <a asp-controller="Matches" asp-route-RoundId="@Model.CurrentRound.Id" class="btn btn-primary">
+                <a asp-controller="Matches" asp-action="Index" asp-route-RoundId="@Model.CurrentRound.Id" class="btn btn-primary">
                     <i class="bi bi-calendar-plus"></i> View Matches
                 </a>
 
@@ -201,7 +206,7 @@
                 {
                     <form asp-action="RankTeams" asp-route-id="@Model.CurrentRound.Id" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-info" 
+                        <button type="submit" class="btn btn-info"
                                 onclick="return confirm('Update team rankings based on current match results?');">
                             <i class="bi bi-sort-numeric-down"></i> Rank Teams
                         </button>
@@ -219,7 +224,7 @@
                 {
                     <form asp-action="FinalizeRound" asp-route-id="@Model.CurrentRound.Id" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-success" 
+                        <button type="submit" class="btn btn-success"
                                 onclick="return confirm('Finalize this round? This will calculate rankings and lock the round.');">
                             <i class="bi bi-check-circle"></i> Finalize Round
                         </button>
@@ -254,7 +259,7 @@
                         <i class="bi bi-arrow-right-circle"></i> Generate Next Round
                     </button>
                 }
-                
+
                 <!-- Create Playoff Round Button -->
                 @if (Model.ShowCreatePlayoffRound)
                 {
@@ -272,13 +277,13 @@
         <div class="card mb-4">
             <div class="card-header bg-dark text-white d-flex justify-content-between">
                 <h5 class="mb-0"><i class="bi bi-list-ol"></i> Team Rankings</h5>
-                
+
                 <!-- Rank Teams Button -->
                 @if (!Model.CurrentRound.IsFinished && Model.Matches.Any())
                 {
                     <form asp-action="RankTeams" asp-route-id="@Model.CurrentRound.Id" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-info" 
+                        <button type="submit" class="btn btn-info"
                                 onclick="return confirm('Update team rankings based on current match results?');">
                             <i class="bi bi-sort-numeric-down"></i> Rank Teams
                         </button>
@@ -299,7 +304,10 @@
                                 <th>Seed</th>
                                 <th>Rank</th>
                                 <th>Team</th>
-                                <th>Group</th>
+                                @if (Model.ShowTeamGroup == true)
+                                {
+                                    <th>Group</th>
+                                }
                                 <th>Played</th>
                                 <th>W-D-L</th>
                                 <th>Points</th>
@@ -318,16 +326,20 @@
                                         @Html.DisplayFor(modelItem => team.Rank, "Rank")
                                     </td>
                                     <td><strong>@team.TeamName</strong></td>
-                                    <td>@team.GroupName</td>
+
+                                    @if (Model.ShowTeamGroup == true)
+                                    {
+                                        <td>@team.GroupName</td>
+                                    }
                                     <td>@team.MatchesPlayed</td>
                                     <td>@team.Wins-@team.Draws-@team.Losses</td>
                                     <td><strong>@team.Points</strong></td>
                                     <td>@team.SetsFor-@team.SetsAgainst</td>
                                     <td>
-                                   <span class="@(team.SetsDifference > 0 ? "text-success" : team.SetsDifference < 0 ? "text-danger" : "")">
+                                        <span class="@(team.SetsDifference > 0 ? "text-success" : team.SetsDifference < 0 ? "text-danger" : "")">
                                             @(team.SetsDifference > 0 ? "+" : "")@team.SetsDifference
                                         </span>
-                               </td>
+                                    </td>
                                     <td>@team.ScoreFor-@team.ScoreAgainst</td>
                                     <td>
                                         <span class="@(team.ScoreDifference > 0 ? "text-success" : team.ScoreDifference < 0 ? "text-danger" : "")">
@@ -349,9 +361,9 @@
         <div class="card">
             <div class="card-header bg-primary text-white d-flex justify-content-between">
                 <h5 class="mb-0"><i class="bi bi-calendar3"></i> Matches (@Model.Matches.Count)</h5>
-                
+
                 <!-- View Matches Button -->
-                <a asp-controller="Matches" asp-route-RoundId="@Model.CurrentRound.Id" class="btn btn-primary">
+                <a asp-controller="Matches" asp-action="Index" asp-route-RoundId="@Model.CurrentRound.Id" class="btn btn-primary">
                     <i class="bi bi-calendar-plus"></i> View Matches
                 </a>
             </div>
@@ -400,9 +412,13 @@
                                         }
                                     </td>
                                     <td>
-                                        <a asp-area="Admin" asp-controller="Matches" asp-action="Details" asp-route-id="@match.Id" 
+                                        <a asp-area="Admin" asp-controller="Matches" asp-action="Details" asp-route-id="@match.Id"
                                            class="btn btn-sm btn-info">
                                             <i class="bi bi-eye"></i> Details
+                                        </a>
+                                        <a asp-area="Admin" asp-controller="Matches" asp-action="Scorer" asp-route-id="@match.Id"
+                                           class="btn btn-sm btn-warning">
+                                            <i class="bi bi-calculator"></i> Score
                                         </a>
                                     </td>
                                 </tr>

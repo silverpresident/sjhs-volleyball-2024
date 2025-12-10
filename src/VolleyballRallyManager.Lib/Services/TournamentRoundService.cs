@@ -100,6 +100,8 @@ public class TournamentRoundService : ITournamentRoundService
                 RoundNumber = roundNumber,
                 MatchGenerationStrategy = matchGenerationStrategy,
                 PreviousTournamentRoundId = null,
+                QualifyingTeamsCount = 0,
+                QualifyingTeamSelectionStrategy = TeamSelectionStrategy.Manual,
                 AdvancingTeamSelectionStrategy = advancingTeamSelectionStrategy,
                 AdvancingTeamsCount = advancingTeamsCount,
                 GroupingStrategy = groupingStrategy,
@@ -144,11 +146,14 @@ public class TournamentRoundService : ITournamentRoundService
         Guid divisionId,
         Guid roundId,
         Guid previousTournamentRoundId,
+        int qualifyingTeamsCount,
+        TeamSelectionStrategy qualifyingTeamSelectionStrategy,
         int advancingTeamsCount,
         TeamSelectionStrategy advancingTeamSelectionStrategy,
         MatchGenerationStrategy matchGenerationStrategy,
         GroupGenerationStrategy groupingStrategy,
         int groupingSize,
+        bool isPlayoff,
         string userName)
     {
         try
@@ -166,10 +171,13 @@ public class TournamentRoundService : ITournamentRoundService
             {
                 throw new InvalidOperationException("Previous round must be finished before creating next round");
             }
-
             var roundNumber = previousRound.RoundNumber + 1;
-            if (_context.TournamentRounds.Any(tr => tr.TournamentId == tournamentId && tr.DivisionId == divisionId && tr.RoundNumber == roundNumber)){
-                throw new InvalidOperationException($"Round {roundNumber} already exists");     
+            if (isPlayoff == false)
+            {
+                if (_context.TournamentRounds.Any(tr => tr.TournamentId == tournamentId && tr.DivisionId == divisionId && tr.RoundNumber == roundNumber))
+                {
+                    throw new InvalidOperationException($"Round {roundNumber} already exists");
+                }
             }
             /*if (_context.TournamentRounds.Any(tr => tr.TournamentId == tournamentId && tr.DivisionId == divisionId && tr.RoundNumber == roundNumber )){
                 throw new InvalidOperationException($"CurrentRound {roundNumber} already exists");     
@@ -181,11 +189,14 @@ public class TournamentRoundService : ITournamentRoundService
                 DivisionId = divisionId,
                 RoundId = roundId,
                 RoundNumber = roundNumber,
+                QualifyingTeamsCount = qualifyingTeamsCount,
+                QualifyingTeamSelectionStrategy = qualifyingTeamSelectionStrategy,
+                AdvancingTeamsCount = advancingTeamsCount,
                 AdvancingTeamSelectionStrategy = advancingTeamSelectionStrategy,
                 MatchGenerationStrategy = matchGenerationStrategy,
                 PreviousTournamentRoundId = previousTournamentRoundId,
-                AdvancingTeamsCount = advancingTeamsCount,
                 GroupingStrategy = groupingStrategy,
+                IsPlayoff = isPlayoff,
                 IsFinished = false,
                 IsLocked = false,
                 CreatedBy = userName,
@@ -195,7 +206,7 @@ public class TournamentRoundService : ITournamentRoundService
             // Save group configuration 
             tournamentRound.TeamsPerGroup = tournamentRound.GroupingStrategy == GroupGenerationStrategy.TeamsPerGroup ? groupingSize : null;
             tournamentRound.GroupsInRound = tournamentRound.GroupingStrategy == GroupGenerationStrategy.GroupsInRound ? groupingSize : null;
-
+  
             if (tournamentRound.AdvancingTeamSelectionStrategy == TeamSelectionStrategy.WinnersOnly)
             {
                 if (tournamentRound.AdvancingTeamsCount > 1)
@@ -918,7 +929,7 @@ public class TournamentRoundService : ITournamentRoundService
 
             // Get all matches for these rounds
             var matches = await _context.Matches
-                .Where(m => roundIds.Contains(m.RoundId))
+                .Where(m => roundIds.Contains(m.RoundId) && m.TournamentId == tournamentId)
                 .ToListAsync();
 
             if (matches.Any())
@@ -948,19 +959,19 @@ public class TournamentRoundService : ITournamentRoundService
             _context.TournamentRounds.RemoveRange(tournamentRounds);
             _logger.LogInformation("Deleted {Count} tournament rounds", tournamentRounds.Count);
 
-            // Delete the actual CurrentRound entities
+            /*// Delete the actual CurrentRound entities
             var rounds = await _context.Rounds
                 .Where(r => roundIds.Contains(r.Id))
                 .ToListAsync();
             _context.Rounds.RemoveRange(rounds);
             _logger.LogInformation("Deleted {Count} rounds", rounds.Count);
-
+*/
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("Successfully deleted {Count} rounds for tournament {TournamentId}", 
-                rounds.Count, tournamentId);
+                tournamentRounds.Count, tournamentId);
 
-            return rounds.Count;
+            return tournamentRounds.Count;
         }
         catch (Exception ex)
         {

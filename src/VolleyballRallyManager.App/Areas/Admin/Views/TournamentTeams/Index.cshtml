@@ -19,9 +19,9 @@
                 <div class="col-auto">
                     <div class="btn-group divisions-filter" role="group">
                         @if(ViewBag.Divisions != null){
-                            <button  type="button" class="btn btn-outline-secondary active" data-divisionId="">All</button>
+                            <button  type="button" class="btn btn-outline-secondary" data-division-id="">All</button>
                             @foreach(TournamentDivision division in ViewBag.Divisions){
-                                <button  type="button" class="btn btn-outline-secondary" data-divisionId="@division.DivisionId">@division.Division.Name</button>
+                                <button  type="button" class="btn btn-outline-secondary" data-division-id="@division.DivisionId">@division.Division.Name</button>
                             }
                         }
                     </div>
@@ -85,7 +85,7 @@
             $('.divisions-filter').on('click','button',function() {
                 $('.divisions-filter button').removeClass('active');
                 $(this).addClass('active');
-                var divisionId = $(this).data('divisionId');
+                const divisionId = $(this).data('division-id');
                 console.log("divisions-filter divisionId", divisionId);
                 if (divisionId === '') {
                     $('tbody tr').show();

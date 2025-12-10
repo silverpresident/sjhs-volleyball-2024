@@ -1,5 +1,6 @@
 using VolleyballRallyManager.Lib.Models;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace VolleyballRallyManager.App.Areas.Admin.Models;
 
@@ -30,7 +31,9 @@ public class CreateFirstRoundViewModel
     public TeamSelectionStrategy AdvancingTeamSelectionStrategy { get; set; } = TeamSelectionStrategy.Manual;
     public MatchGenerationStrategy MatchGenerationStrategy { get; set; } = MatchGenerationStrategy.RoundRobin;
     public int AdvancingTeamsCount { get; set; } = 4;
+    [ValidateNever]
     public int QualifyingTeamsCount { get; set; } = 0;
+    [ValidateNever]
     public TeamSelectionStrategy QualifyingTeamSelectionStrategy { get; set; } = TeamSelectionStrategy.Manual;
 
     // Group Configuration
@@ -134,4 +137,6 @@ public class EditTournamentRoundViewModel
     public bool IsFinished { get; set; }
     public bool HasTeams { get; set; }
     public bool HasMatches { get; set; }
+    public bool IsPlayoff { get; internal set; }
+    public bool IsLocked { get; internal set; }
 }

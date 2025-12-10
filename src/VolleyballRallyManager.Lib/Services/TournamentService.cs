@@ -750,6 +750,7 @@ namespace VolleyballRallyManager.Lib.Services
             {
                 viewModel.GroupingStrategyLabel = "Knockout";
             }
+            viewModel.ShowTeamGroup = tournamentRound.GroupingStrategy != GroupGenerationStrategy.NoGroup;
 
             await FixButtonState(viewModel, tournamentRound, hasMatches, allMatchesComplete);
             viewModel.CanSelectTeams = true;
