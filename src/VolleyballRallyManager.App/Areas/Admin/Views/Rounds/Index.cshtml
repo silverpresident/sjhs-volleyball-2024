@@ -1,6 +1,6 @@
 @model VolleyballRallyManager.App.Areas.Admin.Models.RoundsIndexViewModel
 @{
-    ViewData["Title"] = "Rounds";
+    ViewData["Title"] = "Round Templates";
 }
 
 <link rel="stylesheet" href="~/css/rounds-index.css" />
@@ -8,142 +8,82 @@
 <div class="rounds-header">
     <div class="d-flex justify-content-between align-items-center">
         <h1><i class="bi bi-calendar3"></i> Round Templates</h1>
-        <div>
-            <a asp-action="Create" class="btn btn-success me-2">
-                <i class="bi bi-plus-circle"></i> Create New Round
-            </a>
-            <a asp-controller="Matches" asp-action="Index" class="btn btn-light">
-                <i class="bi bi-trophy"></i> View All Matches
-            </a>
-        </div>
+        <a asp-action="Create" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Create New Round Template
+        </a>
     </div>
     <p class="text-muted mt-2">
-        Manage round templates that serve as recommendations for tournament setup. These settings guide tournament organizers but can be customized per tournament.
+        Manage round templates that define recommended settings for tournament rounds. 
+        These templates serve as blueprints that can be customized when creating actual tournament rounds.
     </p>
 </div>
 
 @if (Model.Rounds.Any())
 {
-    <div class="stats-container">
-        <div class="stat-card">
-            <div class="stat-label">Total Rounds</div>
-            <div class="stat-value">@Model.TotalRounds</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Total Matches</div>
-            <div class="stat-value">@Model.TotalMatches</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Completed</div>
-            <div class="stat-value">@Model.TotalCompletedMatches</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Pending</div>
-            <div class="stat-value">@Model.TotalPendingMatches</div>
-        </div>
+    <div class="alert alert-info mb-4">
+        <i class="bi bi-info-circle"></i> <strong>@Model.TotalRounds</strong> round template(s) configured
     </div>
 
-    <div class="rounds-grid">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         @foreach (var round in Model.Rounds)
         {
-            <div class="round-card">
-                <div class="round-card-header">
-                    <h3>@round.Name</h3>
-                    <div class="round-sequence-badge">
-                        Sequence #@round.Sequence
+            <div class="col">
+                <div class="card h-100 @(round.IsPlayoff ? "border-warning" : "")">
+                    <div class="card-header @(round.IsPlayoff ? "bg-warning text-dark" : "bg-primary text-white")">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">@round.Name</h5>
+                            <span class="badge bg-light text-dark">Seq #@round.Sequence</span>
+                        </div>
                     </div>
-                </div>
-                <div class="round-card-body">
-                    <div class="round-info-row">
-                        <span class="round-info-label">Total Matches</span>
-                        <span class="round-info-value">@round.TotalMatches</span>
-                    </div>
-                    <div class="round-info-row">
-                        <span class="round-info-label">Completed Matches</span>
-                        <span class="round-info-value text-success">@round.CompletedMatches</span>
-                    </div>
-                    <div class="round-info-row">
-                        <span class="round-info-label">Pending Matches</span>
-                        <span class="round-info-value text-warning">@round.PendingMatches</span>
-                    </div>
-                    <div class="round-info-row">
-                        <span class="round-info-label">Recommended Qualifying Teams</span>
-                        <span class="round-info-value">
-                            @if (round.RecommendedQualifyingTeamsCount == 0)
-                            {
-                                <span class="badge bg-info">All Teams</span>
-                            }
-                            else
-                            {
-                                @round.RecommendedQualifyingTeamsCount
-                            }
-                        </span>
-                    </div>
-                    <div class="round-info-row">
-                        <span class="round-info-label">Match Strategy</span>
-                        <span class="round-info-value">
-                            <span class="badge bg-secondary">@round.RecommendedMatchGenerationStrategy</span>
-                        </span>
-                    </div>
-                    <div class="round-info-row">
-                        <span class="round-info-label">Team Selection</span>
-                        <span class="round-info-value">
-                            <span class="badge bg-secondary">@round.RecommendedTeamSelectionStrategy</span>
-                        </span>
-                    </div>
-                    @if (round.IsPlayoff)
-                    {
-                        <div class="round-info-row">
-                            <span class="round-info-label">Round Type</span>
-                            <span class="round-info-value">
-                                <span class="badge bg-warning text-dark">
+                    <div class="card-body">
+                        @if (round.IsPlayoff)
+                        {
+                            <div class="mb-3">
+                                <span class="badge bg-warning text-dark fs-6">
                                     <i class="bi bi-trophy"></i> Playoff Round
                                 </span>
-                            </span>
-                        </div>
-                    }
-                    <div class="round-info-row">
-                        <span class="round-info-label">Status</span>
-                        <span class="round-info-value">
-                            @if (round.IsComplete)
-                            {
-                                <span class="status-badge complete">Complete</span>
-                            }
-                            else if (round.CompletedMatches > 0)
-                            {
-                                <span class="status-badge in-progress">In Progress</span>
-                            }
-                            else
-                            {
-                                <span class="status-badge not-started">Not Started</span>
-                            }
-                        </span>
+                            </div>
+                        }
+
+                        <h6 class="text-muted mb-3">Recommended Configuration</h6>
+
+                        <dl class="row mb-0">
+                            <dt class="col-sm-6 small">Match Strategy:</dt>
+                            <dd class="col-sm-6 small">
+                                <span class="badge bg-secondary">@round.RecommendedMatchGenerationStrategy</span>
+                            </dd>
+
+                            <dt class="col-sm-6 small">Team Selection:</dt>
+                            <dd class="col-sm-6 small">
+                                <span class="badge bg-secondary">@round.RecommendedTeamSelectionStrategy</span>
+                            </dd>
+
+                            <dt class="col-sm-6 small">Qualifying Teams:</dt>
+                            <dd class="col-sm-6 small">
+                                @if (round.RecommendedQualifyingTeamsCount == 0)
+                                {
+                                    <span class="badge bg-info">All Teams</span>
+                                }
+                                else
+                                {
+                                    <strong>@round.RecommendedQualifyingTeamsCount</strong>
+                                }
+                            </dd>
+                        </dl>
                     </div>
-
-                    @if (round.TotalMatches > 0)
-                    {
-                        <div class="progress-section">
-                            <div class="progress-label">
-                                <span>Match Completion</span>
-                                <span class="progress-percentage">@round.CompletionPercentage.ToString("F1")%</span>
-                            </div>
-                            <div class="progress-bar-container">
-                                <div class="progress-bar" style="width: @(round.CompletionPercentage)%"></div>
-                            </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex gap-2">
+                            <a asp-action="Edit" asp-route-id="@round.Id" class="btn btn-sm btn-primary flex-grow-1">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            <form asp-action="Delete" asp-route-id="@round.Id" method="post" class="d-inline"
+                                  onsubmit="return confirm('Are you sure you want to delete the @round.Name template? This action cannot be undone.');">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
                         </div>
-                    }
-
-                    <div class="mt-3 d-flex gap-2">
-                        <a asp-action="Edit" asp-route-id="@round.Id" class="btn btn-sm btn-primary">
-                            <i class="bi bi-pencil"></i> Edit
-                        </a>
-                        <form asp-action="Delete" asp-route-id="@round.Id" method="post" class="d-inline"
-                              onsubmit="return confirm('Are you sure you want to delete this round template? This action cannot be undone.');">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-danger">
-                                <i class="bi bi-trash"></i> Delete
-                            </button>
-                        </form>
                     </div>
                 </div>
             </div>
@@ -152,11 +92,10 @@
 }
 else
 {
-    <div class="empty-state">
-        <i class="bi bi-calendar-x"></i>
-        <h3>No Round Templates Found</h3>
-        <p>There are currently no round templates configured.</p>
-        <p class="text-muted mt-2">Create round templates to define recommended settings for tournament rounds.</p>
+    <div class="text-center py-5">
+        <i class="bi bi-calendar-x" style="font-size: 4rem; color: #ccc;"></i>
+        <h3 class="mt-3">No Round Templates Found</h3>
+        <p class="text-muted">Create round templates to define recommended settings for tournament rounds.</p>
         <a asp-action="Create" class="btn btn-success mt-3">
             <i class="bi bi-plus-circle"></i> Create First Round Template
         </a>
@@ -165,9 +104,6 @@ else
 
 @section Scripts {
     <script>
-        // Auto-refresh every 30 seconds to keep data current
-        setTimeout(function() {
-            location.reload();
-        }, 30000);
+        // Optional: Add any client-side interactivity here
     </script>
 }

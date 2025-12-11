@@ -9,27 +9,17 @@ public class RoundViewModel
     public string Name { get; set; } = string.Empty;
     public int Sequence { get; set; }
     
-    // Recommendation properties (renamed from QualifyingTeams)
+    // Template recommendation properties
     public int RecommendedQualifyingTeamsCount { get; set; }
     public MatchGenerationStrategy RecommendedMatchGenerationStrategy { get; set; }
     public TeamSelectionStrategy RecommendedTeamSelectionStrategy { get; set; }
     public bool IsPlayoff { get; set; }
-    
-    // Match statistics
-    public int TotalMatches { get; set; }
-    public int CompletedMatches { get; set; }
-    public int PendingMatches { get; set; }
-    public double CompletionPercentage { get; set; }
-    public bool IsComplete { get; set; }
 }
 
 public class RoundsIndexViewModel
 {
     public IEnumerable<RoundViewModel> Rounds { get; set; } = new List<RoundViewModel>();
     public int TotalRounds { get; set; }
-    public int TotalMatches { get; set; }
-    public int TotalCompletedMatches { get; set; }
-    public int TotalPendingMatches { get; set; }
 }
 
 /// <summary>

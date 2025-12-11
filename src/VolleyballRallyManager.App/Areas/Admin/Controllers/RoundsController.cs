@@ -23,49 +23,23 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         {
             try
             {
-                var rounds = await _roundService.GetRoundsWithMatchesAsync();
+                var rounds = await _roundService.GetAllRoundsAsync();
                 
-                var roundViewModels = new List<RoundViewModel>();
-                int totalMatches = 0;
-                int totalCompleted = 0;
-                
-                foreach (var round in rounds)
+                var roundViewModels = rounds.Select(round => new RoundViewModel
                 {
-                    var totalMatchCount = round.Matches.Count;
-                    var completedMatchCount = round.Matches.Count(m => m.IsFinished);
-                    var pendingMatchCount = totalMatchCount - completedMatchCount;
-                    
-                    totalMatches += totalMatchCount;
-                    totalCompleted += completedMatchCount;
-                    
-                    var completionPercentage = totalMatchCount > 0 
-                        ? (double)completedMatchCount / totalMatchCount * 100 
-                        : 0;
-                    
-                    roundViewModels.Add(new RoundViewModel
-                    {
-                        Id = round.Id,
-                        Name = round.Name,
-                        Sequence = round.Sequence,
-                        RecommendedQualifyingTeamsCount = round.RecommendedQualifyingTeamsCount,
-                        RecommendedMatchGenerationStrategy = round.RecommendedMatchGenerationStrategy,
-                        RecommendedTeamSelectionStrategy = round.RecommendedTeamSelectionStrategy,
-                        IsPlayoff = round.IsPlayoff,
-                        TotalMatches = totalMatchCount,
-                        CompletedMatches = completedMatchCount,
-                        PendingMatches = pendingMatchCount,
-                        CompletionPercentage = completionPercentage,
-                        IsComplete = totalMatchCount > 0 && completedMatchCount == totalMatchCount
-                    });
-                }
+                    Id = round.Id,
+                    Name = round.Name,
+                    Sequence = round.Sequence,
+                    RecommendedQualifyingTeamsCount = round.RecommendedQualifyingTeamsCount,
+                    RecommendedMatchGenerationStrategy = round.RecommendedMatchGenerationStrategy,
+                    RecommendedTeamSelectionStrategy = round.RecommendedTeamSelectionStrategy,
+                    IsPlayoff = round.IsPlayoff
+                }).OrderBy(r => r.Sequence).ToList();
                 
                 var viewModel = new RoundsIndexViewModel
                 {
-                    Rounds = roundViewModels.OrderBy(r => r.Sequence),
-                    TotalRounds = roundViewModels.Count,
-                    TotalMatches = totalMatches,
-                    TotalCompletedMatches = totalCompleted,
-                    TotalPendingMatches = totalMatches - totalCompleted
+                    Rounds = roundViewModels,
+                    TotalRounds = roundViewModels.Count
                 };
                 
                 return View(viewModel);
