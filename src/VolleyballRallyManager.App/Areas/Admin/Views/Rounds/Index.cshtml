@@ -7,11 +7,19 @@
 
 <div class="rounds-header">
     <div class="d-flex justify-content-between align-items-center">
-        <h1><i class="bi bi-calendar3"></i> Tournament Rounds</h1>
-        <a asp-controller="Matches" asp-action="Index" class="btn btn-light">
-            <i class="bi bi-trophy"></i> View All Matches
-        </a>
+        <h1><i class="bi bi-calendar3"></i> Round Templates</h1>
+        <div>
+            <a asp-action="Create" class="btn btn-success me-2">
+                <i class="bi bi-plus-circle"></i> Create New Round
+            </a>
+            <a asp-controller="Matches" asp-action="Index" class="btn btn-light">
+                <i class="bi bi-trophy"></i> View All Matches
+            </a>
+        </div>
     </div>
+    <p class="text-muted mt-2">
+        Manage round templates that serve as recommendations for tournament setup. These settings guide tournament organizers but can be customized per tournament.
+    </p>
 </div>
 
 @if (Model.Rounds.Any())
@@ -59,9 +67,41 @@
                         <span class="round-info-value text-warning">@round.PendingMatches</span>
                     </div>
                     <div class="round-info-row">
-                        <span class="round-info-label">Qualifying Teams</span>
-                        <span class="round-info-value">@round.QualifyingTeams</span>
+                        <span class="round-info-label">Recommended Qualifying Teams</span>
+                        <span class="round-info-value">
+                            @if (round.RecommendedQualifyingTeamsCount == 0)
+                            {
+                                <span class="badge bg-info">All Teams</span>
+                            }
+                            else
+                            {
+                                @round.RecommendedQualifyingTeamsCount
+                            }
+                        </span>
                     </div>
+                    <div class="round-info-row">
+                        <span class="round-info-label">Match Strategy</span>
+                        <span class="round-info-value">
+                            <span class="badge bg-secondary">@round.RecommendedMatchGenerationStrategy</span>
+                        </span>
+                    </div>
+                    <div class="round-info-row">
+                        <span class="round-info-label">Team Selection</span>
+                        <span class="round-info-value">
+                            <span class="badge bg-secondary">@round.RecommendedTeamSelectionStrategy</span>
+                        </span>
+                    </div>
+                    @if (round.IsPlayoff)
+                    {
+                        <div class="round-info-row">
+                            <span class="round-info-label">Round Type</span>
+                            <span class="round-info-value">
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-trophy"></i> Playoff Round
+                                </span>
+                            </span>
+                        </div>
+                    }
                     <div class="round-info-row">
                         <span class="round-info-label">Status</span>
                         <span class="round-info-value">
@@ -92,6 +132,19 @@
                             </div>
                         </div>
                     }
+
+                    <div class="mt-3 d-flex gap-2">
+                        <a asp-action="Edit" asp-route-id="@round.Id" class="btn btn-sm btn-primary">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                        <form asp-action="Delete" asp-route-id="@round.Id" method="post" class="d-inline"
+                              onsubmit="return confirm('Are you sure you want to delete this round template? This action cannot be undone.');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         }
@@ -101,9 +154,12 @@ else
 {
     <div class="empty-state">
         <i class="bi bi-calendar-x"></i>
-        <h3>No Rounds Found</h3>
-        <p>There are currently no rounds configured for the tournament.</p>
-        <p class="text-muted mt-2">Rounds will be automatically created when matches are generated.</p>
+        <h3>No Round Templates Found</h3>
+        <p>There are currently no round templates configured.</p>
+        <p class="text-muted mt-2">Create round templates to define recommended settings for tournament rounds.</p>
+        <a asp-action="Create" class="btn btn-success mt-3">
+            <i class="bi bi-plus-circle"></i> Create First Round Template
+        </a>
     </div>
 }
 

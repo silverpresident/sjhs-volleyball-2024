@@ -100,6 +100,15 @@ namespace VolleyballRallyManager.Lib.Data
                 .Property(r => r.Name)
                 .IsRequired();
 
+            // Configure Round enums as strings
+            builder.Entity<Round>()
+                .Property(r => r.RecommendedMatchGenerationStrategy)
+                .HasConversion<string>();
+
+            builder.Entity<Round>()
+                .Property(r => r.RecommendedTeamSelectionStrategy)
+                .HasConversion<string>();
+
             builder.Entity<Match>()
                 .Property(m => m.CourtLocation)
                 .IsRequired();

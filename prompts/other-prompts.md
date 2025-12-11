@@ -171,3 +171,14 @@ The GetTournamentDetailsAsync does something similar but it returns details for 
 ====
 
 Fix the design and presentation of the Admin/Updates index page
+
+===
+
+to ROund entity
+add RecommendedMatchGenerationStrategy
+add RecommendedTeamSelectionStrategy
+change QualifyingTeams to RecommendedQualifyingTeamsCount
+add IsPlayoff
+
+Update the Edit view and action to accomodate these input
+UPdate the database initilaizer to have reasonable defaults

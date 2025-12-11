@@ -137,15 +137,63 @@ namespace VolleyballRallyManager.Lib.Configuration
         private static async Task<List<Round>> SeedRoundsAsync(ApplicationDbContext dbContext)
         {
             var rounds = new List<Round>();
-            // Add sample rounds
+            // Add sample rounds with recommendation properties
             var defaultRounds = new[]
             {
-                new Round { Id = Guid.NewGuid(), Name = "Preliminary Round", Sequence = 1, QualifyingTeams = 0 },
-                new Round { Id = Guid.NewGuid(), Name = "Seeded Round", Sequence = 2, QualifyingTeams = 16 },
-                new Round { Id = Guid.NewGuid(), Name = "Quarter Finals", Sequence = 4, QualifyingTeams = 8 },
-                new Round { Id = Guid.NewGuid(), Name = "Semi Finals", Sequence = 5, QualifyingTeams = 4 },
-                new Round { Id = Guid.NewGuid(), Name = "Third Place Playoff", Sequence = 6, QualifyingTeams = 2 },
-                new Round { Id = Guid.NewGuid(), Name = "Finals", Sequence = 7, QualifyingTeams = 2 }
+                new Round {
+                    Id = Guid.NewGuid(),
+                    Name = "Preliminary Round",
+                    Sequence = 1,
+                    RecommendedQualifyingTeamsCount = 0,
+                    RecommendedMatchGenerationStrategy = MatchGenerationStrategy.RoundRobin,
+                    RecommendedTeamSelectionStrategy = TeamSelectionStrategy.TopFromGroupAndNextBest,
+                    IsPlayoff = false
+                },
+                new Round {
+                    Id = Guid.NewGuid(),
+                    Name = "Seeded Round",
+                    Sequence = 2,
+                    RecommendedQualifyingTeamsCount = 16,
+                    RecommendedMatchGenerationStrategy = MatchGenerationStrategy.GroupStageKnockout,
+                    RecommendedTeamSelectionStrategy = TeamSelectionStrategy.TopByPoints,
+                    IsPlayoff = false
+                },
+                new Round {
+                    Id = Guid.NewGuid(),
+                    Name = "Quarter Finals",
+                    Sequence = 4,
+                    RecommendedQualifyingTeamsCount = 8,
+                    RecommendedMatchGenerationStrategy = MatchGenerationStrategy.SeededBracket,
+                    RecommendedTeamSelectionStrategy = TeamSelectionStrategy.WinnersOnly,
+                    IsPlayoff = true
+                },
+                new Round {
+                    Id = Guid.NewGuid(),
+                    Name = "Semi Finals",
+                    Sequence = 5,
+                    RecommendedQualifyingTeamsCount = 4,
+                    RecommendedMatchGenerationStrategy = MatchGenerationStrategy.SeededBracket,
+                    RecommendedTeamSelectionStrategy = TeamSelectionStrategy.WinnersOnly,
+                    IsPlayoff = false
+                },
+                new Round {
+                    Id = Guid.NewGuid(),
+                    Name = "Third Place Playoff",
+                    Sequence = 6,
+                    RecommendedQualifyingTeamsCount = 2,
+                    RecommendedMatchGenerationStrategy = MatchGenerationStrategy.SeededBracket,
+                    RecommendedTeamSelectionStrategy = TeamSelectionStrategy.WinnersOnly,
+                    IsPlayoff = true
+                },
+                new Round {
+                    Id = Guid.NewGuid(),
+                    Name = "Finals",
+                    Sequence = 7,
+                    RecommendedQualifyingTeamsCount = 2,
+                    RecommendedMatchGenerationStrategy = MatchGenerationStrategy.SeededBracket,
+                    RecommendedTeamSelectionStrategy = TeamSelectionStrategy.WinnersOnly,
+                    IsPlayoff = false
+                }
             };
             foreach (var round in defaultRounds)
             {

@@ -1,0 +1,128 @@
+@model VolleyballRallyManager.App.Areas.Admin.Models.CreateEditRoundViewModel
+
+@{
+    ViewData["Title"] = "Edit Round Template";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-pencil"></i> Edit Round Template</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-info-circle"></i> Round Configuration</h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <i class="bi bi-lightbulb"></i> <strong>Template Guidance:</strong> 
+                These settings serve as recommendations when creating tournament rounds. 
+                Tournament organizers can override these defaults as needed for specific tournaments.
+            </div>
+
+            <form asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <input type="hidden" asp-for="Id" />
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label">
+                                Round Name <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Name" class="form-control" placeholder="e.g., Quarter Finals" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                            <small class="form-text text-muted">Descriptive name for this round type</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="Sequence" class="form-label">
+                                Sequence <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Sequence" type="number" class="form-control" min="1" max="100" />
+                            <span asp-validation-for="Sequence" class="text-danger"></span>
+                            <small class="form-text text-muted">Order in which this round appears</small>
+                        </div>
+                    </div>
+                </div>
+
+                <h6 class="border-bottom pb-2 mb-3 mt-4">
+                    <i class="bi bi-gear"></i> Recommended Settings
+                </h6>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="RecommendedMatchGenerationStrategy" class="form-label">
+                                Recommended Match Strategy <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="RecommendedMatchGenerationStrategy" class="form-select"
+                                    asp-items="Html.GetEnumSelectList<VolleyballRallyManager.Lib.Models.MatchGenerationStrategy>()">
+                            </select>
+                            <span asp-validation-for="RecommendedMatchGenerationStrategy" class="text-danger"></span>
+                            <small class="form-text text-muted">How matches should be generated</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="RecommendedTeamSelectionStrategy" class="form-label">
+                                Recommended Team Selection <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="RecommendedTeamSelectionStrategy" class="form-select"
+                                    asp-items="Html.GetEnumSelectList<VolleyballRallyManager.Lib.Models.TeamSelectionStrategy>()">
+                            </select>
+                            <span asp-validation-for="RecommendedTeamSelectionStrategy" class="text-danger"></span>
+                            <small class="form-text text-muted">How teams should advance to next round</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label asp-for="RecommendedQualifyingTeamsCount" class="form-label">
+                                Recommended Qualifying Teams Count
+                            </label>
+                            <input asp-for="RecommendedQualifyingTeamsCount" type="number" class="form-control" min="0" max="100" />
+                            <span asp-validation-for="RecommendedQualifyingTeamsCount" class="text-danger"></span>
+                            <small class="form-text text-muted">Suggested number of teams (0 = all teams)</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3 mt-4">
+                            <div class="form-check">
+                                <input asp-for="IsPlayoff" class="form-check-input" />
+                                <label asp-for="IsPlayoff" class="form-check-label">
+                                    <strong>Is Playoff Round</strong>
+                                </label>
+                            </div>
+                            <small class="form-text text-muted">Mark this as an elimination/playoff round</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-save"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
