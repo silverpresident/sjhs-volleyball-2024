@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 using VolleyballRallyManager.Lib.Models;
 
@@ -29,7 +30,7 @@ public class CreatePlayoffRoundViewModel
     [Required]
     public Guid RoundId { get; set; }
     
-    [Required]
+    [ValidateNever]
     [Display(Name = "Playoff Round Name")]
     public string RoundName { get; set; } = string.Empty;
     

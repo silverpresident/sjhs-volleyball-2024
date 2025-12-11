@@ -221,8 +221,11 @@ public class TournamentRoundService : ITournamentRoundService
             _context.TournamentRounds.Add(tournamentRound);
             await _context.SaveChangesAsync();
 
-            previousRound.NextTournamentRoundId = tournamentRound.Id;
-            await _context.SaveChangesAsync();
+            if (isPlayoff == false)
+            {
+                previousRound.NextTournamentRoundId = tournamentRound.Id;
+                await _context.SaveChangesAsync();
+            }
 
             _logger.LogInformation("Created next round with round number {RoundNumber}", tournamentRound.RoundNumber);
 
@@ -436,19 +439,19 @@ public class TournamentRoundService : ITournamentRoundService
             List<TournamentRoundTeam> qualifyingTeams = new List<TournamentRoundTeam>();
 
             // Apply selection logic based on method
-            switch (previousRound.AdvancingTeamSelectionStrategy)
+            switch (tournamentRound.QualifyingTeamSelectionStrategy)
             {
                 case TeamSelectionStrategy.WinnersOnly:
                     //TODO should teams who won their match
                     qualifyingTeams = previousRoundTeams
                         .Where(t => t.Wins > 0)
-                        .Take(previousRound.AdvancingTeamsCount)
+                        .Take(tournamentRound.QualifyingTeamsCount)
                         .ToList();
                     break;
 
                 case TeamSelectionStrategy.SeedTopHalf:
                     int halfCount = previousRoundTeams.Count / 2;
-                    int teamsToSelect = Math.Min(halfCount, previousRound.AdvancingTeamsCount);
+                    int teamsToSelect = Math.Min(halfCount, tournamentRound.QualifyingTeamsCount);
                     qualifyingTeams = previousRoundTeams
                         .Take(teamsToSelect)
                         .ToList();
@@ -456,7 +459,7 @@ public class TournamentRoundService : ITournamentRoundService
 
                 case TeamSelectionStrategy.TopByPoints:
                     qualifyingTeams = previousRoundTeams
-                        .Take(previousRound.AdvancingTeamsCount)
+                        .Take(tournamentRound.QualifyingTeamsCount)
                         .ToList();
                     break;
 
@@ -470,7 +473,7 @@ public class TournamentRoundService : ITournamentRoundService
                     // Get next best teams overall
                     var remainingTeams = previousRoundTeams
                         .Except(groupWinners)
-                        .Take(previousRound.AdvancingTeamsCount - groupWinners.Count)
+                        .Take(tournamentRound.QualifyingTeamsCount - groupWinners.Count)
                         .ToList();
 
                     qualifyingTeams = groupWinners.Concat(remainingTeams).ToList();

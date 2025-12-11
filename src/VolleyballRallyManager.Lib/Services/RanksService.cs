@@ -47,14 +47,14 @@ public class RanksService : IRanksService
 
             // Get all matches for this round
             var matches = await _context.Matches
-                .Where(m => m.TournamentId == tournamentRound.TournamentId 
-                    && m.DivisionId == tournamentRound.DivisionId 
+                .Where(m => m.TournamentId == tournamentRound.TournamentId
+                    && m.DivisionId == tournamentRound.DivisionId
                     && m.RoundId == tournamentRound.RoundId
                     && m.IsFinished)
                 .Include(m => m.Sets)
                 .ToListAsync();
 
-            _logger.LogInformation("Found {MatchCount} finished matches for tournament round {TournamentRoundId}", 
+            _logger.LogInformation("Found {MatchCount} finished matches for tournament round {TournamentRoundId}",
                 matches.Count, tournamentRoundId);
 
             // Calculate statistics for each team
@@ -88,7 +88,7 @@ public class RanksService : IRanksService
                     {
                         int teamScore = isHomeTeam ? set.HomeTeamScore : set.AwayTeamScore;
                         int opponentScore = isHomeTeam ? set.AwayTeamScore : set.HomeTeamScore;
-                        
+
                         roundTeam.ScoreFor += teamScore;
                         roundTeam.ScoreAgainst += opponentScore;
                     }
@@ -133,7 +133,7 @@ public class RanksService : IRanksService
 
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Successfully updated ranks for {TeamCount} teams in tournament round {TournamentRoundId}", 
+            _logger.LogInformation("Successfully updated ranks for {TeamCount} teams in tournament round {TournamentRoundId}",
                 rankedTeams.Count, tournamentRoundId);
 
             return rankedTeams;
@@ -146,61 +146,89 @@ public class RanksService : IRanksService
     }
     public async Task<List<TournamentTeamDivision>> UpdateDivisionRanksAsync(Guid tournamentId, Guid divisionId)
     {
-        var teams = await _context.TournamentTeamDivisions
-            .Where(ttd => ttd.TournamentId == tournamentId && ttd.DivisionId == divisionId)
-            .ToListAsync();
-        var tournamanetRounds = await _context.TournamentRounds
-            .Where(ttd => ttd.TournamentId == tournamentId && ttd.DivisionId == divisionId)
-            .ToListAsync();
-        var tournamanetRoundTeams = await _context.TournamentRoundTeams
-            .Where(ttd => ttd.TournamentId == tournamentId && ttd.DivisionId == divisionId)
-            .ToListAsync();
 
-        foreach (var team in teams)
+        try
         {
-            team.Rank = 0;
-            team.ScoreAgainst = 0;
-            team.ScoreFor = 0;
-            team.RankingPoints = 0;
-            team.TotalPoints = 0;
-            team.MatchesPlayed = 0;
-            team.Wins = 0;
-            team.Draws = 0;
-            team.Losses = 0;
-            team.SetsFor = 0;
-            team.SetsAgainst = 0; 
-            var roundRanks = tournamanetRoundTeams.Where(trt => trt.TeamId == team.TeamId);
-            foreach(var roundRank in roundRanks)
+            _logger.LogInformation("Updating team division ranks for tournament {TournamentId}", tournamentId);
+
+            var teams = await _context.TournamentTeamDivisions
+            .Where(ttd => ttd.TournamentId == tournamentId && ttd.DivisionId == divisionId)
+            .ToListAsync();
+            var tournamanetRounds = await _context.TournamentRounds
+                .Where(ttd => ttd.TournamentId == tournamentId && ttd.DivisionId == divisionId)
+                .ToListAsync();
+            var tournamanetRoundTeams = await _context.TournamentRoundTeams
+                .Where(ttd => ttd.TournamentId == tournamentId && ttd.DivisionId == divisionId)
+                .ToListAsync();
+
+            foreach (var team in teams)
             {
-                team.ScoreAgainst += roundRank.ScoreAgainst;
-                team.ScoreFor += roundRank.ScoreFor;
-                team.RankingPoints += roundRank.RankingPoints;
-                team.TotalPoints += roundRank.Points;
-                team.MatchesPlayed += roundRank.MatchesPlayed;
-                team.Wins += roundRank.Wins;
-                team.Draws += roundRank.Draws;
-                team.Losses += roundRank.Losses;
-                team.SetsFor += roundRank.SetsFor;
-                team.SetsAgainst += roundRank.SetsAgainst;
+                team.Rank = 0;
+                team.ScoreAgainst = 0;
+                team.ScoreFor = 0;
+                team.RankingPoints = 0;
+                team.TotalPoints = 0;
+                team.MatchesPlayed = 0;
+                team.Wins = 0;
+                team.Draws = 0;
+                team.Losses = 0;
+                team.SetsFor = 0;
+                team.SetsAgainst = 0;
+                var roundRanks = tournamanetRoundTeams.Where(trt => trt.TeamId == team.TeamId);
+                foreach (var roundRank in roundRanks)
+                {
+                    if (roundRank.TournamentRound?.IsPlayoff == true)
+                    {
+                        if (roundRank.Wins > 0)
+                        {
+                            team.RankingPoints += 1;
+                        }
+                        if (roundRank.MatchesPlayed > 0)
+                        {
+                            team.RankingPoints += 1;
+                        }
+                        continue;
+                    }
+                    team.ScoreAgainst += roundRank.ScoreAgainst;
+                    team.ScoreFor += roundRank.ScoreFor;
+                    team.RankingPoints += roundRank.RankingPoints;
+                    team.TotalPoints += roundRank.Points;
+                    team.MatchesPlayed += roundRank.MatchesPlayed;
+                    team.Wins += roundRank.Wins;
+                    team.Draws += roundRank.Draws;
+                    team.Losses += roundRank.Losses;
+                    team.SetsFor += roundRank.SetsFor;
+                    team.SetsAgainst += roundRank.SetsAgainst;
+                }
+
+
             }
+            var rankedTeams = teams
+                    .OrderByDescending(t => t.RankingPoints)                    // 1. Highest Total Points
+                    .OrderByDescending(t => t.TotalPoints)                    // 1. Highest Total Points
+                    .ThenByDescending(t => t.ScoreDifference)           // 2. Highest Score Difference
+                    .ThenByDescending(t => t.ScoreFor)                  // 3. Highest Score For
+                    .ThenBy(t => t.SeedNumber)                          // 4. Best Seed Number (lower is better)
+                    .ToList();
 
+            // Assign final ranks and ranking points
+            int rank = 1;
+            foreach (var team in rankedTeams)
+            {
+                team.Rank = rank++;
+            }
+            await _context.SaveChangesAsync();
 
+            _logger.LogInformation("Successfully updated division ranks for {TeamCount} teams in tournament {TournamentId}",
+                rankedTeams.Count, tournamentId);
+
+            return rankedTeams;
         }
-        var rankedTeams = teams
-                .OrderByDescending(t => t.RankingPoints)                    // 1. Highest Total Points
-                .OrderByDescending(t => t.TotalPoints)                    // 1. Highest Total Points
-                .ThenByDescending(t => t.ScoreDifference)           // 2. Highest Score Difference
-                .ThenByDescending(t => t.ScoreFor)                  // 3. Highest Score For
-                .ThenBy(t => t.SeedNumber)                          // 4. Best Seed Number (lower is better)
-                .ToList();
-
-        // Assign final ranks and ranking points
-        int rank = 1;
-        foreach (var team in rankedTeams)
+        catch (Exception ex)
         {
-            team.Rank = rank++;
+            _logger.LogError(ex, "Error updating division ranks for tournament {TournamentId}", tournamentId);
+            throw;
         }
-        return rankedTeams;
     }
 
     /// <summary>
@@ -212,7 +240,7 @@ public class RanksService : IRanksService
         {
             var standings = await GetStandingsAsync(tournamentRoundId);
             var teamStanding = standings.FirstOrDefault(t => t.TeamId == teamId);
-            
+
             if (teamStanding == null)
             {
                 _logger.LogWarning("Team {TeamId} not found in tournament round {TournamentRoundId}", teamId, tournamentRoundId);
@@ -223,7 +251,7 @@ public class RanksService : IRanksService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error calculating team rank for team {TeamId} in tournament round {TournamentRoundId}", 
+            _logger.LogError(ex, "Error calculating team rank for team {TeamId} in tournament round {TournamentRoundId}",
                 teamId, tournamentRoundId);
             throw;
         }
