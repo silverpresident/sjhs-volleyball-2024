@@ -39,7 +39,19 @@ UPDATE Rounds
 SET RecommendedMatchGenerationStrategy = 'SeededBracket',
     RecommendedTeamSelectionStrategy = 'WinnersOnly',
     IsPlayoff = 1
-WHERE Sequence >= 4;
+WHERE Sequence >= 5;
+
+
+-- Round 4: Typically another seeded round
+UPDATE Rounds
+SET IsPlayoff = 1
+WHERE Sequence = 4;
+
+
+-- Round 4: Typically another seeded round
+UPDATE Rounds
+SET IsPlayoff = 0
+WHERE Name = 'Quarter Finals';
 
 -- Verify the migration
 SELECT 
