@@ -246,17 +246,31 @@
                         </button>
                     </form>
                 }
-                <!-- Generate Next Round Button -->
+                <!-- Create Next Round Button (Quick) -->
                 @if (Model.CanGenerateNextRound)
                 {
-                    <a asp-action="GenerateNextRound" asp-route-id="@Model.CurrentRound.Id" class="btn btn-primary">
-                        <i class="bi bi-arrow-right-circle"></i> Generate Next Round
+                    <a asp-action="CreateNextRound" asp-route-id="@Model.CurrentRound.Id" class="btn btn-success" title="Quick create with defaults">
+                        <i class="bi bi-plus-circle"></i> Create Next Round
                     </a>
                 }
                 else
                 {
                     <button type="button" class="btn btn-secondary" disabled title="Round must be finalized first">
-                        <i class="bi bi-arrow-right-circle"></i> Generate Next Round
+                        <i class="bi bi-plus-circle"></i> Create Next Round
+                    </button>
+                }
+
+                <!-- Generate Next Round Button (Full Configuration) -->
+                @if (Model.CanGenerateNextRound)
+                {
+                    <a asp-action="GenerateNextRound" asp-route-id="@Model.CurrentRound.Id" class="btn btn-outline-success" title="Configure all settings upfront">
+                        <i class="bi bi-gear"></i> Generate Next Round
+                    </a>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-secondary" disabled title="Round must be finalized first">
+                        <i class="bi bi-gear"></i> Generate Next Round
                     </button>
                 }
 

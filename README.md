@@ -182,9 +182,11 @@ Key configuration settings required in appsettings.json:
 - User authentication with Google and Microsoft accounts
 - Real-time match updates using SignalR
 - **Tournament Round Management** - Multi-stage tournament system
+  - **Create Next Round** - Simplified two-step round creation with smart defaults
+  - **Generate Next Round** - Comprehensive round configuration with full control
   - Create and manage tournament rounds with automatic progression
   - Multiple team selection methods (Top By Points, Seed Top Half, Winners Only, etc.)
-  - Match generation strategies (Round Robin, Seeded Bracket)
+  - Match generation strategies (Round Robin, Seeded Bracket, Group Stage Knockout)
   - Sophisticated ranking algorithm with 4-level tie-breakers
   - Automatic team seeding and qualification
   - Round finalization with permanent rankings
@@ -241,6 +243,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - [Tournament Rounds User Guide](docs/TOURNAMENT_ROUNDS_USER_GUIDE.md) - Complete guide to multi-stage tournament management
 - [Tournament Rounds Implementation](docs/TOURNAMENT_ROUNDS_IMPLEMENTATION.md) - Technical implementation details
+- [Create Next Round Feature](docs/CREATE_NEXT_ROUND_FEATURE.md) - Simplified round creation workflow guide
+- [Round Recommendations Feature](docs/ROUND_RECOMMENDATIONS_FEATURE.md) - Round template recommendation system
 - [AutoSeed Feature Guide](docs/AUTOSEED_FEATURE.md) - Automated team seeding documentation
 - [Announcer Feature Guide](docs/ANNOUNCER_FEATURE.md) - Complete guide to the announcement queue system
 - [User Management Guide](docs/USER_MANAGEMENT_GUIDE.md) - User administration documentation

@@ -45,3 +45,16 @@ Finally, the form must include two critical flags implemented as 'now/defer' tog
 
 * **Internal Service:** Ensure the **`SelectTeams` workflow** is implemented as a clean, internal service/method to maintain separation of concerns.
 * **Data Structure:** The form data submitted must clearly distinguish between the **Source** and **Destination** configurations.
+
+
+
+===========
+
+Let's work on the Tournament Round feature.
+I would like to experiment with a different way of setting up a new round.
+Call this action and view "Create Next Round".
+Look at but do not change the "Generate Next Round" implementation to see how it is done.
+For this new experimental "Create Next Round"
+- Process is done in 2 parts. In the first part only the round type (round template) is selected and saved
+- The Tournament  round is then created with the default recommmended values from the Round Template enity.
+- YOu are then redirected to the edit page where you can customize the round further.

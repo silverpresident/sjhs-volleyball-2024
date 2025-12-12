@@ -181,11 +181,19 @@
                                         </form>
                                     }
 
-                                    <!-- Generate Next Round Button -->
+                                    <!-- Create Next Round Button (Quick) -->
                                     @if (round.CanGenerateNextRound)
                                     {
-                                        <a asp-action="GenerateNextRound" asp-route-id="@round.TournamentRoundId" class="btn btn-secondary">
-                                            <i class="bi bi-arrow-right-circle"></i> Generate Next Round
+                                        <a asp-action="CreateNextRound" asp-route-id="@round.TournamentRoundId" class="btn btn-success" title="Quick create with defaults">
+                                            <i class="bi bi-plus-circle"></i> Create Next Round
+                                        </a>
+                                    }
+
+                                    <!-- Generate Next Round Button (Full Configuration) -->
+                                    @if (round.CanGenerateNextRound)
+                                    {
+                                        <a asp-action="GenerateNextRound" asp-route-id="@round.TournamentRoundId" class="btn btn-outline-success" title="Configure all settings">
+                                            <i class="bi bi-gear"></i> Generate
                                         </a>
                                     }
                                 </div>

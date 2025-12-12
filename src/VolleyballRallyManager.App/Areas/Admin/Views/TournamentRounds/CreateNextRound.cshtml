@@ -1,0 +1,149 @@
+@model VolleyballRallyManager.App.Areas.Admin.Models.CreateNextRoundSimpleViewModel
+
+@{
+    ViewData["Title"] = "Create Next Round";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            <i class="bi bi-plus-circle"></i> Create Next Round
+        </h1>
+        <a asp-action="Details" asp-route-id="@Model.PreviousTournamentRoundId" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Round
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- MAIN FORM -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-lightning-fill"></i> Quick Round Creation</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Info Alert -->
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>How it works:</strong> Select a round type below, and we'll create it with recommended default settings from the round template. You can then customize all settings on the Edit page.
+                    </div>
+
+                    <!-- Context Information -->
+                    <div class="card mb-4 bg-light">
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">Tournament:</dt>
+                                <dd class="col-sm-8"><strong>@Model.TournamentName</strong></dd>
+                                
+                                <dt class="col-sm-4">Division:</dt>
+                                <dd class="col-sm-8"><strong>@Model.DivisionName</strong></dd>
+                                
+                                <dt class="col-sm-4">Previous Round:</dt>
+                                <dd class="col-sm-8">
+                                    <strong>@Model.PreviousRoundName</strong> 
+                                    <span class="badge bg-success">Finalized</span>
+                                </dd>
+                                
+                                <dt class="col-sm-4">Teams Advancing:</dt>
+                                <dd class="col-sm-8"><strong>@Model.PreviousRoundAdvancingTeams</strong> teams</dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <!-- Form -->
+                    <form asp-action="CreateNextRound" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <input type="hidden" asp-for="TournamentId" />
+                        <input type="hidden" asp-for="DivisionId" />
+                        <input type="hidden" asp-for="PreviousTournamentRoundId" />
+
+                        <!-- Round Type Selection -->
+                        <div class="mb-4">
+                            <label asp-for="RoundId" class="form-label fs-5">
+                                <i class="bi bi-trophy"></i> Select Round Type <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="RoundId" class="form-select form-select-lg" asp-items='@((SelectList)ViewData["Rounds"])'>
+                                <option value="">-- Select Round Type --</option>
+                            </select>
+                            <span asp-validation-for="RoundId" class="text-danger"></span>
+                            <div class="form-text">
+                                The round will be created with recommended defaults from the selected template.
+                                You can customize all settings on the next page.
+                            </div>
+                        </div>
+
+                        <!-- What Happens Next -->
+                        <div class="card border-success mb-4">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0"><i class="bi bi-check-circle"></i> What Happens Next</h6>
+                            </div>
+                            <div class="card-body">
+                                <ol class="mb-0">
+                                    <li>System creates the round with recommended defaults from the template</li>
+                                    <li>You're redirected to the <strong>Edit page</strong></li>
+                                    <li>Review and customize settings as needed (team selection, match generation, groups, etc.)</li>
+                                    <li>Assign teams and generate matches when ready</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Details" asp-route-id="@Model.PreviousTournamentRoundId" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle"></i> Create Round
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- SIDEBAR: Information -->
+        <div class="col-lg-4">
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0"><i class="bi bi-question-circle"></i> About This Feature</h6>
+                </div>
+                <div class="card-body">
+                    <p class="small mb-2">
+                        <strong>Quick Setup:</strong> This simplified process creates rounds with smart defaults.
+                    </p>
+                    <p class="small mb-2">
+                        <strong>Benefits:</strong>
+                    </p>
+                    <ul class="small mb-0">
+                        <li>One-click round creation</li>
+                        <li>Smart defaults from templates</li>
+                        <li>Full customization available</li>
+                        <li>Streamlined workflow</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                    <h6 class="mb-0"><i class="bi bi-lightbulb"></i> Alternative Option</h6>
+                </div>
+                <div class="card-body">
+                    <p class="small mb-2">
+                        Prefer to configure everything upfront? Use the comprehensive
+                        <a asp-action="GenerateNextRound" asp-route-id="@Model.PreviousTournamentRoundId">
+                            <strong>Generate Next Round</strong>
+                        </a> form instead.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Round Setup Recommendations -->
+            @await Html.PartialAsync("_RoundSetupRecommendations")
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

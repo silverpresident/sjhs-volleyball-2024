@@ -537,6 +537,151 @@ public class TournamentRoundsController : Controller
         }
     }
 
+    // GET: Admin/TournamentRounds/CreateNextRound/5
+    public async Task<IActionResult> CreateNextRound(Guid id)
+    {
+        try
+        {
+            var currentRound = await _tournamentRoundService.GetTournamentRoundByIdAsync(id);
+            if (currentRound == null)
+            {
+                return NotFound();
+            }
+
+            if (!currentRound.IsFinished)
+            {
+                TempData["ErrorMessage"] = "Current round must be finalized before creating next round.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            var tournament = await _context.Tournaments.FindAsync(currentRound.TournamentId);
+            var division = await _context.Divisions.FindAsync(currentRound.DivisionId);
+
+            // Get only non-playoff rounds for dropdown
+            var nonPlayoffRounds = await _context.Rounds
+                .Where(r => !r.IsPlayoff)
+                .OrderBy(r => r.Sequence)
+                .ToListAsync();
+            ViewData["Rounds"] = new SelectList(nonPlayoffRounds, "Id", "Name");
+
+            var model = new CreateNextRoundSimpleViewModel
+            {
+                TournamentId = currentRound.TournamentId,
+                DivisionId = currentRound.DivisionId,
+                PreviousTournamentRoundId = id,
+                TournamentName = tournament?.Name ?? "Unknown",
+                DivisionName = division?.Name ?? "Unknown",
+                PreviousRoundName = currentRound.Round?.Name ?? $"Round {currentRound.RoundNumber}",
+                PreviousRoundAdvancingTeams = currentRound.AdvancingTeamsCount
+            };
+
+            return View(model);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading create next round form");
+            TempData["ErrorMessage"] = "Error loading form.";
+            return RedirectToAction(nameof(Index));
+        }
+    }
+
+    // POST: Admin/TournamentRounds/CreateNextRound
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateNextRound(CreateNextRoundSimpleViewModel model)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                var rounds = await _context.Rounds
+                    .Where(r => !r.IsPlayoff)
+                    .OrderBy(r => r.Sequence)
+                    .ToListAsync();
+                ViewData["Rounds"] = new SelectList(rounds, "Id", "Name");
+                return View(model);
+            }
+
+            var userName = User.Identity?.Name ?? "admin";
+            
+            // Get the selected Round template to retrieve recommendations
+            var selectedRound = await _context.Rounds.FindAsync(model.RoundId);
+            if (selectedRound == null)
+            {
+                ModelState.AddModelError("", "Selected round template not found.");
+                var rounds = await _context.Rounds
+                    .Where(r => !r.IsPlayoff)
+                    .OrderBy(r => r.Sequence)
+                    .ToListAsync();
+                ViewData["Rounds"] = new SelectList(rounds, "Id", "Name");
+                return View(model);
+            }
+            
+            // Get previous round to calculate defaults
+            var previousRound = await _tournamentRoundService.GetTournamentRoundByIdAsync(model.PreviousTournamentRoundId);
+            if (previousRound == null)
+            {
+                ModelState.AddModelError("", "Previous round not found.");
+                var rounds = await _context.Rounds
+                    .Where(r => !r.IsPlayoff)
+                    .OrderBy(r => r.Sequence)
+                    .ToListAsync();
+                ViewData["Rounds"] = new SelectList(rounds, "Id", "Name");
+                return View(model);
+            }
+
+            // Calculate defaults from Round template and previous round
+            int qualifyingTeamsCount = selectedRound.RecommendedQualifyingTeamsCount > 0
+                ? selectedRound.RecommendedQualifyingTeamsCount
+                : previousRound.AdvancingTeamsCount;
+                
+            int advancingTeamsCount = Math.Max(2, qualifyingTeamsCount / 2);
+            
+            // Determine group configuration based on match strategy
+            GroupGenerationStrategy groupStrategy = GroupGenerationStrategy.NoGroup;
+            int groupValue = 2;
+            
+            if (selectedRound.RecommendedMatchGenerationStrategy == MatchGenerationStrategy.GroupStageKnockout)
+            {
+                groupStrategy = GroupGenerationStrategy.GroupsInRound;
+                groupValue = Math.Max(2, qualifyingTeamsCount / 4);
+            }
+
+            // Create the tournament round using the service
+            var tournamentRound = await _tournamentRoundService.CreateNextRoundAsync(
+                model.TournamentId,
+                model.DivisionId,
+                model.RoundId,
+                model.PreviousTournamentRoundId,
+                qualifyingTeamsCount,
+                selectedRound.RecommendedTeamSelectionStrategy,
+                advancingTeamsCount,
+                selectedRound.RecommendedTeamSelectionStrategy,
+                selectedRound.RecommendedMatchGenerationStrategy,
+                groupStrategy,
+                groupValue,
+                selectedRound.IsPlayoff,
+                userName);
+
+            TempData["SuccessMessage"] = $"Round '{selectedRound.Name}' created successfully with recommended defaults. You can customize settings below.";
+            
+            // Redirect to Edit page for further customization
+            return RedirectToAction(nameof(Edit), new { id = tournamentRound.Id });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating next round");
+            ModelState.AddModelError("", $"Error creating next round: {ex.Message}");
+            
+            var rounds = await _context.Rounds
+                .Where(r => !r.IsPlayoff)
+                .OrderBy(r => r.Sequence)
+                .ToListAsync();
+            ViewData["Rounds"] = new SelectList(rounds, "Id", "Name");
+            return View(model);
+        }
+    }
+
     // POST: Admin/TournamentRounds/SelectTeams/5
     [HttpPost]
     [ValidateAntiForgeryToken]
