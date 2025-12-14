@@ -722,7 +722,7 @@ public class TournamentRoundsController : Controller
             {
                 TournamentRoundId = id,
                 RoundName = round.Round?.Name ?? $"Round {round.RoundNumber}",
-                StartTime = DateTime.Now.AddMinutes(30),
+                StartTime = await _activeTournamentService.GetNextMatchStartTimeAsync(),
                 StartingCourtNumber = 1,
                 NumberOfCourts = 3,
                 MatchTimeInterval = 10,

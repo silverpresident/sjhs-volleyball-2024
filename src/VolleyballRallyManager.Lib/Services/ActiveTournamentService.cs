@@ -386,11 +386,44 @@ namespace VolleyballRallyManager.Lib.Services
                 .Include(m => m.HomeTeam)
                 .Include(m => m.AwayTeam)
                 .Include(m => m.Round)
-                .OrderByDescending(m => m.ScheduledTime)
+                .OrderByDescending(m => m.UpdatedAt)
                 .ThenBy(m => m.ScheduledTime)
                 .Take(howMany)
                 .ToListAsync();
         }
 
+        public async Task<DateTime> GetNextMatchStartTimeAsync()
+        {
+            var activeTournament = await GetActiveTournamentAsync();
+            if (activeTournament != null)
+            {
+                var match = await _dbContext.Matches
+                    .Where(m => m.TournamentId == activeTournament.Id)
+                .OrderByDescending(m => m.ScheduledTime)
+                .FirstOrDefaultAsync();
+                if (match == null)
+                {
+                    var dt1 = activeTournament.TournamentDate.Date;
+                    dt1.AddHours(9);
+                    return dt1;
+                }
+                var dt = match.ScheduledTime.AddMinutes(15);
+                if (DateTime.Now > dt)
+                {
+                    dt = DateTime.Now.AddMinutes(30);
+                }
+                // Adding half the interval length before truncation helps with rounding to the nearest value
+                var totalMinutes = (int)(dt.TimeOfDay.TotalMinutes + 15 / 2.0);
+
+                // Perform integer division and multiplication to find the nearest multiple of 'minutes'
+                var roundedMinutes = (totalMinutes - (totalMinutes % 15));
+                dt = dt.Date;
+
+                return dt.AddMinutes(roundedMinutes);
+            }
+
+
+            return DateTime.Now.AddMinutes(30);
+        }
     }
 }
