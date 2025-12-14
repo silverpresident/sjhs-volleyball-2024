@@ -34,7 +34,7 @@ public class ScorerHub : Hub
         await Clients.Caller.SendAsync("ReceiveMatchState", new
         {
             MatchId = matchId,
-            CurrentSetNumber = match?.CurrentSetNumber ?? 0,
+            CurrentSetNumber = match.CurrentSetNumber,
             IsFinished = match.IsFinished,
             IsDisputed = match.IsDisputed,
             IsLocked = match.IsLocked,
@@ -162,6 +162,12 @@ public class ScorerHub : Hub
             
             // Refresh match state after queuing
             match = await _matchService.GetMatchAsync(matchId);
+            
+            if (match == null)
+            {
+                await Clients.Caller.SendAsync("ReceiveError", "Match not found after action");
+                return;
+            }
 
             await Clients.Group($"scorer_{matchId}").SendAsync("ReceiveMatchStateChange", new
             {
@@ -171,7 +177,7 @@ public class ScorerHub : Hub
                 IsDisputed = match.IsDisputed,
                 IsLocked = match.IsLocked,
                 ActualStartTime = match.ActualStartTime,
-                CurrentSetNumber = match?.CurrentSetNumber ?? 0,
+                CurrentSetNumber = match.CurrentSetNumber,
                 Timestamp = DateTime.Now
             });
 

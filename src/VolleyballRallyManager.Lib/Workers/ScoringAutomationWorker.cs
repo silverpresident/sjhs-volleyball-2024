@@ -261,11 +261,11 @@ public class ScoringAutomationWorker : BackgroundService
             string winner;
             if (matchSet.AwayTeamScore > matchSet.HomeTeamScore)
             {
-                winner = match.AwayTeam?.Name;
+                winner = match.AwayTeam?.Name ?? "Away Team";
             }
             else
             {
-                winner = match.HomeTeam?.Name;
+                winner = match.HomeTeam?.Name ?? "Home Team";
             }
             var announcement = new Announcement
             {

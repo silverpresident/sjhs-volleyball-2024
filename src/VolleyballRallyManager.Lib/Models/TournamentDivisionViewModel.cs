@@ -13,6 +13,6 @@ namespace VolleyballRallyManager.Lib.Models
        
         public int TeamCount { get; set; }
         public int MatchesPlayed { get; set; }
-        public Division Division { get; set; }
+        public required Division Division { get; set; }
     }
 }

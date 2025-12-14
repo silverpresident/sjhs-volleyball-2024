@@ -25,7 +25,7 @@ namespace VolleyballRallyManager.Lib.Services
             }
             return model;
         }
-        public async Task<Division> GetDivisionAsync(Guid divisionId)
+        public async Task<Division?> GetDivisionAsync(Guid divisionId)
         {
             return await _dbContext.Divisions.FindAsync(divisionId);
         }
