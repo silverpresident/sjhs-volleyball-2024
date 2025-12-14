@@ -185,3 +185,10 @@ UPdate the database initilaizer to have reasonable defaults
 ====
 The ROund Index page.
 THe round entity if a template for rounds used accacross tournaments. It includes fields like Name, RecommendedMatchGenerationStrategy, RecommendedTeamSelectionStrategy, RecommendedQualifyingTeamsCount, IsPlayoff, and others. THe index displays "number of matches per round" in the index view. It should not, this view and module is only for customizing the round templates used across tournaments. It should display information about the round's configuration and purpose, not the number of matches per round.
+====
+Create a page to help me debug user issues. The page "CurrentUser" should be in the 
+UserManagement controller of the Admin area.
+THe page should display for the currently logged in users:
+- THe name, Id and other relevant info
+- All the claims
+- All the roles

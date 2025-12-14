@@ -44,6 +44,7 @@ namespace VolleyballRallyManager.Lib.Configuration
             }
             try
             {
+                //TODO this one should only run in the debug environment
                 await SeedInitialDataAsync(dbContext);
             }
             catch (Exception ex)
