@@ -96,4 +96,52 @@ namespace VolleyballRallyManager.App.Areas.Admin.Models
         public string? RoleFilter { get; set; }
         public List<string> AvailableRoles { get; set; } = new List<string>();
     }
+
+    /// <summary>
+    /// View model for displaying current user debug information
+    /// </summary>
+    public class CurrentUserViewModel
+    {
+        [Display(Name = "User ID")]
+        public string Id { get; set; } = string.Empty;
+
+        [Display(Name = "User Name")]
+        public string UserName { get; set; } = string.Empty;
+
+        [Display(Name = "Email")]
+        public string Email { get; set; } = string.Empty;
+
+        [Display(Name = "Email Confirmed")]
+        public bool EmailConfirmed { get; set; }
+
+        [Display(Name = "Phone Number")]
+        public string? PhoneNumber { get; set; }
+
+        [Display(Name = "Phone Number Confirmed")]
+        public bool PhoneNumberConfirmed { get; set; }
+
+        [Display(Name = "Two-Factor Enabled")]
+        public bool TwoFactorEnabled { get; set; }
+
+        [Display(Name = "Lockout Enabled")]
+        public bool LockoutEnabled { get; set; }
+
+        [Display(Name = "Lockout End")]
+        public DateTimeOffset? LockoutEnd { get; set; }
+
+        [Display(Name = "Access Failed Count")]
+        public int AccessFailedCount { get; set; }
+
+        [Display(Name = "Roles")]
+        public List<string> Roles { get; set; } = new List<string>();
+
+        [Display(Name = "Claims")]
+        public Dictionary<string, string> Claims { get; set; } = new Dictionary<string, string>();
+
+        [Display(Name = "Is Authenticated")]
+        public bool IsAuthenticated { get; set; }
+
+        [Display(Name = "Authentication Type")]
+        public string? AuthenticationType { get; set; }
+    }
 }

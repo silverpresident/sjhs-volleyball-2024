@@ -1,0 +1,321 @@
+@model VolleyballRallyManager.App.Areas.Admin.Models.CurrentUserViewModel
+@{
+    ViewData["Title"] = "Current User Information";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="fw-bold text-success">
+                <i class="fas fa-user-circle me-2"></i>Current User Information
+            </h2>
+            <p class="text-muted">Debug information for the currently logged-in user</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Back to User List
+            </a>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- User Information Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-user me-2"></i>User Details
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.Id):</dt>
+                        <dd class="col-sm-7"><code>@Model.Id</code></dd>
+
+                        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.UserName):</dt>
+                        <dd class="col-sm-7">@Model.UserName</dd>
+
+                        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.Email):</dt>
+                        <dd class="col-sm-7">
+                            <i class="fas fa-envelope text-muted me-1"></i>@Model.Email
+                        </dd>
+
+                        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.EmailConfirmed):</dt>
+                        <dd class="col-sm-7">
+                            @if (Model.EmailConfirmed)
+                            {
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle me-1"></i>Confirmed
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-exclamation-circle me-1"></i>Not Confirmed
+                                </span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.PhoneNumber):</dt>
+                        <dd class="col-sm-7">
+                            @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                            {
+                                @Model.PhoneNumber
+                            }
+                            else
+                            {
+                                <span class="text-muted">Not set</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.PhoneNumberConfirmed):</dt>
+                        <dd class="col-sm-7">
+                            @if (Model.PhoneNumberConfirmed)
+                            {
+                                <i class="fas fa-check text-success"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-times text-danger"></i>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+                <div class="col-md-6">
+                    <dl class="row">
+                        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.TwoFactorEnabled):</dt>
+                        <dd class="col-sm-7">
+                            @if (Model.TwoFactorEnabled)
+                            {
+                                <span class="badge bg-success">
+                                    <i class="fas fa-shield-alt me-1"></i>Enabled
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">
+                                    <i class="fas fa-shield-alt me-1"></i>Disabled
+                                </span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.LockoutEnabled):</dt>
+                        <dd class="col-sm-7">
+                            @if (Model.LockoutEnabled)
+                            {
+                                <i class="fas fa-check text-success"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-times text-danger"></i>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.LockoutEnd):</dt>
+                        <dd class="col-sm-7">
+                            @if (Model.LockoutEnd.HasValue && Model.LockoutEnd.Value > DateTimeOffset.Now)
+                            {
+                                <span class="badge bg-danger">
+                                    Locked until @Model.LockoutEnd.Value.ToString("yyyy-MM-dd HH:mm")
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Not locked</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.AccessFailedCount):</dt>
+                        <dd class="col-sm-7">
+                            @if (Model.AccessFailedCount > 0)
+                            {
+                                <span class="badge bg-warning">@Model.AccessFailedCount</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">0</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.IsAuthenticated):</dt>
+                        <dd class="col-sm-7">
+                            @if (Model.IsAuthenticated)
+                            {
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle me-1"></i>Authenticated
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">
+                                    <i class="fas fa-times-circle me-1"></i>Not Authenticated
+                                </span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-5">@Html.DisplayNameFor(model => model.AuthenticationType):</dt>
+                        <dd class="col-sm-7">
+                            @if (!string.IsNullOrEmpty(Model.AuthenticationType))
+                            {
+                                <code>@Model.AuthenticationType</code>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Not set</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Roles Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-user-tag me-2"></i>Roles (@Model.Roles.Count)
+            </h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Roles.Any())
+            {
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach (var role in Model.Roles)
+                    {
+                        <span class="badge bg-primary fs-6">
+                            <i class="fas fa-user-tag me-1"></i>@role
+                        </span>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-0">
+                    <i class="fas fa-info-circle me-1"></i>No roles assigned to this user
+                </p>
+            }
+        </div>
+    </div>
+
+    <!-- Claims Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-key me-2"></i>Claims (@Model.Claims.Count)
+            </h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Claims.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 30%;">Claim Type</th>
+                                <th style="width: 70%;">Claim Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var claim in Model.Claims.OrderBy(c => c.Key))
+                            {
+                                <tr>
+                                    <td>
+                                        <code class="text-primary">@claim.Key</code>
+                                    </td>
+                                    <td>
+                                        <code>@claim.Value</code>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-0">
+                    <i class="fas fa-info-circle me-1"></i>No claims found for this user
+                </p>
+            }
+        </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="card border-info">
+        <div class="card-header bg-info text-white">
+            <i class="fas fa-question-circle me-2"></i>About This Page
+        </div>
+        <div class="card-body">
+            <p>
+                This page displays debug information about your current user session, including:
+            </p>
+            <ul>
+                <li><strong>User Details:</strong> Basic information about your user account from the Identity system</li>
+                <li><strong>Roles:</strong> The roles assigned to your account that determine your access level</li>
+                <li><strong>Claims:</strong> Additional security claims and authentication data associated with your session</li>
+            </ul>
+            <p class="mb-0">
+                <i class="fas fa-info-circle me-1"></i>
+                This information is useful for troubleshooting authentication and authorization issues.
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-success {
+        background-color: #198754;
+        border-color: #198754;
+    }
+
+    .btn-success:hover {
+        background-color: #157347;
+        border-color: #146c43;
+    }
+
+    .text-success {
+        color: #198754 !important;
+    }
+
+    .bg-success {
+        background-color: #198754 !important;
+    }
+
+    .badge.bg-primary {
+        background-color: #0d6efd !important;
+    }
+
+    .badge.bg-success {
+        background-color: #198754 !important;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(25, 135, 84, 0.05);
+    }
+
+    dl dt {
+        font-weight: 600;
+        color: #495057;
+    }
+
+    dl dd {
+        color: #212529;
+    }
+
+    code {
+        background-color: #f8f9fa;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 90%;
+    }
+</style>

@@ -383,6 +383,74 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         }
 
         /// <summary>
+        /// Display current logged-in user information for debugging (available to all authenticated users)
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> CurrentUser()
+        {
+            try
+            {
+                var userId = _userManager.GetUserId(User);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    _logger.LogWarning("CurrentUser called but no user ID found");
+                    TempData["ErrorMessage"] = "Unable to retrieve current user information.";
+                    return RedirectToAction("Index", "Home", new { area = "Admin" });
+                }
+
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                {
+                    _logger.LogWarning("User {UserId} not found in database", userId);
+                    TempData["ErrorMessage"] = "User not found in database.";
+                    return RedirectToAction("Index", "Home", new { area = "Admin" });
+                }
+
+                // Get user roles
+                var roles = await _userManager.GetRolesAsync(user);
+
+                // Get user claims
+                var claims = await _userManager.GetClaimsAsync(user);
+                var claimsDictionary = claims.ToDictionary(c => c.Type, c => c.Value);
+
+                // Add claims from the current principal (includes authentication claims)
+                foreach (var claim in User.Claims)
+                {
+                    if (!claimsDictionary.ContainsKey(claim.Type))
+                    {
+                        claimsDictionary[claim.Type] = claim.Value;
+                    }
+                }
+
+                var viewModel = new CurrentUserViewModel
+                {
+                    Id = user.Id,
+                    UserName = user.UserName ?? string.Empty,
+                    Email = user.Email ?? string.Empty,
+                    EmailConfirmed = user.EmailConfirmed,
+                    PhoneNumber = user.PhoneNumber,
+                    PhoneNumberConfirmed = user.PhoneNumberConfirmed,
+                    TwoFactorEnabled = user.TwoFactorEnabled,
+                    LockoutEnabled = user.LockoutEnabled,
+                    LockoutEnd = user.LockoutEnd,
+                    AccessFailedCount = user.AccessFailedCount,
+                    Roles = roles.ToList(),
+                    Claims = claimsDictionary,
+                    IsAuthenticated = User.Identity?.IsAuthenticated ?? false,
+                    AuthenticationType = User.Identity?.AuthenticationType
+                };
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading current user information");
+                TempData["ErrorMessage"] = "An error occurred while loading user information.";
+                return RedirectToAction("Index", "Home", new { area = "Admin" });
+            }
+        }
+
+        /// <summary>
         /// Generate a secure random password
         /// </summary>
         private string GenerateSecurePassword()
