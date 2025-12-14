@@ -1,0 +1,279 @@
+@model VolleyballRallyManager.Lib.Models.TournamentRoundDetailsViewModel
+
+@{
+    ViewData["Title"] = $"Round Details - {Model.CurrentRound.Round?.Name}";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-trophy"></i> @Model.CurrentRound.Round?.Name</h1>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Rounds
+        </a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-white" style="background-color: #2e7d32;">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Round Information</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Tournament:</dt>
+                        <dd class="col-sm-7">@Model.CurrentRound.Tournament?.Name</dd>
+
+                        <dt class="col-sm-5">Division:</dt>
+                        <dd class="col-sm-7">@Model.CurrentRound.Division?.Name</dd>
+
+                        <dt class="col-sm-5">Round Number:</dt>
+                        <dd class="col-sm-7">@Model.CurrentRound.RoundNumber
+                            @if (Model.CurrentRound.IsPlayoff)
+                            {
+                                <span class="badge bg-info">Playoff</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-5">Match Strategy:</dt>
+                        <dd class="col-sm-7"><span class="badge bg-warning text-dark">@Model.CurrentRound.MatchGenerationStrategy</span></dd>
+
+                        <dt class="col-sm-5">Teams Advancing:</dt>
+                        <dd class="col-sm-7">
+                            @Model.CurrentRound.AdvancingTeamsCount 
+                            <span class="badge bg-info">@Model.CurrentRound.AdvancingTeamSelectionStrategy</span>
+                        </dd>
+
+                        <dt class="col-sm-5">Status:</dt>
+                        <dd class="col-sm-7">
+                            @if (Model.CurrentRound.IsFinished)
+                            {
+                                <span class="badge bg-success"><i class="bi bi-check-circle"></i> Finished</span>
+                            }
+                            else if (Model.CurrentRound.IsLocked)
+                            {
+                                <span class="badge bg-warning"><i class="bi bi-lock"></i> Locked</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary"><i class="bi bi-hourglass"></i> In Progress</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Round Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Total Teams:</dt>
+                        <dd class="col-sm-7"><strong>@Model.Teams.Count</strong></dd>
+
+                        <dt class="col-sm-5">Total Matches:</dt>
+                        <dd class="col-sm-7"><strong>@Model.Matches.Count</strong></dd>
+
+                        <dt class="col-sm-5">Completed Matches:</dt>
+                        <dd class="col-sm-7"><strong>@Model.Matches.Count(m => m.IsFinished)</strong></dd>
+
+                        <dt class="col-sm-5">Pending Matches:</dt>
+                        <dd class="col-sm-7"><strong>@Model.Matches.Count(m => !m.IsFinished)</strong></dd>
+
+                        <dt class="col-sm-5">Disputed Matches:</dt>
+                        <dd class="col-sm-7">
+                            @{
+                                var disputedCount = Model.Matches.Count(m => m.IsDisputed);
+                            }
+                            @if (disputedCount > 0)
+                            {
+                                <span class="badge bg-danger fs-6"><i class="bi bi-exclamation-triangle"></i> @disputedCount</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success"><i class="bi bi-check-circle"></i> 0</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-5">Completion:</dt>
+                        <dd class="col-sm-7">
+                            @if (Model.Matches.Any())
+                            {
+                                var percent = (double)Model.Matches.Count(m => m.IsFinished) / Model.Matches.Count * 100;
+                                <div class="progress">
+                                    <div class="progress-bar @(percent == 100 ? "bg-success" : "")"
+                                         role="progressbar"
+                                         style="width: @percent%; background-color: #2e7d32;">
+                                        @Math.Round(percent, 0)%
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-muted">No matches</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Rankings -->
+    @if (Model.Teams.Any())
+    {
+        <div class="card mb-4">
+            <div class="card-header text-white d-flex justify-content-between" style="background-color: #2e7d32;">
+                <h5 class="mb-0"><i class="bi bi-list-ol"></i> Team Rankings</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Seed</th>
+                                <th>Rank</th>
+                                <th>Team</th>
+                                @if (Model.ShowTeamGroup == true)
+                                {
+                                    <th>Group</th>
+                                }
+                                <th>Played</th>
+                                <th>W-D-L</th>
+                                <th>Points</th>
+                                <th>Sets</th>
+                                <th>Set Diff</th>
+                                <th>Score</th>
+                                <th>Score Diff</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var team in Model.Teams.OrderBy(t => t.Rank != 0 ? t.Rank : 999).ThenBy(t => t.SeedNumber))
+                            {
+                                <tr>
+                                    <td><span class="badge bg-secondary">@team.SeedNumber</span></td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => team.Rank, "Rank")
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Teams" asp-action="Details" asp-route-id="@team.TeamId">
+                                            <strong>@team.TeamName</strong>
+                                        </a>
+                                    </td>
+
+                                    @if (Model.ShowTeamGroup == true)
+                                    {
+                                        <td>@team.GroupName</td>
+                                    }
+                                    <td>@team.MatchesPlayed</td>
+                                    <td>@team.Wins-@team.Draws-@team.Losses</td>
+                                    <td><strong>@team.Points</strong></td>
+                                    <td>@team.SetsFor-@team.SetsAgainst</td>
+                                    <td>
+                                        <span class="@(team.SetsDifference > 0 ? "text-success" : team.SetsDifference < 0 ? "text-danger" : "")">
+                                            @(team.SetsDifference > 0 ? "+" : "")@team.SetsDifference
+                                        </span>
+                                    </td>
+                                    <td>@team.ScoreFor-@team.ScoreAgainst</td>
+                                    <td>
+                                        <span class="@(team.ScoreDifference > 0 ? "text-success" : team.ScoreDifference < 0 ? "text-danger" : "")">
+                                            @(team.ScoreDifference > 0 ? "+" : "")@team.ScoreDifference
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Matches -->
+    @if (Model.Matches.Any())
+    {
+        <div class="card">
+            <div class="card-header text-white d-flex justify-content-between" style="background-color: #2e7d32;">
+                <h5 class="mb-0"><i class="bi bi-calendar3"></i> Matches (@Model.Matches.Count)</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Match #</th>
+                                <th>Home Team</th>
+                                <th>Score</th>
+                                <th>Away Team</th>
+                                <th>Court</th>
+                                <th>Scheduled</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var match in Model.Matches.OrderBy(m => m.MatchNumber))
+                            {
+                                <tr class="@(match.IsFinished ? "" : "table-warning")">
+                                    <td><strong>#@match.MatchNumber</strong></td>
+                                    <td>
+                                        @if (match.HomeTeam != null)
+                                        {
+                                            <a asp-controller="Teams" asp-action="Details" asp-route-id="@match.HomeTeamId">
+                                                @match.HomeTeam.Name
+                                            </a>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (match.IsFinished)
+                                        {
+                                            <strong>@match.HomeTeamScore - @match.AwayTeamScore</strong>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">vs</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (match.AwayTeam != null)
+                                        {
+                                            <a asp-controller="Teams" asp-action="Details" asp-route-id="@match.AwayTeamId">
+                                                @match.AwayTeam.Name
+                                            </a>
+                                        }
+                                    </td>
+                                    <td>@match.CourtLocation</td>
+                                    <td>@match.ScheduledTime.ToString("MMM dd, HH:mm")</td>
+                                    <td>
+                                        @if (match.IsFinished)
+                                        {
+                                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> Complete</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark"><i class="bi bi-hourglass"></i> Pending</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a asp-controller="Matches" asp-action="Details" asp-route-id="@match.Id"
+                                           class="btn btn-sm" style="background-color: #2e7d32; color: #ffd700;">
+                                            <i class="bi bi-eye"></i> Details
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle"></i> No matches have been generated for this round yet.
+        </div>
+    }
+</div>

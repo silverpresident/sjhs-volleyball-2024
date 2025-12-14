@@ -192,3 +192,13 @@ THe page should display for the currently logged in users:
 - THe name, Id and other relevant info
 - All the claims
 - All the roles
+====
+
+In the public area create a Rounds controller, though called rounds it should be 
+user to display the tournamentRounds entity (for the active tournament)
+
+The index page should list each round grouped by division.
+Each should should have a link to a details page as well as basic info about the rounds (teams, # of matched, completion etc)
+
+The detals page should display information similar to the admin area's TournamentRound Details view.
+Since this page is public and has no update features, it should only have links to the displayed teams details page, and match details page.
