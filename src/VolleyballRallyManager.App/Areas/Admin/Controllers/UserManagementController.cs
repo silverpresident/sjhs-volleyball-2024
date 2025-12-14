@@ -15,15 +15,18 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<UserManagementController> _logger;
 
         public UserManagementController(
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
+            SignInManager<IdentityUser> signInManager,
             ILogger<UserManagementController> logger)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _signInManager = signInManager;
             _logger = logger;
         }
 
@@ -295,6 +298,15 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 if (rolesToAdd.Any())
                 {
                     await _userManager.AddToRolesAsync(user, rolesToAdd);
+                }
+
+                // Refresh the authentication cookie if the edited user is the current user
+                // This ensures role changes take effect immediately without requiring logout/login
+                var currentUserId = _userManager.GetUserId(User);
+                if (user.Id == currentUserId)
+                {
+                    await _signInManager.RefreshSignInAsync(user);
+                    _logger.LogInformation("Refreshed sign-in for current user after role changes");
                 }
 
                 _logger.LogInformation("User {Email} updated by {AdminUser}", model.Email, User.Identity!.Name);

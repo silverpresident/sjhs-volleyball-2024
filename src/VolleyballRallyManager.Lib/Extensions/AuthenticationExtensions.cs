@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using VolleyballRallyManager.Lib.Configuration;
 using VolleyballRallyManager.Lib.Data;
 
 namespace VolleyballRallyManager.Lib.Extensions
@@ -52,9 +54,14 @@ namespace VolleyballRallyManager.Lib.Extensions
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedEmail = false; // Disabled for development
             })
-            .AddRoles<IdentityRole>() 
+            .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
+
+            // Register custom claims principal factory to load roles into claims
+            // This ensures user roles are available during authentication for all login methods
+            services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>,
+                CustomUserClaimsPrincipalFactory>();
  
             // Configure authentication
             services.ConfigureApplicationCookie(options =>
@@ -79,41 +86,77 @@ namespace VolleyballRallyManager.Lib.Extensions
                     throw new InvalidOperationException("Google ClientSecret not configured");
 
                 options.SaveTokens = true;
-                options.Events.OnCreatingTicket = context =>
+                options.Events.OnCreatingTicket = async context =>
                 {
-                    // Extract additional claims from Google profile if needed
+                    // Extract email from Google profile
                     var email = context.Principal?.FindFirst(c => c.Type == System.Security.Claims.ClaimTypes.Email)?.Value;
-                    if (!string.IsNullOrEmpty(email))
+                    if (string.IsNullOrEmpty(email))
                     {
-                        // Add role claims based on configuration
+                        return;
+                    }
+
+                    // Get services from DI container
+                    var services = context.HttpContext.RequestServices;
+                    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+                    var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+                    var logger = loggerFactory.CreateLogger("GoogleOAuth");
+
+                    try
+                    {
+                        // Find the user in the database
+                        var user = await userManager.FindByEmailAsync(email);
+                        if (user == null)
+                        {
+                            // User will be created in ExternalLoginCallback, skip role assignment here
+                            return;
+                        }
+
+                        // Get role configuration
                         var adminEmail = configuration["VolleyBallRallyManager:AdminEmail"];
                         var adminEmails = configuration.GetSection("VolleyBallRallyManager:DefaultAdminEmails").Get<string[]>();
                         var judgeEmails = configuration.GetSection("VolleyBallRallyManager:DefaultJudgeEmails").Get<string[]>();
                         var scorekeeperEmails = configuration.GetSection("VolleyBallRallyManager:DefaultScorekeeperEmails").Get<string[]>();
 
-                        if (email == adminEmail)
+                        // Assign roles to database (not just claims)
+                        // These will be loaded into claims by CustomUserClaimsPrincipalFactory
+                        if (email == adminEmail || adminEmails?.Contains(email) == true)
                         {
-                            context.Identity?.AddClaim(new System.Security.Claims.Claim(
-                                System.Security.Claims.ClaimTypes.Role, "Administrator"));
-                        }
-                        else if (adminEmails?.Contains(email) == true)
-                        {
-                            context.Identity?.AddClaim(new System.Security.Claims.Claim(
-                                System.Security.Claims.ClaimTypes.Role, "Administrator"));
+                            if (!await userManager.IsInRoleAsync(user, "Administrator"))
+                            {
+                                var result = await userManager.AddToRoleAsync(user, "Administrator");
+                                if (result.Succeeded)
+                                {
+                                    logger.LogInformation("Assigned Administrator role to user {Email} during OAuth", email);
+                                }
+                            }
                         }
                         else if (judgeEmails?.Contains(email) == true)
                         {
-                            context.Identity?.AddClaim(new System.Security.Claims.Claim(
-                                System.Security.Claims.ClaimTypes.Role, "Judge"));
+                            if (!await userManager.IsInRoleAsync(user, "Judge"))
+                            {
+                                var result = await userManager.AddToRoleAsync(user, "Judge");
+                                if (result.Succeeded)
+                                {
+                                    logger.LogInformation("Assigned Judge role to user {Email} during OAuth", email);
+                                }
+                            }
                         }
                         else if (scorekeeperEmails?.Contains(email) == true)
                         {
-                            context.Identity?.AddClaim(new System.Security.Claims.Claim(
-                                System.Security.Claims.ClaimTypes.Role, "Scorekeeper"));
+                            if (!await userManager.IsInRoleAsync(user, "Scorekeeper"))
+                            {
+                                var result = await userManager.AddToRoleAsync(user, "Scorekeeper");
+                                if (result.Succeeded)
+                                {
+                                    logger.LogInformation("Assigned Scorekeeper role to user {Email} during OAuth", email);
+                                }
+                            }
                         }
                     }
-
-                    return Task.CompletedTask;
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Error assigning roles during Google OAuth for user {Email}", email);
+                    }
                 };
             })/*
                 .AddMicrosoftAccount(options =>

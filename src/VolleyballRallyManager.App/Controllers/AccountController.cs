@@ -25,15 +25,18 @@ namespace VolleyballRallyManager.App.Controllers
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<AccountController> _logger;
+        private readonly IConfiguration _configuration;
 
         public AccountController(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger,
+            IConfiguration configuration)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
+            _configuration = configuration;
         }
 
         /// <summary>
@@ -186,10 +189,14 @@ namespace VolleyballRallyManager.App.Controllers
                     return RedirectToAction(nameof(Login), new { ReturnUrl = returnUrl });
                 }
 
+                // Try to find existing user by email
                 var user = await _userManager.FindByEmailAsync(email);
+                bool isNewUser = false;
+
                 if (user == null)
                 {
                     // Create a new user
+                    isNewUser = true;
                     user = new IdentityUser
                     {
                         UserName = email,
@@ -209,16 +216,32 @@ namespace VolleyballRallyManager.App.Controllers
 
                     _logger.LogInformation("Created new user account for {Email}", email);
                 }
-
-                // Add the external login to the user
-                var addLoginResult = await _userManager.AddLoginAsync(user, info);
-                if (!addLoginResult.Succeeded)
+                else
                 {
-                    _logger.LogError("Failed to add external login for {Email}: {Errors}",
-                        email,
-                        string.Join(", ", addLoginResult.Errors.Select(e => e.Description)));
-                    TempData["ErrorMessage"] = "Failed to link external login to account.";
-                    return RedirectToAction(nameof(Login), new { ReturnUrl = returnUrl });
+                    _logger.LogInformation("Found existing user account for {Email}, linking Google login", email);
+                }
+
+                // Add the external login to the user (if not already linked)
+                var existingLogins = await _userManager.GetLoginsAsync(user);
+                if (!existingLogins.Any(l => l.LoginProvider == info.LoginProvider && l.ProviderKey == info.ProviderKey))
+                {
+                    var addLoginResult = await _userManager.AddLoginAsync(user, info);
+                    if (!addLoginResult.Succeeded)
+                    {
+                        _logger.LogError("Failed to add external login for {Email}: {Errors}",
+                            email,
+                            string.Join(", ", addLoginResult.Errors.Select(e => e.Description)));
+                        TempData["ErrorMessage"] = "Failed to link external login to account.";
+                        return RedirectToAction(nameof(Login), new { ReturnUrl = returnUrl });
+                    }
+                    _logger.LogInformation("Linked Google login to user {Email}", email);
+                }
+
+                // Assign roles based on configuration (for new users OR existing users without roles)
+                var userRoles = await _userManager.GetRolesAsync(user);
+                if (isNewUser || !userRoles.Any())
+                {
+                    await AssignRolesBasedOnConfigurationAsync(user, email);
                 }
 
                 // Sign in the user
@@ -345,6 +368,49 @@ namespace VolleyballRallyManager.App.Controllers
                 _logger.LogError(ex, "Error during password change for user");
                 ModelState.AddModelError(string.Empty, "An error occurred while changing your password. Please try again.");
                 return View(model);
+            }
+        }
+
+        /// <summary>
+        /// Assign roles to user based on email configuration
+        /// </summary>
+        private async Task AssignRolesBasedOnConfigurationAsync(IdentityUser user, string email)
+        {
+            try
+            {
+                var adminEmail = _configuration["VolleyBallRallyManager:AdminEmail"];
+                var adminEmails = _configuration.GetSection("VolleyBallRallyManager:DefaultAdminEmails").Get<string[]>();
+                var judgeEmails = _configuration.GetSection("VolleyBallRallyManager:DefaultJudgeEmails").Get<string[]>();
+                var scorekeeperEmails = _configuration.GetSection("VolleyBallRallyManager:DefaultScorekeeperEmails").Get<string[]>();
+
+                if (email == adminEmail || adminEmails?.Contains(email) == true)
+                {
+                    if (!await _userManager.IsInRoleAsync(user, "Administrator"))
+                    {
+                        await _userManager.AddToRoleAsync(user, "Administrator");
+                        _logger.LogInformation("Assigned Administrator role to user {Email}", email);
+                    }
+                }
+                else if (judgeEmails?.Contains(email) == true)
+                {
+                    if (!await _userManager.IsInRoleAsync(user, "Judge"))
+                    {
+                        await _userManager.AddToRoleAsync(user, "Judge");
+                        _logger.LogInformation("Assigned Judge role to user {Email}", email);
+                    }
+                }
+                else if (scorekeeperEmails?.Contains(email) == true)
+                {
+                    if (!await _userManager.IsInRoleAsync(user, "Scorekeeper"))
+                    {
+                        await _userManager.AddToRoleAsync(user, "Scorekeeper");
+                        _logger.LogInformation("Assigned Scorekeeper role to user {Email}", email);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error assigning roles to user {Email}", email);
             }
         }
 
