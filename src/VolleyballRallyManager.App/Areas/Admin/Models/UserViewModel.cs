@@ -102,6 +102,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Models
     /// </summary>
     public class CurrentUserViewModel
     {
+        // UserManager Data (from database)
         [Display(Name = "User ID")]
         public string Id { get; set; } = string.Empty;
 
@@ -132,16 +133,41 @@ namespace VolleyballRallyManager.App.Areas.Admin.Models
         [Display(Name = "Access Failed Count")]
         public int AccessFailedCount { get; set; }
 
-        [Display(Name = "Roles")]
+        [Display(Name = "Roles (from UserManager)")]
         public List<string> Roles { get; set; } = new List<string>();
 
-        [Display(Name = "Claims")]
+        [Display(Name = "Claims (from UserManager)")]
         public Dictionary<string, string> Claims { get; set; } = new Dictionary<string, string>();
 
+        // Session/Identity Data (from ClaimsPrincipal)
         [Display(Name = "Is Authenticated")]
         public bool IsAuthenticated { get; set; }
 
         [Display(Name = "Authentication Type")]
         public string? AuthenticationType { get; set; }
+
+        [Display(Name = "Identity Name")]
+        public string? IdentityName { get; set; }
+
+        [Display(Name = "Session Claims (from ClaimsPrincipal)")]
+        public Dictionary<string, List<string>> SessionClaims { get; set; } = new Dictionary<string, List<string>>();
+
+        [Display(Name = "All Identities Count")]
+        public int IdentitiesCount { get; set; }
+
+        [Display(Name = "Identity Details")]
+        public List<IdentityInfo> Identities { get; set; } = new List<IdentityInfo>();
+    }
+
+    /// <summary>
+    /// Information about an identity in the ClaimsPrincipal
+    /// </summary>
+    public class IdentityInfo
+    {
+        public string? Name { get; set; }
+        public string? AuthenticationType { get; set; }
+        public bool IsAuthenticated { get; set; }
+        public string? Label { get; set; }
+        public Dictionary<string, string> Claims { get; set; } = new Dictionary<string, string>();
     }
 }

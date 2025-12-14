@@ -183,7 +183,7 @@
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-primary text-white">
             <h5 class="mb-0">
-                <i class="fas fa-user-tag me-2"></i>Roles (@Model.Roles.Count)
+                <i class="fas fa-user-tag me-2"></i>Roles (from UserManager) - @Model.Roles.Count
             </h5>
         </div>
         <div class="card-body">
@@ -201,20 +201,23 @@
             else
             {
                 <p class="text-muted mb-0">
-                    <i class="fas fa-info-circle me-1"></i>No roles assigned to this user
+                    <i class="fas fa-info-circle me-1"></i>No roles assigned to this user in the database
                 </p>
             }
         </div>
     </div>
 
-    <!-- Claims Card -->
+    <!-- Claims Card (from UserManager) -->
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-info text-white">
             <h5 class="mb-0">
-                <i class="fas fa-key me-2"></i>Claims (@Model.Claims.Count)
+                <i class="fas fa-key me-2"></i>Claims (from UserManager) - @Model.Claims.Count
             </h5>
         </div>
         <div class="card-body">
+            <p class="text-muted small mb-3">
+                <i class="fas fa-database me-1"></i>These claims are stored in the database and retrieved via UserManager
+            </p>
             @if (Model.Claims.Any())
             {
                 <div class="table-responsive">
@@ -244,11 +247,239 @@
             else
             {
                 <p class="text-muted mb-0">
-                    <i class="fas fa-info-circle me-1"></i>No claims found for this user
+                    <i class="fas fa-info-circle me-1"></i>No claims found in the database for this user
                 </p>
             }
         </div>
     </div>
+
+    <hr class="my-5" />
+
+    <!-- Session/Identity Information Section Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="fw-bold text-warning">
+                <i class="fas fa-id-card me-2"></i>Session & Identity Information
+            </h3>
+            <p class="text-muted">Information from the current ClaimsPrincipal and HttpContext session</p>
+        </div>
+    </div>
+
+    <!-- Identity Summary Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">
+                <i class="fas fa-user-check me-2"></i>Identity Summary
+            </h5>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.IdentityName):</dt>
+                <dd class="col-sm-8">
+                    @if (!string.IsNullOrEmpty(Model.IdentityName))
+                    {
+                        <code>@Model.IdentityName</code>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Not set</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.AuthenticationType):</dt>
+                <dd class="col-sm-8">
+                    @if (!string.IsNullOrEmpty(Model.AuthenticationType))
+                    {
+                        <code>@Model.AuthenticationType</code>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Not set</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.IsAuthenticated):</dt>
+                <dd class="col-sm-8">
+                    @if (Model.IsAuthenticated)
+                    {
+                        <span class="badge bg-success">
+                            <i class="fas fa-check-circle me-1"></i>Authenticated
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">
+                            <i class="fas fa-times-circle me-1"></i>Not Authenticated
+                        </span>
+                    }
+                </dd>
+
+                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.IdentitiesCount):</dt>
+                <dd class="col-sm-8">
+                    <span class="badge bg-secondary">@Model.IdentitiesCount</span>
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Session Claims Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">
+                <i class="fas fa-clipboard-list me-2"></i>Session Claims (from ClaimsPrincipal) - @Model.SessionClaims.Count
+            </h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted small mb-3">
+                <i class="fas fa-certificate me-1"></i>These claims are loaded from the authentication cookie/session for the current request
+            </p>
+            @if (Model.SessionClaims.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 30%;">Claim Type</th>
+                                <th style="width: 60%;">Claim Value(s)</th>
+                                <th style="width: 10%;" class="text-center">Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var claim in Model.SessionClaims.OrderBy(c => c.Key))
+                            {
+                                <tr>
+                                    <td>
+                                        <code class="text-warning">@claim.Key</code>
+                                    </td>
+                                    <td>
+                                        @if (claim.Value.Count == 1)
+                                        {
+                                            <code>@claim.Value[0]</code>
+                                        }
+                                        else
+                                        {
+                                            <ul class="mb-0 ps-3">
+                                                @foreach (var value in claim.Value)
+                                                {
+                                                    <li><code>@value</code></li>
+                                                }
+                                            </ul>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-secondary">@claim.Value.Count</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted mb-0">
+                    <i class="fas fa-info-circle me-1"></i>No claims found in the current session
+                </p>
+            }
+        </div>
+    </div>
+
+    <!-- Identity Details Card -->
+    @if (Model.Identities.Any())
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">
+                    <i class="fas fa-id-badge me-2"></i>Identity Details (@Model.Identities.Count)
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">
+                    <i class="fas fa-layer-group me-1"></i>Detailed information about each identity in the ClaimsPrincipal
+                </p>
+                @for (int i = 0; i < Model.Identities.Count; i++)
+                {
+                    var identity = Model.Identities[i];
+                    <div class="border rounded p-3 @(i < Model.Identities.Count - 1 ? "mb-3" : "")">
+                        <h6 class="fw-bold mb-3">
+                            <i class="fas fa-fingerprint me-2"></i>Identity #@(i + 1)
+                        </h6>
+                        <dl class="row mb-3">
+                            <dt class="col-sm-3">Name:</dt>
+                            <dd class="col-sm-9">
+                                @if (!string.IsNullOrEmpty(identity.Name))
+                                {
+                                    <code>@identity.Name</code>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Not set</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-3">Authentication Type:</dt>
+                            <dd class="col-sm-9">
+                                @if (!string.IsNullOrEmpty(identity.AuthenticationType))
+                                {
+                                    <code>@identity.AuthenticationType</code>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Not set</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-3">Is Authenticated:</dt>
+                            <dd class="col-sm-9">
+                                @if (identity.IsAuthenticated)
+                                {
+                                    <i class="fas fa-check text-success"></i> Yes
+                                }
+                                else
+                                {
+                                    <i class="fas fa-times text-danger"></i> No
+                                }
+                            </dd>
+
+                            @if (!string.IsNullOrEmpty(identity.Label))
+                            {
+                                <dt class="col-sm-3">Label:</dt>
+                                <dd class="col-sm-9"><code>@identity.Label</code></dd>
+                            }
+                        </dl>
+
+                        @if (identity.Claims.Any())
+                        {
+                            <h6 class="fw-bold mb-2">Claims (@identity.Claims.Count):</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-striped">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width: 35%;">Claim Type</th>
+                                            <th style="width: 65%;">Claim Value</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var claim in identity.Claims.OrderBy(c => c.Key))
+                                        {
+                                            <tr>
+                                                <td><code class="small">@claim.Key</code></td>
+                                                <td><code class="small">@claim.Value</code></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted small mb-0">No claims in this identity</p>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
 
     <!-- Help Section -->
     <div class="card border-info">

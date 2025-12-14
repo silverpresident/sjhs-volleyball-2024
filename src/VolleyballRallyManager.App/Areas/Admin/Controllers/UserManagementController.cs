@@ -406,24 +406,58 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                     return RedirectToAction("Index", "Home", new { area = "Admin" });
                 }
 
-                // Get user roles
+                // Get user roles from UserManager (database)
                 var roles = await _userManager.GetRolesAsync(user);
 
-                // Get user claims
+                // Get user claims from UserManager (database)
                 var claims = await _userManager.GetClaimsAsync(user);
                 var claimsDictionary = claims.ToDictionary(c => c.Type, c => c.Value);
 
-                // Add claims from the current principal (includes authentication claims)
+                // Get session claims from ClaimsPrincipal (current request/session)
+                var sessionClaims = new Dictionary<string, List<string>>();
                 foreach (var claim in User.Claims)
                 {
-                    if (!claimsDictionary.ContainsKey(claim.Type))
+                    if (!sessionClaims.ContainsKey(claim.Type))
                     {
-                        claimsDictionary[claim.Type] = claim.Value;
+                        sessionClaims[claim.Type] = new List<string>();
+                    }
+                    sessionClaims[claim.Type].Add(claim.Value);
+                }
+
+                // Get all identities from ClaimsPrincipal
+                var identities = new List<IdentityInfo>();
+                if (User.Identities != null)
+                {
+                    foreach (var identity in User.Identities)
+                    {
+                        var identityClaims = new Dictionary<string, string>();
+                        foreach (var claim in identity.Claims)
+                        {
+                            // Use a key that includes index if duplicate claim types exist
+                            var key = claim.Type;
+                            var counter = 1;
+                            while (identityClaims.ContainsKey(key))
+                            {
+                                key = $"{claim.Type} [{counter}]";
+                                counter++;
+                            }
+                            identityClaims[key] = claim.Value;
+                        }
+
+                        identities.Add(new IdentityInfo
+                        {
+                            Name = identity.Name,
+                            AuthenticationType = identity.AuthenticationType,
+                            IsAuthenticated = identity.IsAuthenticated,
+                            Label = identity.Label,
+                            Claims = identityClaims
+                        });
                     }
                 }
 
                 var viewModel = new CurrentUserViewModel
                 {
+                    // UserManager data (from database)
                     Id = user.Id,
                     UserName = user.UserName ?? string.Empty,
                     Email = user.Email ?? string.Empty,
@@ -436,8 +470,14 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                     AccessFailedCount = user.AccessFailedCount,
                     Roles = roles.ToList(),
                     Claims = claimsDictionary,
+                    
+                    // Session/Identity data (from ClaimsPrincipal)
                     IsAuthenticated = User.Identity?.IsAuthenticated ?? false,
-                    AuthenticationType = User.Identity?.AuthenticationType
+                    AuthenticationType = User.Identity?.AuthenticationType,
+                    IdentityName = User.Identity?.Name,
+                    SessionClaims = sessionClaims,
+                    IdentitiesCount = identities.Count,
+                    Identities = identities
                 };
 
                 return View(viewModel);
