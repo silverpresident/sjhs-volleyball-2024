@@ -590,7 +590,7 @@ namespace VolleyballRallyManager.Lib.Services
                 var roundView = new TournamentRoundSummaryViewModel()
                 {
                     TournamentRoundId = tr.Id,
-                    TournamentId = tournament.Id,
+                    TournamentId = tournament!.Id,
                     RoundId = tr.RoundId,
                     DivisionId = tr.DivisionId,
                     IsFinished = tr.IsFinished,
@@ -635,8 +635,8 @@ namespace VolleyballRallyManager.Lib.Services
             {
                 TournamentId = tournamentId,
                 DivisionId = divisionId,
-                Tournament = tournament,
-                Division = division,
+                Tournament = tournament!,
+                Division = division!,
                 DivisionStats = divisionStats,
                 Rounds = roundViewModels,
                 Teams = teams
