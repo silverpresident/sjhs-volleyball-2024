@@ -1,17 +1,43 @@
+-- =============================================
+-- ST JAGO Volleyball Rally Manager - Complete Database Setup
+-- =============================================
+-- This script creates all tables needed for the Volleyball Rally Manager
+-- Run this script on a fresh database to create the complete schema
+
 -- Create Database
 IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'stjago-volleyball-demo')
 BEGIN
-    CREATE DATABASE stjago-volleyball-demo;
+    CREATE DATABASE [stjago-volleyball-demo];
 END
 GO
 
-USE stjago-volleyball-demo;
+USE [stjago-volleyball-demo];
 GO
 
 -- Create Schema
 IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'dbo')
 BEGIN
     EXEC('CREATE SCHEMA dbo');
+END
+GO
+
+-- =============================================
+-- Core Tables
+-- =============================================
+
+-- Divisions
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Divisions' AND schema_id = SCHEMA_ID('dbo'))
+BEGIN
+    CREATE TABLE dbo.Divisions
+    (
+        Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+        Name NVARCHAR(50) NOT NULL,
+        CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+        UpdatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+        CreatedBy NVARCHAR(256) NOT NULL DEFAULT 'system',
+        UpdatedBy NVARCHAR(256) NOT NULL DEFAULT 'system'
+    );
+    PRINT 'Divisions table created successfully.';
 END
 GO
 
@@ -25,29 +51,16 @@ BEGIN
         Description NVARCHAR(MAX) NULL,
         TournamentDate DATETIME2 NOT NULL,
         IsActive BIT NOT NULL DEFAULT 0,
-        CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
-        UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
-        CreatedBy NVARCHAR(256),
-        UpdatedBy NVARCHAR(256)
+        RegistrationUrl NVARCHAR(1000) NULL,
+        CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+        UpdatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+        CreatedBy NVARCHAR(256) NOT NULL DEFAULT 'system',
+        UpdatedBy NVARCHAR(256) NOT NULL DEFAULT 'system'
     );
+    PRINT 'Tournaments table created successfully.';
 END
 GO
 
--- Create Tables
--- Divisions
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Divisions' AND schema_id = SCHEMA_ID('dbo'))
-BEGIN
-    CREATE TABLE dbo.Divisions
-    (
-        Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
-        Name NVARCHAR(50) NOT NULL,
-        CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
-        UpdatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
-        CreatedBy NVARCHAR(256),
-        UpdatedBy NVARCHAR(256)
-    );
-END
-GO
 
 -- Teams
 IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Teams' AND schema_id = SCHEMA_ID('dbo'))

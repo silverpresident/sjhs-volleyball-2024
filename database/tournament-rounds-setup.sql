@@ -39,10 +39,6 @@ BEGIN
         CONSTRAINT FK_TournamentRounds_Round FOREIGN KEY (RoundId) 
             REFERENCES Rounds(Id) ON DELETE NO ACTION,
         
-        -- Unique Constraint: One round per tournament-division-round combination
-        CONSTRAINT UQ_TournamentRounds_TournamentDivisionRound 
-            UNIQUE (TournamentId, DivisionId, RoundId),
-        
         -- Check Constraints
         CONSTRAINT CK_TournamentRounds_RoundNumber CHECK (RoundNumber >= 0),
         CONSTRAINT CK_TournamentRounds_AdvancingTeamsCount CHECK (AdvancingTeamsCount >= 0),
