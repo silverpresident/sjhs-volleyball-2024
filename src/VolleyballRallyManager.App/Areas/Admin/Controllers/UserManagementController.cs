@@ -515,7 +515,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             {
                 password[i] = chars[random.Next(chars.Length)];
             }
-            
+            password[4] = random.Next(0, 9).ToString()[0]; //password must contain at least 1 digit
             return new string(password);
         }
     }

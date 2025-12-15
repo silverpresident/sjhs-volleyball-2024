@@ -174,7 +174,7 @@ public class TournamentRoundService : ITournamentRoundService
             var roundNumber = previousRound.RoundNumber + 1;
             if (isPlayoff == false)
             {
-                if (_context.TournamentRounds.Any(tr => tr.TournamentId == tournamentId && tr.DivisionId == divisionId && tr.RoundNumber == roundNumber))
+                if (_context.TournamentRounds.Any(tr => tr.TournamentId == tournamentId && tr.DivisionId == divisionId && tr.RoundNumber == roundNumber && tr.IsPlayoff == false))
                 {
                     throw new InvalidOperationException($"Round {roundNumber} already exists");
                 }
