@@ -58,7 +58,7 @@ public class RoundsController : Controller
             {
                 var divisionDetails = await _tournamentService.GetTournamentDivisionDetailsAsync(
                     activeTournament.Id,
-                    division.Id);
+                    division.DivisionId);
 
                 if (divisionDetails?.Rounds == null || !divisionDetails.Rounds.Any())
                 {
@@ -67,7 +67,7 @@ public class RoundsController : Controller
 
                 var divisionGroup = new DivisionRoundsGroup
                 {
-                    DivisionId = division.Id,
+                    DivisionId = division.DivisionId,
                     DivisionName = division.Division.Name,
                     Rounds = new List<RoundSummaryInfo>()
                 };
