@@ -715,8 +715,23 @@ public class TournamentRoundsController : Controller
             {
                 return NotFound();
             }
-            //TODO if tournamentRound 1 auto assign teams
-            var teams = await _tournamentRoundService.GetRoundTeamsAsync(id);
+            
+            // Auto-assign teams for round 1 if not yet assigned
+            List<TournamentRoundTeam> teams;
+            if (round.RoundNumber == 1)
+            {
+                teams = await _tournamentRoundService.GetRoundTeamsAsync(id);
+                if (!teams.Any())
+                {
+                    var userName = User.Identity?.Name ?? "admin";
+                    teams = await _tournamentRoundService.AssignFirstRoundTeamsAsync(id, userName);
+                    TempData["InfoMessage"] = "Teams were automatically assigned for Round 1.";
+                }
+            }
+            else
+            {
+                teams = await _tournamentRoundService.GetRoundTeamsAsync(id);
+            }
 
             var model = new GenerateMatchesViewModel
             {

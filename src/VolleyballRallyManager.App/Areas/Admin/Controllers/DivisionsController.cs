@@ -11,10 +11,12 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
     public class DivisionsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<DivisionsController> _logger;
 
-        public DivisionsController(ApplicationDbContext context)
+        public DivisionsController(ApplicationDbContext context, ILogger<DivisionsController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: Admin/Divisions
@@ -139,14 +141,42 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var division = await _context.Divisions.FindAsync(id);
-            if (division != null)
+            try
             {
-                //TODO check before deleting
-                _context.Divisions.Remove(division);
+                var division = await _context.Divisions.FindAsync(id);
+                if (division != null)
+                {
+                    // Check if division is used in tournaments
+                    var hasTournamentDivisions = await _context.TournamentDivisions
+                        .AnyAsync(td => td.DivisionId == id);
+                    
+                    // Check if division has teams
+                    var hasTeams = await _context.TournamentTeamDivisions
+                        .AnyAsync(ttd => ttd.DivisionId == id);
+                    
+                    // Check if division has rounds
+                    var hasRounds = await _context.TournamentRounds
+                        .AnyAsync(tr => tr.DivisionId == id);
+                    
+                    if (hasTournamentDivisions || hasTeams || hasRounds)
+                    {
+                        TempData["Error"] = "Cannot delete division. It is being used in tournaments, teams, or rounds.";
+                        _logger.LogWarning("Attempted to delete division {DivisionId} which is in use", id);
+                        return RedirectToAction(nameof(Index));
+                    }
+                    
+                    _context.Divisions.Remove(division);
+                }
+                await _context.SaveChangesAsync();
+               TempData["Success"] = "Division deleted successfully.";
+                return RedirectToAction(nameof(Index));
             }
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting division {DivisionId}", id);
+                TempData["Error"] = "An error occurred while deleting the division.";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         private bool DivisionExists(Guid id)

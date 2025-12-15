@@ -456,7 +456,7 @@ public class MatchService : IMatchService
             await _notificationService.NotifyMatchUpdatedAsync(match);
         }
         await _context.SaveChangesAsync();
-        //TODO update match with sets won v lost
+        // Match sets won/lost are already updated above (lines 452-453)
         return matchSet;
     }
 

@@ -442,7 +442,7 @@ public class TournamentRoundService : ITournamentRoundService
             switch (tournamentRound.QualifyingTeamSelectionStrategy)
             {
                 case TeamSelectionStrategy.WinnersOnly:
-                    //TODO should teams who won their match
+                    // Select teams who won at least one match, ordered by rank
                     qualifyingTeams = previousRoundTeams
                         .Where(t => t.Wins > 0)
                         .Take(tournamentRound.QualifyingTeamsCount)

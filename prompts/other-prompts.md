@@ -202,3 +202,6 @@ Each should should have a link to a details page as well as basic info about the
 
 The detals page should display information similar to the admin area's TournamentRound Details view.
 Since this page is public and has no update features, it should only have links to the displayed teams details page, and match details page.
+====
+
+THe project has some todo items scattered thoughout what are they and can you implement them?

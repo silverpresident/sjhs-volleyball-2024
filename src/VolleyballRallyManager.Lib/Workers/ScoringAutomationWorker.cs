@@ -167,17 +167,11 @@ public class ScoringAutomationWorker : BackgroundService
             return;
         }
 
-        // Create match update requesting support
-        /*var update = new MatchUpdate
-        {
-            MatchId = scoringEvent.MatchId,
-            UpdateType = UpdateType.Other,
-            Content = $"Support requested for {match.HomeTeam?.Name} vs {match.AwayTeam?.Name} on {match.CourtLocation ?? "court"}"
-        };
-        await matchService.AddMatchUpdateAsync(update);*/
-        //TODO this message is for admin chat only - implement when admin chat is available
-
-        _logger.LogInformation("Processed CallToSupport for match {MatchId} - Admin notification should be implemented", scoringEvent.MatchId);
+        // Note: This functionality is for admin chat notifications
+        // When admin chat is implemented, create a match update or notification here
+        // For now, just log the support request
+        _logger.LogInformation("Support requested for match {MatchId} - {HomeTeam} vs {AwayTeam} on {Court}. Admin chat notification pending implementation.",
+            scoringEvent.MatchId, match.HomeTeam?.Name, match.AwayTeam?.Name, match.CourtLocation ?? "court");
     }
 
     private async Task HandleMatchStartAsync(ScoringEvent scoringEvent, IMatchService matchService, ISignalRNotificationService notificationService, IAnnouncementService announcerService)
@@ -371,11 +365,14 @@ public class ScoringAutomationWorker : BackgroundService
         string title = $"Match Finished #{match.MatchNumber}";
         if (await announcerService.TitleExistsAsync(title) == false)
         {
-            //TODO include score for each set in announcement
+            // Get all sets for the match to include individual set scores
+            var sets = await matchService.GetMatchSetsAsync(scoringEvent.MatchId);
+            var setScores = string.Join(", ", sets.Select(s => $"{s.HomeTeamScore}-{s.AwayTeamScore}"));
+            
             var announcement = new Announcement
             {
                 Title = title,
-                Content = $"Match #{match.MatchNumber} between Teams {match.HomeTeam?.Name} and {match.AwayTeam?.Name} has ended. Final score: {match.HomeTeamScore}-{match.AwayTeamScore} sets.",
+                Content = $"Match #{match.MatchNumber} between Teams {match.HomeTeam?.Name} and {match.AwayTeam?.Name} has ended. Final score: {match.HomeTeamScore}-{match.AwayTeamScore} sets ({setScores}).",
                 IsHidden = false,
                 CreatedBy = scoringEvent.UserName
             };

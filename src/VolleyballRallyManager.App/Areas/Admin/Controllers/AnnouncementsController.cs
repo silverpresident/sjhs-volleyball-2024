@@ -71,7 +71,8 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    //TODO CreatedBY
+                    announcement.CreatedBy = User.Identity?.Name ?? "admin";
+                    announcement.UpdatedBy = User.Identity?.Name ?? "admin";
                     await _announcementService.CreateAnnouncementAsync(announcement);
                     TempData["Success"] = "Announcement created successfully.";
                     return RedirectToAction(nameof(Index));
@@ -112,7 +113,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    //TODO updated by
+                    announcement.UpdatedBy = User.Identity?.Name ?? "admin";
                     await _announcementService.UpdateAnnouncementAsync(announcement);
                     TempData["Success"] = "Announcement updated successfully.";
                     return RedirectToAction(nameof(Index));

@@ -97,6 +97,7 @@ public class AnnouncementService : IAnnouncementService
                 announcement.Title = $"Announcement {cnt}";
             }
             announcement.TournamentId = ActiveTournamentId;
+            announcement.CreatedAt = DateTime.Now;
             announcement.UpdatedAt = DateTime.Now;
             announcement.UpdatedBy = announcement.CreatedBy;
 

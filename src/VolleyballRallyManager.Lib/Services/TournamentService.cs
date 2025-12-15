@@ -664,8 +664,8 @@ namespace VolleyballRallyManager.Lib.Services
                 var previousRound = await _context.TournamentRounds.FindAsync(tr.PreviousTournamentRoundId.Value);
                 roundView.CanSelectTeams = previousRound != null && previousRound.IsFinished;
             }
-            //TODO temp
-            roundView.CanSelectTeams = true;
+            // Allow manual team selection for flexibility in tournament management
+            //roundView.CanSelectTeams = true;
 
             // Show Create Playoff Round button when:
             // 1. Round is finished (has rankings)

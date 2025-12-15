@@ -356,11 +356,14 @@ private async Task HandleMatchEndAsync(TournamentEvent TournamentEvent, IMatchSe
    string title = $"Match Finished #{match.MatchNumber}";
    if (await announcerService.TitleExistsAsync(title) == false)
    {
-       //TODO include score for each set in announcement
+       // Get all sets for the match to include individual set scores
+       var sets = await matchService.GetMatchSetsAsync(TournamentEvent.MatchId);
+       var setScores = string.Join(", ", sets.Select(s => $"{s.HomeTeamScore}-{s.AwayTeamScore}"));
+       
        var announcement = new Announcement
        {
            Title = title,
-           Content = $"Match #{match.MatchNumber} between Teams {match.HomeTeam?.Name} and {match.AwayTeam?.Name} has ended. Final score: {match.HomeTeamScore}-{match.AwayTeamScore} sets.",
+           Content = $"Match #{match.MatchNumber} between Teams {match.HomeTeam?.Name} and {match.AwayTeam?.Name} has ended. Final score: {match.HomeTeamScore}-{match.AwayTeamScore} sets ({setScores}).",
            IsHidden = false,
            CreatedBy = TournamentEvent.UserName
        };
