@@ -55,7 +55,7 @@ public class TournamentRoundsController : Controller
             // Get first division if not specified
             if (!divisionId.HasValue)
             {
-                var firstDivision = await _context.Divisions.FirstOrDefaultAsync();
+                var firstDivision = await _context.Divisions.AsNoTracking().FirstOrDefaultAsync();
                 if (firstDivision == null)
                 {
                     TempData["ErrorMessage"] = "No divisions found. Please create a division first.";
@@ -126,13 +126,14 @@ public class TournamentRoundsController : Controller
 
             if (!divisionId.HasValue)
             {
-                var firstDivision = await _context.Divisions.FirstOrDefaultAsync();
+                var firstDivision = await _context.Divisions.AsNoTracking().FirstOrDefaultAsync();
                 divisionId = firstDivision?.Id ?? Guid.Empty;
             }
 
             // ACCESS GUARD: Check if a tournamentRound with RoundNumber > 1 already exists
             var existingRounds = await _context.TournamentRounds
                 .Include(tr => tr.Round)
+                .AsNoTracking()
                 .Where(tr => tr.TournamentId == tournamentId.Value && tr.DivisionId == divisionId.Value)
                 .ToListAsync();
 
@@ -162,7 +163,7 @@ public class TournamentRoundsController : Controller
             var division = await _context.Divisions.FindAsync(divisionId.Value);
             
             // Get CurrentRound with RoundNumber = 1
-            var firstRoundDef = await _context.Rounds.FirstOrDefaultAsync(r => r.Sequence == 1);
+            var firstRoundDef = await _context.Rounds.AsNoTracking().FirstOrDefaultAsync(r => r.Sequence == 1);
             if (firstRoundDef == null)
             {
                 TempData["ErrorMessage"] = "No round with Sequence = 1 found. Please create a round first.";
@@ -425,7 +426,7 @@ public class TournamentRoundsController : Controller
             var division = await _context.Divisions.FindAsync(currentRound.DivisionId);
 
             // Get all rounds and the current tournamentRound to disable it in the dropdown
-            var allRounds = await _context.Rounds.OrderBy(r => r.Sequence).ToListAsync();
+            var allRounds = await _context.Rounds.AsNoTracking().OrderBy(r => r.Sequence).ToListAsync();
             ViewData["Rounds"] = new SelectList(allRounds, "Id", "Name");
 
             // Get team count from current tournamentRound

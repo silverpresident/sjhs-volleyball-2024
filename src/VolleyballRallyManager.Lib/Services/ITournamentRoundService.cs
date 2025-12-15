@@ -116,36 +116,54 @@ public interface ITournamentRoundService
     Task<TournamentRound> FinalizeRoundAsync(Guid tournamentRoundId, string userName);
 
     /// <summary>
-    /// Checks if all matches in a round are complete
+    /// Checks if all matches in a round are complete.
     /// </summary>
+    /// <param name="tournamentRoundId">The tournament round ID to check.</param>
+    /// <returns>True if all matches are complete, false otherwise.</returns>
     Task<bool> AreAllMatchesCompleteAsync(Guid tournamentRoundId);
 
     /// <summary>
-    /// Checks if a round has teams assigned
+    /// Checks if a round has teams assigned to it.
     /// </summary>
+    /// <param name="tournamentRoundId">The tournament round ID to check.</param>
+    /// <returns>True if teams are assigned, false otherwise.</returns>
     Task<bool> HasTeamsAssignedAsync(Guid tournamentRoundId);
 
     /// <summary>
-    /// Checks if a round has matches generated
+    /// Checks if a round has matches generated.
     /// </summary>
+    /// <param name="tournamentRoundId">The tournament round ID to check.</param>
+    /// <returns>True if matches exist, false otherwise.</returns>
     Task<bool> HasMatchesGeneratedAsync(Guid tournamentRoundId);
 
     /// <summary>
-    /// Gets teams for a tournament round
+    /// Gets all teams participating in a tournament round with their statistics.
     /// </summary>
+    /// <param name="tournamentRoundId">The tournament round ID.</param>
+    /// <returns>List of tournament round teams with rankings and statistics.</returns>
     Task<List<TournamentRoundTeam>> GetRoundTeamsAsync(Guid tournamentRoundId);
 
     /// <summary>
-    /// Gets matches for a tournament round
+    /// Gets all matches in a tournament round.
     /// </summary>
+    /// <param name="tournamentRoundId">The tournament round ID.</param>
+    /// <returns>List of matches in the round.</returns>
     Task<List<Match>> GetRoundMatchesAsync(Guid tournamentRoundId);
 
     /// <summary>
-    /// Deletes all rounds for a specific tournament
+    /// Deletes all rounds for a specific tournament (developer/cleanup operation).
     /// </summary>
-    /// <param name="tournamentId">Tournament ID</param>
-    /// <returns>Number of rounds deleted</returns>
+    /// <param name="tournamentId">The tournament ID.</param>
+    /// <returns>Number of rounds deleted.</returns>
     Task<int> DeleteAllRoundsByTournamentAsync(Guid tournamentId);
+
+    /// <summary>
+    /// Unfinalizes a previously finalized round (unlocks it for modifications).
+    /// Use with caution as this can affect dependent rounds.
+    /// </summary>
+    /// <param name="id">The tournament round ID to unfinalize.</param>
+    /// <param name="userName">User performing the action.</param>
+    /// <returns>The unfinalized tournament round.</returns>
     Task<TournamentRound> UnfinalizeRoundAsync(Guid id, string userName);
 
     /// <summary>

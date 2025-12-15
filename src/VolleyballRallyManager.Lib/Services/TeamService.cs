@@ -5,12 +5,47 @@ using VolleyballRallyManager.Lib.Models;
 
 namespace VolleyballRallyManager.Lib.Services;
 
+/// <summary>
+/// Service for managing teams in the volleyball tournament system.
+/// Handles basic CRUD operations for team entities.
+/// </summary>
 public interface ITeamService
 {
+    /// <summary>
+    /// Retrieves a specific team by ID.
+    /// </summary>
+    /// <param name="id">The team ID to retrieve.</param>
+    /// <returns>The team or null if not found.</returns>
     Task<Team?> GetTeamAsync(Guid id);
+
+    /// <summary>
+    /// Gets all teams in the system, ordered by name.
+    /// </summary>
+    /// <returns>Collection of all teams.</returns>
     Task<IEnumerable<Team>> GetTeamsAsync();
+
+    /// <summary>
+    /// Creates a new team.
+    /// </summary>
+    /// <param name="team">The team to create.</param>
+    /// <returns>The created team.</returns>
     Task<Team> CreateTeamAsync(Team team);
+
+    /// <summary>
+    /// Updates an existing team.
+    /// </summary>
+    /// <param name="team">The team with updated values.</param>
+    /// <returns>The updated team.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if team is not found.</exception>
     Task<Team> UpdateTeamAsync(Team team);
+
+    /// <summary>
+    /// Deletes a team by ID.
+    /// Teams with existing matches cannot be deleted.
+    /// </summary>
+    /// <param name="id">The team ID to delete.</param>
+    /// <returns>True if deleted successfully, false if team not found.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if team has existing matches.</exception>
     Task<bool> DeleteTeamAsync(Guid id);
 }
 

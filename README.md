@@ -31,7 +31,7 @@ The solution consists of three main projects:
 
 ## Prerequisites
 
-- [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - [Visual Studio Code](https://code.visualstudio.com/) or [Visual Studio 2022](https://visualstudio.microsoft.com/vs/)
 - [SQL Server](https://www.microsoft.com/sql-server)
 - [Azure Account](https://azure.microsoft.com/free/)
@@ -55,10 +55,10 @@ The solution consists of three main projects:
 3. Create and configure appsettings.json files:
    ```bash
    # Admin project
-   cp src/VolleyballRallyManager.App/appsettings.json.example src/VolleyballRallyManager.App/appsettings.json
+   cp src/VolleyballRallyManager.App/appsettings.Example.json src/VolleyballRallyManager.App/appsettings.json
    
    # Public project
-   cp src/VolleyballRallyManager.Public/wwwroot/appsettings.json.example src/VolleyballRallyManager.Public/wwwroot/appsettings.json
+   cp src/VolleyballRallyManager.Public/wwwroot/appsettings.Example.json src/VolleyballRallyManager.Public/wwwroot/appsettings.json
    ```
 
 4. Set up the database:
@@ -112,11 +112,11 @@ The solution consists of three main projects:
    ```bash
    # Deploy Admin app
    dotnet publish src/VolleyballRallyManager.App -c Release
-   az webapp deployment source config-zip --src bin/Release/net8.0/publish.zip --name your-admin-app --resource-group your-resource-group
+   az webapp deployment source config-zip --src bin/Release/net10.0/publish.zip --name your-admin-app --resource-group your-resource-group
    
    # Deploy Public app
    dotnet publish src/VolleyballRallyManager.Public -c Release
-   az webapp deployment source config-zip --src bin/Release/net8.0/publish.zip --name your-public-app --resource-group your-resource-group
+   az webapp deployment source config-zip --src bin/Release/net10.0/publish.zip --name your-public-app --resource-group your-resource-group
    ```
 
 ## Required Azure Resources

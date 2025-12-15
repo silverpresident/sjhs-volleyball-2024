@@ -497,8 +497,8 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             // Get unseeded teams (SeedNumber is 0 or null)
             var unseededTeams = await _context.TournamentTeamDivisions
                 .Include(t => t.Team)
-                .Where(t => t.TournamentId == tournamentId && 
-                           t.DivisionId == divisionId && 
+                .Where(t => t.TournamentId == tournamentId &&
+                           t.DivisionId == divisionId &&
                            t.SeedNumber <= 0)
                 .ToListAsync();
 
@@ -510,8 +510,9 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
             // Get already seeded teams
             var seededTeams = await _context.TournamentTeamDivisions
-                .Where(t => t.TournamentId == tournamentId && 
-                           t.DivisionId == divisionId && 
+                .AsNoTracking()
+                .Where(t => t.TournamentId == tournamentId &&
+                           t.DivisionId == divisionId &&
                            t.SeedNumber > 0)
                 .Select(t => t.SeedNumber)
                 .ToListAsync();
@@ -559,8 +560,8 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             // Get all seeded teams
             var seededTeams = await _context.TournamentTeamDivisions
                 .Include(t => t.Team)
-                .Where(t => t.TournamentId == tournamentId && 
-                           t.DivisionId == divisionId && 
+                .Where(t => t.TournamentId == tournamentId &&
+                           t.DivisionId == divisionId &&
                            t.SeedNumber > 0)
                 .ToListAsync();
 

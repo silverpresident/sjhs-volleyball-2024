@@ -22,7 +22,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         // GET: Admin/Divisions
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Divisions.ToListAsync());
+            return View(await _context.Divisions.AsNoTracking().ToListAsync());
         }
 
         // GET: Admin/Divisions/Details/5
@@ -34,6 +34,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             }
 
             var division = await _context.Divisions
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (division == null)
             {
@@ -127,6 +128,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             }
 
             var division = await _context.Divisions
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (division == null)
             {
