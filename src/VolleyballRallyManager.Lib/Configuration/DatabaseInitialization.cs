@@ -44,8 +44,12 @@ namespace VolleyballRallyManager.Lib.Configuration
             }
             try
             {
-                //TODO this one should only run in the debug environment
-                await SeedInitialDataAsync(dbContext);
+                // Seed initial test data only in Development environment
+                var environment = config["ASPNETCORE_ENVIRONMENT"] ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                if (environment == "Development")
+                {
+                    await SeedInitialDataAsync(dbContext);
+                }
             }
             catch (Exception ex)
             {
@@ -86,7 +90,7 @@ namespace VolleyballRallyManager.Lib.Configuration
             }
 
             // Create default admin user if it doesn't exist
-            var adminUserDefault = new IdentityUser { UserName = "admin", Email = adminEmail };
+            var adminUserDefault = new IdentityUser { UserName = adminEmail, Email = adminEmail };
             await MakeDefaultUserAsync(userManager, roleManager, adminUserDefault, AdminRole, defaultPassword);
             foreach (var user in adminEmails)
             {
@@ -98,13 +102,11 @@ namespace VolleyballRallyManager.Lib.Configuration
                 var judgeUser = new IdentityUser { UserName = user, Email = user };
                 await MakeDefaultUserAsync(userManager, roleManager, judgeUser, "Judge", defaultPassword);
             }
-
             foreach (var user in scorekeeperEmails)
             {
                 var scorekeeperUser = new IdentityUser { UserName = user, Email = user };
                 await MakeDefaultUserAsync(userManager, roleManager, scorekeeperUser, "Scorekeeper", defaultPassword);
             }
-
         }
 
         private static async Task MakeDefaultUserAsync(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IdentityUser adminUserDefault, string role, string defaultPassword)
