@@ -12,7 +12,7 @@ namespace VolleyballRallyManager.Lib.Data
         }
 
         public DbSet<Team> Teams { get; set; }
-        public DbSet<Round> Rounds { get; set; }
+        public DbSet<RoundTemplate> RoundTemplates { get; set; }
         public DbSet<Match> Matches { get; set; }
         public DbSet<MatchSet> MatchSets { get; set; }
         public DbSet<Bulletin> Bulletins { get; set; }
@@ -90,16 +90,20 @@ namespace VolleyballRallyManager.Lib.Data
                 .Property(d => d.Name)
                 .IsRequired();
 
-            builder.Entity<Round>()
+            builder.Entity<RoundTemplate>()
                 .Property(r => r.Name)
                 .IsRequired();
 
-            // Configure Round enums as strings
-            builder.Entity<Round>()
+            // Configure RoundTemplate table name
+            builder.Entity<RoundTemplate>()
+                .ToTable("RoundTemplates");
+
+            // Configure RoundTemplate enums as strings
+            builder.Entity<RoundTemplate>()
                 .Property(r => r.RecommendedMatchGenerationStrategy)
                 .HasConversion<string>();
 
-            builder.Entity<Round>()
+            builder.Entity<RoundTemplate>()
                 .Property(r => r.RecommendedTeamSelectionStrategy)
                 .HasConversion<string>();
 
@@ -158,7 +162,7 @@ namespace VolleyballRallyManager.Lib.Data
             builder.Entity<TournamentRound>()
                 .HasOne(tr => tr.Round)
                 .WithMany()
-                .HasForeignKey(tr => tr.RoundId)
+                .HasForeignKey(tr => tr.RoundTemplateId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<TournamentRound>()
@@ -200,7 +204,7 @@ namespace VolleyballRallyManager.Lib.Data
             builder.Entity<TournamentRoundTeam>()
                 .HasOne(trt => trt.Round)
                 .WithMany()
-                .HasForeignKey(trt => trt.RoundId)
+                .HasForeignKey(trt => trt.RoundTemplateId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<TournamentRoundTeam>()

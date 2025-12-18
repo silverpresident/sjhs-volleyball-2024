@@ -10,7 +10,7 @@ public class Match : BaseEntity
     public int MatchNumber { get; set; }
 
     [Display(Name = "Round")]
-    public required Guid RoundId { get; set; }
+    public required Guid RoundTemplateId { get; set; }
 
     [Display(Name = "Scheduled Time")]
     public required DateTime ScheduledTime { get; set; }
@@ -64,7 +64,7 @@ public class Match : BaseEntity
 
     // Navigation properties
     public virtual Division? Division { get; set; }
-    public virtual Round? Round { get; set; }
+    public virtual RoundTemplate? Round { get; set; }
     public virtual Team? HomeTeam { get; set; }
     public virtual Team? AwayTeam { get; set; }
     public virtual ICollection<MatchUpdate> Updates { get; set; } = new List<MatchUpdate>();
@@ -96,5 +96,3 @@ public class Match : BaseEntity
         }
     }
 }
-
-

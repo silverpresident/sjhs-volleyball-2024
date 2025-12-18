@@ -176,13 +176,13 @@ namespace VolleyballRallyManager.Lib.Configuration
             return divisions;
         }
 
-        private static async Task<List<Round>> SeedRoundsAsync(ApplicationDbContext dbContext)
+        private static async Task<List<RoundTemplate>> SeedRoundsAsync(ApplicationDbContext dbContext)
         {
-            var rounds = new List<Round>();
+            var rounds = new List<RoundTemplate>();
             // Add sample rounds with recommendation properties
             var defaultRounds = new[]
             {
-                new Round {
+                new RoundTemplate {
                     Id = Guid.NewGuid(),
                     Name = "Preliminary Round",
                     Sequence = 1,
@@ -191,7 +191,7 @@ namespace VolleyballRallyManager.Lib.Configuration
                     RecommendedTeamSelectionStrategy = TeamSelectionStrategy.TopFromGroupAndNextBest,
                     IsPlayoff = false
                 },
-                new Round {
+                new RoundTemplate {
                     Id = Guid.NewGuid(),
                     Name = "Seeded Round",
                     Sequence = 2,
@@ -200,7 +200,7 @@ namespace VolleyballRallyManager.Lib.Configuration
                     RecommendedTeamSelectionStrategy = TeamSelectionStrategy.TopByPoints,
                     IsPlayoff = false
                 },
-                new Round {
+                new RoundTemplate {
                     Id = Guid.NewGuid(),
                     Name = "Quarter Finals",
                     Sequence = 4,
@@ -209,7 +209,7 @@ namespace VolleyballRallyManager.Lib.Configuration
                     RecommendedTeamSelectionStrategy = TeamSelectionStrategy.WinnersOnly,
                     IsPlayoff = true
                 },
-                new Round {
+                new RoundTemplate {
                     Id = Guid.NewGuid(),
                     Name = "Semi Finals",
                     Sequence = 5,
@@ -218,7 +218,7 @@ namespace VolleyballRallyManager.Lib.Configuration
                     RecommendedTeamSelectionStrategy = TeamSelectionStrategy.WinnersOnly,
                     IsPlayoff = false
                 },
-                new Round {
+                new RoundTemplate {
                     Id = Guid.NewGuid(),
                     Name = "Third Place Playoff",
                     Sequence = 6,
@@ -227,7 +227,7 @@ namespace VolleyballRallyManager.Lib.Configuration
                     RecommendedTeamSelectionStrategy = TeamSelectionStrategy.WinnersOnly,
                     IsPlayoff = true
                 },
-                new Round {
+                new RoundTemplate {
                     Id = Guid.NewGuid(),
                     Name = "Finals",
                     Sequence = 7,
@@ -240,9 +240,9 @@ namespace VolleyballRallyManager.Lib.Configuration
             foreach (var round in defaultRounds)
             {
 
-                if (dbContext.Rounds.Any(d => d.Name == round.Name))
+                if (dbContext.RoundTemplates.Any(d => d.Name == round.Name))
                 {
-                    rounds.Add(dbContext.Rounds.First(d => d.Name == round.Name));
+                    rounds.Add(dbContext.RoundTemplates.First(d => d.Name == round.Name));
                 }
                 else
                 {
@@ -250,7 +250,7 @@ namespace VolleyballRallyManager.Lib.Configuration
                     round.CreatedAt = DateTime.Now;
                     round.UpdatedBy = "System";
                     round.CreatedBy = "System";
-                    dbContext.Rounds.Add(round);
+                    dbContext.RoundTemplates.Add(round);
                     rounds.Add(round);
                 }
             }

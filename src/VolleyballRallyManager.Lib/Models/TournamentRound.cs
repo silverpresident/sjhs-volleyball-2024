@@ -26,10 +26,10 @@ public class TournamentRound : BaseEntity
 
     [Required]
     [Display(Name = "Round")]
-    public Guid RoundId { get; set; }
+    public Guid RoundTemplateId { get; set; }
     
-    [ForeignKey("RoundId")]
-    public Round Round { get; set; } = null!;
+    [ForeignKey("RoundTemplateId")]
+    public RoundTemplate Round { get; set; } = null!;
 
     // CurrentRound Configuration
     [Required]

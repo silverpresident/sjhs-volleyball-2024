@@ -16,11 +16,11 @@ public class RoundService : IRoundService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<Round>> GetAllRoundsAsync()
+    public async Task<IEnumerable<RoundTemplate>> GetAllRoundsAsync()
     {
         try
         {
-            return await _context.Rounds
+            return await _context.RoundTemplates
                 .OrderBy(r => r.Sequence)
                 .AsNoTracking()
                 .ToListAsync();
@@ -32,11 +32,11 @@ public class RoundService : IRoundService
         }
     }
 
-    public async Task<Round?> GetRoundByIdAsync(Guid id)
+    public async Task<RoundTemplate?> GetRoundByIdAsync(Guid id)
     {
         try
         {
-            return await _context.Rounds
+            return await _context.RoundTemplates
                 .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
@@ -47,11 +47,11 @@ public class RoundService : IRoundService
         }
     }
 
-    public async Task<Round?> GetRoundWithMatchesAsync(Guid id)
+    public async Task<RoundTemplate?> GetRoundWithMatchesAsync(Guid id)
     {
         try
         {
-            return await _context.Rounds
+            return await _context.RoundTemplates
                 .Include(r => r.Matches)
                     .ThenInclude(m => m.HomeTeam)
                 .Include(r => r.Matches)
@@ -68,11 +68,11 @@ public class RoundService : IRoundService
         }
     }
 
-    public async Task<IEnumerable<Round>> GetRoundsWithMatchesAsync()
+    public async Task<IEnumerable<RoundTemplate>> GetRoundsWithMatchesAsync()
     {
         try
         {
-            return await _context.Rounds
+            return await _context.RoundTemplates
                 .Include(r => r.Matches)
                     .ThenInclude(m => m.HomeTeam)
                 .Include(r => r.Matches)
@@ -90,11 +90,11 @@ public class RoundService : IRoundService
         }
     }
 
-    public async Task CreateRoundAsync(Round round)
+    public async Task CreateRoundAsync(RoundTemplate round)
     {
         try
         {
-            _context.Rounds.Add(round);
+            _context.RoundTemplates.Add(round);
             await _context.SaveChangesAsync();
             _logger.LogInformation("Created round: {RoundName} (ID: {RoundId})", round.Name, round.Id);
         }
@@ -105,11 +105,11 @@ public class RoundService : IRoundService
         }
     }
 
-    public async Task UpdateRoundAsync(Round round)
+    public async Task UpdateRoundAsync(RoundTemplate round)
     {
         try
         {
-            _context.Rounds.Update(round);
+            _context.RoundTemplates.Update(round);
             await _context.SaveChangesAsync();
             _logger.LogInformation("Updated round: {RoundName} (ID: {RoundId})", round.Name, round.Id);
         }
@@ -124,10 +124,10 @@ public class RoundService : IRoundService
     {
         try
         {
-            var round = await _context.Rounds.FindAsync(id);
+            var round = await _context.RoundTemplates.FindAsync(id);
             if (round != null)
             {
-                _context.Rounds.Remove(round);
+                _context.RoundTemplates.Remove(round);
                 await _context.SaveChangesAsync();
                 _logger.LogInformation("Deleted round with ID {RoundId}", id);
             }
