@@ -49,7 +49,7 @@ public class RanksService : IRanksService
             var matches = await _context.Matches
                 .Where(m => m.TournamentId == tournamentRound.TournamentId
                     && m.DivisionId == tournamentRound.DivisionId
-                    && m.RoundId == tournamentRound.RoundId
+                    && m.RoundTemplateId == tournamentRound.RoundTemplateId
                     && m.IsFinished)
                 .Include(m => m.Sets)
                 .ToListAsync();

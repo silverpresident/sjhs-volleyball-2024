@@ -74,12 +74,12 @@ public class SignalRNotificationService : ISignalRNotificationService
         await _matchHubContext.Clients.All.SendAsync("TeamDeleted", teamId);
     }
 
-    public async Task NotifyRoundStartedAsync(Round round)
+    public async Task NotifyRoundStartedAsync(RoundTemplate round)
     {
         await _matchHubContext.Clients.All.SendAsync("RoundStarted", round);
     }
 
-    public async Task NotifyRoundFinishedAsync(Round round)
+    public async Task NotifyRoundFinishedAsync(RoundTemplate round)
     {
         await _matchHubContext.Clients.All.SendAsync("RoundFinished", round);
     }

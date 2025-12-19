@@ -75,17 +75,17 @@ public class RoundsController : Controller
                 // Build round summary for each round in the division
                 foreach (var roundSummary in divisionDetails.Rounds.OrderBy(r => r.RoundNumber))
                 {
-                    // Get the full tournament round to access IsPlayoff and RoundId
+                    // Get the full tournament round to access IsPlayoff and RoundTemplateId
                     var tournamentRound = await _context.TournamentRounds
                         .FirstOrDefaultAsync(tr => tr.Id == roundSummary.TournamentRoundId);
 
                     if (tournamentRound == null) continue;
 
-                    // Get match statistics using RoundId
+                    // Get match statistics using RoundTemplateId
                     var matches = await _context.Matches
                         .Where(m => m.TournamentId == activeTournament.Id 
                                  && m.DivisionId == division.DivisionId
-                                 && m.RoundId == tournamentRound.RoundId)
+                                 && m.RoundTemplateId == tournamentRound.RoundTemplateId)
                         .ToListAsync();
 
                     var teamCount = await _context.TournamentRoundTeams

@@ -3,7 +3,7 @@ using VolleyballRallyManager.Lib.Models;
 namespace VolleyballRallyManager.App.Models;
 
 /// <summary>
-/// ViewModel for the public Rounds index page
+/// ViewModel for the public RoundTemplates index page
 /// </summary>
 public class PublicRoundsIndexViewModel
 {

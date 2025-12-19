@@ -127,7 +127,7 @@ public class TournamentHub : Hub
         //await Clients.Group($"division_{team.Division.Name}").SendAsync("ReceiveTeamUpdate", team);
     }
 
-    public async Task SendRoundUpdate(Round round)
+    public async Task SendRoundUpdate(RoundTemplate round)
     {
         await Clients.Group($"round_{round.Id}").SendAsync("ReceiveRoundUpdate", round);
     }

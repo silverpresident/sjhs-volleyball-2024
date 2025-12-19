@@ -352,7 +352,7 @@ namespace VolleyballRallyManager.Lib.Services
             }
             if (roundId != null)
             {
-                qry = qry.Where(m => m.RoundId == roundId);
+                qry = qry.Where(m => m.RoundTemplateId == roundId);
             }
             if (teamId != null)
             {
@@ -370,8 +370,8 @@ namespace VolleyballRallyManager.Lib.Services
                 ids = model.Select(td => td.HomeTeamId).ToArray();
                 ids = ids.Union(model.Select(td => td.AwayTeamId).ToArray()).ToArray();
                 _dbContext.Teams.Where(d => ids.Contains(d.Id)).Load();
-                ids = model.Select(td => td.RoundId).ToArray();
-                _dbContext.Rounds.Where(d => ids.Contains(d.Id)).Load();
+                ids = model.Select(td => td.RoundTemplateId).ToArray();
+                _dbContext.RoundTemplates.Where(d => ids.Contains(d.Id)).Load();
             }
             return model.OrderBy(m => m?.Division?.Name).ThenBy(m => m?.Round?.Sequence).ThenBy(m => m.ScheduledTime).ToList();
         }

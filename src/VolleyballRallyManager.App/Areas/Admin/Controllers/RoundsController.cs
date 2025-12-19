@@ -51,7 +51,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             }
         }
 
-        // GET: Admin/Rounds/Create
+        // GET: Admin/RoundTemplates/Create
         public IActionResult Create()
         {
             var model = new CreateEditRoundViewModel
@@ -63,7 +63,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             return View(model);
         }
 
-        // POST: Admin/Rounds/Create
+        // POST: Admin/RoundTemplates/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateEditRoundViewModel model)
@@ -77,7 +77,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
                 var userName = User.Identity?.Name ?? "admin";
 
-                var round = new Round
+                var round = new RoundTemplate
                 {
                     Name = model.Name,
                     Sequence = model.Sequence,
@@ -105,7 +105,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             }
         }
 
-        // GET: Admin/Rounds/Edit/5
+        // GET: Admin/RoundTemplates/Edit/5
         public async Task<IActionResult> Edit(Guid id)
         {
             try
@@ -138,7 +138,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             }
         }
 
-        // POST: Admin/Rounds/Edit
+        // POST: Admin/RoundTemplates/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(CreateEditRoundViewModel model)
@@ -187,7 +187,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             }
         }
 
-        // POST: Admin/Rounds/Delete/5
+        // POST: Admin/RoundTemplates/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)

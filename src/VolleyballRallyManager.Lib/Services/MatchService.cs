@@ -42,7 +42,7 @@ public class MatchService : IMatchService
         return await _context.Matches
             .Include(m => m.HomeTeam)
             .Include(m => m.AwayTeam)
-            .Where(m => m.RoundId == roundId)
+            .Where(m => m.RoundTemplateId == roundId)
             .OrderBy(m => m.ScheduledTime)
             .ToListAsync();
     }
@@ -322,7 +322,7 @@ public class MatchService : IMatchService
     public async Task<bool> HasTeamPlayedInRoundAsync(Guid teamId, Guid roundId)
     {
         return await _context.Matches
-            .AnyAsync(m => m.RoundId == roundId && (m.HomeTeamId == teamId || m.AwayTeamId == teamId));
+            .AnyAsync(m => m.RoundTemplateId == roundId && (m.HomeTeamId == teamId || m.AwayTeamId == teamId));
     }
 
     public async Task<bool> AreTeamsAvailableAsync(Guid homeTeamId, Guid awayTeamId, DateTime scheduledTime)
@@ -672,7 +672,7 @@ public class MatchService : IMatchService
         // Get all round IDs for the tournament via TournamentRounds
         var roundIds = await _context.Set<TournamentRound>()
             .Where(tr => tr.TournamentId == tournamentId)
-            .Select(tr => tr.RoundId)
+            .Select(tr => tr.RoundTemplateId)
             .ToListAsync();
 
         if (!roundIds.Any())
@@ -682,7 +682,7 @@ public class MatchService : IMatchService
 
         // Get all matches for these rounds
         var matches = await _context.Matches
-            .Where(m => roundIds.Contains(m.RoundId))
+            .Where(m => roundIds.Contains(m.RoundTemplateId))
             .ToListAsync();
 
         if (!matches.Any())

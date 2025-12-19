@@ -86,13 +86,13 @@ public interface ISignalRNotificationService
     /// Notifies clients that a tournament round has started.
     /// </summary>
     /// <param name="round">The round that started.</param>
-    Task NotifyRoundStartedAsync(Round round);
+    Task NotifyRoundStartedAsync(RoundTemplate round);
 
     /// <summary>
     /// Notifies clients that a tournament round has finished.
     /// </summary>
     /// <param name="round">The finished round.</param>
-    Task NotifyRoundFinishedAsync(Round round);
+    Task NotifyRoundFinishedAsync(RoundTemplate round);
 
     /// <summary>
     /// Notifies clients of a tournament status change.

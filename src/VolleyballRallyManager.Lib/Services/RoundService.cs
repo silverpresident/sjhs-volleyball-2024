@@ -144,7 +144,7 @@ public class RoundService : IRoundService
         try
         {
             return await _context.Matches
-                .Where(m => m.RoundId == roundId)
+                .Where(m => m.RoundTemplateId == roundId)
                 .CountAsync();
         }
         catch (Exception ex)
@@ -159,7 +159,7 @@ public class RoundService : IRoundService
         try
         {
             return await _context.Matches
-                .Where(m => m.RoundId == roundId && m.IsFinished)
+                .Where(m => m.RoundTemplateId == roundId && m.IsFinished)
                 .CountAsync();
         }
         catch (Exception ex)

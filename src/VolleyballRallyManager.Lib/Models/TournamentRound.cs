@@ -5,7 +5,7 @@ namespace VolleyballRallyManager.Lib.Models;
 
 /// <summary>
 /// Represents a round within a specific tournament division
-/// Rounds are sequenced independently within each division
+/// RoundTemplates are sequenced independently within each division
 /// </summary>
 public class TournamentRound : BaseEntity
 {

@@ -96,7 +96,7 @@ public class TournamentRoundService : ITournamentRoundService
             {
                 TournamentId = tournamentId,
                 DivisionId = divisionId,
-                RoundId = roundId,
+                RoundTemplateId = roundId,
                 RoundNumber = roundNumber,
                 MatchGenerationStrategy = matchGenerationStrategy,
                 PreviousTournamentRoundId = null,
@@ -187,7 +187,7 @@ public class TournamentRoundService : ITournamentRoundService
             {
                 TournamentId = tournamentId,
                 DivisionId = divisionId,
-                RoundId = roundId,
+                RoundTemplateId = roundId,
                 RoundNumber = roundNumber,
                 QualifyingTeamsCount = qualifyingTeamsCount,
                 QualifyingTeamSelectionStrategy = qualifyingTeamSelectionStrategy,
@@ -289,7 +289,7 @@ public class TournamentRoundService : ITournamentRoundService
                 {
                     TournamentId = tournamentRound.TournamentId,
                     DivisionId = tournamentRound.DivisionId,
-                    RoundId = tournamentRound.RoundId,
+                    RoundTemplateId = tournamentRound.RoundTemplateId,
                     TeamId = divisionTeam.TeamId,
                     TournamentRoundId = tournamentRound.Id,
                     SeedNumber = divisionTeam.SeedNumber,
@@ -500,7 +500,7 @@ public class TournamentRoundService : ITournamentRoundService
                 {
                     TournamentId = tournamentRound.TournamentId,
                     DivisionId = tournamentRound.DivisionId,
-                    RoundId = tournamentRound.RoundId,
+                    RoundTemplateId = tournamentRound.RoundTemplateId,
                     TeamId = qualifyingTeam.TeamId,
                     TournamentRoundId = tournamentRound.Id,
                     SeedNumber = seedNumber++,
@@ -647,7 +647,7 @@ public class TournamentRoundService : ITournamentRoundService
                     {
                         TournamentId = tournamentRound.TournamentId,
                         DivisionId = tournamentRound.DivisionId,
-                        RoundId = tournamentRound.RoundId,
+                        RoundTemplateId = tournamentRound.RoundTemplateId,
                         MatchNumber = matchNumber++,
                         HomeTeamId = groupTeams[i].TeamId,
                         AwayTeamId = groupTeams[j].TeamId,
@@ -705,7 +705,7 @@ public class TournamentRoundService : ITournamentRoundService
             {
                 TournamentId = tournamentRound.TournamentId,
                 DivisionId = tournamentRound.DivisionId,
-                RoundId = tournamentRound.RoundId,
+                RoundTemplateId = tournamentRound.RoundTemplateId,
                 MatchNumber = matchNumber++,
                 HomeTeamId = orderedTeams[i].TeamId,
                 AwayTeamId = orderedTeams[teamCount - 1 - i].TeamId,
@@ -849,7 +849,7 @@ public class TournamentRoundService : ITournamentRoundService
             return await _context.Matches
                 .Where(m => m.TournamentId == tournamentRound.TournamentId
                     && m.DivisionId == tournamentRound.DivisionId
-                    && m.RoundId == tournamentRound.RoundId)
+                    && m.RoundTemplateId == tournamentRound.RoundTemplateId)
                 .AnyAsync();
         }
         catch (Exception ex)
@@ -892,7 +892,7 @@ public class TournamentRoundService : ITournamentRoundService
                 .Include(m => m.Sets)
                 .Where(m => m.TournamentId == tournamentRound.TournamentId
                     && m.DivisionId == tournamentRound.DivisionId
-                    && m.RoundId == tournamentRound.RoundId)
+                    && m.RoundTemplateId == tournamentRound.RoundTemplateId)
                 .OrderBy(m => m.MatchNumber)
                 .ToListAsync();
         }
@@ -921,7 +921,7 @@ public class TournamentRoundService : ITournamentRoundService
             }
 
             var tournamentRoundIds = tournamentRounds.Select(tr => tr.Id).ToList();
-            var roundIds = tournamentRounds.Select(tr => tr.RoundId).Distinct().ToList();
+            var roundIds = tournamentRounds.Select(tr => tr.RoundTemplateId).Distinct().ToList();
 
             // Delete tournament round teams
             var tournamentRoundTeams = await _context.TournamentRoundTeams
@@ -932,7 +932,7 @@ public class TournamentRoundService : ITournamentRoundService
 
             // Get all matches for these rounds
             var matches = await _context.Matches
-                .Where(m => roundIds.Contains(m.RoundId) && m.TournamentId == tournamentId)
+                .Where(m => roundIds.Contains(m.RoundTemplateId) && m.TournamentId == tournamentId)
                 .ToListAsync();
 
             if (matches.Any())
@@ -963,10 +963,10 @@ public class TournamentRoundService : ITournamentRoundService
             _logger.LogInformation("Deleted {Count} tournament rounds", tournamentRounds.Count);
 
             /*// Delete the actual CurrentRound entities
-            var rounds = await _context.Rounds
+            var rounds = await _context.RoundTemplates
                 .Where(r => roundIds.Contains(r.Id))
                 .ToListAsync();
-            _context.Rounds.RemoveRange(rounds);
+            _context.RoundTemplates.RemoveRange(rounds);
             _logger.LogInformation("Deleted {Count} rounds", rounds.Count);
 */
             await _context.SaveChangesAsync();

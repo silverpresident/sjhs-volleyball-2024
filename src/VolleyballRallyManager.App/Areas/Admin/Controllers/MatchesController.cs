@@ -35,13 +35,13 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             List<Match> matches;
             var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
             if (RoundId.HasValue){
-                var round = await _dbContext.Rounds.FirstOrDefaultAsync(r => r.Id == RoundId);
+                var round = await _dbContext.RoundTemplates.FirstOrDefaultAsync(r => r.Id == RoundId);
                 if (round == null){
                     var tournamentRound = await _dbContext.TournamentRounds.FirstOrDefaultAsync(tr => tr.Id == RoundId);
                     if (tournamentRound != null)
                     {
                         divisionId = tournamentRound.DivisionId;
-                        RoundId = tournamentRound.RoundId;
+                        RoundId = tournamentRound.RoundTemplateId;
                     }
                 }
                 var matchesEnumerable = await _activeTournamentService.GetMatchesAsync(divisionId, RoundId);
@@ -432,7 +432,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         {
             var tournament = await _activeTournamentService.GetActiveTournamentAsync();
             var teams = await _activeTournamentService.GetAvailableTeamsAsync();
-            var rounds = await _dbContext.Rounds.OrderBy(r => r.Sequence).ToListAsync();
+            var rounds = await _dbContext.RoundTemplates.OrderBy(r => r.Sequence).ToListAsync();
             
             // Calculate default scheduled time: 15 minutes after last match or tournament date
             var lastMatch = await _dbContext.Matches
@@ -502,11 +502,11 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             
             var tournament2 = await _activeTournamentService.GetActiveTournamentAsync();
             var teams = await _activeTournamentService.GetAvailableTeamsAsync();
-            var rounds = await _dbContext.Rounds.OrderBy(r => r.Sequence).ToListAsync();
+            var rounds = await _dbContext.RoundTemplates.OrderBy(r => r.Sequence).ToListAsync();
             
             ViewData["AwayTeamId"] = new SelectList(teams, "Id", "Name", match.AwayTeamId);
             ViewData["HomeTeamId"] = new SelectList(teams, "Id", "Name", match.HomeTeamId);
-            ViewData["Rounds"] = new SelectList(rounds, "Id", "Name", match.RoundId);
+            ViewData["Rounds"] = new SelectList(rounds, "Id", "Name", match.RoundTemplateId);
             
             return View(match);
         }
@@ -526,11 +526,11 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             }
             
             var teams = await _activeTournamentService.GetAvailableTeamsAsync();
-            var rounds = await _dbContext.Rounds.OrderBy(r => r.Sequence).ToListAsync();
+            var rounds = await _dbContext.RoundTemplates.OrderBy(r => r.Sequence).ToListAsync();
             
             ViewData["AwayTeamId"] = new SelectList(teams, "Id", "Name", match.AwayTeamId);
             ViewData["HomeTeamId"] = new SelectList(teams, "Id", "Name", match.HomeTeamId);
-            ViewData["Rounds"] = new SelectList(rounds, "Id", "Name", match.RoundId);
+            ViewData["Rounds"] = new SelectList(rounds, "Id", "Name", match.RoundTemplateId);
             
             return View(match);
         }
@@ -580,11 +580,11 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             }
             
             var teams = await _activeTournamentService.GetAvailableTeamsAsync();
-            var rounds = await _dbContext.Rounds.OrderBy(r => r.Sequence).ToListAsync();
+            var rounds = await _dbContext.RoundTemplates.OrderBy(r => r.Sequence).ToListAsync();
             
             ViewData["AwayTeamId"] = new SelectList(teams, "Id", "Name", match.AwayTeamId);
             ViewData["HomeTeamId"] = new SelectList(teams, "Id", "Name", match.HomeTeamId);
-            ViewData["Rounds"] = new SelectList(rounds, "Id", "Name", match.RoundId);
+            ViewData["Rounds"] = new SelectList(rounds, "Id", "Name", match.RoundTemplateId);
             
             return View(match);
         }
@@ -656,19 +656,19 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 return NotFound("No active tournament found.");
             }
 
-            var currentRoundNumber = await _dbContext.Rounds
+            var currentRoundNumber = await _dbContext.RoundTemplates
                 .Where(r => r.Matches.Any(m => m.TournamentId == activeTournament.Id && m.DivisionId == selectedDivisionId))
                 .MaxAsync(r => (int?)r.Sequence) ?? 0;
             var nextRoundNumber = currentRoundNumber + 1;
 
-            var nextRound = new Round
+            var nextRound = new RoundTemplate
             {
                 Id = Guid.NewGuid(),
-                Name = $"Round {nextRoundNumber}",
+                Name = $"RoundTemplate {nextRoundNumber}",
                 Sequence = nextRoundNumber,
                 QualifyingTeams = teamsToAdvance
             };
-            _dbContext.Rounds.Add(nextRound);
+            _dbContext.RoundTemplates.Add(nextRound);
             await _dbContext.SaveChangesAsync();
 
             var divisionMatches = await _dbContext.Matches
@@ -725,7 +725,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                         Id = Guid.NewGuid(),
                         TournamentId = activeTournament.Id,
                         DivisionId = selectedDivisionId,
-                        RoundId = nextRound.Id,
+                        RoundTemplateId = nextRound.Id,
                         HomeTeamId = advancingTeams[i].Id,
                         AwayTeamId = advancingTeams[i + 1].Id,
                         ScheduledTime = activeTournament.TournamentDate.AddDays(nextRoundNumber), // Example scheduling

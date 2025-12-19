@@ -11,7 +11,7 @@ namespace VolleyballRallyManager.Lib.Models
     public class TournamentRoundSummaryViewModel: ITournamentRoundButtonState
     {
         public Guid TournamentRoundId { get; set; }
-        public Guid RoundId { get; set; }
+        public Guid RoundTemplateId { get; set; }
         public Guid DivisionId { get; set; }
         public string TournamentName { get; set; } = string.Empty;
         public string DivisionName { get; set; } = string.Empty;

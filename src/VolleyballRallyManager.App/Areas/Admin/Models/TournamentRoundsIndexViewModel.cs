@@ -62,7 +62,7 @@ public class CreateNextRoundViewModel
     public string PreviousRoundName { get; set; } = string.Empty;
     public Guid CurrentRoundId { get; set; } // To disable in dropdown
     
-    // SOURCE SECTION: Teams Coming Into This Round (Qualifying Configuration)
+    // SOURCE SECTION: Teams Coming Into This RoundTemplate (Qualifying Configuration)
     public int QualifyingTeamsCount { get; set; }
     public TeamSelectionStrategy QualifyingTeamSelectionStrategy { get; set; }
     public MatchGenerationStrategy SourceMatchStrategy { get; set; }

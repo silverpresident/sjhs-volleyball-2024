@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 namespace VolleyballRallyManager.App.Areas.Admin.Models;
 
 /// <summary>
-/// Simplified ViewModel for "Create Next Round" feature
-/// Only requires round type selection; defaults are applied from Round template
+/// Simplified ViewModel for "Create Next RoundTemplate" feature
+/// Only requires round type selection; defaults are applied from RoundTemplate template
 /// </summary>
 public class CreateNextRoundSimpleViewModel
 {

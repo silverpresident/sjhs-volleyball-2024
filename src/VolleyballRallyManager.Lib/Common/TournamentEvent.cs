@@ -25,11 +25,11 @@ public class TournamentEvent
     /// </summary>
     public Guid? DivisionId { get; set; }
     /// <summary>
-    /// The Round ID (for changes)
+    /// The RoundTemplate ID (for changes)
     /// </summary>
     public Guid? RoundId { get; set; }
     /// <summary>
-    /// The Tournament Round ID (for changes)
+    /// The Tournament RoundTemplate ID (for changes)
     /// </summary>
     public Guid? TournamentRoundId { get; set; }
 

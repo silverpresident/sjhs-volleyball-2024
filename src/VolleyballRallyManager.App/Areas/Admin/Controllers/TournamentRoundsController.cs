@@ -163,7 +163,7 @@ public class TournamentRoundsController : Controller
             var division = await _context.Divisions.FindAsync(divisionId.Value);
             
             // Get CurrentRound with RoundNumber = 1
-            var firstRoundDef = await _context.Rounds.AsNoTracking().FirstOrDefaultAsync(r => r.Sequence == 1);
+            var firstRoundDef = await _context.RoundTemplates.AsNoTracking().FirstOrDefaultAsync(r => r.Sequence == 1);
             if (firstRoundDef == null)
             {
                 TempData["ErrorMessage"] = "No round with Sequence = 1 found. Please create a round first.";
@@ -290,7 +290,7 @@ public class TournamentRoundsController : Controller
                 Id = tournamentRound.Id,
                 TournamentId = tournamentRound.TournamentId,
                 DivisionId = tournamentRound.DivisionId,
-                RoundId = tournamentRound.RoundId,
+                RoundId = tournamentRound.RoundTemplateId,
                 TournamentName = tournament?.Name ?? "Unknown",
                 DivisionName = division?.Name ?? "Unknown",
                 RoundName = tournamentRound.Round?.Name ?? $"Round {tournamentRound.RoundNumber}",
@@ -426,7 +426,7 @@ public class TournamentRoundsController : Controller
             var division = await _context.Divisions.FindAsync(currentRound.DivisionId);
 
             // Get all rounds and the current tournamentRound to disable it in the dropdown
-            var allRounds = await _context.Rounds.AsNoTracking().OrderBy(r => r.Sequence).ToListAsync();
+            var allRounds = await _context.RoundTemplates.AsNoTracking().OrderBy(r => r.Sequence).ToListAsync();
             ViewData["Rounds"] = new SelectList(allRounds, "Id", "Name");
 
             // Get team count from current tournamentRound
@@ -437,7 +437,7 @@ public class TournamentRoundsController : Controller
                 TournamentId = currentRound.TournamentId,
                 DivisionId = currentRound.DivisionId,
                 PreviousTournamentRoundId = id,
-                CurrentRoundId = currentRound.RoundId,
+                CurrentRoundId = currentRound.RoundTemplateId,
                 TournamentName = tournament?.Name ?? "Unknown",
                 DivisionName = division?.Name ?? "Unknown",
                 PreviousRoundName = currentRound.Round?.Name ?? $"Round {currentRound.RoundNumber}",
@@ -477,7 +477,7 @@ public class TournamentRoundsController : Controller
         {
             if (!ModelState.IsValid)
             {
-                var rounds = await _context.Rounds.OrderBy(r => r.Sequence).ToListAsync();
+                var rounds = await _context.RoundTemplates.OrderBy(r => r.Sequence).ToListAsync();
                 ViewData["Rounds"] = new SelectList(rounds, "Id", "Name");
                 return View(model);
             }
@@ -532,7 +532,7 @@ public class TournamentRoundsController : Controller
             _logger.LogError(ex, "Error generating next round");
             ModelState.AddModelError("", $"Error generating next round: {ex.Message}");
             
-            var rounds = await _context.Rounds.OrderBy(r => r.Sequence).ToListAsync();
+            var rounds = await _context.RoundTemplates.OrderBy(r => r.Sequence).ToListAsync();
             ViewData["Rounds"] = new SelectList(rounds, "Id", "Name");
             return View(model);
         }
@@ -559,7 +559,7 @@ public class TournamentRoundsController : Controller
             var division = await _context.Divisions.FindAsync(currentRound.DivisionId);
 
             // Get only non-playoff rounds for dropdown
-            var nonPlayoffRounds = await _context.Rounds
+            var nonPlayoffRounds = await _context.RoundTemplates
                 .Where(r => !r.IsPlayoff)
                 .OrderBy(r => r.Sequence)
                 .ToListAsync();
@@ -595,7 +595,7 @@ public class TournamentRoundsController : Controller
         {
             if (!ModelState.IsValid)
             {
-                var rounds = await _context.Rounds
+                var rounds = await _context.RoundTemplates
                     .Where(r => !r.IsPlayoff)
                     .OrderBy(r => r.Sequence)
                     .ToListAsync();
@@ -605,12 +605,12 @@ public class TournamentRoundsController : Controller
 
             var userName = User.Identity?.Name ?? "admin";
             
-            // Get the selected Round template to retrieve recommendations
-            var selectedRound = await _context.Rounds.FindAsync(model.RoundId);
+            // Get the selected RoundTemplate template to retrieve recommendations
+            var selectedRound = await _context.RoundTemplates.FindAsync(model.RoundId);
             if (selectedRound == null)
             {
                 ModelState.AddModelError("", "Selected round template not found.");
-                var rounds = await _context.Rounds
+                var rounds = await _context.RoundTemplates
                     .Where(r => !r.IsPlayoff)
                     .OrderBy(r => r.Sequence)
                     .ToListAsync();
@@ -623,7 +623,7 @@ public class TournamentRoundsController : Controller
             if (previousRound == null)
             {
                 ModelState.AddModelError("", "Previous round not found.");
-                var rounds = await _context.Rounds
+                var rounds = await _context.RoundTemplates
                     .Where(r => !r.IsPlayoff)
                     .OrderBy(r => r.Sequence)
                     .ToListAsync();
@@ -631,7 +631,7 @@ public class TournamentRoundsController : Controller
                 return View(model);
             }
 
-            // Calculate defaults from Round template and previous round
+            // Calculate defaults from RoundTemplate template and previous round
             int qualifyingTeamsCount = selectedRound.RecommendedQualifyingTeamsCount > 0
                 ? selectedRound.RecommendedQualifyingTeamsCount
                 : previousRound.AdvancingTeamsCount;
@@ -674,7 +674,7 @@ public class TournamentRoundsController : Controller
             _logger.LogError(ex, "Error creating next round");
             ModelState.AddModelError("", $"Error creating next round: {ex.Message}");
             
-            var rounds = await _context.Rounds
+            var rounds = await _context.RoundTemplates
                 .Where(r => !r.IsPlayoff)
                 .OrderBy(r => r.Sequence)
                 .ToListAsync();
@@ -899,7 +899,7 @@ public class TournamentRoundsController : Controller
             var division = await _context.Divisions.FindAsync(previousRound.DivisionId);
 
             // Get all rounds for the dropdown
-            var allRounds = await _context.Rounds.OrderBy(r => r.Sequence).ToListAsync();
+            var allRounds = await _context.RoundTemplates.OrderBy(r => r.Sequence).ToListAsync();
             ViewData["Rounds"] = new SelectList(allRounds, "Id", "Name");
 
             // Suggest a default number of teams (e.g., half the teams that didn't advance, minimum 4)
@@ -953,7 +953,7 @@ public class TournamentRoundsController : Controller
         {
             if (!ModelState.IsValid)
             {
-                var rounds = await _context.Rounds.OrderBy(r => r.Sequence).ToListAsync();
+                var rounds = await _context.RoundTemplates.OrderBy(r => r.Sequence).ToListAsync();
                 ViewData["Rounds"] = new SelectList(rounds, "Id", "Name");
                 
                 // Reload candidate teams if validation fails
@@ -997,7 +997,7 @@ public class TournamentRoundsController : Controller
                 {
                     TournamentId = playoffRound.TournamentId,
                     DivisionId = playoffRound.DivisionId,
-                    RoundId = playoffRound.RoundId,
+                    RoundTemplateId = playoffRound.RoundTemplateId,
                     TeamId = teamId,
                     TournamentRoundId = playoffRound.Id,
                     SeedNumber = seedNumber++,
@@ -1027,7 +1027,7 @@ public class TournamentRoundsController : Controller
             _logger.LogError(ex, "Error creating playoff round");
             ModelState.AddModelError("", $"Error creating playoff round: {ex.Message}");
             
-            var rounds = await _context.Rounds.OrderBy(r => r.Sequence).ToListAsync();
+            var rounds = await _context.RoundTemplates.OrderBy(r => r.Sequence).ToListAsync();
             ViewData["Rounds"] = new SelectList(rounds, "Id", "Name");
             
             // Reload candidate teams on error

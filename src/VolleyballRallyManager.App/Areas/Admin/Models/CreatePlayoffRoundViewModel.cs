@@ -9,7 +9,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Models;
 /// </summary>
 public class CreatePlayoffRoundViewModel
 {
-    // Previous Round Information
+    // Previous RoundTemplate Information
     public Guid PreviousRoundId { get; set; }
     
     [Display(Name = "Previous Round Name")]
@@ -26,7 +26,7 @@ public class CreatePlayoffRoundViewModel
     [Display(Name = "Division Name")]
     public string DivisionName { get; set; } = string.Empty;
     
-    // New Playoff Round Configuration
+    // New Playoff RoundTemplate Configuration
     [Required]
     public Guid RoundId { get; set; }
     
