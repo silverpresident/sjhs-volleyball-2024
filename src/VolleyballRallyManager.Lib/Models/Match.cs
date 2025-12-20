@@ -8,6 +8,8 @@ public class Match : BaseEntity
 {
     [Display(Name = "Match Number")]
     public int MatchNumber { get; set; }
+    [Display(Name = "Round")]
+    public required Guid TournamentRoundId { get; set; }
 
     [Display(Name = "Round")]
     public required Guid RoundTemplateId { get; set; }

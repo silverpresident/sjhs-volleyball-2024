@@ -80,10 +80,10 @@ BEGIN
 END
 GO
 
--- Rounds
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Rounds' AND schema_id = SCHEMA_ID('dbo'))
+-- RoundTemplates
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'RoundTemplates' AND schema_id = SCHEMA_ID('dbo'))
 BEGIN
-    CREATE TABLE dbo.Rounds
+    CREATE TABLE dbo.RoundTemplates
     (
         Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
         Name NVARCHAR(50) NOT NULL,
@@ -97,7 +97,7 @@ BEGIN
         CreatedBy NVARCHAR(256) NOT NULL DEFAULT 'system',
         UpdatedBy NVARCHAR(256) NOT NULL DEFAULT 'system'
     );
-    PRINT 'Rounds table created successfully.';
+    PRINT 'RoundTemplates table created successfully.';
 END
 GO
 
@@ -171,7 +171,7 @@ BEGIN
         Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
         TournamentId UNIQUEIDENTIFIER NOT NULL,
         DivisionId UNIQUEIDENTIFIER NOT NULL,
-        RoundId UNIQUEIDENTIFIER NOT NULL,
+        RoundTemplateId UNIQUEIDENTIFIER NOT NULL,
         RoundNumber INT NOT NULL,
         MatchGenerationStrategy NVARCHAR(50) NOT NULL DEFAULT 'Manual',
         GroupingStrategy NVARCHAR(50) NOT NULL DEFAULT 'NoGroup',
@@ -196,8 +196,8 @@ BEGIN
             REFERENCES dbo.Tournaments(Id) ON DELETE CASCADE,
         CONSTRAINT FK_TournamentRounds_Division FOREIGN KEY (DivisionId) 
             REFERENCES dbo.Divisions(Id) ON DELETE NO ACTION,
-        CONSTRAINT FK_TournamentRounds_Round FOREIGN KEY (RoundId) 
-            REFERENCES dbo.Rounds(Id) ON DELETE NO ACTION,
+        CONSTRAINT FK_TournamentRounds_RoundTemplate FOREIGN KEY (RoundTemplateId) 
+            REFERENCES dbo.RoundTemplates(Id) ON DELETE NO ACTION,
         
         -- Check Constraints
         CONSTRAINT CK_TournamentRounds_RoundNumber CHECK (RoundNumber >= 0),
@@ -224,9 +224,9 @@ BEGIN
         Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
         TournamentId UNIQUEIDENTIFIER NOT NULL,
         DivisionId UNIQUEIDENTIFIER NOT NULL,
-        RoundId UNIQUEIDENTIFIER NOT NULL,
-        TeamId UNIQUEIDENTIFIER NOT NULL,
         TournamentRoundId UNIQUEIDENTIFIER NOT NULL,
+        RoundTemplateId UNIQUEIDENTIFIER NOT NULL,
+        TeamId UNIQUEIDENTIFIER NOT NULL,
         SeedNumber INT NOT NULL DEFAULT 0,
         RankingPoints INT NOT NULL DEFAULT 0,
         Rank INT NOT NULL DEFAULT 0,
@@ -239,10 +239,10 @@ BEGIN
         SetsAgainst INT NOT NULL DEFAULT 0,
         ScoreFor INT NOT NULL DEFAULT 0,
         ScoreAgainst INT NOT NULL DEFAULT 0,
-        GroupName NVARCHAR(100) NOT NULL DEFAULT '',
+        GroupName NVARCHAR(50) NOT NULL DEFAULT '',
         CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
-        CreatedBy NVARCHAR(256) NOT NULL DEFAULT 'system',
         UpdatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+        CreatedBy NVARCHAR(256) NOT NULL DEFAULT 'system',
         UpdatedBy NVARCHAR(256) NOT NULL DEFAULT 'system',
         
         -- Foreign Key Constraints
@@ -250,8 +250,8 @@ BEGIN
             REFERENCES dbo.Tournaments(Id) ON DELETE CASCADE,
         CONSTRAINT FK_TournamentRoundTeams_Division FOREIGN KEY (DivisionId) 
             REFERENCES dbo.Divisions(Id) ON DELETE NO ACTION,
-        CONSTRAINT FK_TournamentRoundTeams_Round FOREIGN KEY (RoundId) 
-            REFERENCES dbo.Rounds(Id) ON DELETE NO ACTION,
+        CONSTRAINT FK_TournamentRoundTeams_RoundTemplate FOREIGN KEY (RoundTemplateId) 
+            REFERENCES dbo.RoundTemplates(Id) ON DELETE NO ACTION,
         CONSTRAINT FK_TournamentRoundTeams_Team FOREIGN KEY (TeamId) 
             REFERENCES dbo.Teams(Id) ON DELETE NO ACTION,
         CONSTRAINT FK_TournamentRoundTeams_TournamentRound FOREIGN KEY (TournamentRoundId) 
@@ -304,7 +304,8 @@ BEGIN
         GroupName NVARCHAR(50) NOT NULL,
         TournamentId UNIQUEIDENTIFIER NOT NULL,
         DivisionId UNIQUEIDENTIFIER NOT NULL,
-        RoundId UNIQUEIDENTIFIER NOT NULL,
+        TournamentRoundId UNIQUEIDENTIFIER NOT NULL,
+        RoundTemplateId UNIQUEIDENTIFIER NOT NULL,
         HomeTeamId UNIQUEIDENTIFIER NOT NULL,
         AwayTeamId UNIQUEIDENTIFIER NOT NULL,
         HomeTeamScore INT NOT NULL DEFAULT 0,
@@ -321,7 +322,8 @@ BEGIN
         UpdatedBy NVARCHAR(256) NOT NULL DEFAULT 'system',
         CONSTRAINT FK_Matches_Tournaments FOREIGN KEY (TournamentId) REFERENCES dbo.Tournaments(Id) ON DELETE CASCADE,
         CONSTRAINT FK_Matches_Divisions FOREIGN KEY (DivisionId) REFERENCES dbo.Divisions(Id) ON DELETE NO ACTION,
-        CONSTRAINT FK_Matches_Rounds FOREIGN KEY (RoundId) REFERENCES dbo.Rounds(Id) ON DELETE NO ACTION,
+        CONSTRAINT FK_Matches_TournamentRounds FOREIGN KEY (TournamentRoundId) REFERENCES dbo.TournamentRounds(Id),
+        CONSTRAINT FK_Matches_RoundTemplates FOREIGN KEY (RoundTemplateId) REFERENCES dbo.RoundTemplates(Id),
         CONSTRAINT FK_Matches_HomeTeam FOREIGN KEY (HomeTeamId) REFERENCES dbo.Teams(Id) ON DELETE NO ACTION,
         CONSTRAINT FK_Matches_AwayTeam FOREIGN KEY (AwayTeamId) REFERENCES dbo.Teams(Id) ON DELETE NO ACTION
     );
@@ -329,7 +331,7 @@ BEGIN
     -- Create Indexes
     CREATE INDEX IX_Matches_Tournament ON dbo.Matches(TournamentId);
     CREATE INDEX IX_Matches_Division ON dbo.Matches(DivisionId);
-    CREATE INDEX IX_Matches_Round ON dbo.Matches(RoundId);
+    CREATE INDEX IX_Matches_TournamentRound ON dbo.Matches(TournamentRoundId);
     CREATE INDEX IX_Matches_Teams ON dbo.Matches(HomeTeamId, AwayTeamId);
     
     PRINT 'Matches table created successfully.';
@@ -348,8 +350,8 @@ BEGIN
         IsFinished BIT NOT NULL DEFAULT 0,
         IsLocked BIT NOT NULL DEFAULT 0,
         CreatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
-        CreatedBy NVARCHAR(256) NOT NULL DEFAULT 'system',
         UpdatedAt DATETIME2 NOT NULL DEFAULT GETDATE(),
+        CreatedBy NVARCHAR(256) NOT NULL DEFAULT 'system',
         UpdatedBy NVARCHAR(256) NOT NULL DEFAULT 'system',
         
         -- Foreign key constraint
@@ -497,9 +499,9 @@ END
 GO
 
 -- Insert Rounds with updated recommendations
-IF NOT EXISTS (SELECT * FROM dbo.Rounds)
+IF NOT EXISTS (SELECT * FROM dbo.RoundTemplates)
 BEGIN
-    INSERT INTO dbo.Rounds (Id, Name, Sequence, RecommendedQualifyingTeamsCount, RecommendedMatchGenerationStrategy, RecommendedTeamSelectionStrategy, IsPlayoff, CreatedBy, UpdatedBy) VALUES
+    INSERT INTO dbo.RoundTemplates (Id, Name, Sequence, RecommendedQualifyingTeamsCount, RecommendedMatchGenerationStrategy, RecommendedTeamSelectionStrategy, IsPlayoff, CreatedBy, UpdatedBy) VALUES
     (NEWID(), 'Preliminary Round', 1, 0, 'RoundRobin', 'TopByPoints', 0, 'system', 'system'),
     (NEWID(), 'Seeded Round', 2, 16, 'GroupStageKnockout', 'TopByPoints', 0, 'system', 'system'),
     (NEWID(), 'Round 3', 3, 12, 'GroupStageKnockout', 'TopByPoints', 0, 'system', 'system'),
@@ -508,7 +510,7 @@ BEGIN
     (NEWID(), 'Third Place Playoff', 6, 2, 'SeededBracket', 'WinnersOnly', 1, 'system', 'system'),
     (NEWID(), 'Finals', 7, 2, 'SeededBracket', 'WinnersOnly', 1, 'system', 'system');
     
-    PRINT 'Initial Rounds data inserted successfully.';
+    PRINT 'Initial RoundTemplates data inserted successfully.';
 END
 GO
 

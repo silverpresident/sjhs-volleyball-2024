@@ -81,9 +81,9 @@ END
 GO
 
 -- Rounds
-IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Rounds' AND schema_id = SCHEMA_ID('dbo'))
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'RoundTemplates' AND schema_id = SCHEMA_ID('dbo'))
 BEGIN
-    CREATE TABLE dbo.Rounds
+    CREATE TABLE dbo.RoundTemplates
     (
         Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWSEQUENTIALID(),
         Name NVARCHAR(50) NOT NULL,
@@ -113,7 +113,8 @@ BEGIN
         GroupName NVARCHAR(50) NOT NULL,
         TournamentId UNIQUEIDENTIFIER NOT NULL,
         DivisionId UNIQUEIDENTIFIER NOT NULL,
-        RoundId UNIQUEIDENTIFIER NOT NULL,
+        TournamentRoundId UNIQUEIDENTIFIER NOT NULL,
+        RoundTemplateId UNIQUEIDENTIFIER NOT NULL,
         HomeTeamId UNIQUEIDENTIFIER NOT NULL,
         AwayTeamId UNIQUEIDENTIFIER NOT NULL,
         HomeTeamScore INT NOT NULL DEFAULT 0,
@@ -130,7 +131,8 @@ BEGIN
         UpdatedBy NVARCHAR(256),
         CONSTRAINT FK_Matches_Tournaments FOREIGN KEY (TournamentId) REFERENCES dbo.Tournaments(Id),
         CONSTRAINT FK_Matches_Divisions FOREIGN KEY (DivisionId) REFERENCES dbo.Divisions(Id),
-        CONSTRAINT FK_Matches_Rounds FOREIGN KEY (RoundId) REFERENCES dbo.Rounds(Id),
+        CONSTRAINT FK_Matches_TournamentRounds FOREIGN KEY (TournamentRoundId) REFERENCES dbo.TournamentRounds(Id),
+        CONSTRAINT FK_Matches_RoundTemplates FOREIGN KEY (RoundTemplateId) REFERENCES dbo.RoundTemplates(Id),
         CONSTRAINT FK_Matches_HomeTeam FOREIGN KEY (HomeTeamId) REFERENCES dbo.Teams(Id),
         CONSTRAINT FK_Matches_AwayTeam FOREIGN KEY (AwayTeamId) REFERENCES dbo.Teams(Id)
     );
@@ -188,10 +190,10 @@ BEGIN
 END
 GO
 
--- Insert Rounds
-IF NOT EXISTS (SELECT * FROM dbo.Rounds)
+-- Insert RoundTemplates
+IF NOT EXISTS (SELECT * FROM dbo.RoundTemplates)
 BEGIN
-    INSERT INTO dbo.Rounds (Id, Name, Sequence, QualifyingTeams, CreatedBy, UpdatedBy) VALUES
+    INSERT INTO dbo.RoundTemplates (Id, Name, Sequence, QualifyingTeams, CreatedBy, UpdatedBy) VALUES
     (NEWID(), 'Preliminary Round', 1, 0, 'system', 'system'),
     (NEWID(), 'Seeded Round', 2, 16, 'system', 'system'),
     (NEWID(), 'Quarter Finals', 4, 8, 'system', 'system'),
@@ -204,7 +206,7 @@ GO
 -- Create Indexes
 CREATE NONCLUSTERED INDEX IX_Matches_Tournament ON dbo.Matches(TournamentId);
 CREATE NONCLUSTERED INDEX IX_Matches_Division ON dbo.Matches(DivisionId);
-CREATE NONCLUSTERED INDEX IX_Matches_Round ON dbo.Matches(RoundId);
+CREATE NONCLUSTERED INDEX IX_Matches_RoundTemplate ON dbo.Matches(RoundTemplateId);
 CREATE NONCLUSTERED INDEX IX_Matches_Teams ON dbo.Matches(HomeTeamId, AwayTeamId);
 CREATE NONCLUSTERED INDEX IX_MatchUpdates_Match ON dbo.MatchUpdates(MatchId);
 CREATE NONCLUSTERED INDEX IX_Bulletins_Priority ON dbo.Bulletins(Priority);

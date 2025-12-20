@@ -647,6 +647,7 @@ public class TournamentRoundService : ITournamentRoundService
                     {
                         TournamentId = tournamentRound.TournamentId,
                         DivisionId = tournamentRound.DivisionId,
+                        TournamentRoundId = tournamentRound.Id,
                         RoundTemplateId = tournamentRound.RoundTemplateId,
                         MatchNumber = matchNumber++,
                         HomeTeamId = groupTeams[i].TeamId,
@@ -654,6 +655,7 @@ public class TournamentRoundService : ITournamentRoundService
                         ScheduledTime = courtSchedule[assignedCourt],
                         CourtLocation = $"Court {assignedCourt}",
                         GroupName = groupName,
+                        CreatedAt = DateTime.Now,
                         CreatedBy = userName,
                         UpdatedBy = userName
                     };
@@ -705,6 +707,7 @@ public class TournamentRoundService : ITournamentRoundService
             {
                 TournamentId = tournamentRound.TournamentId,
                 DivisionId = tournamentRound.DivisionId,
+                TournamentRoundId = tournamentRound.Id,
                 RoundTemplateId = tournamentRound.RoundTemplateId,
                 MatchNumber = matchNumber++,
                 HomeTeamId = orderedTeams[i].TeamId,
@@ -712,6 +715,7 @@ public class TournamentRoundService : ITournamentRoundService
                 ScheduledTime = courtSchedule[assignedCourt],
                 CourtLocation = $"Court {assignedCourt}",
                 GroupName = string.Empty,
+                CreatedAt = DateTime.Now,
                 CreatedBy = userName,
                 UpdatedBy = userName
             };
