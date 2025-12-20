@@ -15,9 +15,6 @@ There should be a default room for
 
 
 ==========
-That's a **strong foundation** for your real-time chat feature! As an experienced developer, I can see you've covered the core functional requirements. The goal now is to add **security, scalability, persistence, and enhanced UX details** that the AI can implement to make the feature production-ready.
-
-Here is an improved and more comprehensive prompt, structured by feature area:
 
 ## 💬 Comprehensive Real-Time Chat Feature Prompt (SignalR)
 The chat feature is for organizers and workers to communicate during the tournament.
@@ -76,7 +73,7 @@ The chat feature is for organizers and workers to communicate during the tournam
     * `Content` (Text)
     * `Timestamp`
     * (Optional but recommended: `ReadStatus` for private chats).
-
+* **markdown** messages whgould support markdown.
 
 
 ***

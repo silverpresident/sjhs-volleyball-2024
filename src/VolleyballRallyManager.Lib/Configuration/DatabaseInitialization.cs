@@ -44,6 +44,16 @@ namespace VolleyballRallyManager.Lib.Configuration
             }
             try
             {
+                // Seed default chat rooms
+                await SeedChatRoomsAsync(dbContext);
+            }
+            catch (Exception ex)
+            {
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
+                logger.LogError(ex, "An error occurred while seeding chat rooms.");
+            }
+            try
+            {
                 // Seed initial test data only in Development environment
                 var environment = config["ASPNETCORE_ENVIRONMENT"] ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
                 if (environment == "Development")
@@ -70,7 +80,7 @@ namespace VolleyballRallyManager.Lib.Configuration
             var judgeEmails = configuration.GetSection("VolleyBallRallyManager:DefaultJudgeEmails").Get<string[]>();
             var scorekeeperEmails = configuration.GetSection("VolleyBallRallyManager:DefaultScorekeeperEmails").Get<string[]>();
 
-            string[] roles = { "Administrator", "Judge", "Scorekeeper", "Announcer" };
+            string[] roles = { "Administrator", "Judge", "Scorekeeper", "Announcer", "Referee" };
             string AdminRole = "Administrator";
             foreach (string role in roles)
             {
@@ -277,6 +287,46 @@ namespace VolleyballRallyManager.Lib.Configuration
             }
             await dbContext.SaveChangesAsync();
 
+        }
+
+        private static async Task SeedChatRoomsAsync(ApplicationDbContext dbContext)
+        {
+            // Define default system rooms
+            var defaultRooms = new[]
+            {
+                new { Name = "Lobby", Description = "General communication", RoomType = ChatRoomType.Public, RequiredRole = (string?)null },
+                new { Name = "Management", Description = "For key organizers", RoomType = ChatRoomType.Private, RequiredRole = (string?)null },
+                new { Name = "Judges and Referees", Description = "For official referee communications", RoomType = ChatRoomType.RoleBased, RequiredRole = "Referee" },
+                new { Name = "Scorers", Description = "For official score-keeping communications", RoomType = ChatRoomType.RoleBased, RequiredRole = "Scorekeeper" },
+                new { Name = "Announcers", Description = "For official announcer communications", RoomType = ChatRoomType.RoleBased, RequiredRole = "Announcer" },
+                new { Name = "Support", Description = "For support staff to handle escalated issues", RoomType = ChatRoomType.Private, RequiredRole = (string?)null }
+            };
+
+            foreach (var roomDef in defaultRooms)
+            {
+                // Check if room already exists
+                if (!await dbContext.ChatRooms.AnyAsync(r => r.Name == roomDef.Name))
+                {
+                    var room = new ChatRoom
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = roomDef.Name,
+                        Description = roomDef.Description,
+                        RoomType = roomDef.RoomType,
+                        RequiredRole = roomDef.RequiredRole,
+                        IsSystemRoom = true,
+                        OwnerId = "System",
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now,
+                        CreatedBy = "System",
+                        UpdatedBy = "System"
+                    };
+
+                    await dbContext.ChatRooms.AddAsync(room);
+                }
+            }
+
+            await dbContext.SaveChangesAsync();
         }
         private static async Task SeedInitialDataAsync(ApplicationDbContext dbContext)
         {

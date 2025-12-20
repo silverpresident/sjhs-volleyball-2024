@@ -25,6 +25,9 @@ namespace VolleyballRallyManager.Lib.Data
         public DbSet<TournamentRoundTeam> TournamentRoundTeams { get; set; }
         public DbSet<Announcement> Announcements { get; set; }
         public DbSet<AnnouncementHistoryLog> AnnouncementHistoryLogs { get; set; }
+        public DbSet<ChatRoom> ChatRooms { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<ChatRoomMembership> ChatRoomMemberships { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -212,6 +215,55 @@ namespace VolleyballRallyManager.Lib.Data
                 .WithMany()
                 .HasForeignKey(trt => trt.TeamId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure ChatRoom
+            builder.Entity<ChatRoom>()
+                .Property(cr => cr.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            builder.Entity<ChatRoom>()
+                .Property(cr => cr.RoomType)
+                .HasConversion<string>();
+
+            builder.Entity<ChatRoom>()
+                .HasMany(cr => cr.Memberships)
+                .WithOne(m => m.ChatRoom)
+                .HasForeignKey(m => m.ChatRoomId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ChatRoom>()
+                .HasMany(cr => cr.Messages)
+                .WithOne(m => m.ChatRoom)
+                .HasForeignKey(m => m.ChatRoomId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure ChatMessage
+            builder.Entity<ChatMessage>()
+                .Property(cm => cm.Content)
+                .IsRequired();
+
+            builder.Entity<ChatMessage>()
+                .Property(cm => cm.SenderId)
+                .IsRequired();
+
+            builder.Entity<ChatMessage>()
+                .Property(cm => cm.SenderName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // Configure ChatRoomMembership
+            builder.Entity<ChatRoomMembership>()
+                .Property(crm => crm.UserId)
+                .IsRequired();
+
+            // Create index for faster queries
+            builder.Entity<ChatMessage>()
+                .HasIndex(cm => new { cm.ChatRoomId, cm.Timestamp });
+
+            builder.Entity<ChatRoomMembership>()
+                .HasIndex(crm => new { crm.UserId, crm.ChatRoomId })
+                .IsUnique();
 
         }
     }
