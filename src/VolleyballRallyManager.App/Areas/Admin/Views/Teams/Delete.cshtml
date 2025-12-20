@@ -13,7 +13,27 @@
     </div>
 
     <div class="row">
-        <div class="col-md-8"> 
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">@Model.Name</h5>
+                    <div class="team-color" style="width: 30px; height: 30px; border-radius: 50%; background-color: @Model.Color;"></div>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-3">School</dt>
+                        <dd class="col-sm-9">@Model.School</dd>
+
+                        @if (!string.IsNullOrEmpty(Model.LogoUrl))
+                        {
+                            <dt class="col-sm-3">Logo</dt>
+                            <dd class="col-sm-9">
+                                <img src="@Model.LogoUrl" alt="Team Logo" style="max-width: 100px;" />
+                            </dd>
+                        }
+                    </dl>
+                </div>
+            </div>
 
             <form asp-action="Delete">
                 <input type="hidden" asp-for="Id" />
