@@ -1,5 +1,15 @@
 -- Drop all tables
-USE stjago-volleyball-demo;
+
+IF OBJECT_ID('dbo.ChatRoomMemberships', 'U') IS NOT NULL
+    DROP TABLE dbo.ChatRoomMemberships;
+GO
+
+IF OBJECT_ID('dbo.ChatMessages', 'U') IS NOT NULL
+    DROP TABLE dbo.ChatMessages;
+GO
+
+IF OBJECT_ID('dbo.ChatRooms', 'U') IS NOT NULL
+    DROP TABLE dbo.ChatRooms;
 GO
 
 IF OBJECT_ID('dbo.MatchSets', 'U') IS NOT NULL
@@ -26,6 +36,10 @@ IF OBJECT_ID('dbo.TournamentRoundTeams', 'U') IS NOT NULL
 GO
 IF OBJECT_ID('dbo.TournamentRounds', 'U') IS NOT NULL
     DROP TABLE dbo.TournamentRounds;
+GO
+
+IF OBJECT_ID('dbo.RoundTemplates', 'U') IS NOT NULL
+    DROP TABLE dbo.RoundTemplates;
 GO
 
 IF OBJECT_ID('dbo.Rounds', 'U') IS NOT NULL

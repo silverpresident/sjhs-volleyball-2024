@@ -1,7 +1,4 @@
 -- Drop all user tables
-USE stjago-volleyball-demo;
-GO
-
 IF OBJECT_ID('dbo.AspNetUsers', 'U') IS NOT NULL
     DROP TABLE dbo.AspNetUsers;
 GO
