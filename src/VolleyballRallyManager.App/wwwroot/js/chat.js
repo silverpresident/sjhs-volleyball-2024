@@ -1,0 +1,609 @@
+// Chat Application - SignalR Integration
+(function () {
+    'use strict';
+
+    // State Management
+    const state = {
+        connection: null,
+        currentRoomId: null,
+        currentRoomName: null,
+        currentRoomType: null,
+        isConnected: false,
+        typingTimeout: null,
+        isTyping: false,
+        messageCache: {},
+        unreadCounts: {},
+        mutedRooms: new Set()
+    };
+
+    // Audio for notifications
+    const messageSound = new Audio('/sounds/message.mp3');
+    messageSound.volume = 0.5;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeSignalR();
+        setupEventListeners();
+        configureMarked();
+    });
+
+    // Configure marked.js for markdown support
+    function configureMarked() {
+        if (typeof marked !== 'undefined') {
+            marked.setOptions({
+                breaks: true,
+                gfm: true,
+                sanitize: false // We'll use DOMPurify
+            });
+        }
+    }
+
+    // Initialize SignalR Connection
+    function initializeSignalR() {
+        state.connection = new signalR.HubConnectionBuilder()
+            .withUrl('/chathub')
+            .withAutomaticReconnect([0, 2000, 5000, 10000])
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        // Connection Events
+        state.connection.onreconnecting(() => {
+            console.log('Reconnecting to chat...');
+            showNotification('Reconnecting to chat...', 'warning');
+        });
+
+        state.connection.onreconnected(() => {
+            console.log('Reconnected to chat');
+            showNotification('Reconnected to chat', 'success');
+            if (state.currentRoomId) {
+               reloadCurrentRoom();
+            }
+        });
+
+        state.connection.onclose(() => {
+            console.log('Connection closed');
+            state.isConnected = false;
+            showNotification('Chat connection lost', 'danger');
+        });
+
+        // Register Hub Methods
+        registerHubMethods();
+
+        // Start Connection
+        startConnection();
+    }
+
+    function startConnection() {
+        state.connection.start()
+            .then(() => {
+                console.log('Connected to ChatHub');
+                state.isConnected = true;
+                showNotification('Connected to chat', 'success');
+            })
+            .catch(err => {
+                console.error('Error connecting to ChatHub:', err);
+                showNotification('Failed to connect to chat. Please refresh.', 'danger');
+                // Retry after 5 seconds
+                setTimeout(() => startConnection(), 5000);
+            });
+    }
+
+    // Register SignalR Hub Methods
+    function registerHubMethods() {
+        // Receive Message
+        state.connection.on('ReceiveMessage', (message) => {
+            handleIncomingMessage(message);
+        });
+
+        // Message History
+        state.connection.on('MessageHistory', (roomId, messages) => {
+            displayMessageHistory(roomId, messages);
+        });
+
+        // User Joined Room
+        state.connection.on('UserJoinedRoom', (roomId, userId, userName) => {
+            if (roomId === state.currentRoomId) {
+                showSystemMessage(`${userName} joined the room`);
+            }
+        });
+
+        // User Left Room
+        state.connection.on('UserLeftRoom', (roomId, userId, userName) => {
+            if (roomId === state.currentRoomId) {
+                showSystemMessage(`${userName} left the room`);
+            }
+        });
+
+        // Typing Indicators
+        state.connection.on('UserTyping', (roomId, userId, userName) => {
+            if (roomId === state.currentRoomId && userId !== currentUserId) {
+                showTypingIndicator(userName);
+            }
+        });
+
+        state.connection.on('UserStoppedTyping', (roomId, userId) => {
+            if (roomId === state.currentRoomId) {
+                hideTypingIndicator();
+            }
+        });
+
+        // User Presence
+        state.connection.on('UserOnline', (userId) => {
+            console.log(`User ${userId} is online`);
+            // Update UI if needed
+        });
+
+        state.connection.on('UserOffline', (userId) => {
+            console.log(`User ${userId} is offline`);
+            // Update UI if needed
+        });
+
+        // Room Events
+        state.connection.on('RoomCreated', (roomInfo) => {
+            console.log('New room created:', roomInfo);
+            addRoomToSidebar(roomInfo);
+        });
+
+        state.connection.on('RoomMuteToggled', (roomId, isMuted) => {
+            if (isMuted) {
+                state.mutedRooms.add(roomId);
+            } else {
+                state.mutedRooms.delete(roomId);
+            }
+            updateMuteButton();
+        });
+
+        // Unread Count
+        state.connection.on('UnreadCount', (roomId, count) => {
+            updateUnreadBadge(roomId, count);
+        });
+
+        // Errors
+        state.connection.on('Error', (message) => {
+            console.error('Chat error:', message);
+            showNotification(message, 'danger');
+        });
+    }
+
+    // Setup Event Listeners
+    function setupEventListeners() {
+        // Room Selection
+        document.querySelectorAll('.room-item').forEach(item => {
+            item.addEventListener('click', function () {
+                const roomId = this.dataset.roomId;
+                const roomName = this.dataset.roomName;
+                const roomType = this.dataset.roomType;
+                joinRoom(roomId, roomName, roomType);
+            });
+        });
+
+        // Send Message
+        document.getElementById('send-btn').addEventListener('click', sendMessage);
+        document.getElementById('message-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Typing Indicator
+        document.getElementById('message-input').addEventListener('input', handleTyping);
+
+        // Create Room
+        document.getElementById('create-room-btn').addEventListener('click', () => {
+            const modal = new bootstrap.Modal(document.getElementById('createRoomModal'));
+            modal.show();
+        });
+
+        document.getElementById('create-room-confirm').addEventListener('click', createRoom);
+
+        // Mute Room
+        document.getElementById('mute-room-btn').addEventListener('click', toggleMuteRoom);
+
+        // Leave Room
+        document.getElementById('leave-room-btn').addEventListener('click', leaveRoom);
+
+        // Infinite Scroll for Messages
+        const messagesArea = document.getElementById('messages-area');
+        messagesArea.addEventListener('scroll', handleScroll);
+    }
+
+    // Join a Room
+    function joinRoom(roomId, roomName, roomType) {
+        if (!state.isConnected) {
+            showNotification('Not connected to chat. Please wait...', 'warning');
+            return;
+        }
+
+        // Leave current room if any
+        if (state.currentRoomId && state.currentRoomId !== roomId) {
+            state.connection.invoke('LeaveRoom', state.currentRoomId);
+        }
+
+        state.currentRoomId = roomId;
+        state.currentRoomName = roomName;
+        state.currentRoomType = roomType;
+
+        // Update UI
+        document.querySelectorAll('.room-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelector(`[data-room-id="${roomId}"]`).classList.add('active');
+
+        document.getElementById('current-room-name').textContent = roomName;
+        document.getElementById('message-input-area').style.display = 'flex';
+        document.getElementById('mute-room-btn').style.display = 'inline-block';
+        
+        // Only show leave button for non-system rooms
+        if (roomType !== 'Public') {
+            document.getElementById('leave-room-btn').style.display = 'inline-block';
+        } else {
+            document.getElementById('leave-room-btn').style.display = 'none';
+        }
+
+        // Clear messages area
+        document.getElementById('messages-area').innerHTML = '<div class="text-center"><div class="spinner-border text-success" role="status"></div></div>';
+
+        // Join room and load messages
+        state.connection.invoke('JoinRoom', roomId)
+            .then(() => {
+                console.log(`Joined room: ${roomName}`);
+                return state.connection.invoke('LoadMessageHistory', roomId, null, 50);
+            })
+            .then(() => {
+                // Clear unread badge
+                updateUnreadBadge(roomId, 0);
+                updateMuteButton();
+            })
+            .catch(err => {
+                console.error('Error joining room:', err);
+                showNotification('Failed to join room', 'danger');
+            });
+    }
+
+    function reloadCurrentRoom() {
+        if (state.currentRoomId) {
+            state.connection.invoke('JoinRoom', state.currentRoomId)
+                .then(() => {
+                    return state.connection.invoke('LoadMessageHistory', state.currentRoomId, null, 50);
+                })
+                .catch(err => console.error('Error reloading room:', err));
+        }
+    }
+
+    // Send Message
+    function sendMessage() {
+        const input = document.getElementById('message-input');
+        const message = input.value.trim();
+
+        if (!message || !state.currentRoomId) return;
+
+        state.connection.invoke('SendMessage', state.currentRoomId, message)
+            .then(() => {
+                input.value = '';
+                stopTyping();
+            })
+            .catch(err => {
+                console.error('Error sending message:', err);
+                showNotification('Failed to send message', 'danger');
+            });
+    }
+
+    // Handle Incoming Message
+    function handleIncomingMessage(message) {
+        // Play sound notification if room is not muted
+        if (!state.mutedRooms.has(message.roomId)) {
+            playMessageSound(message.roomId === state.currentRoomId ? 'standard' : 'priority');
+            triggerVibration(message.roomId === state.currentRoomId ? 'standard' : 'priority');
+        }
+
+        // If message is for current room, display it
+        if (message.roomId === state.currentRoomId) {
+            appendMessage(message);
+        } else {
+            // Update unread count
+            const currentCount = state.unreadCounts[message.roomId] || 0;
+            updateUnreadBadge(message.roomId, currentCount + 1);
+        }
+    }
+
+    // Display Message History
+    function displayMessageHistory(roomId, messages) {
+        if (roomId !== state.currentRoomId) return;
+
+        const messagesArea = document.getElementById('messages-area');
+        messagesArea.innerHTML = '';
+
+        if (messages.length === 0) {
+            messagesArea.innerHTML = '<div class="text-center text-muted py-5">No messages yet. Start the conversation!</div>';
+            return;
+        }
+
+        messages.forEach(message => {
+            appendMessage(message, false);
+        });
+
+        // Scroll to bottom
+        scrollToBottom();
+    }
+
+    // Append Message to UI
+    function appendMessage(message, scroll = true) {
+        const messagesArea = document.getElementById('messages-area');
+        const isOwn = message.senderId === currentUserId;
+
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isOwn ? 'own' : 'other'}`;
+
+        const bubble = document.createElement('div');
+        bubble.className = 'message-bubble';
+
+        if (!isOwn) {
+            const sender = document.createElement('div');
+            sender.className = 'message-sender';
+            sender.textContent = message.senderName;
+            bubble.appendChild(sender);
+        }
+
+       // Parse and sanitize markdown
+        const content = document.createElement('div');
+        if (typeof marked !== 'undefined' && typeof DOMPurify !== 'undefined') {
+            const rawHtml = marked.parse(message.content);
+            content.innerHTML = DOMPurify.sanitize(rawHtml);
+        } else {
+            content.textContent = message.content;
+        }
+        bubble.appendChild(content);
+
+        const time = document.createElement('div');
+        time.className = 'message-time';
+        time.textContent = formatTime(message.timestamp);
+        bubble.appendChild(time);
+
+        messageDiv.appendChild(bubble);
+        messagesArea.appendChild(messageDiv);
+
+        if (scroll) {
+            scrollToBottom();
+        }
+    }
+
+    // Typing Indicators
+    function handleTyping() {
+        if (!state.currentRoomId) return;
+
+        if (!state.isTyping) {
+            state.isTyping = true;
+            state.connection.invoke('UserTyping', state.currentRoomId);
+        }
+
+        // Reset timeout
+        clearTimeout(state.typingTimeout);
+        state.typingTimeout = setTimeout(stopTyping, 2000);
+    }
+
+    function stopTyping() {
+        if (state.isTyping && state.currentRoomId) {
+            state.isTyping = false;
+            state.connection.invoke('UserStoppedTyping', state.currentRoomId);
+        }
+        clearTimeout(state.typingTimeout);
+    }
+
+    function showTypingIndicator(userName) {
+        const indicator = document.getElementById('typing-indicator');
+        document.getElementById('typing-user-name').textContent = userName;
+        indicator.style.display = 'block';
+    }
+
+    function hideTypingIndicator() {
+        document.getElementById('typing-indicator').style.display = 'none';
+    }
+
+    // Room Management
+    function createRoom() {
+        const name = document.getElementById('room-name').value.trim();
+        const description = document.getElementById('room-description').value.trim();
+        const isPrivate = document.getElementById('room-private').checked;
+
+        if (!name) {
+            alert('Please enter a room name');
+            return;
+        }
+
+        state.connection.invoke('CreateRoom', name, description, isPrivate)
+            .then(() => {
+                // Close modal
+                bootstrap.Modal.getInstance(document.getElementById('createRoomModal')).hide();
+                // Reset form
+                document.getElementById('create-room-form').reset();
+                showNotification('Room created successfully', 'success');
+            })
+            .catch(err => {
+                console.error('Error creating room:', err);
+                showNotification('Failed to create room', 'danger');
+            });
+    }
+
+    function addRoomToSidebar(roomInfo) {
+        const roomList = document.getElementById('room-list');
+        
+        const icon = roomInfo.roomType === 'Public' ? 'bi-globe' : 
+                     roomInfo.roomType === 'Private' ? 'bi-lock' : 
+                     roomInfo.roomType === 'RoleBased' ? 'bi-people' : 'bi-person-circle';
+
+        const roomDiv = document.createElement('div');
+        roomDiv.className = 'room-item p-3 border-bottom cursor-pointer';
+        roomDiv.dataset.roomId = roomInfo.roomId;
+        roomDiv.dataset.roomName = roomInfo.name;
+        roomDiv.dataset.roomType = roomInfo.roomType;
+
+        roomDiv.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="bi ${icon} me-2"></i>
+                <div class="flex-grow-1">
+                    <div class="fw-bold">${roomInfo.name}</div>
+                    ${roomInfo.description ? `<small class="text-muted">${roomInfo.description}</small>` : ''}
+                </div>
+                <span class="badge bg-danger ms-2 unread-badge" style="display: none;">0</span>
+            </div>
+        `;
+
+        roomDiv.addEventListener('click', function () {
+            joinRoom(this.dataset.roomId, this.dataset.roomName, this.dataset.roomType);
+        });
+
+        roomList.appendChild(roomDiv);
+    }
+
+    function toggleMuteRoom() {
+        if (!state.currentRoomId) return;
+
+        state.connection.invoke('ToggleMuteRoom', state.currentRoomId)
+            .then(() => {
+                const isMuted = state.mutedRooms.has(state.currentRoomId);
+                showNotification(isMuted ? 'Room unmuted' : 'Room muted', 'info');
+            })
+            .catch(err => {
+                console.error('Error toggling mute:', err);
+            });
+    }
+
+    function updateMuteButton() {
+        const btn = document.getElementById('mute-room-btn');
+        if (state.mutedRooms.has(state.currentRoomId)) {
+            btn.innerHTML = '<i class="bi bi-bell"></i> Unmute';
+            btn.classList.remove('btn-outline-secondary');
+            btn.classList.add('btn-warning');
+        } else {
+            btn.innerHTML = '<i class="bi bi-bell-slash"></i> Mute';
+            btn.classList.remove('btn-warning');
+            btn.classList.add('btn-outline-secondary');
+        }
+    }
+
+    function leaveRoom() {
+        if (!state.currentRoomId) return;
+
+        const confirmLeave = confirm(`Are you sure you want to leave ${state.currentRoomName}?`);
+        if (!confirmLeave) return;
+
+        state.connection.invoke('LeaveRoom', state.currentRoomId)
+            .then(() => {
+                // Remove from sidebar
+                const roomItem = document.querySelector(`[data-room-id="${state.currentRoomId}"]`);
+                if (roomItem) roomItem.remove();
+
+                // Clear current room
+                state.currentRoomId = null;
+                state.currentRoomName = null;
+                document.getElementById('messages-area').innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-chat-text display-1"></i><p>Select a room to start chatting</p></div>';
+                document.getElementById('message-input-area').style.display = 'none';
+                document.getElementById('mute-room-btn').style.display = 'none';
+                document.getElementById('leave-room-btn').style.display = 'none';
+
+                showNotification('Left the room', 'info');
+            })
+            .catch(err => {
+                console.error('Error leaving room:', err);
+                showNotification('Failed to leave room', 'danger');
+            });
+    }
+
+    // Unread Badges
+    function updateUnreadBadge(roomId, count) {
+        state.unreadCounts[roomId] = count;
+        const badge = document.querySelector(`[data-room-id="${roomId}"] .unread-badge`);
+        if (badge) {
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    }
+
+    // Notifications
+    function playMessageSound(priority = 'standard') {
+        try {
+            messageSound.play().catch(err => console.log('Could not play sound:', err));
+        } catch (err) {
+            console.log('Sound not available');
+        }
+    }
+
+    function triggerVibration(priority = 'standard') {
+        if ('vibrate' in navigator) {
+            if (priority === 'priority') {
+                // More vigorous vibration for direct messages
+                navigator.vibrate([100, 50, 100, 50, 100]);
+            } else {
+                // Standard vibration
+                navigator.vibrate(100);
+            }
+        }
+    }
+
+    // Infinite Scroll for Message History
+    function handleScroll(e) {
+        const messagesArea = e.target;
+        
+        // Check if scrolled to top
+        if (messagesArea.scrollTop === 0 && state.currentRoomId) {
+            loadOlderMessages();
+        }
+    }
+
+    function loadOlderMessages() {
+        const messagesArea = document.getElementById('messages-area');
+        const firstMessage = messagesArea.querySelector('.message');
+        
+        if (!firstMessage) return;
+
+        // Get timestamp of oldest message
+        // This would need to be stored in data attribute during message creation
+        // For now, we'll skip as it requires more complex state management
+        console .log('Loading older messages...');
+    }
+
+    // UI Helpers
+    function scrollToBottom() {
+        const messagesArea = document.getElementById('messages-area');
+        messagesArea.scrollTop = messagesArea.scrollHeight;
+    }
+
+    function showSystemMessage(text) {
+        const messagesArea = document.getElementById('messages-area');
+        const systemMsg = document.createElement('div');
+        systemMsg.className = 'text-center text-muted my-2';
+        systemMsg.innerHTML = `<small><i>${text}</i></small>`;
+        messagesArea.appendChild(systemMsg);
+        scrollToBottom();
+    }
+
+    function showNotification(message, type = 'info') {
+        // Create toast notification (requires Bootstrap 5 toast component)
+        console.log(`[${type.toUpperCase()}] ${message}`);
+        // You can implement a proper toast/alert here
+    }
+
+    function formatTime(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        
+        // If today, show time only
+        if (date.toDateString() === now.toDateString()) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        // Otherwise show date and time
+        return date.toLocaleString([], { 
+            month: 'short', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+    }
+
+})();
