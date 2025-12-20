@@ -42,6 +42,11 @@ public class Announcement : BaseEntity
     [ValidateNever]
     public bool IsHidden { get; set; } = false;
 
+    [Display(Name = "Tag")]
+    [StringLength(256)]
+    [ValidateNever]
+    public string? Tag { get; set; }
+
     // Navigation property
     public virtual ICollection<AnnouncementHistoryLog> HistoryLogs { get; set; } = new List<AnnouncementHistoryLog>();
     [ValidateNever]

@@ -484,4 +484,26 @@ public class AnnouncementService : IAnnouncementService
     {
         return await _context.Announcements.AnyAsync(a => a.Title == title && a.TournamentId == ActiveTournamentId);
     }
+
+    public async Task<IEnumerable<Announcement>> GetAnnouncementsByTagAsync(string tag)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(tag))
+            {
+                _logger.LogWarning("GetAnnouncementsByTagAsync called with null or empty tag");
+                return Enumerable.Empty<Announcement>();
+            }
+
+            return await _context.Announcements
+                .Where(a => a.TournamentId == ActiveTournamentId && a.Tag == tag)
+                .OrderBy(a => a.SequencingNumber)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving announcements by tag {Tag}", tag);
+            throw;
+        }
+    }
 }

@@ -109,4 +109,11 @@ public interface IAnnouncementService
     /// <param name="title">The title to check.</param>
     /// <returns>True if an announcement with this title exists, false otherwise.</returns>
     Task<bool> TitleExistsAsync(string title);
+
+    /// <summary>
+    /// Retrieves announcements by tag.
+    /// </summary>
+    /// <param name="tag">The tag to search for.</param>
+    /// <returns>Collection of announcements with the specified tag.</returns>
+    Task<IEnumerable<Announcement>> GetAnnouncementsByTagAsync(string tag);
 }
