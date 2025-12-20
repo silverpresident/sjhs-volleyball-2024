@@ -378,8 +378,10 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
+
                 // Disable account by setting lockout end far in the future
                 await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
+                await _userManager.SetLockoutEnabledAsync(user, true);
                 
                 _logger.LogInformation("User {Email} disabled by {AdminUser}", user.Email, User.Identity!.Name);
                 
