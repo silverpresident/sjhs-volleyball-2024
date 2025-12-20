@@ -15,14 +15,14 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
     {
 
         private readonly IActiveTournamentService _activeTournamentService;
-        private readonly ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext _context;
         private readonly IMatchService _matchService;
 
         private readonly ILogger<MatchesController> _logger;
 
         public MatchesController(ILogger<MatchesController> logger, IActiveTournamentService activeTournamentService, ApplicationDbContext context, IMatchService matchService)
         {
-            _dbContext = context;
+            _context = context;
             _activeTournamentService = activeTournamentService;
             _logger = logger;
             _matchService = matchService;
@@ -35,9 +35,9 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             List<Match> matches;
             var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
             if (RoundId.HasValue){
-                var round = await _dbContext.RoundTemplates.FirstOrDefaultAsync(r => r.Id == RoundId);
+                var round = await _context.RoundTemplates.FirstOrDefaultAsync(r => r.Id == RoundId);
                 if (round == null){
-                    var tournamentRound = await _dbContext.TournamentRounds.FirstOrDefaultAsync(tr => tr.Id == RoundId);
+                    var tournamentRound = await _context.TournamentRounds.FirstOrDefaultAsync(tr => tr.Id == RoundId);
                     if (tournamentRound != null)
                     {
                         divisionId = tournamentRound.DivisionId;
@@ -413,8 +413,8 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 set.UpdatedBy = User.Identity?.Name ?? "admin";
                 set.UpdatedAt = DateTime.Now;
 
-                _dbContext.Update(set);
-                await _dbContext.SaveChangesAsync();
+                _context.Update(set);
+                await _context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Set updated successfully.";
                 return RedirectToAction(nameof(Details), new { id = model.MatchId });
@@ -432,10 +432,10 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         {
             var tournament = await _activeTournamentService.GetActiveTournamentAsync();
             var teams = await _activeTournamentService.GetAvailableTeamsAsync();
-            var rounds = await _dbContext.RoundTemplates.OrderBy(r => r.Sequence).ToListAsync();
+            var rounds = await _context.RoundTemplates.OrderBy(r => r.Sequence).ToListAsync();
             
             // Calculate default scheduled time: 15 minutes after last match or tournament date
-            var lastMatch = await _dbContext.Matches
+            var lastMatch = await _context.Matches
                 .Where(m => m.TournamentId == tournament.Id)
                 .OrderByDescending(m => m.ScheduledTime)
                 .FirstOrDefaultAsync();
@@ -471,7 +471,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                     match.TournamentId = tournament.Id;
                     
                     // Get the division from the home team
-                    var homeTeam = await _dbContext.TournamentTeamDivisions
+                    var homeTeam = await _context.TournamentTeamDivisions
                         .FirstOrDefaultAsync(ttd => ttd.TeamId == match.HomeTeamId && ttd.TournamentId == tournament.Id);
                     
                     if (homeTeam != null)
@@ -480,7 +480,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                     }
 
                     // Get next match number
-                    var lastMatchNumber = await _dbContext.Matches
+                    var lastMatchNumber = await _context.Matches
                         .Where(m => m.TournamentId == tournament.Id)
                         .MaxAsync(m => (int?)m.MatchNumber) ?? 0;
                     
@@ -502,7 +502,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             
             var tournament2 = await _activeTournamentService.GetActiveTournamentAsync();
             var teams = await _activeTournamentService.GetAvailableTeamsAsync();
-            var rounds = await _dbContext.RoundTemplates.OrderBy(r => r.Sequence).ToListAsync();
+            var rounds = await _context.RoundTemplates.OrderBy(r => r.Sequence).ToListAsync();
             
             ViewData["AwayTeamId"] = new SelectList(teams, "Id", "Name", match.AwayTeamId);
             ViewData["HomeTeamId"] = new SelectList(teams, "Id", "Name", match.HomeTeamId);
@@ -519,14 +519,14 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var match = await _dbContext.Matches.FindAsync(id);
+            var match = await _context.Matches.FindAsync(id);
             if (match == null)
             {
                 return NotFound();
             }
             
             var teams = await _activeTournamentService.GetAvailableTeamsAsync();
-            var rounds = await _dbContext.RoundTemplates.OrderBy(r => r.Sequence).ToListAsync();
+            var rounds = await _context.RoundTemplates.OrderBy(r => r.Sequence).ToListAsync();
             
             ViewData["AwayTeamId"] = new SelectList(teams, "Id", "Name", match.AwayTeamId);
             ViewData["HomeTeamId"] = new SelectList(teams, "Id", "Name", match.HomeTeamId);
@@ -538,9 +538,14 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         // POST: Admin/Matches/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,RoundId,HomeTeamId,AwayTeamId,ScheduledTime,ActualStartTime,CourtLocation,RefereeName,ScorerName,HomeTeamScore,AwayTeamScore,IsLocked,IsDisputed,IsFinished")] Match match)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,ScheduledTime,ActualStartTime,CourtLocation,RefereeName,ScorerName,HomeTeamScore,AwayTeamScore,IsLocked,IsDisputed,IsFinished")] MatchEditViewModel model)
         {
-            if (id != match.Id)
+            if (id != model.Id)
+            {
+                return NotFound();
+            }
+            var match = await _context.Matches.FindAsync(id);
+            if (match == null)
             {
                 return NotFound();
             }
@@ -549,10 +554,23 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             {
                 try
                 {
+
+
+                        match.IsDisputed = model.IsDisputed;
+                    match.IsFinished = model.IsFinished;
+                    match.IsLocked = model.IsLocked;
+                    match.AwayTeamScore = model.AwayTeamScore;
+                    match.HomeTeamScore = model.HomeTeamScore;
+                    match.ScorerName = model.ScorerName;
+                    match.RefereeName = model.RefereeName;
+                    match.CourtLocation = model.CourtLocation;
+                    match.ScheduledTime = model.ScheduledTime;
+                    match.ActualStartTime = model.ActualStartTime;
                     match.UpdatedBy = User.Identity?.Name ?? "admin";
                     match.UpdatedAt = DateTime.Now;
                     
-                    await _matchService.UpdateMatchAsync(match);
+                    //await _matchService.UpdateMatchAsync(match);
+                    await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Match updated successfully.";
                 }
                 catch (DbUpdateConcurrencyException ex)
@@ -580,7 +598,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             }
             
             var teams = await _activeTournamentService.GetAvailableTeamsAsync();
-            var rounds = await _dbContext.RoundTemplates.OrderBy(r => r.Sequence).ToListAsync();
+            var rounds = await _context.RoundTemplates.OrderBy(r => r.Sequence).ToListAsync();
             
             ViewData["AwayTeamId"] = new SelectList(teams, "Id", "Name", match.AwayTeamId);
             ViewData["HomeTeamId"] = new SelectList(teams, "Id", "Name", match.HomeTeamId);
@@ -597,7 +615,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var match = await _dbContext.Matches
+            var match = await _context.Matches
                 .Include(m => m.AwayTeam)
                 .Include(m => m.HomeTeam)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -614,13 +632,13 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var match = await _dbContext.Matches.FindAsync(id);
+            var match = await _context.Matches.FindAsync(id);
             if (match != null)
             {
-                _dbContext.Matches.Remove(match);
+                _context.Matches.Remove(match);
             }
 
-            await _dbContext.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -630,7 +648,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         {
             var viewModel = new AutoGenerateNextRoundViewModel
             {
-                Divisions = _dbContext.Divisions.Select(d => new SelectListItem { Value = d.Id.ToString(), Text = d.Name }).ToList()
+                Divisions = _context.Divisions.Select(d => new SelectListItem { Value = d.Id.ToString(), Text = d.Name }).ToList()
             };
             return View(viewModel);
         }
@@ -642,7 +660,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                model.Divisions = _dbContext.Divisions.Select(d => new SelectListItem { Value = d.Id.ToString(), Text = d.Name }).ToList();
+                model.Divisions = _context.Divisions.Select(d => new SelectListItem { Value = d.Id.ToString(), Text = d.Name }).ToList();
                 return View(model);
             }
 
@@ -656,7 +674,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 return NotFound("No active tournament found.");
             }
 
-            var currentRoundNumber = await _dbContext.RoundTemplates
+            var currentRoundNumber = await _context.RoundTemplates
                 .Where(r => r.Matches.Any(m => m.TournamentId == activeTournament.Id && m.DivisionId == selectedDivisionId))
                 .MaxAsync(r => (int?)r.Sequence) ?? 0;
             var nextRoundNumber = currentRoundNumber + 1;
@@ -668,10 +686,10 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 Sequence = nextRoundNumber,
                 QualifyingTeams = teamsToAdvance
             };
-            _dbContext.RoundTemplates.Add(nextRound);
-            await _dbContext.SaveChangesAsync();
+            _context.RoundTemplates.Add(nextRound);
+            await _context.SaveChangesAsync();
 
-            var divisionMatches = await _dbContext.Matches
+            var divisionMatches = await _context.Matches
                 .Include(m => m.HomeTeam)
                 .Include(m => m.AwayTeam)
                 .Where(m => m.TournamentId == activeTournament.Id && m.DivisionId == selectedDivisionId)
@@ -734,9 +752,9 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                         CreatedAt = DateTime.Now,
                         GroupName = "TBD"
                     };
-                    _dbContext.Matches.Add(match);
+                    _context.Matches.Add(match);
                 }
-                await _dbContext.SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
 
             return RedirectToAction(nameof(Index));
@@ -766,7 +784,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             {
                 return NotFound("No active tournament found.");
             }
-            var qry = _dbContext.TournamentTeamDivisions
+            var qry = _context.TournamentTeamDivisions
                 .Where(ttd => ttd.TournamentId == activeTournament.Id);
             _logger.LogInformation(divisionIds.Length + " div ids");
             if (divisionIds.Contains(Guid.Empty) == false && divisionIds.Length > 0)
@@ -783,7 +801,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
         private bool MatchExists(Guid? id)
         {
-            return _dbContext.Matches.Any(e => e.Id == id);
+            return _context.Matches.Any(e => e.Id == id);
         }
     }
 }
