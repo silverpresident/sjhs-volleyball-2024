@@ -205,3 +205,12 @@ Since this page is public and has no update features, it should only have links 
 ====
 
 THe project has some todo items scattered thoughout what are they and can you implement them?
+====
+@/prompts/a2.PNG 
+Looking at this picture, lets work on the Scorer view.
+The team name circled in red wraps to 2 lines.
+For consitency in interface, make sure this never happen
+The team name area must be an exact height and then text must either be clipped or shrunk to fix.
+The same must be applied tot he team name circled in black.
+
+The button circled in blue are a bit out of alignment, while they should be large and easy to acess it would be nice if they looked better as they are the most used thinds on this page.

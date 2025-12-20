@@ -11,7 +11,17 @@ body { overflow-x: hidden; }
 .away-panel {
     background: linear-gradient(135deg, #f9a825 0%, #fdd835 100%);
 }
-.team-name { font-size: 2rem; font-weight: bold; margin-bottom: 8px; }
+.team-name {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    height: 2.5rem;
+    line-height: 2.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+}
 .team-panel .team-name .bi {
     color: deepskyblue;
 }
@@ -28,20 +38,39 @@ body { overflow-x: hidden; }
         opacity: 0;
     }
 }
-.team-score { 
-    font-size: 6rem; 
-    font-weight: bold; 
+.team-score {
+    font-size: 6rem;
+    font-weight: bold;
     margin: 18px 0;
     text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
 }
-.score-btn { 
-    width: 70px;
-    height: 70px;
+.score-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+.score-btn {
+    width: 80px;
+    height: 80px;
     font-size: 2.5rem;
     border-radius: 50%;
     margin: 8px;
     font-weight: bold;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.score-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+.score-btn:active {
+    transform: scale(0.95);
 }
 .center-controls {
     background: white;
