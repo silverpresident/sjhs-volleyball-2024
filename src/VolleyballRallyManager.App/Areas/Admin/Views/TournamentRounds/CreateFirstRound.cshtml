@@ -102,10 +102,10 @@
                                     </label>
                                     <select asp-for="AdvancingTeamSelectionStrategy" class="form-select">
                                         <option value="Manual">Manual - Select teams manually</option>
+                                        <option value="TopFromGroupAndNextBest">Top From Group And Next Best</option>
                                         <option value="TopByPoints">Top By Points - Best teams overall</option>
                                         <option value="SeedTopHalf">Seed Top Half - Top 50% of teams</option>
                                         <option value="WinnersOnly">Winners Only - Only rank 1 teams</option>
-                                        <option value="TopFromGroupAndNextBest">Top From Group And Next Best</option>
                                     </select>
                                     <span asp-validation-for="AdvancingTeamSelectionStrategy" class="text-danger"></span>
                                     <div class="form-text">How teams will be selected for subsequent rounds</div>

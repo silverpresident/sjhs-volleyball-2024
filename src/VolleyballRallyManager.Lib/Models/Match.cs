@@ -11,7 +11,7 @@ public class Match : BaseEntity
     [Display(Name = "Round")]
     public required Guid TournamentRoundId { get; set; }
 
-    [Display(Name = "Round")]
+    [Display(Name = "Round Template")]
     public required Guid RoundTemplateId { get; set; }
 
     [Display(Name = "Scheduled Time")]

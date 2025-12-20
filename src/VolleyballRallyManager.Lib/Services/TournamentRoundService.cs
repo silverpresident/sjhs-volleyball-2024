@@ -844,16 +844,8 @@ public class TournamentRoundService : ITournamentRoundService
     {
         try
         { 
-            var tournamentRound = await GetTournamentRoundByIdAsync(tournamentRoundId);
-            if (tournamentRound == null)
-            {
-                return false;
-            }
-
             return await _context.Matches
-                .Where(m => m.TournamentId == tournamentRound.TournamentId
-                    && m.DivisionId == tournamentRound.DivisionId
-                    && m.RoundTemplateId == tournamentRound.RoundTemplateId)
+                .Where(m => m.TournamentRoundId == tournamentRoundId)
                 .AnyAsync();
         }
         catch (Exception ex)
@@ -894,9 +886,7 @@ public class TournamentRoundService : ITournamentRoundService
                 .Include(m => m.HomeTeam)
                 .Include(m => m.AwayTeam)
                 .Include(m => m.Sets)
-                .Where(m => m.TournamentId == tournamentRound.TournamentId
-                    && m.DivisionId == tournamentRound.DivisionId
-                    && m.RoundTemplateId == tournamentRound.RoundTemplateId)
+                .Where(m => m.TournamentRoundId == tournamentRound.Id)
                 .OrderBy(m => m.MatchNumber)
                 .ToListAsync();
         }
@@ -936,7 +926,7 @@ public class TournamentRoundService : ITournamentRoundService
 
             // Get all matches for these rounds
             var matches = await _context.Matches
-                .Where(m => roundIds.Contains(m.RoundTemplateId) && m.TournamentId == tournamentId)
+                .Where(m => m.TournamentId == tournamentId)
                 .ToListAsync();
 
             if (matches.Any())
@@ -965,14 +955,6 @@ public class TournamentRoundService : ITournamentRoundService
             // Delete tournament rounds
             _context.TournamentRounds.RemoveRange(tournamentRounds);
             _logger.LogInformation("Deleted {Count} tournament rounds", tournamentRounds.Count);
-
-            /*// Delete the actual CurrentRound entities
-            var rounds = await _context.RoundTemplates
-                .Where(r => roundIds.Contains(r.Id))
-                .ToListAsync();
-            _context.RoundTemplates.RemoveRange(rounds);
-            _logger.LogInformation("Deleted {Count} rounds", rounds.Count);
-*/
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("Successfully deleted {Count} rounds for tournament {TournamentId}", 
@@ -1118,6 +1100,50 @@ public class TournamentRoundService : ITournamentRoundService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting playoff candidate teams from round {PreviousRoundId}", previousRoundId);
+            throw;
+        }
+    }
+
+    public async Task AddTeamsToRoundAsync(Guid tournamentRoundId, List<Guid> selectedTeamIds, string userName)
+    {
+        // Manually add the selected teams to the playoff round
+
+        try
+        {
+            var tournamentRound = await GetTournamentRoundByIdAsync(tournamentRoundId);
+            if (tournamentRound == null)
+            {
+                return;
+            }
+            int seedNumber = await _context.TournamentRoundTeams.MaxAsync(trt => (int)trt.SeedNumber);
+            seedNumber += 1;
+
+            foreach (var teamId in selectedTeamIds)
+        {
+            var roundTeam = new TournamentRoundTeam
+            {
+                TournamentId = tournamentRound.TournamentId,
+                DivisionId = tournamentRound.DivisionId,
+                RoundTemplateId = tournamentRound.RoundTemplateId,
+                TeamId = teamId,
+                TournamentRoundId = tournamentRound.Id,
+                SeedNumber = seedNumber++,
+                GroupName = string.Empty,
+                CreatedBy = userName,
+                UpdatedBy = userName,
+                CreatedAt = DateTime.Now
+            };
+
+            _context.TournamentRoundTeams.Add(roundTeam);
+        }
+
+        await _context.SaveChangesAsync();
+
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting matches for round {TournamentRoundId}", tournamentRoundId);
             throw;
         }
     }

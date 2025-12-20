@@ -85,12 +85,6 @@ namespace VolleyballRallyManager.Lib.Services
         /// <returns>Number of teams matching the criteria.</returns>
         Task<int> TeamCountAsync(Guid? divisionId = null);
 
-        /// <summary>
-        /// Updates team statistics after a match is completed.
-        /// Recalculates wins, losses, points, and other statistics.
-        /// </summary>
-        /// <param name="match">The completed match to process.</param>
-        Task UpdateTeamStatisticsAsync(Match match);
 
         /// <summary>
         /// Gets all divisions available for the active tournament.

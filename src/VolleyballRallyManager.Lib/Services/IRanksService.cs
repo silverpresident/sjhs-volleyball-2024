@@ -42,4 +42,12 @@ public interface IRanksService
     /// <returns>Updated list of tournament division teams with calculated rankings</returns>
 
     Task<List<TournamentTeamDivision>> UpdateDivisionRanksAsync(Guid tournamentId, Guid divisionId);
+
+
+    /// <summary>
+    /// Updates team statistics after a match is completed.
+    /// Recalculates wins, losses, points, and other statistics.
+    /// </summary>
+    /// <param name="match">The completed match to process.</param>
+    Task UpdateTeamStatisticsAsync(Match match);
 }

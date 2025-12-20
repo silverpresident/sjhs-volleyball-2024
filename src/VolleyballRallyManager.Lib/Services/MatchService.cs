@@ -7,6 +7,7 @@ namespace VolleyballRallyManager.Lib.Services;
 
 public class MatchService : IMatchService
 {
+    //TODO add logging to methods
     private readonly ApplicationDbContext _context;
     private readonly ISignalRNotificationService _notificationService;
 
@@ -33,27 +34,6 @@ public class MatchService : IMatchService
             .Include(m => m.HomeTeam)
             .Include(m => m.AwayTeam)
             .Include(m => m.Round)
-            .OrderBy(m => m.ScheduledTime)
-            .ToListAsync();
-    }
-
-    public async Task<List<Match>> GetMatchesByRoundAsync(Guid roundId)
-    {
-        return await _context.Matches
-            .Include(m => m.HomeTeam)
-            .Include(m => m.AwayTeam)
-            .Where(m => m.RoundTemplateId == roundId)
-            .OrderBy(m => m.ScheduledTime)
-            .ToListAsync();
-    }
-
-    public async Task<List<Match>> GetMatchesByTeamAsync(Guid teamId)
-    {
-        return await _context.Matches
-            .Include(m => m.HomeTeam)
-            .Include(m => m.AwayTeam)
-            .Include(m => m.Round)
-            .Where(m => m.HomeTeamId == teamId || m.AwayTeamId == teamId)
             .OrderBy(m => m.ScheduledTime)
             .ToListAsync();
     }
@@ -317,12 +297,6 @@ public class MatchService : IMatchService
         await _context.SaveChangesAsync();
         await _notificationService.NotifyAddFeedAsync(update);
         return update;
-    }
-
-    public async Task<bool> HasTeamPlayedInRoundAsync(Guid teamId, Guid roundId)
-    {
-        return await _context.Matches
-            .AnyAsync(m => m.RoundTemplateId == roundId && (m.HomeTeamId == teamId || m.AwayTeamId == teamId));
     }
 
     public async Task<bool> AreTeamsAvailableAsync(Guid homeTeamId, Guid awayTeamId, DateTime scheduledTime)
@@ -669,20 +643,9 @@ public class MatchService : IMatchService
 
     public async Task<int> DeleteAllMatchesByTournamentAsync(Guid tournamentId)
     {
-        // Get all round IDs for the tournament via TournamentRounds
-        var roundIds = await _context.Set<TournamentRound>()
-            .Where(tr => tr.TournamentId == tournamentId)
-            .Select(tr => tr.RoundTemplateId)
-            .ToListAsync();
-
-        if (!roundIds.Any())
-        {
-            return 0;
-        }
-
         // Get all matches for these rounds
         var matches = await _context.Matches
-            .Where(m => roundIds.Contains(m.RoundTemplateId))
+            .Where(m => m.TournamentId == tournamentId)
             .ToListAsync();
 
         if (!matches.Any())

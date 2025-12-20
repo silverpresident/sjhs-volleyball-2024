@@ -187,34 +187,5 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
             }
         }
 
-        // POST: Admin/RoundTemplates/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(Guid id)
-        {
-            try
-            {
-                var round = await _roundService.GetRoundByIdAsync(id);
-                if (round == null)
-                {
-                    _logger.LogWarning("Round {RoundId} not found for deletion", id);
-                    return NotFound();
-                }
-
-                var userName = User.Identity?.Name ?? "admin";
-                
-                await _roundService.DeleteRoundAsync(id);
-                _logger.LogInformation("Deleted round '{RoundName}' by user {UserName}", round.Name, userName);
-                
-                TempData["SuccessMessage"] = $"Round '{round.Name}' deleted successfully.";
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting round {RoundId}", id);
-                TempData["ErrorMessage"] = "Error deleting round. It may be in use by existing matches or tournament rounds.";
-            }
-            
-            return RedirectToAction(nameof(Index));
-        }
     }
 }

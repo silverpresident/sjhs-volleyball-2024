@@ -1,7 +1,7 @@
 @model List<VolleyballRallyManager.Lib.Models.TournamentRoundSummaryViewModel>
 @{
-    var totalScheduled = Model.Sum(r => r.MatchesScheduled);
-    var totalPlayed = Model.Sum(r => r.MatchesPlayed);
+    var totalScheduled = Model.Sum(r => r.TotalMatches);
+    var totalPlayed = Model.Sum(r => r.CompletedMatches);
     var overallPercentage = totalScheduled > 0 ? (int)((double)totalPlayed / totalScheduled * 100) : 0;
 }
 <div class="mb-3">
@@ -43,8 +43,8 @@
                     <tr class="clickable-row" style="cursor: pointer;" onclick="window.location.href='@Url.Action("Details", "TournamentRounds", new { id = round.TournamentRoundId })'">
                         <td><strong>@round.RoundName</strong></td>
                         <td>@round.TeamCount</td>
-                        <td>@round.MatchesScheduled</td>
-                        <td>@round.MatchesPlayed</td>
+                        <td>@round.TotalMatches</td>
+                        <td>@round.CompletedMatches</td>
                         <td>
                             <div class="progress" style="height: 20px;">
                                 <div class="progress-bar bg-success" role="progressbar"

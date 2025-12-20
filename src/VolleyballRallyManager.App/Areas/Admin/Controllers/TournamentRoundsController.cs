@@ -174,7 +174,6 @@ public class TournamentRoundsController : Controller
             var teamsCount = await _context.TournamentTeamDivisions
                 .Where(ttd => ttd.TournamentId == tournamentId.Value && ttd.DivisionId == divisionId.Value)
                 .CountAsync();
-
             var model = new CreateFirstRoundViewModel
             {
                 TournamentId = tournamentId.Value,
@@ -183,6 +182,8 @@ public class TournamentRoundsController : Controller
                 TournamentName = tournament?.Name ?? "Unknown",
                 DivisionName = division?.Name ?? "Unknown",
                 RoundName = firstRoundDef.Name,
+                MatchGenerationStrategy = firstRoundDef.RecommendedMatchGenerationStrategy,
+                AdvancingTeamSelectionStrategy = firstRoundDef.RecommendedTeamSelectionStrategy,
                 TotalTeamsInDivision = teamsCount,
                 GroupConfigurationValue = Math.Max(2, teamsCount / 4) // Default to 4 groups
             };
@@ -989,29 +990,11 @@ public class TournamentRoundsController : Controller
                 true,
                 userName);
 
-            // Manually add the selected teams to the playoff round
-            int seedNumber = 1;
-            foreach (var teamId in model.SelectedTeamIds)
-            {
-                var roundTeam = new TournamentRoundTeam
-                {
-                    TournamentId = playoffRound.TournamentId,
-                    DivisionId = playoffRound.DivisionId,
-                    RoundTemplateId = playoffRound.RoundTemplateId,
-                    TeamId = teamId,
-                    TournamentRoundId = playoffRound.Id,
-                    SeedNumber = seedNumber++,
-                    GroupName = string.Empty,
-                    CreatedBy = userName,
-                    UpdatedBy = userName,
-                    CreatedAt = DateTime.Now
-                };
-
-                _context.TournamentRoundTeams.Add(roundTeam);
-            }
-
-            await _context.SaveChangesAsync();
-
+            await _tournamentRoundService.AddTeamsToRoundAsync(
+                playoffRound.Id,
+                model.SelectedTeamIds,
+                userName);
+            
             TempData["SuccessMessage"] = $"Playoff round created successfully with {model.SelectedTeamIds.Count} teams.";
             
             // Immediate execution: Generate matches if requested

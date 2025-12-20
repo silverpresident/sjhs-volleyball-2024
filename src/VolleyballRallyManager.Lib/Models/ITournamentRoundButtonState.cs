@@ -6,6 +6,8 @@ namespace VolleyballRallyManager.Lib.Models;
 public interface ITournamentRoundButtonState
 {
     public int TeamCount { get; set; }
+    public int CompletedMatches { get; set; }
+    public int TotalMatches { get; set; }
     public bool CanFinalize { get; set; }
     public bool CanSelectTeams { get; set; }
     public bool CanGenerateMatches { get; set; }

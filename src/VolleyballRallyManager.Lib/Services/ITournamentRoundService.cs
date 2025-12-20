@@ -173,4 +173,11 @@ public interface ITournamentRoundService
     /// <param name="numberOfTeamsToSelect">Number of teams to select</param>
     /// <returns>List of best performing non-advancing teams</returns>
     Task<IEnumerable<TournamentRoundTeamSummaryViewModel>> GetPlayoffCandidateTeamsAsync(Guid previousRoundId, int numberOfTeamsToSelect);
+
+    /// <summary>
+    /// Add teams to a tournament round.
+    /// </summary>
+    /// <param name="tournamentRoundId">The tournament round ID.</param>
+    /// <returns>none</returns>
+    Task AddTeamsToRoundAsync(Guid tournamentRoundId, List<Guid> selectedTeamIds, string userName);
 }

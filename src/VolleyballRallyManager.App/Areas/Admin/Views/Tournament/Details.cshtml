@@ -96,7 +96,7 @@
                                         <td><strong>@division.DivisionName</strong></td>
                                         <td>@string.Join(", ", division.GroupNames)</td>
                                         <td>@division.TeamCount</td>
-                                        <td>@division.MatchesPlayed</td>
+                                        <td>@division.CompletedMatches</td>
                                     </tr>
                                 }
                             </tbody>
@@ -134,8 +134,8 @@
                                         <tr>
                                             <td><strong>@round.RoundName</strong></td>
                                             <td>@round.TeamCount</td>
-                                            <td>@round.MatchesScheduled</td>
-                                            <td>@round.MatchesPlayed</td>
+                                            <td>@round.TotalMatches</td>
+                                            <td>@round.CompletedMatches</td>
                                             <td>
                                                 <div class="progress" style="height: 20px;">
                                                     <div class="progress-bar bg-success" role="progressbar" 

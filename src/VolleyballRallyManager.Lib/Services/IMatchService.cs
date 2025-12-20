@@ -22,20 +22,6 @@ public interface IMatchService
     Task<List<Match>> GetMatchesAsync();
 
     /// <summary>
-    /// Gets all matches for a specific round.
-    /// </summary>
-    /// <param name="roundId">The round ID to filter by.</param>
-    /// <returns>List of matches in the specified round.</returns>
-    Task<List<Match>> GetMatchesByRoundAsync(Guid roundId);
-
-    /// <summary>
-    /// Gets all matches involving a specific team.
-    /// </summary>
-    /// <param name="teamId">The team ID to filter by.</param>
-    /// <returns>List of matches where the team participates.</returns>
-    Task<List<Match>> GetMatchesByTeamAsync(Guid teamId);
-
-    /// <summary>
     /// Gets all matches currently in progress.
     /// </summary>
     /// <returns>List of in-progress matches.</returns>
@@ -158,13 +144,6 @@ public interface IMatchService
     /// <returns>The created match update.</returns>
     Task<MatchUpdate> AddMatchUpdateAsync(MatchUpdate update);
 
-    /// <summary>
-    /// Checks if a team has already played in a specific round.
-    /// </summary>
-    /// <param name="teamId">The team ID to check.</param>
-    /// <param name="roundId">The round ID to check.</param>
-    /// <returns>True if team has played, false otherwise.</returns>
-    Task<bool> HasTeamPlayedInRoundAsync(Guid teamId, Guid roundId);
 
     /// <summary>
     /// Checks if both teams are available at the specified time (no overlapping matches).

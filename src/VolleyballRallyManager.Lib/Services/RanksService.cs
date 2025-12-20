@@ -19,6 +19,51 @@ public class RanksService : IRanksService
         _logger = logger;
     }
 
+    private async Task<TournamentTeamDivision?> GetTeamAsync(Guid tournamentId, Guid teamId)
+    {
+        var rrd = await _context.TournamentTeamDivisions.FirstOrDefaultAsync(t => t.TournamentId == tournamentId && t.TeamId == teamId);
+        
+        return rrd;
+
+    }
+    public async Task UpdateTeamStatisticsAsync(Match match)
+    {
+        if (match == null || !match.IsFinished) return;
+
+        var homeTeam = await GetTeamAsync(match.TournamentId, match.HomeTeamId);
+        var awayTeam = await GetTeamAsync(match.TournamentId, match.AwayTeamId);
+
+        if (homeTeam != null)
+        {
+            homeTeam.MatchesPlayed++;
+            homeTeam.ScoreFor += match.HomeTeamScore;
+            homeTeam.ScoreAgainst += match.AwayTeamScore;
+
+            if (match.HomeTeamScore > match.AwayTeamScore)
+                homeTeam.Wins++;
+            else if (match.HomeTeamScore < match.AwayTeamScore)
+                homeTeam.Losses++;
+            else
+                homeTeam.Draws++;
+        }
+
+        if (awayTeam != null)
+        {
+            awayTeam.MatchesPlayed++;
+            awayTeam.ScoreFor += match.AwayTeamScore;
+            awayTeam.ScoreAgainst += match.HomeTeamScore;
+
+            if (match.AwayTeamScore > match.HomeTeamScore)
+                awayTeam.Wins++;
+            else if (match.AwayTeamScore < match.HomeTeamScore)
+                awayTeam.Losses++;
+            else
+                awayTeam.Draws++;
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
     /// <summary>
     /// Updates team ranks for a specific tournament round based on match results
     /// Applies strict tie-breaker rules:
@@ -47,9 +92,7 @@ public class RanksService : IRanksService
 
             // Get all matches for this round
             var matches = await _context.Matches
-                .Where(m => m.TournamentId == tournamentRound.TournamentId
-                    && m.DivisionId == tournamentRound.DivisionId
-                    && m.RoundTemplateId == tournamentRound.RoundTemplateId
+                .Where(m => m.TournamentRoundId == tournamentRound.Id
                     && m.IsFinished)
                 .Include(m => m.Sets)
                 .ToListAsync();

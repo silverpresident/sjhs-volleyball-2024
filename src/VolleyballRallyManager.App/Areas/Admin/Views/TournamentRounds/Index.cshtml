@@ -92,19 +92,19 @@
                                 }
                             </td>
                             <td>
-                                @round.MatchesPlayed / @round.MatchesScheduled
-                                @if (round.MatchesScheduled > 0)
+                                @round.CompletedMatches / @round.TotalMatches
+                                @if (round.TotalMatches > 0)
                                 {
                                     <br />
                                     <small class="text-muted">
-                                        (@(Math.Round((double)round.MatchesPlayed / round.MatchesScheduled * 100, 1))%)
+                                        (@(Math.Round((double)round.CompletedMatches / round.TotalMatches * 100, 1))%)
                                     </small>
                                 }
                             </td>
                             <td>
-                                @if (round.MatchesScheduled > 0)
+                                @if (round.TotalMatches > 0)
                                 {
-                                    var progressPercent = (double)round.MatchesPlayed / round.MatchesScheduled * 100;
+                                    var progressPercent = (double)round.CompletedMatches / round.TotalMatches * 100;
                                     <div class="progress" style="height: 25px;">
                                         <div class="progress-bar @(progressPercent == 100 ? "bg-success" : "bg-primary")"
                                              role="progressbar"

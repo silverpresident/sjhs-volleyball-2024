@@ -47,49 +47,6 @@ public class RoundService : IRoundService
         }
     }
 
-    public async Task<RoundTemplate?> GetRoundWithMatchesAsync(Guid id)
-    {
-        try
-        {
-            return await _context.RoundTemplates
-                .Include(r => r.Matches)
-                    .ThenInclude(m => m.HomeTeam)
-                .Include(r => r.Matches)
-                    .ThenInclude(m => m.AwayTeam)
-                .Include(r => r.Matches)
-                    .ThenInclude(m => m.Division)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(r => r.Id == id);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving round with matches for ID {RoundId}", id);
-            throw;
-        }
-    }
-
-    public async Task<IEnumerable<RoundTemplate>> GetRoundsWithMatchesAsync()
-    {
-        try
-        {
-            return await _context.RoundTemplates
-                .Include(r => r.Matches)
-                    .ThenInclude(m => m.HomeTeam)
-                .Include(r => r.Matches)
-                    .ThenInclude(m => m.AwayTeam)
-                .Include(r => r.Matches)
-                    .ThenInclude(m => m.Division)
-                .OrderBy(r => r.Sequence)
-                .AsNoTracking()
-                .ToListAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving rounds with matches");
-            throw;
-        }
-    }
-
     public async Task CreateRoundAsync(RoundTemplate round)
     {
         try
@@ -120,52 +77,5 @@ public class RoundService : IRoundService
         }
     }
 
-    public async Task DeleteRoundAsync(Guid id)
-    {
-        try
-        {
-            var round = await _context.RoundTemplates.FindAsync(id);
-            if (round != null)
-            {
-                _context.RoundTemplates.Remove(round);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Deleted round with ID {RoundId}", id);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error deleting round with ID {RoundId}", id);
-            throw;
-        }
-    }
 
-    public async Task<int> GetMatchCountForRoundAsync(Guid roundId)
-    {
-        try
-        {
-            return await _context.Matches
-                .Where(m => m.RoundTemplateId == roundId)
-                .CountAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting match count for round {RoundId}", roundId);
-            throw;
-        }
-    }
-
-    public async Task<int> GetCompletedMatchCountForRoundAsync(Guid roundId)
-    {
-        try
-        {
-            return await _context.Matches
-                .Where(m => m.RoundTemplateId == roundId && m.IsFinished)
-                .CountAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting completed match count for round {RoundId}", roundId);
-            throw;
-        }
-    }
 }

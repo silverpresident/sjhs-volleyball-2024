@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VolleyballRallyManager.App.Models;
 using VolleyballRallyManager.Lib.Data;
+using VolleyballRallyManager.Lib.Models;
 using VolleyballRallyManager.Lib.Services;
 
 namespace VolleyballRallyManager.App.Controllers;
@@ -69,49 +70,13 @@ public class RoundsController : Controller
                 {
                     DivisionId = division.DivisionId,
                     DivisionName = division.Division.Name,
-                    Rounds = new List<RoundSummaryInfo>()
+                    Rounds = new List<TournamentRoundSummaryViewModel>()
                 };
 
                 // Build round summary for each round in the division
                 foreach (var roundSummary in divisionDetails.Rounds.OrderBy(r => r.RoundNumber))
                 {
-                    // Get the full tournament round to access IsPlayoff and RoundTemplateId
-                    var tournamentRound = await _context.TournamentRounds
-                        .FirstOrDefaultAsync(tr => tr.Id == roundSummary.TournamentRoundId);
-
-                    if (tournamentRound == null) continue;
-
-                    // Get match statistics using RoundTemplateId
-                    var matches = await _context.Matches
-                        .Where(m => m.TournamentId == activeTournament.Id 
-                                 && m.DivisionId == division.DivisionId
-                                 && m.RoundTemplateId == tournamentRound.RoundTemplateId)
-                        .ToListAsync();
-
-                    var teamCount = await _context.TournamentRoundTeams
-                        .Where(trt => trt.TournamentRoundId == roundSummary.TournamentRoundId)
-                        .CountAsync();
-
-                    var completedMatches = matches.Count(m => m.IsFinished);
-                    var totalMatches = matches.Count;
-                    var completionPercentage = totalMatches > 0 ? (double)completedMatches / totalMatches * 100 : 0;
-
-                    divisionGroup.Rounds.Add(new RoundSummaryInfo
-                    {
-                        TournamentRoundId = roundSummary.TournamentRoundId,
-                        RoundName = roundSummary.RoundName,
-                        RoundNumber = roundSummary.RoundNumber,
-                        IsPlayoff = tournamentRound.IsPlayoff,
-                        MatchGenerationStrategy = roundSummary.MatchGenerationStrategy,
-                        TeamCount = teamCount,
-                        AdvancingTeamsCount = roundSummary.AdvancingTeamsCount,
-                        TotalMatches = totalMatches,
-                        CompletedMatches = completedMatches,
-                        PendingMatches = totalMatches - completedMatches,
-                        CompletionPercentage = completionPercentage,
-                        IsFinished = roundSummary.IsFinished,
-                        IsLocked = roundSummary.IsLocked
-                    });
+                    divisionGroup.Rounds.Add(roundSummary);
                 }
 
                 viewModel.DivisionGroups.Add(divisionGroup);
