@@ -9,7 +9,8 @@ The database schema includes tables for managing volleyball tournaments, includi
 - **Relationship Tables**: TournamentDivisions, TournamentTeamDivisions
 - **Round Management**: TournamentRounds, TournamentRoundTeams
 - **Match Management**: Matches, MatchSets, MatchUpdates
-- **Communication**: Bulletins, Announcements, AnnouncementHistoryLogs
+- **Communication**: Bulletins, Announcements, AnnouncementHistoryLogs, ChatRooms, ChatMessages
+- **Chat**: ChatRooms, ChatMessages, ChatRoomMemberships
 
 ## Setup Scripts
 
@@ -43,6 +44,8 @@ sqlcmd -S your-server -d master -i setup.sql
 
 ### migration-schema-sync-complete.sql
 **Purpose**: Comprehensive migration script to update existing databases to the latest schema.
+
+**⚠️ NOTE**: This script is currently **outdated** and does not include the latest Chat tables or Announcement Tags. It is recommended to use `setup.sql` for fresh installations.
 
 **Usage**: Run this on an existing database to apply all schema updates.
 
@@ -193,6 +196,12 @@ Team (1) ---------+              +--------- (1) Division
 - Tournament-specific announcements
 - Supports repeat announcements and priority levels
 - Linked to AnnouncementHistoryLogs for tracking announcement history
+- Includes `Tag` field for categorization
+
+#### Chat Tables
+- **ChatRooms**: Manages chat rooms (Public, Private, etc.)
+- **ChatMessages**: Stores messages with markdown support
+- **ChatRoomMemberships**: Tracks user membership in rooms
 
 ## Best Practices
 
@@ -266,6 +275,7 @@ Ensure your SQL user has `db_owner` or appropriate CREATE/ALTER permissions.
 
 ## Version History
 
+- **2025-12-20**: Added Chat tables and Announcement Tags. Removed "Round 3" and renamed "Semi-finals" in seed data.
 - **2025-12-15**: Consolidated all migrations into migration-schema-sync-complete.sql
 - **2025-12-11**: Added round recommendation fields
 - **2025-12-10**: Added playoff fields to tournament rounds

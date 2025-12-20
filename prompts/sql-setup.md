@@ -32,3 +32,6 @@ Create a single SQL script that combines the setup.sql and any other .sql files,
 Update cleanup.sql so that it can be used to reset teh database.
 
 GIve me a list of files that can be removed because there are no longer relevant.
+
+
+okay, update the README.md and SCHEMA_SYNC_REPORT.md files in the database folder.

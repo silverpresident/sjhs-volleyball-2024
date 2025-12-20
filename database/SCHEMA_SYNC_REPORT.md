@@ -1,6 +1,6 @@
 # Database Schema Synchronization Report
 
-**Date**: 2025-12-15  
+**Date**: 2025-12-20
 **Task**: Ensure SQL setup files are in sync with project database schema
 
 ## Summary
@@ -13,6 +13,14 @@ The database SQL scripts have been reviewed, updated, and synchronized with the 
 **File**: [`database/setup.sql`](setup.sql)
 
 **Changes**:
+- ✅ Added **Chat Feature** tables:
+  - `ChatRooms`
+  - `ChatMessages`
+  - `ChatRoomMemberships`
+- ✅ Added `Tag` column to `Announcements` table
+- ✅ Updated Seed Data:
+  - Removed "Round 3"
+  - Renamed "Semi Finals" to "Semi-finals"
 - ✅ Added all missing tables that were created via separate scripts
 - ✅ Added `RegistrationUrl` column to Tournaments table
 - ✅ Added recommendation fields to Rounds table:
@@ -94,6 +102,9 @@ The database SQL scripts have been reviewed, updated, and synchronized with the 
 | Bulletin | Bulletins | ✅ Synced |
 | Announcement | Announcements | ✅ Synced |
 | AnnouncementHistoryLog | AnnouncementHistoryLogs | ✅ Synced |
+| ChatRoom | ChatRooms | ✅ Synced |
+| ChatMessage | ChatMessages | ✅ Synced |
+| ChatRoomMembership | ChatRoomMemberships | ✅ Synced |
 
 ### Key Columns Verified
 
@@ -163,7 +174,13 @@ The database SQL scripts have been reviewed, updated, and synchronized with the 
 - [x] RemainingRepeatCount (INT)
 - [x] AnnouncedCount (INT)
 - [x] IsHidden (BIT)
+- [x] Tag (NVARCHAR(256)) - **Added**
 - [x] Audit fields
+
+#### Chat Tables
+- [x] ChatRooms: Name, RoomType, RequiredRole, IsSystemRoom
+- [x] ChatMessages: Content, Timestamp, IsRead
+- [x] ChatRoomMemberships: IsRoomAdmin, IsMuted, JoinedAt
 
 ## Foreign Key Relationships Verified
 
