@@ -137,12 +137,18 @@
                 color: 'warning', 
                 badgeColor: 'warning' 
             },
-            'RefereeAssigned': { 
-                label: 'Referee Assigned', 
-                icon: 'bi bi-person-badge-fill', 
-                color: 'secondary', 
-                badgeColor: 'secondary' 
+            'OfficialAssigned': {
+                label: 'Official Assigned',
+                icon: 'bi bi-person-badge',
+                color: 'secondary',
+                badgeColor: 'secondary'
             },
+            'RefereeAssigned': {
+                label: 'Referee Assigned',
+                icon: 'bi bi-person-badge-fill',
+                color: 'secondary',
+                badgeColor: 'secondary'
+            }, 
             'ScorerAssigned': { 
                 label: 'Scorer Assigned', 
                 icon: 'bi bi-pencil-square', 

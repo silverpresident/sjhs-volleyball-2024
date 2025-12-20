@@ -544,17 +544,21 @@ public class MatchService : IMatchService
 
     public async Task<Match> UpdateMatchDetailsAsync(Guid matchId, DateTime? scheduledTime, string? courtLocation, string? refereeName, string? scorerName, string userId)
     {
+        int typeCount = 0;
+        UpdateType updateType = UpdateType.Other;
         var match = await GetMatchAsync(matchId);
         if (match == null)
             throw new KeyNotFoundException("Match not found");
 
         var changes = new List<string>();
-
+        bool scorerChanged = false;
+        bool refereeChanged = false;
         if (scheduledTime.HasValue && match.ScheduledTime != scheduledTime.Value)
         {
             var oldTime = match.ScheduledTime;
             match.ScheduledTime = scheduledTime.Value;
             changes.Add($"Time changed from {oldTime:g} to {scheduledTime.Value:g}");
+            updateType = UpdateType.TimeChanged;
         }
 
         if (!string.IsNullOrEmpty(courtLocation) && match.CourtLocation != courtLocation)
@@ -562,18 +566,23 @@ public class MatchService : IMatchService
             var oldLocation = match.CourtLocation;
             match.CourtLocation = courtLocation;
             changes.Add($"Court changed from {oldLocation} to {courtLocation}");
+            updateType = UpdateType.LocationChanged;
         }
 
         if (refereeName != null && match.RefereeName != refereeName)
         {
             match.RefereeName = refereeName;
             changes.Add($"Referee assigned: {refereeName}");
+            refereeChanged = true;
+            updateType = UpdateType.RefereeAssigned;
         }
 
         if (scorerName != null && match.ScorerName != scorerName)
         {
             match.ScorerName = scorerName;
             changes.Add($"Scorer assigned: {scorerName}");
+            scorerChanged = true;
+            updateType = UpdateType.ScorerAssigned;
         }
 
         if (changes.Count > 0)
@@ -585,6 +594,14 @@ public class MatchService : IMatchService
                 UpdateType = UpdateType.Other,
                 Content = string.Join("; ", changes)
             };
+            if (changes.Count == 1)
+            {
+                update.UpdateType = updateType;
+            }
+            if (changes.Count == 2 && scorerChanged && refereeChanged)
+            {
+                update.UpdateType = UpdateType.OfficialAssigned;
+            }
             await AddMatchUpdateAsync(update);
 
             await _context.SaveChangesAsync();

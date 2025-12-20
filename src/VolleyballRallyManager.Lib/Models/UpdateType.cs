@@ -4,6 +4,7 @@ public enum UpdateType
 {
     ScoreUpdate,
     DisputeRaised,
+    OfficialAssigned,
     RefereeAssigned,
     ScorerAssigned,
     LocationChanged,
