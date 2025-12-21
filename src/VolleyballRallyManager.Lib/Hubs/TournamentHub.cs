@@ -126,8 +126,20 @@ public class TournamentHub : Hub
     public async Task SendMatchUpdate(MatchUpdate update)
     {
         _logger.LogInformation("Sending match update for match {MatchId} to match_{MatchId} and updates groups", update.MatchId, update.MatchId);
-        await Clients.Group($"match_{update.MatchId}").SendAsync("ReceiveMatchUpdate", update);
-        await Clients.Group("updates").SendAsync("ReceiveMatchUpdate", update);
+        var safeUpdate = new
+        {
+            update.Id,
+            update.MatchId,
+            update.Content,
+            update.UpdateType,
+            update.PreviousValue,
+            update.NewValue,
+            update.IsProcessed,
+            update.ProcessedAt,
+            update.CreatedAt
+        };
+        await Clients.Group($"match_{update.MatchId}").SendAsync("ReceiveMatchUpdate", safeUpdate);
+        await Clients.Group("updates").SendAsync("ReceiveMatchUpdate", safeUpdate);
     }
 
     public async Task SendScoreUpdate(Guid matchId, int homeScore, int awayScore)
@@ -154,14 +166,45 @@ public class TournamentHub : Hub
     public async Task SendTeamUpdate(Team team)
     {
         _logger.LogInformation("Sending team update for team {TeamId}: {TeamName}", team.Id, team.Name);
-        await Clients.Group($"team_{team.Id}").SendAsync("ReceiveTeamUpdate", team);
+        var safeTeam = new
+        {
+            team.Id,
+            team.Name,
+            team.School,
+            team.Color,
+            team.LogoUrl
+        };
+        await Clients.Group($"team_{team.Id}").SendAsync("ReceiveTeamUpdate", safeTeam);
         //await Clients.Group($"division_{team.Division.Name}").SendAsync("ReceiveTeamUpdate", team);
     }
 
     public async Task SendRoundUpdate(RoundTemplate round)
     {
         _logger.LogInformation("Sending round update for round {RoundId}: {RoundName}", round.Id, round.Name);
-        await Clients.Group($"round_{round.Id}").SendAsync("ReceiveRoundUpdate", round);
+        var safeRound = new
+        {
+            round.Id,
+            round.Name,
+            round.Sequence,
+            round.RecommendedQualifyingTeamsCount,
+            round.RecommendedMatchGenerationStrategy,
+            round.RecommendedTeamSelectionStrategy,
+            round.IsPlayoff,
+            Matches = round.Matches.Select(m => new
+            {
+                m.Id,
+                m.MatchNumber,
+                m.HomeTeamId,
+                m.AwayTeamId,
+                m.HomeTeamScore,
+                m.AwayTeamScore,
+                m.IsFinished,
+                m.ScheduledTime,
+                m.CourtLocation,
+                m.GroupName
+            }).ToList()
+        };
+        await Clients.Group($"round_{round.Id}").SendAsync("ReceiveRoundUpdate", safeRound);
     }
 
     public async Task SendError(string error)
