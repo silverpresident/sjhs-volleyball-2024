@@ -159,8 +159,19 @@ public class TournamentHub : Hub
     public async Task SendBulletin(Bulletin bulletin)
     {
         _logger.LogInformation("Broadcasting bulletin {BulletinId}: {Content}", bulletin.Id, bulletin.Content);
-        await Clients.Group("bulletins").SendAsync("ReceiveBulletin", bulletin);
-        await Clients.Group("all").SendAsync("ReceiveBulletin", bulletin);
+        var bulletinDto = new
+        {
+            bulletin.Id,
+            bulletin.Content,
+            bulletin.RenderedContent,
+            bulletin.UseMarkdown,
+            bulletin.Priority,
+            bulletin.IsVisible,
+            bulletin.CreatedAt,
+            bulletin.UpdatedAt
+        };
+        await Clients.Group("bulletins").SendAsync("ReceiveBulletin", bulletinDto);
+        await Clients.Group("all").SendAsync("ReceiveBulletin", bulletinDto);
     }
 
     public async Task SendTeamUpdate(Team team)
@@ -225,8 +236,25 @@ public class TournamentHub : Hub
         {
             _logger.LogInformation("Client {ConnectionId} requesting announcements", Context.ConnectionId);
             var announcements = await _announcementService.GetQueuedAnnouncementsAsync();
-            await Clients.Caller.SendAsync("AnnouncementQueueChanged", announcements.ToList());
-            _logger.LogInformation("Sent {Count} announcements to client {ConnectionId}", announcements.Count(), Context.ConnectionId);
+            var announcementsDto = announcements.Select(a => new
+            {
+                a.Id,
+                a.Title,
+                a.Content,
+                a.Priority,
+                a.SequencingNumber,
+                a.FirstAnnouncementTime,
+                a.LastAnnouncementTime,
+                a.RemainingRepeatCount,
+                a.AnnouncedCount,
+                a.IsHidden,
+                a.Tag,
+                a.TournamentId,
+                a.CreatedAt,
+                a.UpdatedAt
+            }).ToList();
+            await Clients.Caller.SendAsync("AnnouncementQueueChanged", announcementsDto);
+            _logger.LogInformation("Sent {Count} announcements to client {ConnectionId}", announcementsDto.Count, Context.ConnectionId);
         }
         catch (Exception ex)
         {

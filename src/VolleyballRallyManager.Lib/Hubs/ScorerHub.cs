@@ -222,7 +222,13 @@ public class ScorerHub : Hub
             // Also send feed update if an update was created
             if (update != null)
             {
-                await Clients.Group($"scorer_{matchId}").SendAsync("ReceiveFeedUpdate", update);
+                var updateDto = new
+                {
+                    update.Content,
+                    update.CreatedAt,
+                    update.UpdateType
+                };
+                await Clients.Group($"scorer_{matchId}").SendAsync("ReceiveFeedUpdate", updateDto);
             }
         }
         catch (Exception ex)
@@ -237,9 +243,15 @@ public class ScorerHub : Hub
         {
             _logger.LogInformation("Client {ConnectionId} requesting feed list for match {MatchId}", Context.ConnectionId, matchId);
             var updates = await _matchService.GetMatchUpdatesAsync(matchId);
-            updates = updates.Take(20).ToList();
-            await Clients.Group($"scorer_{matchId}").SendAsync("ReceiveFeedList", updates);
-            _logger.LogInformation("Sent {Count} updates to scorer_{MatchId} group", updates.Count, matchId);
+            var updatesDto = updates.Take(20).Select(u => new
+            {
+                u.Content,
+                u.CreatedAt,
+                Timestamp = u.CreatedAt,
+                u.UpdateType
+            }).ToList();
+            await Clients.Group($"scorer_{matchId}").SendAsync("ReceiveFeedList", updatesDto);
+            _logger.LogInformation("Sent {Count} updates to scorer_{MatchId} group", updatesDto.Count, matchId);
         }
         catch (Exception ex)
         {
