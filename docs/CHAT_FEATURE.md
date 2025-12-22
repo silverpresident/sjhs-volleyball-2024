@@ -1,5 +1,7 @@
 # Real-Time Chat Feature Documentation
 
+> **Member Management**: See [`CHAT_MEMBER_MANAGEMENT.md`](CHAT_MEMBER_MANAGEMENT.md) for detailed information on adding/removing members from private rooms and group chats.
+
 ## Overview
 The VolleyballRallyManager now includes a comprehensive real-time chat feature built using ASP.NET Core SignalR. This feature enables organizers and workers to communicate efficiently during tournaments through public, private, and role-based chat rooms.
 

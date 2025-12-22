@@ -2,8 +2,8 @@
 (function () {
     'use strict';
 
-    // State Management - Exposed globally for chat-members.js
-    window.chatState = {
+    // State Management
+    const state = {
         connection: null,
         currentRoomId: null,
         currentRoomName: null,
@@ -13,11 +13,8 @@
         isTyping: false,
         messageCache: {},
         unreadCounts: {},
-        mutedRooms: new Set(),
-        allUsers: []
+        mutedRooms: new Set()
     };
-
-    const state = window.chatState;
 
     // Audio for notifications
     const messageSound = new Audio('/sounds/message.mp3');
@@ -28,7 +25,6 @@
         initializeSignalR();
         setupEventListeners();
         configureMarked();
-        loadUsers();
     });
 
     // Configure marked.js for markdown support
@@ -42,17 +38,6 @@
         }
     }
 
-    // Load all users for member management
-    function loadUsers() {
-        fetch('/Admin/Chat/GetUsers')
-            .then(response => response.json())
-            .then(users => {
-                state.allUsers = users;
-                console.log('Loaded users:', users.length);
-            })
-            .catch(err => console.error('Error loading users:', err));
-    }
-
     // Initialize SignalR Connection
     function initializeSignalR() {
         state.connection = new signalR.HubConnectionBuilder()
@@ -60,9 +45,6 @@
             .withAutomaticReconnect([0, 2000, 5000, 10000])
             .configureLogging(signalR.LogLevel.Information)
             .build();
-
-        // Expose connection globally
-        window.chatConnection = state.connection;
 
         // Connection Events
         state.connection.onreconnecting(() => {
@@ -108,48 +90,6 @@
 
     // Register SignalR Hub Methods
     function registerHubMethods() {
-        // Member Management Events
-        state.connection.on('UserAddedToRoom', (roomId, userId) => {
-            console.log(`User ${userId} added to room ${roomId}`);
-            // chat-members.js will handle the UI update
-        });
-
-        state.connection.on('UserRemovedFromRoom', (roomId, userId) => {
-            console.log(`User ${userId} removed from room ${roomId}`);
-            // chat-members.js will handle the UI update
-        });
-
-        state.connection.on('AddedToRoom', (roomInfo) => {
-            console.log('You were added to room:', roomInfo);
-            addRoomToSidebar(roomInfo);
-            showNotification(`You were added to ${roomInfo.name}`, 'info');
-        });
-
-        state.connection.on('RemovedFromRoom', (roomId, roomName) => {
-            console.log(`You were removed from room: ${roomName}`);
-            const roomItem = document.querySelector(`[data-room-id="${roomId}"]`);
-            if (roomItem) roomItem.remove();
-            
-            if (roomId === state.currentRoomId) {
-                state.currentRoomId = null;
-                state.currentRoomName = null;
-                document.getElementById('messages-area').innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-chat-text display-1"></i><p>Select a room to start chatting</p></div>';
-document.getElementById('message-input-area').style.display = 'none';
-                document.getElementById('manage-members-btn').style.display = 'none';
-                document.getElementById('mute-room-btn').style.display = 'none';
-                document.getElementById('leave-room-btn').style.display = 'none';
-            }
-            
-            showNotification(`You were removed from ${roomName}`, 'warning');
-        });
-
-        state.connection.on('RoomMembers', (roomId, memberIds) => {
-            // This is handled by chat-members.js displayRoomMembers function
-            if (typeof window.displayRoomMembers === 'function') {
-                window.displayRoomMembers(memberIds);
-            }
-        });
-
         // Receive Message
         state.connection.on('ReceiveMessage', (message) => {
             handleIncomingMessage(message);
@@ -293,13 +233,6 @@ document.getElementById('message-input-area').style.display = 'none';
         document.getElementById('current-room-name').textContent = roomName;
         document.getElementById('message-input-area').style.display = 'flex';
         document.getElementById('mute-room-btn').style.display = 'inline-block';
-        
-        // Show manage members button for private rooms and direct chats
-        if (roomType === 'Private' || roomType === 'Direct') {
-            document.getElementById('manage-members-btn').style.display = 'inline-block';
-        } else {
-            document.getElementById('manage-members-btn').style.display = 'none';
-        }
         
         // Only show leave button for non-system rooms
         if (roomType !== 'Public') {
@@ -566,7 +499,6 @@ document.getElementById('message-input-area').style.display = 'none';
                 state.currentRoomName = null;
                 document.getElementById('messages-area').innerHTML = '<div class="text-center text-muted py-5"><i class="bi bi-chat-text display-1"></i><p>Select a room to start chatting</p></div>';
                 document.getElementById('message-input-area').style.display = 'none';
-                document.getElementById('manage-members-btn').style.display = 'none';
                 document.getElementById('mute-room-btn').style.display = 'none';
                 document.getElementById('leave-room-btn').style.display = 'none';
 
@@ -632,7 +564,7 @@ document.getElementById('message-input-area').style.display = 'none';
         // Get timestamp of oldest message
         // This would need to be stored in data attribute during message creation
         // For now, we'll skip as it requires more complex state management
-        console.log('Loading older messages...');
+        console .log('Loading older messages...');
     }
 
     // UI Helpers
