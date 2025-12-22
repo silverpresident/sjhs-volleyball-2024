@@ -37,7 +37,7 @@ public static class SignalRConfiguration
                 options.TransportMaxBufferSize = 102400; // 100 KB
             });
 
-            endpoints.MapHub<ScorerHub>("/scorerhub", options =>
+            endpoints.MapHub<ScorerHub>("/ScorerHub", options =>
             {
                 options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets |
                                    Microsoft.AspNetCore.Http.Connections.HttpTransportType.ServerSentEvents;
@@ -46,7 +46,7 @@ public static class SignalRConfiguration
                 options.TransportMaxBufferSize = 102400; // 100 KB
             });
 
-            endpoints.MapHub<ChatHub>("/chathub", options =>
+            endpoints.MapHub<ChatHub>("/ChatHub", options =>
             {
                 options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets |
                                    Microsoft.AspNetCore.Http.Connections.HttpTransportType.ServerSentEvents;

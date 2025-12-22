@@ -87,6 +87,7 @@ public class ScorerHub : Hub
         _logger.LogInformation("Client {ConnectionId} leaving scorer_{MatchId} group", Context.ConnectionId, matchId);
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"scorer_{matchId}");
     }
+     
 
     public async Task SendScoreUpdate(Guid matchId, int setNumber, Guid teamId, int incrementValue)
     {
@@ -384,9 +385,7 @@ public class ScorerHub : Hub
                 _logger.LogWarning("Cannot broadcast score update: Current set not found for match {MatchId}", matchId);
                 return;
             }
-
-            // Broadcast optimistic update (actual update will come from worker)
-            await Clients.Group($"scorer_{matchId}").SendAsync("ReceiveScoreUpdate", new
+            var safeUpdate = new
             {
                 MatchId = matchId,
                 SetNumber = currentSet.SetNumber,
@@ -395,8 +394,12 @@ public class ScorerHub : Hub
                 HomeSetsWon = match.HomeTeamScore,
                 AwaySetsWon = match.AwayTeamScore,
                 Timestamp = DateTime.Now
-            });
-            
+            };
+
+            // Broadcast optimistic update (actual update will come from worker)
+            await Clients.Group($"scorer_{matchId}").SendAsync("ReceiveScoreUpdate", safeUpdate);
+            await Clients.Group($"match_{matchId}").SendAsync("ReceiveScoreUpdate", safeUpdate);
+
             _logger.LogInformation("Broadcasted score update to scorer_{MatchId} group: Set {SetNumber}, Home={HomeScore}, Away={AwayScore}",
                 matchId, currentSet.SetNumber, currentSet.HomeTeamScore, currentSet.AwayTeamScore);
         }

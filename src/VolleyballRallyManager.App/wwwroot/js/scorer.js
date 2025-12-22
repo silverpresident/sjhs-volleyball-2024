@@ -26,7 +26,7 @@ $(function () {
 
     function initializeSignalR() {
         scorerConnection = new signalR.HubConnectionBuilder()
-            .withUrl("/scorerhub")
+            .withUrl("/ScorerHub")
             .withAutomaticReconnect()
             .build();
 
@@ -79,7 +79,7 @@ $(function () {
                 console.log("SignalR Connected");
                 scorerConnection.invoke("JoinMatchGroup", matchId);
             })
-            .catch(err => console.error("SignalR Error:", err));
+            .catch(err => console.error("[ScorerHub] SignalR Error:", err));
     }
 
     function loadInitialState() {

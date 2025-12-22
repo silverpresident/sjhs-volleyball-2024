@@ -10,14 +10,12 @@ namespace VolleyballRallyManager.App.Controllers
     {
         private readonly IMatchService _matchService;
         private readonly IRoundService _roundService;
-        private readonly IHubContext<TournamentHub> _matchHub;
         private readonly IActiveTournamentService _activeTournamentService;
         private readonly ILogger<MatchesController> _logger;
 
-        public MatchesController(ILogger<MatchesController> logger, IActiveTournamentService activeTournamentService, IMatchService matchService, IHubContext<TournamentHub> matchHub, IRoundService roundService)
+        public MatchesController(ILogger<MatchesController> logger, IActiveTournamentService activeTournamentService, IMatchService matchService, IRoundService roundService)
         {
             _matchService = matchService;
-            _matchHub = matchHub;
             _activeTournamentService = activeTournamentService;
             _logger = logger;
             _roundService = roundService;

@@ -142,20 +142,6 @@ public class TournamentHub : Hub
         await Clients.Group("updates").SendAsync("ReceiveMatchUpdate", safeUpdate);
     }
 
-    public async Task SendScoreUpdate(Guid matchId, int homeScore, int awayScore)
-    {
-        _logger.LogInformation("Sending score update for match {MatchId}: Home={HomeScore}, Away={AwayScore}", matchId, homeScore, awayScore);
-        var update = new
-        {
-            MatchId = matchId,
-            HomeScore = homeScore,
-            AwayScore = awayScore,
-            Timestamp = DateTime.Now
-        };
-        await Clients.Group($"match_{matchId}").SendAsync("ReceiveScoreUpdate", update);
-        await Clients.Group("updates").SendAsync("ReceiveScoreUpdate", update);
-    }
-
     public async Task SendBulletin(Bulletin bulletin)
     {
         _logger.LogInformation("Broadcasting bulletin {BulletinId}: {Content}", bulletin.Id, bulletin.Content);
@@ -188,8 +174,8 @@ public class TournamentHub : Hub
         await Clients.Group($"team_{team.Id}").SendAsync("ReceiveTeamUpdate", safeTeam);
         //await Clients.Group($"division_{team.Division.Name}").SendAsync("ReceiveTeamUpdate", team);
     }
-
-    public async Task SendRoundUpdate(RoundTemplate round)
+/*
+    public async Task SendRoundUpdate(TournamenTROund round)
     {
         _logger.LogInformation("Sending round update for round {RoundId}: {RoundName}", round.Id, round.Name);
         var safeRound = new
@@ -217,7 +203,7 @@ public class TournamentHub : Hub
         };
         await Clients.Group($"round_{round.Id}").SendAsync("ReceiveRoundUpdate", safeRound);
     }
-
+*/
     public async Task SendError(string error)
     {
         _logger.LogWarning("Sending error to client {ConnectionId}: {Error}", Context.ConnectionId, error);

@@ -8,7 +8,8 @@ function initializeSignalR() {
         .withAutomaticReconnect()
         .build();
 
-    connection.start().catch(err => console.error(err.toString()));
+    connection.start()
+        .catch(err => console.error("[TournamentHub] SignalR Error:", err));
 
     // Handle connection events
     connection.onreconnecting(error => {

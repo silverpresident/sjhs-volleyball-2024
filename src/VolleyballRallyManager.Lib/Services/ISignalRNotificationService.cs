@@ -83,18 +83,6 @@ public interface ISignalRNotificationService
     Task NotifyTeamDeletedAsync(Guid teamId);
 
     /// <summary>
-    /// Notifies clients that a tournament round has started.
-    /// </summary>
-    /// <param name="round">The round that started.</param>
-    Task NotifyRoundStartedAsync(RoundTemplate round);
-
-    /// <summary>
-    /// Notifies clients that a tournament round has finished.
-    /// </summary>
-    /// <param name="round">The finished round.</param>
-    Task NotifyRoundFinishedAsync(RoundTemplate round);
-
-    /// <summary>
     /// Notifies clients of a tournament status change.
     /// </summary>
     /// <param name="status">Status message describing the tournament state.</param>
