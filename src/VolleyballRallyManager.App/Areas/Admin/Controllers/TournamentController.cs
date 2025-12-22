@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VolleyballRallyManager.App.Models;
@@ -7,6 +8,7 @@ using VolleyballRallyManager.Lib.Services;
 
 namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 {
+    [Authorize]
     [Area("Admin")]
     public class TournamentController : Controller
     {

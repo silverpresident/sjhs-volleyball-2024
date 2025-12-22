@@ -9,6 +9,7 @@ using VolleyballRallyManager.Lib.Models;
 
 namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 {
+    [Authorize]
     [Area("Admin")]
     public class TournamentTeamsController : Controller
     {
