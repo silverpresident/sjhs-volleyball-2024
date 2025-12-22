@@ -1,6 +1,7 @@
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using VolleyballRallyManager.Lib.Common;
+using VolleyballRallyManager.Lib.Models;
 
 namespace VolleyballRallyManager.Lib.Workers;
 
@@ -41,8 +42,380 @@ public class TournamentChannel
             UserName = source
         };
         await QueueEventAsync(TournamentEvent);
-
     }
+
+    #region SignalR Notification Methods
+
+    /// <summary>
+    /// Notify clients that a match has been created
+    /// </summary>
+    public async Task NotifyMatchCreatedAsync(Match match, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.MatchCreated,
+            TournamentId = match.TournamentId,
+            MatchId = match.Id,
+            Match = match,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients that a match has been updated
+    /// </summary>
+    public async Task NotifyMatchUpdatedAsync(Match match, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.MatchUpdated,
+            TournamentId = match.TournamentId,
+            MatchId = match.Id,
+            Match = match,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients that a match has started
+    /// </summary>
+    public async Task NotifyMatchStartedAsync(Match match, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.MatchStarted,
+            TournamentId = match.TournamentId,
+            MatchId = match.Id,
+            Match = match,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients that a match has finished
+    /// </summary>
+    public async Task NotifyMatchFinishedAsync(Match match, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.MatchFinished,
+            TournamentId = match.TournamentId,
+            MatchId = match.Id,
+            Match = match,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients that a match has been disputed
+    /// </summary>
+    public async Task NotifyMatchDisputedAsync(Match match, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.MatchDisputedNotification,
+            TournamentId = match.TournamentId,
+            MatchId = match.Id,
+            Match = match,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients of a score update
+    /// </summary>
+    public async Task NotifyScoreUpdateAsync(Match match, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.ScoreUpdate,
+            TournamentId = match.TournamentId,
+            MatchId = match.Id,
+            Match = match,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients that a bulletin has been created
+    /// </summary>
+    public async Task NotifyBulletinCreatedAsync(Bulletin bulletin, Guid tournamentId, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.BulletinCreated,
+            TournamentId = tournamentId,
+            EntityId = bulletin.Id,
+            Bulletin = bulletin,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients that a bulletin has been updated
+    /// </summary>
+    public async Task NotifyBulletinUpdatedAsync(Bulletin bulletin, Guid tournamentId, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.BulletinUpdated,
+            TournamentId = tournamentId,
+            EntityId = bulletin.Id,
+            Bulletin = bulletin,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients that a bulletin has been deleted
+    /// </summary>
+    public async Task NotifyBulletinDeletedAsync(Guid bulletinId, Guid tournamentId, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.BulletinDeleted,
+            TournamentId = tournamentId,
+            EntityId = bulletinId,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients that a team has been created
+    /// </summary>
+    public async Task NotifyTeamCreatedAsync(Team team, Guid tournamentId, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.TeamCreated,
+            TournamentId = tournamentId,
+            TeamId = team.Id,
+            Team = team,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients that a team has been updated
+    /// </summary>
+    public async Task NotifyTeamUpdatedAsync(Team team, Guid tournamentId, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.TeamUpdated,
+            TournamentId = tournamentId,
+            TeamId = team.Id,
+            Team = team,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients that a team has been deleted
+    /// </summary>
+    public async Task NotifyTeamDeletedAsync(Guid teamId, Guid tournamentId, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.TeamDeleted,
+            TournamentId = tournamentId,
+            TeamId = teamId,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients of a tournament status change
+    /// </summary>
+    public async Task NotifyTournamentStatusAsync(string status, Guid tournamentId, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.TournamentStatus,
+            TournamentId = tournamentId,
+            Message = status,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients of an error
+    /// </summary>
+    public async Task NotifyErrorAsync(string error, Guid tournamentId, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.ErrorNotification,
+            TournamentId = tournamentId,
+            Message = error,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Broadcast a general message to all clients
+    /// </summary>
+    public async Task BroadcastMessageAsync(string message, Guid tournamentId, string type = "info", string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.BroadcastMessage,
+            TournamentId = tournamentId,
+            Message = message,
+            MessageType = type,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients of a new match update in the feed
+    /// </summary>
+    public async Task NotifyAddFeedAsync(MatchUpdate update, Guid tournamentId, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.AddFeed,
+            TournamentId = tournamentId,
+            MatchId = update.MatchId,
+            MatchUpdate = update,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients that an announcement has been created
+    /// </summary>
+    public async Task NotifyAnnouncementCreatedAsync(Announcement announcement, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.AnnouncementCreated,
+            TournamentId = announcement.TournamentId,
+            EntityId = announcement.Id,
+            Announcement = announcement,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients that an announcement has been updated
+    /// </summary>
+    public async Task NotifyAnnouncementUpdatedAsync(Announcement announcement, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.AnnouncementUpdated,
+            TournamentId = announcement.TournamentId,
+            EntityId = announcement.Id,
+            Announcement = announcement,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients that an announcement has been deleted
+    /// </summary>
+    public async Task NotifyAnnouncementDeletedAsync(Guid announcementId, Guid tournamentId, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.AnnouncementDeleted,
+            TournamentId = tournamentId,
+            EntityId = announcementId,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients that an announcement property has changed
+    /// </summary>
+    public async Task NotifyAnnouncementPropertyChangedAsync(Guid announcementId, string property, string value, Guid tournamentId, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.AnnouncementPropertyChanged,
+            TournamentId = tournamentId,
+            EntityId = announcementId,
+            Property = property,
+            Value = value,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients that the announcement queue has changed
+    /// </summary>
+    public async Task NotifyAnnouncementQueueChangedAsync(List<Announcement> announcements, Guid tournamentId, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.AnnouncementQueueChanged,
+            TournamentId = tournamentId,
+            Announcements = announcements,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    /// <summary>
+    /// Notify clients that an announcement has been called
+    /// </summary>
+    public async Task NotifyAnnouncementCalledAsync(Announcement announcement, string source = "system")
+    {
+        var tournamentEvent = new TournamentEvent
+        {
+            EventType = TournamentEventType.AnnouncementCalled,
+            TournamentId = announcement.TournamentId,
+            EntityId = announcement.Id,
+            Announcement = announcement,
+            Source = source,
+            UserName = source
+        };
+        await QueueEventAsync(tournamentEvent);
+    }
+
+    #endregion
 
     /*
 /// <summary>

@@ -73,6 +73,75 @@ public class TournamentAutomationWorker : BackgroundService
             case TournamentEventType.UpdateDivisionRanks:
                 await HandleUpdateDivisionRanks(TournamentEvent, rankService, notificationService, announcerService, bulletinService);
                 break;
+
+            // SignalR Notification Events
+            case TournamentEventType.MatchCreated:
+                await HandleMatchCreated(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.MatchUpdated:
+                await HandleMatchUpdated(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.MatchStarted:
+                await HandleMatchStarted(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.MatchFinished:
+                await HandleMatchFinished(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.MatchDisputedNotification:
+                await HandleMatchDisputedNotification(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.ScoreUpdate:
+                await HandleScoreUpdate(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.BulletinCreated:
+                await HandleBulletinCreated(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.BulletinUpdated:
+                await HandleBulletinUpdated(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.BulletinDeleted:
+                await HandleBulletinDeleted(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.TeamCreated:
+                await HandleTeamCreated(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.TeamUpdated:
+                await HandleTeamUpdated(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.TeamDeleted:
+                await HandleTeamDeleted(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.TournamentStatus:
+                await HandleTournamentStatus(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.ErrorNotification:
+                await HandleErrorNotification(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.BroadcastMessage:
+                await HandleBroadcastMessage(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.AddFeed:
+                await HandleAddFeed(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.AnnouncementCreated:
+                await HandleAnnouncementCreated(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.AnnouncementUpdated:
+                await HandleAnnouncementUpdated(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.AnnouncementDeleted:
+                await HandleAnnouncementDeleted(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.AnnouncementPropertyChanged:
+                await HandleAnnouncementPropertyChanged(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.AnnouncementQueueChanged:
+                await HandleAnnouncementQueueChanged(TournamentEvent, notificationService);
+                break;
+            case TournamentEventType.AnnouncementCalled:
+                await HandleAnnouncementCalled(TournamentEvent, notificationService);
+                break;
+
             /*
         case TournamentEventType.CallToSupport:
             await HandleCallToSupportAsync(TournamentEvent, matchService, notificationService, announcerService);
@@ -117,6 +186,256 @@ public class TournamentAutomationWorker : BackgroundService
         await rankService.UpdateDivisionRanksAsync(tournamentEvent.TournamentId, tournamentEvent.DivisionId ?? Guid.Empty);
         _logger.LogInformation("Processed HandleUpdateDivisionRanks for Tournament {TournamentId}", tournamentEvent.TournamentId);
     }
+
+    #region SignalR Notification Handlers
+
+    private async Task HandleMatchCreated(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.Match == null)
+        {
+            _logger.LogWarning("Match is null for MatchCreated event");
+            return;
+        }
+        await notificationService.NotifyMatchCreatedAsync(tournamentEvent.Match);
+        _logger.LogInformation("Processed MatchCreated notification for match {MatchId}", tournamentEvent.MatchId);
+    }
+
+    private async Task HandleMatchUpdated(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.Match == null)
+        {
+            _logger.LogWarning("Match is null for MatchUpdated event");
+            return;
+        }
+        await notificationService.NotifyMatchUpdatedAsync(tournamentEvent.Match);
+        _logger.LogInformation("Processed MatchUpdated notification for match {MatchId}", tournamentEvent.MatchId);
+    }
+
+    private async Task HandleMatchStarted(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.Match == null)
+        {
+            _logger.LogWarning("Match is null for MatchStarted event");
+            return;
+        }
+        await notificationService.NotifyMatchStartedAsync(tournamentEvent.Match);
+        _logger.LogInformation("Processed MatchStarted notification for match {MatchId}", tournamentEvent.MatchId);
+    }
+
+    private async Task HandleMatchFinished(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.Match == null)
+        {
+            _logger.LogWarning("Match is null for MatchFinished event");
+            return;
+        }
+        await notificationService.NotifyMatchFinishedAsync(tournamentEvent.Match);
+        _logger.LogInformation("Processed MatchFinished notification for match {MatchId}", tournamentEvent.MatchId);
+    }
+
+    private async Task HandleMatchDisputedNotification(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.Match == null)
+        {
+            _logger.LogWarning("Match is null for MatchDisputedNotification event");
+            return;
+        }
+        await notificationService.NotifyMatchDisputedAsync(tournamentEvent.Match);
+        _logger.LogInformation("Processed MatchDisputedNotification for match {MatchId}", tournamentEvent.MatchId);
+    }
+
+    private async Task HandleScoreUpdate(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.Match == null)
+        {
+            _logger.LogWarning("Match is null for ScoreUpdate event");
+            return;
+        }
+        await notificationService.NotifyScoreUpdateAsync(tournamentEvent.Match);
+        _logger.LogInformation("Processed ScoreUpdate notification for match {MatchId}", tournamentEvent.MatchId);
+    }
+
+    private async Task HandleBulletinCreated(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.Bulletin == null)
+        {
+            _logger.LogWarning("Bulletin is null for BulletinCreated event");
+            return;
+        }
+        await notificationService.NotifyBulletinCreatedAsync(tournamentEvent.Bulletin);
+        _logger.LogInformation("Processed BulletinCreated notification for bulletin {BulletinId}", tournamentEvent.EntityId);
+    }
+
+    private async Task HandleBulletinUpdated(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.Bulletin == null)
+        {
+            _logger.LogWarning("Bulletin is null for BulletinUpdated event");
+            return;
+        }
+        await notificationService.NotifyBulletinUpdatedAsync(tournamentEvent.Bulletin);
+        _logger.LogInformation("Processed BulletinUpdated notification for bulletin {BulletinId}", tournamentEvent.EntityId);
+    }
+
+    private async Task HandleBulletinDeleted(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.EntityId == null)
+        {
+            _logger.LogWarning("EntityId is null for BulletinDeleted event");
+            return;
+        }
+        await notificationService.NotifyBulletinDeletedAsync(tournamentEvent.EntityId.Value);
+        _logger.LogInformation("Processed BulletinDeleted notification for bulletin {BulletinId}", tournamentEvent.EntityId);
+    }
+
+    private async Task HandleTeamCreated(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.Team == null)
+        {
+            _logger.LogWarning("Team is null for TeamCreated event");
+            return;
+        }
+        await notificationService.NotifyTeamCreatedAsync(tournamentEvent.Team);
+        _logger.LogInformation("Processed TeamCreated notification for team {TeamId}", tournamentEvent.TeamId);
+    }
+
+    private async Task HandleTeamUpdated(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.Team == null)
+        {
+            _logger.LogWarning("Team is null for TeamUpdated event");
+            return;
+        }
+        await notificationService.NotifyTeamUpdatedAsync(tournamentEvent.Team);
+        _logger.LogInformation("Processed TeamUpdated notification for team {TeamId}", tournamentEvent.TeamId);
+    }
+
+    private async Task HandleTeamDeleted(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.TeamId == null)
+        {
+            _logger.LogWarning("TeamId is null for TeamDeleted event");
+            return;
+        }
+        await notificationService.NotifyTeamDeletedAsync(tournamentEvent.TeamId.Value);
+        _logger.LogInformation("Processed TeamDeleted notification for team {TeamId}", tournamentEvent.TeamId);
+    }
+
+    private async Task HandleTournamentStatus(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (string.IsNullOrEmpty(tournamentEvent.Message))
+        {
+            _logger.LogWarning("Message is null for TournamentStatus event");
+            return;
+        }
+        await notificationService.NotifyTournamentStatusAsync(tournamentEvent.Message);
+        _logger.LogInformation("Processed TournamentStatus notification for tournament {TournamentId}", tournamentEvent.TournamentId);
+    }
+
+    private async Task HandleErrorNotification(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (string.IsNullOrEmpty(tournamentEvent.Message))
+        {
+            _logger.LogWarning("Message is null for ErrorNotification event");
+            return;
+        }
+        await notificationService.NotifyErrorAsync(tournamentEvent.Message);
+        _logger.LogInformation("Processed ErrorNotification for tournament {TournamentId}", tournamentEvent.TournamentId);
+    }
+
+    private async Task HandleBroadcastMessage(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (string.IsNullOrEmpty(tournamentEvent.Message))
+        {
+            _logger.LogWarning("Message is null for BroadcastMessage event");
+            return;
+        }
+        await notificationService.BroadcastMessageAsync(tournamentEvent.Message, tournamentEvent.MessageType ?? "info");
+        _logger.LogInformation("Processed BroadcastMessage notification for tournament {TournamentId}", tournamentEvent.TournamentId);
+    }
+
+    private async Task HandleAddFeed(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.MatchUpdate == null)
+        {
+            _logger.LogWarning("MatchUpdate is null for AddFeed event");
+            return;
+        }
+        await notificationService.NotifyAddFeedAsync(tournamentEvent.MatchUpdate);
+        _logger.LogInformation("Processed AddFeed notification for match {MatchId}", tournamentEvent.MatchId);
+    }
+
+    private async Task HandleAnnouncementCreated(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.Announcement == null)
+        {
+            _logger.LogWarning("Announcement is null for AnnouncementCreated event");
+            return;
+        }
+        await notificationService.NotifyAnnouncementCreatedAsync(tournamentEvent.Announcement);
+        _logger.LogInformation("Processed AnnouncementCreated notification for announcement {AnnouncementId}", tournamentEvent.EntityId);
+    }
+
+    private async Task HandleAnnouncementUpdated(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.Announcement == null)
+        {
+            _logger.LogWarning("Announcement is null for AnnouncementUpdated event");
+            return;
+        }
+        await notificationService.NotifyAnnouncementUpdatedAsync(tournamentEvent.Announcement);
+        _logger.LogInformation("Processed AnnouncementUpdated notification for announcement {AnnouncementId}", tournamentEvent.EntityId);
+    }
+
+    private async Task HandleAnnouncementDeleted(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.EntityId == null)
+        {
+            _logger.LogWarning("EntityId is null for AnnouncementDeleted event");
+            return;
+        }
+        await notificationService.NotifyAnnouncementDeletedAsync(tournamentEvent.EntityId.Value);
+        _logger.LogInformation("Processed AnnouncementDeleted notification for announcement {AnnouncementId}", tournamentEvent.EntityId);
+    }
+
+    private async Task HandleAnnouncementPropertyChanged(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.EntityId == null || string.IsNullOrEmpty(tournamentEvent.Property))
+        {
+            _logger.LogWarning("EntityId or Property is null for AnnouncementPropertyChanged event");
+            return;
+        }
+        await notificationService.NotifyAnnouncementPropertyChangedAsync(
+            tournamentEvent.EntityId.Value,
+            tournamentEvent.Property,
+            tournamentEvent.Value ?? string.Empty);
+        _logger.LogInformation("Processed AnnouncementPropertyChanged notification for announcement {AnnouncementId}", tournamentEvent.EntityId);
+    }
+
+    private async Task HandleAnnouncementQueueChanged(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.Announcements == null)
+        {
+            _logger.LogWarning("Announcements list is null for AnnouncementQueueChanged event");
+            return;
+        }
+        await notificationService.NotifyAnnouncementQueueChangedAsync(tournamentEvent.Announcements);
+        _logger.LogInformation("Processed AnnouncementQueueChanged notification for tournament {TournamentId}", tournamentEvent.TournamentId);
+    }
+
+    private async Task HandleAnnouncementCalled(TournamentEvent tournamentEvent, ISignalRNotificationService notificationService)
+    {
+        if (tournamentEvent.Announcement == null)
+        {
+            _logger.LogWarning("Announcement is null for AnnouncementCalled event");
+            return;
+        }
+        await notificationService.NotifyAnnouncementCalledAsync(tournamentEvent.Announcement);
+        _logger.LogInformation("Processed AnnouncementCalled notification for announcement {AnnouncementId}", tournamentEvent.EntityId);
+    }
+
+    #endregion
+
     /*
 private async Task HandleCallToCourtAsync(TournamentEvent TournamentEvent, IMatchService matchService, ISignalRNotificationService notificationService, IAnnouncementService announcerService, IBulletinService bulletinService)
 {

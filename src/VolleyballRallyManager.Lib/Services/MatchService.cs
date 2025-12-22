@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
+using VolleyballRallyManager.Lib.Workers;
 
 namespace VolleyballRallyManager.Lib.Services;
 
@@ -9,12 +10,12 @@ public class MatchService : IMatchService
 {
     //TODO add logging to methods
     private readonly ApplicationDbContext _context;
-    private readonly ISignalRNotificationService _notificationService;
+    private readonly TournamentChannel _tournamentChannel;
 
-    public MatchService(ApplicationDbContext context, ISignalRNotificationService notificationService)
+    public MatchService(ApplicationDbContext context, TournamentChannel tournamentChannel)
     {
         _context = context;
-        _notificationService = notificationService;
+        _tournamentChannel = tournamentChannel;
     }
 
     public async Task<Match?> GetMatchAsync(Guid id)
@@ -75,7 +76,7 @@ public class MatchService : IMatchService
     {
         _context.Matches.Add(match);
         await _context.SaveChangesAsync();
-        await _notificationService.NotifyMatchCreatedAsync(match);
+        await _tournamentChannel.NotifyMatchCreatedAsync(match);
         return match;
     }
 
@@ -83,7 +84,7 @@ public class MatchService : IMatchService
     {
         _context.Entry(match).State = EntityState.Modified;
         await _context.SaveChangesAsync();
-        await _notificationService.NotifyMatchUpdatedAsync(match);
+        await _tournamentChannel.NotifyMatchUpdatedAsync(match);
         return match;
     }
 
@@ -117,7 +118,7 @@ public class MatchService : IMatchService
 
         await AddMatchUpdateAsync(update);
         await _context.SaveChangesAsync();
-        await _notificationService.NotifyScoreUpdateAsync(match);
+        await _tournamentChannel.NotifyScoreUpdateAsync(match);
         return match;
     }
 
@@ -174,7 +175,7 @@ public class MatchService : IMatchService
         };
         await AddMatchUpdateAsync(update);
         await _context.SaveChangesAsync();
-        await _notificationService.NotifyMatchFinishedAsync(match);
+        await _tournamentChannel.NotifyMatchFinishedAsync(match);
         return match;
     }
 
@@ -193,7 +194,7 @@ public class MatchService : IMatchService
         };
         await AddMatchUpdateAsync(update);
         await _context.SaveChangesAsync();
-        await _notificationService.NotifyMatchDisputedAsync(match);
+        await _tournamentChannel.NotifyMatchDisputedAsync(match);
         return match;
     }
 
@@ -213,7 +214,7 @@ public class MatchService : IMatchService
 
         await AddMatchUpdateAsync(update);
         await _context.SaveChangesAsync();
-        await _notificationService.NotifyMatchUpdatedAsync(match);
+        await _tournamentChannel.NotifyMatchUpdatedAsync(match);
         return match;
     }
 
@@ -233,7 +234,7 @@ public class MatchService : IMatchService
 
         await AddMatchUpdateAsync(update);
         await _context.SaveChangesAsync();
-        await _notificationService.NotifyMatchUpdatedAsync(match);
+        await _tournamentChannel.NotifyMatchUpdatedAsync(match);
         return match;
     }
 
@@ -256,7 +257,7 @@ public class MatchService : IMatchService
 
         await AddMatchUpdateAsync(update);
         await _context.SaveChangesAsync();
-        await _notificationService.NotifyMatchUpdatedAsync(match);
+        await _tournamentChannel.NotifyMatchUpdatedAsync(match);
         return match;
     }
 
@@ -278,7 +279,7 @@ public class MatchService : IMatchService
         };
         await AddMatchUpdateAsync(update);
         await _context.SaveChangesAsync();
-        await _notificationService.NotifyMatchUpdatedAsync(match);
+        await _tournamentChannel.NotifyMatchUpdatedAsync(match);
         return match;
     }
 
@@ -295,7 +296,14 @@ public class MatchService : IMatchService
         _context.MatchUpdates.Add(update);
         CreateBaseEntity(update, update.CreatedBy);
         await _context.SaveChangesAsync();
-        await _notificationService.NotifyAddFeedAsync(update);
+        
+        // Get the match to retrieve tournament ID for notification
+        var match = await _context.Matches.AsNoTracking().FirstOrDefaultAsync(m => m.Id == update.MatchId);
+        if (match != null)
+        {
+            await _tournamentChannel.NotifyAddFeedAsync(update, match.TournamentId);
+        }
+        
         return update;
     }
 
@@ -387,7 +395,7 @@ public class MatchService : IMatchService
         
         if (match != null)
         {
-            await _notificationService.NotifyScoreUpdateAsync(match);
+            await _tournamentChannel.NotifyScoreUpdateAsync(match);
         }
 
         return matchSet;
@@ -427,7 +435,7 @@ public class MatchService : IMatchService
             match.AwayTeamScore = _context.MatchSets.Where(s => s.MatchId == match.Id && s.HomeTeamScore < s.AwayTeamScore).Count(); ;
 
             await _context.SaveChangesAsync();
-            await _notificationService.NotifyMatchUpdatedAsync(match);
+            await _tournamentChannel.NotifyMatchUpdatedAsync(match);
         }
         await _context.SaveChangesAsync();
         // Match sets won/lost are already updated above (lines 452-453)
@@ -457,7 +465,7 @@ public class MatchService : IMatchService
         var matchFull = await GetMatchAsync(matchId);
         if (matchFull != null)
         {
-            await _notificationService.NotifyMatchUpdatedAsync(matchFull);
+            await _tournamentChannel.NotifyMatchUpdatedAsync(matchFull);
         }
 
         return newSet;
@@ -509,7 +517,7 @@ public class MatchService : IMatchService
         var matchFull = await GetMatchAsync(matchId);
         if (matchFull != null)
         {
-            await _notificationService.NotifyMatchUpdatedAsync(matchFull);
+            await _tournamentChannel.NotifyMatchUpdatedAsync(matchFull);
         }
 
         return previousSet ?? throw new KeyNotFoundException("Previous set not found");
@@ -605,7 +613,7 @@ public class MatchService : IMatchService
             await AddMatchUpdateAsync(update);
 
             await _context.SaveChangesAsync();
-            await _notificationService.NotifyMatchUpdatedAsync(match);
+            await _tournamentChannel.NotifyMatchUpdatedAsync(match);
         }
 
         return match;

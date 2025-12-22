@@ -2,23 +2,24 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
+using VolleyballRallyManager.Lib.Workers;
 
 namespace VolleyballRallyManager.Lib.Services;
 
 public class AnnouncementService : IAnnouncementService
 {
     private readonly ApplicationDbContext _context;
-    private readonly ISignalRNotificationService _signalRService;
+    private readonly TournamentChannel _tournamentChannel;
     private readonly ILogger<AnnouncementService> _logger;
     private Guid? _activeTournamentId = null;
 
     public AnnouncementService(
         ApplicationDbContext context,
-        ISignalRNotificationService signalRService,
+        TournamentChannel tournamentChannel,
         ILogger<AnnouncementService> logger)
     {
         _context = context;
-        _signalRService = signalRService;
+        _tournamentChannel = tournamentChannel;
         _logger = logger;
     }
     private Guid ActiveTournamentId
@@ -160,7 +161,7 @@ public class AnnouncementService : IAnnouncementService
             _logger.LogInformation("Created announcement {Id} with sequence number {SequenceNumber}",
                 announcement.Id, announcement.SequencingNumber);
 
-            await _signalRService.NotifyAnnouncementCreatedAsync(announcement);
+            await _tournamentChannel.NotifyAnnouncementCreatedAsync(announcement);
 
             return announcement;
         }
@@ -181,7 +182,7 @@ public class AnnouncementService : IAnnouncementService
 
             _logger.LogInformation("Updated announcement {Id}", announcement.Id);
 
-            await _signalRService.NotifyAnnouncementUpdatedAsync(announcement);
+            await _tournamentChannel.NotifyAnnouncementUpdatedAsync(announcement);
 
             return announcement;
         }
@@ -202,12 +203,14 @@ public class AnnouncementService : IAnnouncementService
                 return false;
             }
 
+            var tournamentId = announcement.TournamentId;
+            
             _context.Announcements.Remove(announcement);
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("Deleted announcement {Id}", id);
 
-            await _signalRService.NotifyAnnouncementDeletedAsync(id);
+            await _tournamentChannel.NotifyAnnouncementDeletedAsync(id, tournamentId);
 
             return true;
         }
@@ -236,7 +239,7 @@ public class AnnouncementService : IAnnouncementService
             _logger.LogInformation("Hidden announcement {Id}", id);
 
             var queuedAnnouncements = await GetQueuedAnnouncementsAsync();
-            await _signalRService.NotifyAnnouncementQueueChangedAsync(queuedAnnouncements.ToList());
+            await _tournamentChannel.NotifyAnnouncementQueueChangedAsync(queuedAnnouncements.ToList(), ActiveTournamentId);
 
             return announcement;
         }
@@ -272,7 +275,7 @@ public class AnnouncementService : IAnnouncementService
             _logger.LogInformation("Unhidden announcement {Id}", id);
 
             var queuedAnnouncements = await GetQueuedAnnouncementsAsync();
-            await _signalRService.NotifyAnnouncementQueueChangedAsync(queuedAnnouncements.ToList());
+            await _tournamentChannel.NotifyAnnouncementQueueChangedAsync(queuedAnnouncements.ToList(), ActiveTournamentId);
 
             return announcement;
         }
@@ -334,7 +337,7 @@ public class AnnouncementService : IAnnouncementService
 
             await _context.SaveChangesAsync();
 
-            await _signalRService.NotifyAnnouncementCalledAsync(announcement);
+            await _tournamentChannel.NotifyAnnouncementCalledAsync(announcement);
 
             return announcement;
         }
@@ -369,7 +372,7 @@ public class AnnouncementService : IAnnouncementService
                 id, announcement.SequencingNumber);
 
             var queuedAnnouncements = await GetQueuedAnnouncementsAsync();
-            await _signalRService.NotifyAnnouncementQueueChangedAsync(queuedAnnouncements.ToList());
+            await _tournamentChannel.NotifyAnnouncementQueueChangedAsync(queuedAnnouncements.ToList(), ActiveTournamentId);
 
             return announcement;
         }
@@ -453,7 +456,7 @@ public class AnnouncementService : IAnnouncementService
                 id, announcement.SequencingNumber);
 
             var queuedAnnouncements = await GetQueuedAnnouncementsAsync();
-            await _signalRService.NotifyAnnouncementQueueChangedAsync(queuedAnnouncements.ToList());
+            await _tournamentChannel.NotifyAnnouncementQueueChangedAsync(queuedAnnouncements.ToList(), ActiveTournamentId);
 
             return announcement;
         }
