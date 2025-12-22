@@ -158,6 +158,14 @@ $(function () {
 
     async function handleSetAction(actionType) {
         try {
+            if (actionType == "StartNextSet"){
+            }
+            if (actionType == "EndCurrentSet"){
+                const currentSet = matchState.sets.find(s => s.setNumber === matchState.currentSetNumber);
+            }
+            if (actionType == "RevertToPreviousSet"){
+                const previousSet = matchState.sets.find(s => s.setNumber === matchState.currentSetNumber - 1);
+            }
             await scorerConnection.invoke("SendSetStateChange", matchId, actionType, matchState.currentSetNumber);
         } catch (err) {
             console.error("Error sending set state change:", err);
