@@ -14,10 +14,35 @@ The database schema includes tables for managing volleyball tournaments, includi
 
 ## Setup Scripts
 
+### setup-identity.sql
+**Purpose**: Creates all ASP.NET Identity tables for user authentication and authorization.
+
+**Usage**: Run this script FIRST on a fresh SQL Server instance to create the Identity schema before running setup.sql.
+
+```sql
+-- Execute in SQL Server Management Studio or Azure Data Studio
+sqlcmd -S your-server -d your-database -i setup-identity.sql
+```
+
+**What it includes**:
+- Creates ASP.NET Identity core tables:
+  - **AspNetUsers**: User accounts with custom fields (FirstName, LastName, RefreshToken, RefreshTokenExpiryTime, LastLoginAt)
+  - **AspNetRoles**: User roles
+  - **AspNetUserRoles**: User-to-role mappings
+  - **AspNetUserClaims**: User claims for fine-grained permissions
+  - **AspNetUserLogins**: External OAuth login providers (Google, Microsoft)
+  - **AspNetUserTokens**: Authentication tokens
+  - **AspNetRoleClaims**: Role-based claims
+- Creates proper indexes for Identity tables
+- Seeds default roles: Admin, Scorer, Viewer, Announcer
+- All tables follow ASP.NET Core Identity conventions
+
+**Order matters**: Run this script BEFORE setup.sql as the main application tables reference AspNetUsers for audit tracking.
+
 ### setup.sql
 **Purpose**: Complete database setup script for fresh installations.
 
-**Usage**: Run this script on a fresh SQL Server instance to create the complete database schema.
+**Usage**: Run this script AFTER setup-identity.sql to create the complete application schema.
 
 ```sql
 -- Execute in SQL Server Management Studio or Azure Data Studio
@@ -25,7 +50,6 @@ sqlcmd -S your-server -d master -i setup.sql
 ```
 
 **What it includes**:
-- Creates the `stjago-volleyball-demo` database
 - Creates all core tables (Tournaments, Divisions, Teams, Rounds)
 - Creates relationship tables (TournamentDivisions, TournamentTeamDivisions)
 - Creates Tournament Rounds Management tables (TournamentRounds, TournamentRoundTeams)
@@ -206,9 +230,11 @@ Team (1) ---------+              +--------- (1) Division
 ## Best Practices
 
 ### For Fresh Installations
-1. Run `setup.sql` on a fresh SQL Server instance
-2. Verify all tables were created successfully
-3. Check that seed data (Divisions and Rounds) was inserted
+1. Create your database (or use an existing one)
+2. Run `setup-identity.sql` first to create ASP.NET Identity tables
+3. Run `setup.sql` to create application tables
+4. Verify all tables were created successfully
+5. Check that seed data (Divisions, Rounds, and Roles) was inserted
 
 ### For Existing Databases
 1. **Backup your database first!**
@@ -218,8 +244,9 @@ Team (1) ---------+              +--------- (1) Division
 
 ### For Development
 1. Use `cleanup.sql` to reset database (development only!)
-2. Run `setup.sql` to recreate schema
-3. Run your application's data seeding if needed
+2. Run `setup-identity.sql` to create Identity tables
+3. Run `setup.sql` to recreate application schema
+4. Run your application's data seeding if needed
 
 ### For Production
 1. **Always backup before any schema changes!**
@@ -275,6 +302,7 @@ Ensure your SQL user has `db_owner` or appropriate CREATE/ALTER permissions.
 
 ## Version History
 
+- **2025-12-22**: Added setup-identity.sql for ASP.NET Identity tables with custom user fields
 - **2025-12-20**: Added Chat tables and Announcement Tags. Removed "Round 3" and renamed "Semi-finals" in seed data.
 - **2025-12-15**: Consolidated all migrations into migration-schema-sync-complete.sql
 - **2025-12-11**: Added round recommendation fields
