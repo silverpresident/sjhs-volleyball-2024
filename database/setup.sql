@@ -198,8 +198,8 @@ BEGIN
     -- Create Indexes
     CREATE INDEX IX_TournamentRounds_Tournament ON dbo.TournamentRounds(TournamentId);
     CREATE INDEX IX_TournamentRounds_Division ON dbo.TournamentRounds(DivisionId);
-    CREATE INDEX IX_TournamentRounds_Round ON dbo.TournamentRounds(RoundId);
-    CREATE INDEX IX_TournamentRounds_TournamentDivisionRound ON dbo.TournamentRounds(TournamentId, DivisionId, RoundId);
+    CREATE INDEX IX_TournamentRounds_RoundTemplate ON dbo.TournamentRounds(RoundTemplateId);
+    CREATE INDEX IX_TournamentRounds_TournamentDivisionRound ON dbo.TournamentRounds(TournamentId, DivisionId, RoundNumber);
     CREATE INDEX IX_TournamentRounds_RoundNumber ON dbo.TournamentRounds(RoundNumber);
     CREATE INDEX IX_TournamentRounds_PreviousRound ON dbo.TournamentRounds(PreviousTournamentRoundId);
     
@@ -267,7 +267,6 @@ BEGIN
     -- Create Indexes
     CREATE INDEX IX_TournamentRoundTeams_Tournament ON dbo.TournamentRoundTeams(TournamentId);
     CREATE INDEX IX_TournamentRoundTeams_Division ON dbo.TournamentRoundTeams(DivisionId);
-    CREATE INDEX IX_TournamentRoundTeams_Round ON dbo.TournamentRoundTeams(RoundId);
     CREATE INDEX IX_TournamentRoundTeams_Team ON dbo.TournamentRoundTeams(TeamId);
     CREATE INDEX IX_TournamentRoundTeams_TournamentRound ON dbo.TournamentRoundTeams(TournamentRoundId);
     CREATE INDEX IX_TournamentRoundTeams_SeedNumber ON dbo.TournamentRoundTeams(SeedNumber);
