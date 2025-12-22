@@ -40,7 +40,6 @@ public static class ServiceCollectionExtensions
 
         // Services
         services.AddScoped<IMatchService, MatchService>();
-        services.AddScoped<ISignalRNotificationService, SignalRNotificationService>();
         services.AddScoped<IBulletinService, BulletinService>();
         services.AddScoped<IAnnouncementService, AnnouncementService>();
         services.AddScoped<ITeamService, TeamService>();
@@ -52,6 +51,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ITournamentRoundService, TournamentRoundService>();
         services.AddScoped<IChatService, ChatService>();
         services.AddSingleton<GroupService>();
+        services.AddSingleton<ISignalRNotificationService, SignalRNotificationService>();
 
         // Scoring Channel and Workers
         services.AddSingleton<ScoringChannel>();
