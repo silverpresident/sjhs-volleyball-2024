@@ -5,20 +5,20 @@ using VolleyballRallyManager.Lib.Models;
 namespace VolleyballRallyManager.Lib.Services;
 
 public class SignalRNotificationService : ISignalRNotificationService
-{
-    private readonly IMatchService _matchService;
+{ 
     private readonly IHubContext<TournamentHub> _tournamentHubContext;
     private readonly IHubContext<ScorerHub> _scorerHubContext;
-    public SignalRNotificationService(IHubContext<TournamentHub> hubContext, IHubContext<ScorerHub> scorerHubContext, IMatchService matchService)
+    public SignalRNotificationService(IHubContext<TournamentHub> hubContext, IHubContext<ScorerHub> scorerHubContext )
     {
         _tournamentHubContext = hubContext;
         _scorerHubContext = scorerHubContext;
-        _matchService = matchService;
     }
 
-    private async Task<object> GetMatchDtoAsync(Match match)
+    private async Task<object> GetMatchDtoAsync(Match match, List<MatchSet>? matchSets = null)
     {
-        var sets = await _matchService.GetMatchSetsAsync(match.Id);
+        if (matchSets == null){
+            matchSets = new List<MatchSet>();
+        }
         return  new
         {
             MatchId = match.Id,
@@ -31,7 +31,7 @@ public class SignalRNotificationService : ISignalRNotificationService
             HomeSetsWon = match.HomeTeamScore,
             AwaySetsWon = match.AwayTeamScore,
             ActualStartTime = match.ActualStartTime,
-            Sets = sets.Select(s => new
+            Sets = matchSets.Select(s => new
             {
                 s.SetNumber,
                 s.HomeTeamScore,

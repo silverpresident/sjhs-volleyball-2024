@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using VolleyballRallyManager.Lib.Data;
 using VolleyballRallyManager.Lib.Models;
 using VolleyballRallyManager.Lib.Workers;
@@ -8,35 +9,64 @@ namespace VolleyballRallyManager.Lib.Services;
 
 public class MatchService : IMatchService
 {
-    //TODO add logging to methods
     private readonly ApplicationDbContext _context;
     private readonly TournamentChannel _tournamentChannel;
+    private readonly ILogger<MatchService> _logger;
 
-    public MatchService(ApplicationDbContext context, TournamentChannel tournamentChannel)
+    public MatchService(ApplicationDbContext context, TournamentChannel tournamentChannel, ILogger<MatchService> logger)
     {
         _context = context;
         _tournamentChannel = tournamentChannel;
+        _logger = logger;
     }
 
     public async Task<Match?> GetMatchAsync(Guid id)
     {
-        return await _context.Matches
-            .Include(m => m.HomeTeam)
-            .Include(m => m.AwayTeam)
-            .Include(m => m.Round)
-            .Include(m => m.Updates)
-            .Include(m => m.Division)
-            .FirstOrDefaultAsync(m => m.Id == id);
+        try
+        {
+            _logger.LogDebug("Retrieving match with ID: {MatchId}", id);
+            var match = await _context.Matches
+                .Include(m => m.HomeTeam)
+                .Include(m => m.AwayTeam)
+                .Include(m => m.Round)
+                .Include(m => m.Updates)
+                .Include(m => m.Division)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            
+            if (match == null)
+            {
+                _logger.LogWarning("Match with ID {MatchId} not found", id);
+            }
+            
+            return match;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving match with ID: {MatchId}", id);
+            throw;
+        }
     }
 
     public async Task<List<Match>> GetMatchesAsync()
     {
-        return await _context.Matches
-            .Include(m => m.HomeTeam)
-            .Include(m => m.AwayTeam)
-            .Include(m => m.Round)
-            .OrderBy(m => m.ScheduledTime)
-            .ToListAsync();
+        try
+        {
+            _logger.LogDebug("Retrieving all matches");
+            var matches = await _context.Matches
+                .Include(m => m.HomeTeam)
+                .Include(m => m.AwayTeam)
+                .Include(m => m.Round)
+                .OrderBy(m => m.ScheduledTime)
+                .ToListAsync();
+            
+            _logger.LogInformation("Retrieved {MatchCount} matches", matches.Count);
+            return matches;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving all matches");
+            throw;
+        }
     }
 
     public async Task<List<Match>> GetInProgressMatchesAsync()

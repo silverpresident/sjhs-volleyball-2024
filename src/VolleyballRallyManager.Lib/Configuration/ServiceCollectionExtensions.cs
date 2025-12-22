@@ -50,8 +50,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IRanksService, RanksService>();
         services.AddScoped<ITournamentRoundService, TournamentRoundService>();
         services.AddScoped<IChatService, ChatService>();
+        services.AddScoped<ISignalRNotificationService, SignalRNotificationService>();
         services.AddSingleton<GroupService>();
-        services.AddSingleton<ISignalRNotificationService, SignalRNotificationService>();
 
         // Scoring Channel and Workers
         services.AddSingleton<ScoringChannel>();
