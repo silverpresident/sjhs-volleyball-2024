@@ -67,6 +67,9 @@
                             <small class="text-muted" id="current-room-description"></small>
                         </div>
                         <div>
+                            <button class="btn btn-sm btn-outline-primary" id="manage-members-btn" style="display: none;">
+                                <i class="bi bi-people"></i> Members
+                            </button>
                             <button class="btn btn-sm btn-outline-secondary" id="mute-room-btn" style="display: none;">
                                 <i class="bi bi-bell-slash"></i> Mute
                             </button>
@@ -141,6 +144,46 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-success" id="create-room-confirm">Create Room</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Manage Members Modal -->
+<div class="modal fade" id="manageMembersModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">Manage Room Members</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Current Members List -->
+                <div class="mb-4">
+                    <h6>Current Members</h6>
+                    <div id="current-members-list" class="list-group">
+                        <div class="text-center text-muted py-3">
+                            <div class="spinner-border spinner-border-sm" role="status"></div>
+                            Loading members...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Member Section -->
+                <div>
+                    <h6>Add Member</h6>
+                    <div class="input-group">
+                        <select class="form-select" id="user-select">
+                            <option value="">Select a user...</option>
+                        </select>
+                        <button class="btn btn-success" type="button" id="add-member-btn">
+                            <i class="bi bi-person-plus"></i> Add
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

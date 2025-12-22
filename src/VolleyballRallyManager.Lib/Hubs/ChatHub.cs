@@ -441,6 +441,174 @@ namespace VolleyballRallyManager.Lib.Hubs
             }
         }
 
+        /// <summary>
+        /// Add a user to a room (for private rooms or direct chats)
+        /// </summary>
+        public async Task AddUserToRoom(string roomId, string targetUserId)
+        {
+            try
+            {
+                var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    await Clients.Caller.SendAsync("Error", "User not authenticated");
+                    return;
+                }
+
+                var userRoles = Context.User?.Claims
+                    .Where(c => c.Type == ClaimTypes.Role)
+                    .Select(c => c.Value)
+                    .ToList() ?? new List<string>();
+
+                var roomGuid = Guid.Parse(roomId);
+                var room = await _chatService.GetRoomByIdAsync(roomGuid);
+
+                if (room == null)
+                {
+                    await Clients.Caller.SendAsync("Error", "Room not found");
+                    return;
+                }
+
+                // Check if user has permission to add members
+                var membership = await _chatService.GetMembershipAsync(roomGuid, userId);
+                bool isAdmin = userRoles.Contains("Administrator");
+                bool isRoomAdmin = membership?.IsRoomAdmin ?? false;
+                bool isOwner = room.OwnerId == userId;
+
+                if (!isAdmin && !isRoomAdmin && !isOwner)
+                {
+                    await Clients.Caller.SendAsync("Error", "You don't have permission to add members to this room");
+                    return;
+                }
+
+                // Add the user to the room
+                var success = await _chatService.AddUserToRoomAsync(roomGuid, targetUserId);
+
+                if (success)
+                {
+                    await Clients.Caller.SendAsync("UserAddedToRoom", roomId, targetUserId);
+                    
+                    // Notify the added user if they're online
+                    if (_userConnections.TryGetValue(targetUserId, out var targetConnectionId))
+                    {
+                        await Clients.Client(targetConnectionId).SendAsync("AddedToRoom", new {
+                            roomId = room.Id,
+                            name = room.Name,
+                            description = room.Description,
+                            roomType = room.RoomType.ToString()
+                        });
+                    }
+
+                    _logger.LogInformation("User {UserId} added user {TargetUserId} to room {RoomId}",
+                        userId, targetUserId, roomId);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding user to room {RoomId}", roomId);
+                await Clients.Caller.SendAsync("Error", "Failed to add user to room");
+            }
+        }
+
+        /// <summary>
+        /// Remove a user from a room
+        /// </summary>
+        public async Task RemoveUserFromRoom(string roomId, string targetUserId)
+        {
+            try
+            {
+                var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    await Clients.Caller.SendAsync("Error", "User not authenticated");
+                    return;
+                }
+
+                var userRoles = Context.User?.Claims
+                    .Where(c => c.Type == ClaimTypes.Role)
+                    .Select(c => c.Value)
+                    .ToList() ?? new List<string>();
+
+                var roomGuid = Guid.Parse(roomId);
+                var room = await _chatService.GetRoomByIdAsync(roomGuid);
+
+                if (room == null)
+                {
+                    await Clients.Caller.SendAsync("Error", "Room not found");
+                    return;
+                }
+
+                // Check if user has permission to remove members
+                var membership = await _chatService.GetMembershipAsync(roomGuid, userId);
+                bool isAdmin = userRoles.Contains("Administrator");
+                bool isRoomAdmin = membership?.IsRoomAdmin ?? false;
+                bool isOwner = room.OwnerId == userId;
+
+                if (!isAdmin && !isRoomAdmin && !isOwner)
+                {
+                    await Clients.Caller.SendAsync("Error", "You don't have permission to remove members from this room");
+                    return;
+                }
+
+                // Remove the user from the room
+                var success = await _chatService.RemoveUserFromRoomAsync(roomGuid, targetUserId);
+
+                if (success)
+                {
+                    await Clients.Caller.SendAsync("UserRemovedFromRoom", roomId, targetUserId);
+                    
+                    // Notify the removed user if they're online
+                    if (_userConnections.TryGetValue(targetUserId, out var targetConnectionId))
+                    {
+                        await Clients.Client(targetConnectionId).SendAsync("RemovedFromRoom", roomId, room.Name);
+                    }
+
+                    _logger.LogInformation("User {UserId} removed user {TargetUserId} from room {RoomId}",
+                        userId, targetUserId, roomId);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error removing user from room {RoomId}", roomId);
+                await Clients.Caller.SendAsync("Error", "Failed to remove user from room");
+            }
+        }
+
+        /// <summary>
+        /// Get list of members in a room
+        /// </summary>
+        public async Task GetRoomMembers(string roomId)
+        {
+            try
+            {
+                var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return;
+                }
+
+                var roomGuid = Guid.Parse(roomId);
+                
+                // Verify user is in the room
+                if (!await _chatService.IsUserInRoomAsync(roomGuid, userId))
+                {
+                    await Clients.Caller.SendAsync("Error", "You are not a member of this room");
+                    return;
+                }
+
+                var memberIds = await _chatService.GetRoomMemberIdsAsync(roomGuid);
+                await Clients.Caller.SendAsync("RoomMembers", roomId, memberIds);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting members for room {RoomId}", roomId);
+                await Clients.Caller.SendAsync("Error", "Failed to get room members");
+            }
+        }
+
         #endregion
     }
 }
