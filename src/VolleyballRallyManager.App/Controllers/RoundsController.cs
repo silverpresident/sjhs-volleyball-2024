@@ -105,7 +105,10 @@ public class RoundsController : Controller
                 _logger.LogWarning("Round {RoundId} not found", id);
                 return NotFound();
             }
-
+            if (roundDetails.CurrentRound.RoundNumber == 1)
+            {
+                roundDetails.Teams = roundDetails.Teams.OrderBy(t => t.GroupName).ToList();
+            }
             return View(roundDetails);
         }
         catch (Exception ex)

@@ -103,6 +103,10 @@ public class TournamentRoundsController : Controller
             }
 
             var viewModel = await _tournamentService.GetTournamentRoundDetailsAsync(id);
+            if (round.RoundNumber == 1)
+            {
+                viewModel.Teams = viewModel.Teams.OrderBy(t => t.GroupName).ToList();
+            }
             return View(viewModel);
         }
         catch (Exception ex)

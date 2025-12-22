@@ -641,26 +641,59 @@ namespace VolleyballRallyManager.Lib.Services
             if (matches == null) {
                 matches = new List<Match>();
             }
-            var teamViewModels = teams.Select(t => new TournamentRoundTeamSummaryViewModel
+            if (tournamentRound.IsFinished)
             {
-                TeamId = t.TeamId,
-                TeamName = t.Team?.Name ?? "Unknown",
-                SeedNumber = t.SeedNumber,
-                RankingPoints = t.RankingPoints,
-                Rank = t.Rank,
-                Points = t.Points,
-                MatchesPlayed = t.MatchesPlayed,
-                Wins = t.Wins,
-                Draws = t.Draws,
-                Losses = t.Losses,
-                SetsFor = t.SetsFor,
-                SetsAgainst = t.SetsAgainst,
-                SetsDifference = t.SetsDifference,
-                ScoreFor = t.ScoreFor,
-                ScoreAgainst = t.ScoreAgainst,
-                ScoreDifference = t.ScoreDifference,
-                GroupName = t.GroupName
-            }).ToList();
+                // Order matches by winner's rank if round is finished
+                matches = matches.OrderBy(m =>
+                {
+                    Guid winningTeamId;
+                    if (m.HomeTeamScore > m.AwayTeamScore)
+                    {
+                        winningTeamId = m.HomeTeamId;
+                    }
+                    else if (m.AwayTeamScore > m.HomeTeamScore)
+                    {
+                        winningTeamId = m.AwayTeamId;
+                    }
+                    else
+                    {
+                        // In case of a draw, use a high value to push it to the end
+                        return int.MaxValue;
+                    }
+                    var winningTeam = teams.FirstOrDefault(t => t.TeamId == winningTeamId);
+                    return winningTeam != null ? winningTeam.Rank : int.MaxValue;
+                }).ToList();
+                teams = teams.OrderBy(t => t.Rank != 0 ? t.Rank : 999).ThenBy(t => t.SeedNumber).ToList();
+            } else if (tournamentRound.RoundNumber == 1)
+            {
+                teams = teams.OrderBy(t => t.GroupName).OrderBy(t => t.Rank != 0 ? t.Rank : 999).ThenBy(t => t.SeedNumber).ToList();
+            } else if (tournamentRound.GroupsInRound > 0)
+            {
+                teams = teams.OrderBy(t => t.GroupName).ThenBy(t => t.SeedNumber).ToList();
+            } else
+            {
+                teams = teams.OrderBy(t => t.SeedNumber).ToList();
+            }
+            var teamViewModels = teams.Select(t => new TournamentRoundTeamSummaryViewModel
+                {
+                    TeamId = t.TeamId,
+                    TeamName = t.Team?.Name ?? "Unknown",
+                    SeedNumber = t.SeedNumber,
+                    RankingPoints = t.RankingPoints,
+                    Rank = t.Rank,
+                    Points = t.Points,
+                    MatchesPlayed = t.MatchesPlayed,
+                    Wins = t.Wins,
+                    Draws = t.Draws,
+                    Losses = t.Losses,
+                    SetsFor = t.SetsFor,
+                    SetsAgainst = t.SetsAgainst,
+                    SetsDifference = t.SetsDifference,
+                    ScoreFor = t.ScoreFor,
+                    ScoreAgainst = t.ScoreAgainst,
+                    ScoreDifference = t.ScoreDifference,
+                    GroupName = t.GroupName
+                }).ToList();
 
             var hasMatches = matches.Any();
             var allMatchesComplete = matches.Any() && (matches.Count(m => m.IsFinished) == matches.Count());
