@@ -33,14 +33,14 @@ namespace VolleyballRallyManager.Lib.Data
         {
             base.OnModelCreating(builder);
 
-            // TournamentDivision and TournamentTeamDivision use single TournamentRoundId primary keys (inherited from BaseEntity)
+            // TournamentDivision and Team use single TournamentRoundId primary keys (inherited from BaseEntity)
 
             builder.Entity<TournamentTeamDivision>()
                 .HasOne(ttd => ttd.Tournament)
                 .WithMany(t => t.TournamentTeamDivisions)
                 .HasForeignKey(ttd => ttd.TournamentId);
 
-            /*builder.Entity<TournamentTeamDivision>()
+            /*builder.Entity<Team>()
                 .HasOne(ttd => ttd.Team)
                 .WithMany(t => t.TournamentTeamDivisions)
                 .HasForeignKey(ttd => ttd.TeamId);
@@ -51,10 +51,10 @@ namespace VolleyballRallyManager.Lib.Data
                 .HasForeignKey(ttd => ttd.DivisionId);
 
             // Configure Team relationships
-            /* builder.Entity<TournamentTeamDivision>()
+            /* builder.Entity<Team>()
                  .HasMany(t => t.HomeMatches);
 
-             builder.Entity<TournamentTeamDivision>()
+             builder.Entity<Team>()
                  .HasMany(t => t.AwayMatches);
  */
             // Configure Division relationships

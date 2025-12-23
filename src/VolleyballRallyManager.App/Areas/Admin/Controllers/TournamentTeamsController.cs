@@ -79,7 +79,7 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 
                 var model = new TournamentTeamDetailsViewModel
                 {
-                    TournamentTeamDivision = tournamentTeamDivision,
+                    Team = tournamentTeamDivision,
                     Matches = matches.OrderByDescending(m => m.ScheduledTime).ToList(),
                     Division = tournamentTeamDivision.Division
                 };

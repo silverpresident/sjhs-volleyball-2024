@@ -1,44 +1,44 @@
-@model VolleyballRallyManager.App.Areas.Admin.Models.TournamentTeamDetailsViewModel
+@model VolleyballRallyManager.Lib.Models.TournamentTeamDetailsViewModel
 
 @{
     ViewData["Title"] = "Team Details";
 }
 
 <div class="container mt-4">
-    <h2 class="mb-4">@Model.TournamentTeamDivision.Team?.Name</h2>
+    <h2 class="mb-4">@Model.Team.Team?.Name</h2>
 
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center bg-success text-white">
             <h5 class="mb-0">Team Information</h5>
-            <div class="team-color" style="width: 30px; height: 30px; border-radius: 50%; background-color: @Model.TournamentTeamDivision.Team?.Color; border: 2px solid white;"></div>
+            <div class="team-color" style="width: 30px; height: 30px; border-radius: 50%; background-color: @Model.Team.Team?.Color; border: 2px solid white;"></div>
         </div>
         <div class="card-body">
             <dl class="row">
                 <dt class="col-sm-3">School</dt>
-                <dd class="col-sm-9">@Model.TournamentTeamDivision.Team?.School</dd>
+                <dd class="col-sm-9">@Model.Team.Team?.School</dd>
 
                 <dt class="col-sm-3">Division</dt>
                 <dd class="col-sm-9">@Model.Division?.Name</dd>
 
                 <dt class="col-sm-3">Group</dt>
-                <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.TournamentTeamDivision.GroupName) ? "N/A" : Model.TournamentTeamDivision.GroupName)</dd>
+                <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Team.GroupName) ? "N/A" : Model.Team.GroupName)</dd>
                 
                 <dt class="col-sm-3">Seed Number</dt>
-                <dd class="col-sm-9">@Model.TournamentTeamDivision.SeedNumber</dd>
+                <dd class="col-sm-9">@Model.Team.SeedNumber</dd>
 
                 <dt class="col-sm-3">Entry Rating</dt>
-                <dd class="col-sm-9">@Model.TournamentTeamDivision.Rating</dd>
+                <dd class="col-sm-9">@Model.Team.Rating</dd>
 
                 <dt class="col-sm-3">Rank in tournament</dt>
-                <dd class="col-sm-9">@Model.TournamentTeamDivision.Rank</dd>
+                <dd class="col-sm-9">@Model.Team.Rank</dd>
 
                 <dt class="col-sm-3">Ranking points in tournament</dt>
-                <dd class="col-sm-9">@Model.TournamentTeamDivision.RankingPoints</dd>
-                @if (!string.IsNullOrEmpty(Model.TournamentTeamDivision.Team?.LogoUrl))
+                <dd class="col-sm-9">@Model.Team.RankingPoints</dd>
+                @if (!string.IsNullOrEmpty(Model.Team.Team?.LogoUrl))
                 {
                     <dt class="col-sm-3">Logo</dt>
                     <dd class="col-sm-9">
-                        <img src="@Model.TournamentTeamDivision.Team?.LogoUrl" alt="Team Logo" class="img-fluid" style="max-width: 150px;" />
+                        <img src="@Model.Team.Team?.LogoUrl" alt="Team Logo" class="img-fluid" style="max-width: 150px;" />
                     </dd>
                 }
             </dl>
@@ -54,33 +54,33 @@
                 <div class="col-md-6">
                     <dl class="row">
                         <dt class="col-sm-6">Matches Played</dt>
-                        <dd class="col-sm-6"><strong>@Model.TournamentTeamDivision.MatchesPlayed</strong></dd>
+                        <dd class="col-sm-6"><strong>@Model.Team.MatchesPlayed</strong></dd>
 
                         <dt class="col-sm-6">Wins</dt>
-                        <dd class="col-sm-6"><span class="badge bg-success">@Model.TournamentTeamDivision.Wins</span></dd>
+                        <dd class="col-sm-6"><span class="badge bg-success">@Model.Team.Wins</span></dd>
 
                         <dt class="col-sm-6">Draws</dt>
-                        <dd class="col-sm-6"><span class="badge bg-secondary">@Model.TournamentTeamDivision.Draws</span></dd>
+                        <dd class="col-sm-6"><span class="badge bg-secondary">@Model.Team.Draws</span></dd>
 
                         <dt class="col-sm-6">Losses</dt>
-                        <dd class="col-sm-6"><span class="badge bg-danger">@Model.TournamentTeamDivision.Losses</span></dd>
+                        <dd class="col-sm-6"><span class="badge bg-danger">@Model.Team.Losses</span></dd>
                     </dl>
                 </div>
                 <div class="col-md-6">
                     <dl class="row">
                         <dt class="col-sm-6">Total Points</dt>
-                        <dd class="col-sm-6"><strong class="text-success">@Model.TournamentTeamDivision.TotalPoints</strong></dd>
+                        <dd class="col-sm-6"><strong class="text-success">@Model.Team.TotalPoints</strong></dd>
 
                         <dt class="col-sm-6">Points Scored</dt>
-                        <dd class="col-sm-6">@Model.TournamentTeamDivision.ScoreFor</dd>
+                        <dd class="col-sm-6">@Model.Team.ScoreFor</dd>
 
                         <dt class="col-sm-6">Points Conceded</dt>
-                        <dd class="col-sm-6">@Model.TournamentTeamDivision.ScoreAgainst</dd>
+                        <dd class="col-sm-6">@Model.Team.ScoreAgainst</dd>
 
                         <dt class="col-sm-6">Point Difference</dt>
                         <dd class="col-sm-6">
-                            <span class="@(Model.TournamentTeamDivision.ScoreDifference >= 0 ? "text-success" : "text-danger")">
-                                @(Model.TournamentTeamDivision.ScoreDifference >= 0 ? "+" : "")@Model.TournamentTeamDivision.ScoreDifference
+                            <span class="@(Model.Team.ScoreDifference >= 0 ? "text-success" : "text-danger")">
+                                @(Model.Team.ScoreDifference >= 0 ? "+" : "")@Model.Team.ScoreDifference
                             </span>
                         </dd>
                     </dl>
@@ -112,7 +112,7 @@
                         <tbody>
                             @foreach (var match in Model.Matches)
                             {
-                                var isHomeTeam = match.HomeTeamId == Model.TournamentTeamDivision.TeamId;
+                                var isHomeTeam = match.HomeTeamId == Model.Team.TeamId;
                                 var isWin = match.IsFinished && ((isHomeTeam && match.HomeTeamScore > match.AwayTeamScore) || (!isHomeTeam && match.AwayTeamScore > match.HomeTeamScore));
                                 var isLoss = match.IsFinished && ((isHomeTeam && match.HomeTeamScore < match.AwayTeamScore) || (!isHomeTeam && match.AwayTeamScore < match.HomeTeamScore));
                                 var isDraw = match.IsFinished && match.HomeTeamScore == match.AwayTeamScore;
@@ -187,7 +187,7 @@
     </div>
 
     <div class="mb-4">
-        <a asp-action="Edit" asp-route-id="@Model.TournamentTeamDivision.TeamId" class="btn btn-primary">
+        <a asp-action="Edit" asp-route-id="@Model.Team.TeamId" class="btn btn-primary">
             <i class="bi bi-pencil"></i> Edit Team
         </a>
         <a asp-action="Index" class="btn btn-secondary">

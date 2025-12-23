@@ -100,7 +100,7 @@ namespace VolleyballRallyManager.Lib.Services
             /*
             if (model == null)
             {
-                return new List<TournamentTeamDivision>();
+                return new List<Team>();
             }
             return model;*/
         }

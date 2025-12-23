@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using VolleyballRallyManager.Lib.Hubs;
 using VolleyballRallyManager.App.Models;
 using VolleyballRallyManager.Lib.Services;
+using VolleyballRallyManager.Lib.Models;
 
 namespace VolleyballRallyManager.App.Controllers
 {
@@ -59,7 +60,7 @@ namespace VolleyballRallyManager.App.Controllers
 
                 var model = new TournamentTeamDetailsViewModel
                 {
-                    TournamentTeamDivision = tournamentTeamDivision,
+                    Team = tournamentTeamDivision,
                     Matches = matches.OrderByDescending(m => m.ScheduledTime).ToList(),
                     Division = tournamentTeamDivision.Division
                 };

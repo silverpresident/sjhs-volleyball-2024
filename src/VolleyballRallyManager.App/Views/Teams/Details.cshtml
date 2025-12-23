@@ -8,18 +8,18 @@
     // Calculate team statistics
     var finishedMatches = matches.Where(m => m.IsFinished).ToList();
     var wins = finishedMatches.Count(m =>
-    (m.HomeTeamId == Model.TournamentTeamDivision.TeamId && m.HomeTeamScore > m.AwayTeamScore) ||
-    (m.AwayTeamId == Model.TournamentTeamDivision.TeamId && m.AwayTeamScore > m.HomeTeamScore));
+    (m.HomeTeamId == Model.Team.TeamId && m.HomeTeamScore > m.AwayTeamScore) ||
+    (m.AwayTeamId == Model.Team.TeamId && m.AwayTeamScore > m.HomeTeamScore));
     var losses = finishedMatches.Count(m =>
-    (m.HomeTeamId == Model.TournamentTeamDivision.TeamId && m.HomeTeamScore < m.AwayTeamScore) ||
-    (m.AwayTeamId == Model.TournamentTeamDivision.TeamId && m.AwayTeamScore < m.HomeTeamScore));
+    (m.HomeTeamId == Model.Team.TeamId && m.HomeTeamScore < m.AwayTeamScore) ||
+    (m.AwayTeamId == Model.Team.TeamId && m.AwayTeamScore < m.HomeTeamScore));
     var draws = finishedMatches.Count(m => m.HomeTeamScore == m.AwayTeamScore);
 
     var totalSetsWon = 0;
     var totalSetsLost = 0;
     foreach (var match in finishedMatches)
     {
-        if (match.HomeTeamId == Model.TournamentTeamDivision.TeamId)
+        if (match.HomeTeamId == Model.Team.TeamId)
         {
             totalSetsWon += match.HomeTeamScore;
             totalSetsLost += match.AwayTeamScore;
@@ -30,7 +30,7 @@
             totalSetsLost += match.HomeTeamScore;
         }
     }
-    string scheduledTimeFormat = Model.TournamentTeamDivision.Tournament?.IsMultiDay == true ? "MMM dd, HH:mm" : "HH:mm";
+    string scheduledTimeFormat = Model.Team.Tournament?.IsMultiDay == true ? "MMM dd, HH:mm" : "HH:mm";
 }
 
 <div class="container my-4">
@@ -40,7 +40,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a asp-action="Index">Teams</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">@Model.TournamentTeamDivision.Team.Name</li>
+                    <li class="breadcrumb-item active" aria-current="page">@Model.Team.Team.Name</li>
                 </ol>
             </nav>
         </div>
@@ -56,13 +56,13 @@
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <h1 class="mb-2 text-custom">
-                        <i class="bi bi-people-fill me-2"></i>@Model.TournamentTeamDivision.Team.Name
+                        <i class="bi bi-people-fill me-2"></i>@Model.Team.Team.Name
                     </h1>
                     <p class="text-muted mb-0">
-                        <span class="badge bg-custom me-2">@Model.TournamentTeamDivision.Division.Name</span>
-                        @if (!string.IsNullOrEmpty(Model.TournamentTeamDivision.GroupName))
+                        <span class="badge bg-custom me-2">@Model.Team.Division.Name</span>
+                        @if (!string.IsNullOrEmpty(Model.Team.GroupName))
                         {
-                            <span class="badge bg-secondary">Group @Model.TournamentTeamDivision.GroupName</span>
+                            <span class="badge bg-secondary">Group @Model.Team.GroupName</span>
                         }
                     </p>
                 </div>
@@ -120,7 +120,7 @@
                 <div class="col mb-3">
                     <div class="card border-0 shadow-sm h-100 stat-card">
                         <div class="card-body text-center">
-                            <h3 class="mb-0">@Html.DisplayFor(modelItem => Model.TournamentTeamDivision.Rank, "Rank")</h3>
+                            <h3 class="mb-0">@Html.DisplayFor(modelItem => Model.Team.Rank, "Rank")</h3>
                             <small class="text-muted">Tournament Rank</small>
                         </div>
                     </div>
@@ -128,7 +128,7 @@
                 <div class="col mb-3">
                     <div class="card border-0 shadow-sm h-100 stat-card">
                         <div class="card-body text-center">
-                            <h3 class="mb-0">@Html.DisplayFor(modelItem => Model.TournamentTeamDivision.TotalPoints)</h3>
+                            <h3 class="mb-0">@Html.DisplayFor(modelItem => Model.Team.TotalPoints)</h3>
                             <small class="text-muted">Total Ranking Points</small>
                         </div>
                     </div>
@@ -147,36 +147,36 @@
                     <dl class="row mb-0">
                         <dt class="col-sm-5">Matches Won:</dt>
                         <dd class="col-sm-7">
-                            <strong>@Model.TournamentTeamDivision.Wins</strong>
+                            <strong>@Model.Team.Wins</strong>
                             -
-                            <strong>@Model.TournamentTeamDivision.Losses</strong>
+                            <strong>@Model.Team.Losses</strong>
                             -
-                            <strong>@Model.TournamentTeamDivision.Draws</strong>
+                            <strong>@Model.Team.Draws</strong>
                             (W-L-D)
                         </dd>
 
                         <dt class="col-sm-5">Matches Played:</dt>
-                        <dd class="col-sm-7"><strong>@Model.TournamentTeamDivision.MatchesPlayed</strong></dd>
+                        <dd class="col-sm-7"><strong>@Model.Team.MatchesPlayed</strong></dd>
 
                         <dt class="col-sm-5">Sets Won:</dt>
-                        <dd class="col-sm-7"><strong>@Model.TournamentTeamDivision.SetsFor</strong></dd>
+                        <dd class="col-sm-7"><strong>@Model.Team.SetsFor</strong></dd>
 
                         <dt class="col-sm-5">Sets Lost:</dt>
-                        <dd class="col-sm-7"><strong>@Model.TournamentTeamDivision.SetsAgainst</strong></dd>
+                        <dd class="col-sm-7"><strong>@Model.Team.SetsAgainst</strong></dd>
 
                         <dt class="col-sm-5">Sets Difference:</dt>
                         <dd class="col-sm-7"><strong>@Html.DisplayFor(modelItem =>
-                                Model.TournamentTeamDivision.SetsDifference,"Difference")</strong></dd>
+                                Model.Team.SetsDifference,"Difference")</strong></dd>
 
                         <dt class="col-sm-5">Points Won:</dt>
-                        <dd class="col-sm-7"><strong>@Model.TournamentTeamDivision.ScoreFor</strong></dd>
+                        <dd class="col-sm-7"><strong>@Model.Team.ScoreFor</strong></dd>
 
                         <dt class="col-sm-5">Points Lost:</dt>
-                        <dd class="col-sm-7"><strong>@Model.TournamentTeamDivision.ScoreAgainst</strong></dd>
+                        <dd class="col-sm-7"><strong>@Model.Team.ScoreAgainst</strong></dd>
 
                         <dt class="col-sm-5">Points Difference:</dt>
                         <dd class="col-sm-7"><strong>@Html.DisplayFor(modelItem =>
-                                Model.TournamentTeamDivision.ScoreDifference,"Difference")</strong></dd>
+                                Model.Team.ScoreDifference,"Difference")</strong></dd>
 
                     </dl>
                 </div>
@@ -208,7 +208,7 @@
                         <tbody>
                             @foreach (var match in matches.OrderByDescending(m => m.ScheduledTime))
                             {
-                                var isHomeTeam = match.HomeTeamId == Model.TournamentTeamDivision.TeamId;
+                                var isHomeTeam = match.HomeTeamId == Model.Team.TeamId;
                                 var opponent = isHomeTeam ? match.AwayTeam?.Name : match.HomeTeam?.Name;
                                 var teamScore = isHomeTeam ? match.HomeTeamScore : match.AwayTeamScore;
                                 var opponentScore = isHomeTeam ? match.AwayTeamScore : match.HomeTeamScore;
@@ -327,7 +327,7 @@
                 <div class="row">
                     @foreach (var match in upcomingMatches)
                     {
-                        var isHomeTeam = match.HomeTeamId == Model.TournamentTeamDivision.TeamId;
+                        var isHomeTeam = match.HomeTeamId == Model.Team.TeamId;
                         var opponent = isHomeTeam ? match.AwayTeam?.Name : match.HomeTeam?.Name;
 
                         <div class="col-md-4 mb-3">

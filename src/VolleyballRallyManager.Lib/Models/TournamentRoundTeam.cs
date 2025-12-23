@@ -89,7 +89,7 @@ public class TournamentRoundTeam : BaseEntity
     [Display(Name = "Score Difference")]
     public int ScoreDifference => ScoreFor - ScoreAgainst;
 
-    // Additional properties from TournamentTeamDivision
+    // Additional properties from Team
     [Display(Name = "Group Name")]
     public string GroupName { get; set; } = string.Empty;
 }
