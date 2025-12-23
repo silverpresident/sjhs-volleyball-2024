@@ -38,11 +38,9 @@ public class GroupService
     }
     private string GetRandomColor(string groupName)
     {
-        using (MD5 md5Hash = MD5.Create())
-        {
-            byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(groupName));
-            return BitConverter.ToString(data).Replace("-", string.Empty).Substring(0, 6);
-        }
+        using MD5 md5Hash = MD5.Create();
+        byte[] data = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(groupName));
+        return BitConverter.ToString(data).Replace("-", string.Empty).Substring(0, 6);
 
     }
 }

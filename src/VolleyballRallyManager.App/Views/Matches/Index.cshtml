@@ -23,7 +23,8 @@
                             <a class="btn btn-outline-secondary" asp-action="Index">All</a>
                             @foreach (TournamentDivision division in ViewBag.Divisions)
                             {
-                                <a class="btn btn-outline-secondary" asp-route-DivisionId="@division.DivisionId">@division.Division.Name</a>
+                                <a class="btn btn-outline-secondary"
+                                    asp-route-DivisionId="@division.DivisionId">@division.Division.Name</a>
                             }
                         </div>
                     }
@@ -49,24 +50,25 @@
                     {
                         <tr>
                             <td>
-                                <a class="btn btn-link btn-sm" asp-action="Details" asp-route-id="@item.Id">@item.MatchNumber</a>
+                                <a class="btn btn-link btn-sm" asp-action="Details"
+                                    asp-route-id="@item.Id">@item.MatchNumber</a>
                             </td>
                             <td>
                                 <a class="btn btn-link btn-sm" asp-route-DivisionId="@item.DivisionId">
                                     @item.Division.Name
                                 </a>
-                                </td>
+                            </td>
                             <td>
-                                <a class="btn btn-outline-secondary btn-sm" 
-                                    asp-controller="Rounds" asp-action="Details" asp-route-Id="@item.TournamentRoundId"
-                                    title="Go to round details">
+                                <a class="btn btn-outline-primary btn-sm" asp-controller="Rounds" asp-action="Details"
+                                    asp-route-Id="@item.TournamentRoundId" title="Go to round details">
                                     <i class="bi bi-bookshelf"></i>
                                 </a>
                                 <a class="btn btn-link btn-sm" asp-route-RoundId="@item.TournamentRoundId">
                                     @item.Round?.Name
                                 </a>
 
-                                <a class="btn btn-link btn-sm" asp-route-DivisionId="@item.DivisionId" asp-route-GroupName="@item.GroupName">
+                                <a class="btn btn-link btn-sm" asp-route-DivisionId="@item.DivisionId"
+                                    asp-route-GroupName="@item.GroupName">
                                     @item.GroupName
                                 </a>
 
@@ -75,7 +77,8 @@
                                 <a class="btn btn-outline-secondary btn-sm" asp-route-TeamId="@item.HomeTeamId">
                                     <i class="bi bi-filter"></i>
                                 </a>
-                                <a class="btn btn-outline-primary btn-sm" asp-controller="Teams" asp-action="Details" asp-route-Id="@item.HomeTeamId">
+                                <a class="btn btn-outline-primary btn-sm" asp-controller="Teams" asp-action="Details"
+                                    asp-route-Id="@item.HomeTeamId" title="Go to team details">
                                     <i class="bi bi-info"></i>
                                 </a>
                                 @Html.DisplayFor(modelItem => item.HomeTeam, "Team")
@@ -86,7 +89,8 @@
                                 <a class="btn btn-outline-secondary btn-sm" asp-route-TeamId="@item.AwayTeamId">
                                     <i class="bi bi-filter"></i>
                                 </a>
-                                <a class="btn btn-outline-primary btn-sm" asp-controller="Teams" asp-action="Details" asp-route-Id="@item.AwayTeamId">
+                                <a class="btn btn-outline-primary btn-sm" asp-controller="Teams" asp-action="Details"
+                                    asp-route-Id="@item.AwayTeamId" title="Go to team details">
                                     <i class="bi bi-info"></i>
                                 </a>
                                 @Html.DisplayFor(modelItem => item.AwayTeam, "Team")

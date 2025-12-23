@@ -46,22 +46,22 @@
                     {
                         <tr>
                             <td>
-                                <a asp-action="Details" asp-route-id="@item.TeamId">
+                                <a class="btn btn-sm btn-link" asp-action="Details" asp-route-id="@item.TeamId">
                                     <i class="bi bi-info-circle"></i>
                                 </a>
                             </td>
                             <td>
-                                <a class="btn btn-link" asp-route-DivisionId="@item.DivisionId">
+                                <a class="btn btn-sm btn-link" asp-route-DivisionId="@item.DivisionId">
                                     @item.Division.Name
                                 </a>
                             </td>
                             <td>
-                                <a class="btn btn-link" asp-route-DivisionId="@item.DivisionId" asp-route-GroupName="@item.GroupName">
+                                <a class="btn btn-sm btn-link" asp-route-DivisionId="@item.DivisionId" asp-route-GroupName="@item.GroupName">
                                     @item.GroupName
                                 </a>
                             </td>
                             <td>
-                                <a asp-action="Details" asp-route-id="@item.TeamId">
+                                <a class="btn btn-sm btn-link" asp-action="Details" asp-route-id="@item.TeamId">
                                     @Html.DisplayFor(modelItem => item.Team, "Team")
                                 </a>
                                 <small>

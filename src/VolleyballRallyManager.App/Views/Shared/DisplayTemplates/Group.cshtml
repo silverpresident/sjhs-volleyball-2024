@@ -3,10 +3,10 @@
 @inject GroupService groupService 
 
 @if(string.IsNullOrEmpty(Model)){
-    <span class="badge badge-secondary"></span>
+    <span class="badge rounded-pill badge-secondary"></span>
     return;
 }
 @{
     string bgcolor = groupService.GetColor(Model);
 }
-<span class="badge text-black" style="background-color: @bgcolor">@Model</span>
+<span class="badge rounded-pill text-black" style="background-color: @bgcolor">@Model</span>

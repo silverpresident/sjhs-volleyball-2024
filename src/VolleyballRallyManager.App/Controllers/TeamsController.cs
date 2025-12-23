@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using VolleyballRallyManager.Lib.Hubs;
+using VolleyballRallyManager.App.Models;
 using VolleyballRallyManager.Lib.Services;
 
 namespace VolleyballRallyManager.App.Controllers
@@ -45,18 +46,25 @@ namespace VolleyballRallyManager.App.Controllers
 
         public async Task<IActionResult> Details(Guid id)
         {
-            var team = await _activeTournamentService.GetTeamAsync(id);
-            if (team == null)
+            var tournamentTeamDivision = await _activeTournamentService.GetTeamAsync(id);
+            if (tournamentTeamDivision == null)
             {
                 return NotFound();
             }
 
             // Fetch matches for this team to display results
-            var matches = await _activeTournamentService.GetMatchesAsync(null, null, null, id);
+                var matches = await _activeTournamentService.GetMatchesAsync(teamId: id);
             //await _matchService.GetMatchesByTeamAsync(id);
             ViewBag.Matches = matches;
 
-            return View(team);
+                var model = new TournamentTeamDetailsViewModel
+                {
+                    TournamentTeamDivision = tournamentTeamDivision,
+                    Matches = matches.OrderByDescending(m => m.ScheduledTime).ToList(),
+                    Division = tournamentTeamDivision.Division
+                };
+
+                return View(model);
         }
     }
 }

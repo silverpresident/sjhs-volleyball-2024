@@ -203,3 +203,7 @@ body {
     background-color: var(--st-jago-green);
     color: white;
 }
+.btn-custom {
+    background-color: var(--st-jago-green);
+    color: #ffd700;
+}

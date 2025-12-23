@@ -11,9 +11,12 @@
     <div class="row mb-3">
         <div class="col">
             <a asp-action="Create" class="btn btn-secondary"><i class="bi bi-plus-circle"></i> Create New Match</a>
-            <a asp-controller="ActiveTournament" asp-action="Index" class="btn btn-primary"><i class="bi bi-award"></i> Tournament Dashboard</a>
-            @if (ViewBag.TournamentRoundId != null){
-                <a asp-controller="TournamentRounds" asp-action="Index" asp-route-RoundId="@ViewBag.TournamentRoundId" class="btn btn-primary"><i class="bi bi-diagram-2"></i> Round</a>
+            <a asp-controller="ActiveTournament" asp-action="Index" class="btn btn-primary"><i class="bi bi-award"></i>
+                Tournament Dashboard</a>
+            @if (ViewBag.TournamentRoundId != null)
+            {
+                <a asp-controller="TournamentRounds" asp-action="Index" asp-route-RoundId="@ViewBag.TournamentRoundId"
+                    class="btn btn-primary"><i class="bi bi-diagram-2"></i> Round</a>
             }
         </div>
         <div class="col-auto">
@@ -45,18 +48,23 @@
             <tbody>
                 @foreach (var item in Model)
                 {
-                    var status = item.IsFinished ? "finished" : 
-                                item.IsDisputed ? "disputed" :
-                                item.ActualStartTime.HasValue ? "in-progress" : "scheduled";
+                    var status = item.IsFinished ? "finished" :
+                    item.IsDisputed ? "disputed" :
+                    item.ActualStartTime.HasValue ? "in-progress" : "scheduled";
 
                     <tr data-status="@status">
                         <td>
                             <div class="btn-group" role="group">
-                                <a asp-action="Assign" asp-route-id="@item.Id" class="btn btn-sm btn-outline-success" title="Assign"><i class="bi bi-calendar-check"></i></a>
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info" title="Details"><i class="bi bi-info-circle"></i></a>
-                                <a asp-action="Finalize" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Finalize"><i class="bi bi-check-circle"></i></a>
-                                <a asp-action="Scorer" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning" title="Scorer"><i class="bi bi-calculator"></i></a>
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                                <a asp-action="Assign" asp-route-id="@item.Id" class="btn btn-sm btn-outline-success"
+                                    title="Assign"><i class="bi bi-calendar-check"></i></a>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info"
+                                    title="Details"><i class="bi bi-info-circle"></i></a>
+                                <a asp-action="Finalize" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary"
+                                    title="Finalize"><i class="bi bi-check-circle"></i></a>
+                                <a asp-action="Scorer" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning"
+                                    title="Scorer"><i class="bi bi-calculator"></i></a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary"
+                                    title="Edit"><i class="bi bi-pencil"></i></a>
                             </div>
                         </td>
                         <td>
@@ -67,15 +75,15 @@
                                 @Html.DisplayFor(modelItem => item.Division.Name)
                             </small>
                             @Html.DisplayFor(modelItem => item.Round!.Name)
-                            
+
                         </td>
                         <td>
                             @item.ScheduledTime.ToString("dd/MM HH:mm")
-                          @*  @if (item.ActualStartTime.HasValue)
-                            {
-                                <br/>
-                                <small class="text-muted">Started: @item.ActualStartTime.Value.ToString("HH:mm")</small>
-                            }*@
+                            @* @if (item.ActualStartTime.HasValue)
+                        {
+                        <br/>
+                        <small class="text-muted">Started: @item.ActualStartTime.Value.ToString("HH:mm")</small>
+                        }*@
                         </td>
                         <td>
                             @if (string.IsNullOrEmpty(item.CourtLocation) || item.CourtLocation == "")
@@ -83,7 +91,9 @@
                                 <span class="text-danger">
                                     @Html.DisplayFor(modelItem => item.CourtLocation)
                                 </span>
-                            } else {
+                            }
+                            else
+                            {
                                 @Html.DisplayFor(modelItem => item.CourtLocation)
                                 if (string.IsNullOrEmpty(item.RefereeName) == false)
                                 {
@@ -100,7 +110,11 @@
                             }
                         </td>
                         <td>
-                           @Html.DisplayFor(modelItem => item.HomeTeam, "Team")
+                                <a class="btn btn-outline-primary btn-sm" asp-controller="TournamentTeams" asp-action="Details"
+                                    asp-route-Id="@item.HomeTeamId" title="Go to team details">
+                                    <i class="bi bi-info"></i>
+                                </a>
+                            @Html.DisplayFor(modelItem => item.HomeTeam, "Team")
                         </td>
                         <td>
                             @if (item.IsFinished)
@@ -117,7 +131,11 @@
                             }
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.AwayTeam, "Team") 
+                                <a class="btn btn-outline-primary btn-sm" asp-controller="TournamentTeams" asp-action="Details"
+                                    asp-route-Id="@item.AwayTeamId" title="Go to team details">
+                                    <i class="bi bi-info"></i>
+                                </a>
+                            @Html.DisplayFor(modelItem => item.AwayTeam, "Team")
                         </td>
                         <td>
                             @if (item.IsDisputed)
@@ -140,6 +158,8 @@
                             {
                                 <span class="badge bg-warning">Locked</span>
                             }
+                            ??
+                                @Html.DisplayFor(modelItem => item.MatchState, "MatchState")
                         </td>
                     </tr>
                 }
@@ -150,11 +170,11 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function() {
-            $('.btn-group button').click(function() {
+        $(document).ready(function () {
+            $('.btn-group button').click(function () {
                 $('.btn-group button').removeClass('active');
                 $(this).addClass('active');
-                
+
                 var filter = $(this).data('filter');
                 if (filter === 'all') {
                     $('tbody tr').show();

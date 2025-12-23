@@ -1,25 +1,25 @@
-@model VolleyballRallyManager.Lib.Models.TournamentTeamDivision
+@model VolleyballRallyManager.Lib.Models.TournamentTeamDetailsViewModel
 @using VolleyballRallyManager.Lib.Models
 
 @{
     ViewData["Title"] = "Team Details";
-    var matches = ViewBag.Matches as List<Match> ?? new List<Match>();
-    
+    var matches = Model.Matches as List<Match> ?? new List<Match>();
+
     // Calculate team statistics
     var finishedMatches = matches.Where(m => m.IsFinished).ToList();
-    var wins = finishedMatches.Count(m => 
-        (m.HomeTeamId == Model.TeamId && m.HomeTeamScore > m.AwayTeamScore) ||
-        (m.AwayTeamId == Model.TeamId && m.AwayTeamScore > m.HomeTeamScore));
-    var losses = finishedMatches.Count(m => 
-        (m.HomeTeamId == Model.TeamId && m.HomeTeamScore < m.AwayTeamScore) ||
-        (m.AwayTeamId == Model.TeamId && m.AwayTeamScore < m.HomeTeamScore));
+    var wins = finishedMatches.Count(m =>
+    (m.HomeTeamId == Model.TournamentTeamDivision.TeamId && m.HomeTeamScore > m.AwayTeamScore) ||
+    (m.AwayTeamId == Model.TournamentTeamDivision.TeamId && m.AwayTeamScore > m.HomeTeamScore));
+    var losses = finishedMatches.Count(m =>
+    (m.HomeTeamId == Model.TournamentTeamDivision.TeamId && m.HomeTeamScore < m.AwayTeamScore) ||
+    (m.AwayTeamId == Model.TournamentTeamDivision.TeamId && m.AwayTeamScore < m.HomeTeamScore));
     var draws = finishedMatches.Count(m => m.HomeTeamScore == m.AwayTeamScore);
-    
+
     var totalSetsWon = 0;
     var totalSetsLost = 0;
     foreach (var match in finishedMatches)
     {
-        if (match.HomeTeamId == Model.TeamId)
+        if (match.HomeTeamId == Model.TournamentTeamDivision.TeamId)
         {
             totalSetsWon += match.HomeTeamScore;
             totalSetsLost += match.AwayTeamScore;
@@ -30,6 +30,7 @@
             totalSetsLost += match.HomeTeamScore;
         }
     }
+    string scheduledTimeFormat = Model.TournamentTeamDivision.Tournament?.IsMultiDay == true ? "MMM dd, HH:mm" : "HH:mm";
 }
 
 <div class="container my-4">
@@ -39,15 +40,15 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a asp-action="Index">Teams</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">@Model.Team.Name</li>
+                    <li class="breadcrumb-item active" aria-current="page">@Model.TournamentTeamDivision.Team.Name</li>
                 </ol>
             </nav>
         </div>
     </div>
-@*
-TODO display rank when implemented
-@Html.DisplayFor(modelItem => team.Rank, "Rank")
-*@
+    @*
+    TODO display rank when implemented
+    @Html.DisplayFor(modelItem => team.Rank, "Rank")
+    *@
 
     <!-- Team Header Card -->
     <div class="card border-0 shadow-sm mb-4">
@@ -55,13 +56,13 @@ TODO display rank when implemented
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <h1 class="mb-2 text-custom">
-                        <i class="bi bi-people-fill me-2"></i>@Model.Team.Name
+                        <i class="bi bi-people-fill me-2"></i>@Model.TournamentTeamDivision.Team.Name
                     </h1>
                     <p class="text-muted mb-0">
-                        <span class="badge bg-custom me-2">@Model.Division.Name</span>
-                        @if (!string.IsNullOrEmpty(Model.GroupName))
+                        <span class="badge bg-custom me-2">@Model.TournamentTeamDivision.Division.Name</span>
+                        @if (!string.IsNullOrEmpty(Model.TournamentTeamDivision.GroupName))
                         {
-                            <span class="badge bg-secondary">Group @Model.GroupName</span>
+                            <span class="badge bg-secondary">Group @Model.TournamentTeamDivision.GroupName</span>
                         }
                     </p>
                 </div>
@@ -75,62 +76,114 @@ TODO display rank when implemented
         </div>
     </div>
 
-    <!-- Statistics Cards -->
+    <!-- Statistics Row -->
     <div class="row mb-4">
-        <div class="col-md-2 col-sm-6 mb-3">
-            <div class="card border-0 shadow-sm h-100 stat-card">
-                <div class="card-body text-center">
-                    <i class="bi bi-trophy-fill display-4 text-success mb-2"></i>
-                    <h3 class="mb-0">@wins</h3>
-                    <small class="text-muted">Wins</small>
+        <div class="col-md-6">
+            <!-- Statistics Highlight Card -->
+            <div class="row mb-4">
+                <div class="col mb-3">
+                    <div class="card border-0 shadow-sm h-100 stat-card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-trophy-fill display-4 text-success mb-2"></i>
+                            <h3 class="mb-0">@wins</h3>
+                            <small class="text-muted">Wins</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col mb-3">
+                    <div class="card border-0 shadow-sm h-100 stat-card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-x-circle-fill display-4 text-danger mb-2"></i>
+                            <h3 class="mb-0">@losses</h3>
+                            <small class="text-muted">Losses</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col mb-3">
+                    <div class="card border-0 shadow-sm h-100 stat-card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-arrow-up-circle-fill display-4 text-custom mb-2"></i>
+                            <h3 class="mb-0">@totalSetsWon</h3>
+                            <small class="text-muted">Sets Won</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col mb-3">
+                    <div class="card border-0 shadow-sm h-100 stat-card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-arrow-down-circle-fill display-4 text-warning mb-2"></i>
+                            <h3 class="mb-0">@totalSetsLost</h3>
+                            <small class="text-muted">Sets Lost</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col mb-3">
+                    <div class="card border-0 shadow-sm h-100 stat-card">
+                        <div class="card-body text-center">
+                            <h3 class="mb-0">@Html.DisplayFor(modelItem => Model.TournamentTeamDivision.Rank, "Rank")</h3>
+                            <small class="text-muted">Tournament Rank</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col mb-3">
+                    <div class="card border-0 shadow-sm h-100 stat-card">
+                        <div class="card-body text-center">
+                            <h3 class="mb-0">@Html.DisplayFor(modelItem => Model.TournamentTeamDivision.TotalPoints)</h3>
+                            <small class="text-muted">Total Ranking Points</small>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-2 col-sm-6 mb-3">
-            <div class="card border-0 shadow-sm h-100 stat-card">
-                <div class="card-body text-center">
-                    <i class="bi bi-x-circle-fill display-4 text-danger mb-2"></i>
-                    <h3 class="mb-0">@losses</h3>
-                    <small class="text-muted">Losses</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2 col-sm-6 mb-3">
-            <div class="card border-0 shadow-sm h-100 stat-card">
-                <div class="card-body text-center">
-                    <i class="bi bi-arrow-up-circle-fill display-4 text-custom mb-2"></i>
-                    <h3 class="mb-0">@totalSetsWon</h3>
-                    <small class="text-muted">Sets Won</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2 col-sm-6 mb-3">
-            <div class="card border-0 shadow-sm h-100 stat-card">
-                <div class="card-body text-center">
-                    <i class="bi bi-arrow-down-circle-fill display-4 text-warning mb-2"></i>
-                    <h3 class="mb-0">@totalSetsLost</h3>
-                    <small class="text-muted">Sets Lost</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2 col-sm-6 mb-3">
-            <div class="card border-0 shadow-sm h-100 stat-card">
-                <div class="card-body text-center">
-                    <h3 class="mb-0">@Html.DisplayFor(modelItem => Model.Rank, "Rank")</h3>
-                    <small class="text-muted">Tournament Rank</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-2 col-sm-6 mb-3">
-            <div class="card border-0 shadow-sm h-100 stat-card">
-                <div class="card-body text-center">
-                    <h3 class="mb-0">@Html.DisplayFor(modelItem => Model.TotalPoints)</h3>
-                    <small class="text-muted">Total Points</small>
-                </div>
-            </div>
-        </div>
-    </div>
 
+        </div>
+        <div class="col-md-6">
+            <!-- Statistics Details -->
+
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-bar-chart"></i> Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Matches Won:</dt>
+                        <dd class="col-sm-7">
+                            <strong>@Model.TournamentTeamDivision.Wins</strong>
+                            -
+                            <strong>@Model.TournamentTeamDivision.Losses</strong>
+                            -
+                            <strong>@Model.TournamentTeamDivision.Draws</strong>
+                            (W-L-D)
+                        </dd>
+
+                        <dt class="col-sm-5">Matches Played:</dt>
+                        <dd class="col-sm-7"><strong>@Model.TournamentTeamDivision.MatchesPlayed</strong></dd>
+
+                        <dt class="col-sm-5">Sets Won:</dt>
+                        <dd class="col-sm-7"><strong>@Model.TournamentTeamDivision.SetsFor</strong></dd>
+
+                        <dt class="col-sm-5">Sets Lost:</dt>
+                        <dd class="col-sm-7"><strong>@Model.TournamentTeamDivision.SetsAgainst</strong></dd>
+
+                        <dt class="col-sm-5">Sets Difference:</dt>
+                        <dd class="col-sm-7"><strong>@Html.DisplayFor(modelItem =>
+                                Model.TournamentTeamDivision.SetsDifference,"Difference")</strong></dd>
+
+                        <dt class="col-sm-5">Points Won:</dt>
+                        <dd class="col-sm-7"><strong>@Model.TournamentTeamDivision.ScoreFor</strong></dd>
+
+                        <dt class="col-sm-5">Points Lost:</dt>
+                        <dd class="col-sm-7"><strong>@Model.TournamentTeamDivision.ScoreAgainst</strong></dd>
+
+                        <dt class="col-sm-5">Points Difference:</dt>
+                        <dd class="col-sm-7"><strong>@Html.DisplayFor(modelItem =>
+                                Model.TournamentTeamDivision.ScoreDifference,"Difference")</strong></dd>
+
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+    </div>
     <!-- Match Results Section -->
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-custom text-white">
@@ -143,7 +196,6 @@ TODO display rank when implemented
                     <table class="table table-hover mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th></th>
                                 <th>Match #</th>
                                 <th>Round</th>
                                 <th class="text-center">Status</th>
@@ -156,12 +208,12 @@ TODO display rank when implemented
                         <tbody>
                             @foreach (var match in matches.OrderByDescending(m => m.ScheduledTime))
                             {
-                                var isHomeTeam = match.HomeTeamId == Model.TeamId;
+                                var isHomeTeam = match.HomeTeamId == Model.TournamentTeamDivision.TeamId;
                                 var opponent = isHomeTeam ? match.AwayTeam?.Name : match.HomeTeam?.Name;
                                 var teamScore = isHomeTeam ? match.HomeTeamScore : match.AwayTeamScore;
                                 var opponentScore = isHomeTeam ? match.AwayTeamScore : match.HomeTeamScore;
-                                 
-                                
+
+
                                 // Determine result
                                 string resultClass = "";
                                 string resultText = "-";
@@ -187,17 +239,29 @@ TODO display rank when implemented
                                 <tr>
                                     <td class="text-end">
                                         <a asp-controller="Matches" asp-action="Details" asp-route-id="@match.Id"
-                                           class="btn btn-sm btn-outline-custom">
+                                            class="btn btn-sm btn-outline-custom">
+                                            <strong class="fw-bold">#@match.MatchNumber</strong>
                                             <i class="bi bi-eye"></i>
                                         </a>
                                     </td>
-                                    <td class="fw-bold">#@match.MatchNumber</td>
-                                    <td>@match.Round?.Name</td>
+                                    <td>
+                                        <a asp-controller="Rounds" asp-action="Details" asp-route-id="@match.TournamentRoundId"
+                                            class="btn btn-sm btn-outline-custom">
+                                            @match.Round?.Name
+                                        </a>
+                                        @Html.DisplayFor(modelItem => match.GroupName, "Group")
+                                    </td>
                                     <td class="text-center">
                                         @Html.DisplayFor(modelItem => match.MatchState, "MatchState")
                                     </td>
                                     <td>
                                         <strong>@(isHomeTeam ? "vs" : "@")</strong> @opponent
+
+                                        <a asp-controller="Teams" asp-action="Details"
+                                            asp-route-id="@(isHomeTeam ? match.AwayTeamId : match.HomeTeamId)"
+                                            class="btn btn-sm btn-outline-custom">
+                                            <i class="bi bi-info-circle"></i>
+                                        </a>
                                     </td>
                                     <td class="text-center">
                                         @if (match.IsFinished || match.ActualStartTime.HasValue)
@@ -230,7 +294,7 @@ TODO display rank when implemented
                                         }
                                     </td>
                                     <td>
-                                        <small>@match.ScheduledTime.ToString("MMM dd, h:mm tt")</small>
+                                        <small>@match.ScheduledTime.ToString(scheduledTimeFormat)</small>
                                     </td>
                                 </tr>
                             }
@@ -250,7 +314,8 @@ TODO display rank when implemented
 
     <!-- Upcoming Matches -->
     @{
-        var upcomingMatches = matches.Where(m => !m.IsFinished && m.ScheduledTime > DateTime.Now).OrderBy(m => m.ScheduledTime).Take(3).ToList();
+        var upcomingMatches = matches.Where(m => !m.IsFinished && m.ScheduledTime > DateTime.Now).OrderBy(m =>
+        m.ScheduledTime).Take(3).ToList();
     }
     @if (upcomingMatches.Any())
     {
@@ -262,9 +327,9 @@ TODO display rank when implemented
                 <div class="row">
                     @foreach (var match in upcomingMatches)
                     {
-                        var isHomeTeam = match.HomeTeamId == Model.TeamId;
+                        var isHomeTeam = match.HomeTeamId == Model.TournamentTeamDivision.TeamId;
                         var opponent = isHomeTeam ? match.AwayTeam?.Name : match.HomeTeam?.Name;
-                        
+
                         <div class="col-md-4 mb-3">
                             <div class="card h-100 border-primary">
                                 <div class="card-body">
@@ -278,8 +343,8 @@ TODO display rank when implemented
                                     <small class="text-muted d-block mb-2">
                                         <i class="bi bi-geo-alt"></i> @(match.CourtLocation ?? "TBD")
                                     </small>
-                                    <a asp-controller="Matches" asp-action="Details" asp-route-id="@match.Id" 
-                                       class="btn btn-sm btn-custom w-100">
+                                    <a asp-controller="Matches" asp-action="Details" asp-route-id="@match.Id"
+                                        class="btn btn-sm btn-custom w-100">
                                         <i class="bi bi-info-circle"></i>
                                     </a>
                                 </div>
@@ -304,50 +369,51 @@ TODO display rank when implemented
         .text-custom {
             color: #2d5016;
         }
-        
+
         .bg-custom {
             background-color: #2d5016 !important;
         }
-        
+
         .btn-custom {
             background-color: #2d5016;
             border-color: #2d5016;
             color: #ffd700;
         }
-        
+
         .btn-custom:hover {
             background-color: #1f3810;
             border-color: #1f3810;
             color: #ffd700;
         }
-        
+
         .btn-outline-custom {
             color: #2d5016;
             border-color: #2d5016;
         }
-        
+
         .btn-outline-custom:hover {
             background-color: #2d5016;
             border-color: #2d5016;
             color: #ffd700;
         }
-        
+
         .stat-card {
             transition: transform 0.2s;
         }
-        
+
         .stat-card:hover {
             transform: translateY(-5px);
         }
-        
+
         .border-primary {
             border-color: #0d6efd !important;
         }
-        
-        .table td, .table th {
+
+        .table td,
+        .table th {
             vertical-align: middle;
         }
-        
+
         .table-hover tbody tr:hover {
             background-color: rgba(45, 80, 22, 0.05);
         }

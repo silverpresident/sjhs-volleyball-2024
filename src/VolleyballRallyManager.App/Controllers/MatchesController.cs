@@ -26,7 +26,7 @@ namespace VolleyballRallyManager.App.Controllers
             string divisionSubtitle = "";
             if (roundId.HasValue)
             {
-
+//TODO fix titling of filter
                 var tournamentRound = await _activeTournamentService.GetTournamentRoundAsync(roundId.Value);
                 if (tournamentRound != null)
                 {

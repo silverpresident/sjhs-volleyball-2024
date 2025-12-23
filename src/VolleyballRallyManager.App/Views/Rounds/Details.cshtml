@@ -24,48 +24,11 @@
         }
         </div>
     </div>
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header text-white" style="background-color: #2e7d32;">
-                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Round Information</h5>
-                </div>
-                <div class="card-body">
-                    <dl class="row mb-0">
-                        <dt class="col-sm-5">Tournament:</dt>
-                        <dd class="col-sm-7">@Model.Tournament?.Name</dd>
-
-                        <dt class="col-sm-5">Division:</dt>
-                        <dd class="col-sm-7">@Model.CurrentRound.Division?.Name</dd>
-
-                        <dt class="col-sm-5">Round Number:</dt>
-                        <dd class="col-sm-7">@Model.CurrentRound.RoundNumber
-                            @if (Model.CurrentRound.IsPlayoff)
-                            {
-                                <span class="badge bg-info">Playoff</span>
-                            }
-                        </dd>
-
-                        <dt class="col-sm-5">Match Strategy:</dt>
-                        <dd class="col-sm-7"><span class="badge bg-warning text-dark">@Model.CurrentRound.MatchGenerationStrategy</span></dd>
-
-                        <dt class="col-sm-5">Teams Advancing:</dt>
-                        <dd class="col-sm-7">
-                            @Model.CurrentRound.AdvancingTeamsCount
-                            <span class="badge bg-info">@Model.CurrentRound.AdvancingTeamSelectionStrategy</span>
-                        </dd>
-
-                        <dt class="col-sm-5">Status:</dt>
-                        <dd class="col-sm-7">
-
-        }
-        </div>
-    </div>
 
     <div class="row mb-4">
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header text-white" style="background-color: #2e7d32;">
+                <div class="card-header bg-custom text-white">
                     <h5 class="mb-0"><i class="bi bi-info-circle"></i> Round Information</h5>
                 </div>
                 <div class="card-body">
@@ -155,7 +118,7 @@
                                 <div class="progress">
                                     <div class="progress-bar @(percent == 100 ? "bg-success" : "")"
                                          role="progressbar"
-                                         style="width: @percent%; background-color: #2e7d32;">
+                                         style="width: @percent%;">
                                         @Math.Round(percent, 0)%
                                     </div>
                                 </div>
@@ -322,7 +285,7 @@
                                     </td>
                                     <td>
                                         <a asp-controller="Matches" asp-action="Details" asp-route-id="@match.Id"
-                                           class="btn btn-sm" style="background-color: #2e7d32; color: #ffd700;">
+                                           class="btn btn-primary btn-sm">
                                             <i class="bi bi-eye"></i> Details
                                         </a>
                                     </td>

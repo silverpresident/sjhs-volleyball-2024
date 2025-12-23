@@ -28,105 +28,105 @@
     }
     else
     {
-        <div class="row">
-        @foreach (var divisionGroup in Model.DivisionGroups)
-        {
-            <div class="col mb-5">
-                <h2 class="mb-3">
-                    <span class="badge" style="background-color: #2e7d32; color: #ffd700;">
-                        @divisionGroup.DivisionName
-                    </span>
-                </h2>
+        <div class="row g-5">
+            @foreach (var divisionGroup in Model.DivisionGroups)
+            {
+                <div class="col mb-5">
+                    <h2 class="mb-3">
+                        <span class="badge" style="background-color: #2e7d32; color: #ffd700;">
+                            @divisionGroup.DivisionName
+                        </span>
+                    </h2>
 
-                <div class="row">
-                    @foreach (var round in divisionGroup.Rounds)
-                    {
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card h-100 shadow-sm">
-                                <div class="card-header @(round.IsFinished ? "bg-success" : round.IsLocked ? "bg-warning" : "bg-primary") text-white d-flex justify-content-between">
-                                    <h5 class="mb-0">
-                                        <i class="bi bi-circle-fill"></i> @round.RoundName
-                                        @if (round.IsPlayoff)
-                                        {
-                                            <span class="badge bg-info">Playoff</span>
-                                        }
-                                    </h5>
-                                    <span class="badge bg-dark">@round.RoundNumber</span>
-                                </div>
-                                <div class="card-body">
-                                    <dl class="row mb-0">
-                                        <dt class="col-sm-6">Strategy:</dt>
-                                        <dd class="col-sm-6">
-                                            <span class="badge bg-secondary">@round.MatchGenerationStrategy</span>
-                                        </dd>
-
-                                        <dt class="col-sm-6">Teams:</dt>
-                                        <dd class="col-sm-6"><strong>@round.TeamCount</strong></dd>
-
-                                        <dt class="col-sm-6">Advancing:</dt>
-                                        <dd class="col-sm-6">
-                                            <span class="badge" style="background-color: #2e7d32; color: #ffd700;">
-                                                @round.AdvancingTeamsCount teams
-                                            </span>
-                                        </dd>
-
-                                        <dt class="col-sm-6">Matches:</dt>
-                                        <dd class="col-sm-6">
-                                            @round.CompletedMatches / @round.TotalMatches
-                                            @if (round.PendingMatches > 0)
+                    <div class="row">
+                        @foreach (var round in divisionGroup.Rounds)
+                        {
+                            <div class="col-md-6 mb-4">
+                                <div class="card h-100 shadow-sm">
+                                    <div
+                                        class="card-header @(round.IsFinished ? "bg-success" : round.IsLocked ? "bg-warning" : "bg-primary") text-white d-flex justify-content-between">
+                                        <h5 class="mb-0">
+                                            <i class="bi bi-circle-fill"></i> @round.RoundName
+                                            @if (round.IsPlayoff)
                                             {
-                                                <small class="text-muted">(@round.PendingMatches pending)</small>
+                                                <span class="badge bg-info">Playoff</span>
                                             }
-                                        </dd>
+                                        </h5>
+                                        <span class="badge bg-dark">@round.RoundNumber</span>
+                                    </div>
+                                    <div class="card-body">
+                                        <dl class="row mb-0">
+                                            <dt class="col-sm-6">Strategy:</dt>
+                                            <dd class="col-sm-6">
+                                                <span class="badge bg-secondary">@round.MatchGenerationStrategy</span>
+                                            </dd>
 
-                                        <dt class="col-sm-6">Completion:</dt>
-                                        <dd class="col-sm-6">
-                                            <div class="progress" style="height: 20px;">
-                                                <div class="progress-bar @(round.CompletionPercentage == 100 ? "bg-success" : "bg-primary")"
-                                                     role="progressbar"
-                                                     style="width: @round.CompletionPercentage%"
-                                                     aria-valuenow="@round.CompletionPercentage"
-                                                     aria-valuemin="0"
-                                                     aria-valuemax="100">
-                                                    @round.CompletionPercentage %
+                                            <dt class="col-sm-6">Teams:</dt>
+                                            <dd class="col-sm-6"><strong>@round.TeamCount</strong></dd>
+
+                                            <dt class="col-sm-6">Advancing:</dt>
+                                            <dd class="col-sm-6">
+                                                <span class="badge" style="background-color: #2e7d32; color: #ffd700;">
+                                                    @round.AdvancingTeamsCount teams
+                                                </span>
+                                            </dd>
+
+                                            <dt class="col-sm-6">Matches:</dt>
+                                            <dd class="col-sm-6">
+                                                @round.CompletedMatches / @round.TotalMatches
+                                                @if (round.PendingMatches > 0)
+                                                {
+                                                    <small class="text-muted">(@round.PendingMatches pending)</small>
+                                                }
+                                            </dd>
+
+                                            <dt class="col-sm-6">Completion:</dt>
+                                            <dd class="col-sm-6">
+                                                <div class="progress" style="height: 20px;">
+                                                    <div class="progress-bar @(round.CompletionPercentage == 100 ? "bg-success" : "bg-primary")"
+                                                        role="progressbar" style="width: @round.CompletionPercentage%"
+                                                        aria-valuenow="@round.CompletionPercentage" aria-valuemin="0"
+                                                        aria-valuemax="100">
+                                                        @round.CompletionPercentage %
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </dd>
+                                            </dd>
 
-                                        <dt class="col-sm-6">Status:</dt>
-                                        <dd class="col-sm-6">
-                                            @if (round.IsFinished)
-                                            {
-                                                <span class="badge bg-success">
-                                                    <i class="bi bi-check-circle"></i> Finished
-                                                </span>
-                                            }
-                                            else if (round.IsLocked)
-                                            {
-                                                <span class="badge bg-warning text-dark">
-                                                    <i class="bi bi-lock"></i> Locked
-                                                </span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-secondary">
-                                                    <i class="bi bi-hourglass"></i> In Progress
-                                                </span>
-                                            }
-                                        </dd>
-                                    </dl>
-                                </div>
-                                <div class="card-footer bg-light">
-                                    <a asp-action="Details" asp-route-id="@round.TournamentRoundId" class="btn btn-sm w-100" style="background-color: #2e7d32; color: #ffd700;">
-                                        <i class="bi bi-eye"></i> View Details
-                                    </a>
+                                            <dt class="col-sm-6">Status:</dt>
+                                            <dd class="col-sm-6">
+                                                @if (round.IsFinished)
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class="bi bi-check-circle"></i> Finished
+                                                    </span>
+                                                }
+                                                else if (round.IsLocked)
+                                                {
+                                                    <span class="badge bg-warning text-dark">
+                                                        <i class="bi bi-lock"></i> Locked
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">
+                                                        <i class="bi bi-hourglass"></i> In Progress
+                                                    </span>
+                                                }
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                    <div class="card-footer bg-light">
+                                        <a asp-action="Details" asp-route-id="@round.TournamentRoundId"
+                                            class="btn btn-info btn-sm w-100">
+                                            <i class="bi bi-info-circle"></i> View Details
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
-            </div>
-        }
+            }
         </div>
     }
 </div>
