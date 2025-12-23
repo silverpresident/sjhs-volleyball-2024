@@ -688,26 +688,126 @@ public class TournamentRoundsController : Controller
         }
     }
 
-    // POST: Admin/TournamentRounds/SelectTeams/5
-    [HttpPost]
-    [ValidateAntiForgeryToken]
+    // GET: Admin/TournamentRounds/SelectTeams/5
     public async Task<IActionResult> SelectTeams(Guid id)
     {
         try
         {
-            var userName = User.Identity?.Name ?? "admin";
-            var teams = await _tournamentRoundService.SelectTeamsForRoundAsync(id, userName);
+            var round = await _tournamentRoundService.GetTournamentRoundByIdAsync(id);
+            if (round == null)
+            {
+                return NotFound();
+            }
 
-            TempData["SuccessMessage"] = $"Selected {teams.Count} teams for the round.";
-            
-            // Redirect to generate matches
-            return RedirectToAction(nameof(GenerateMatches), new { id });
+            // Get round details with ranked teams
+            var roundDetails = await _tournamentService.GetTournamentRoundDetailsAsync(id);
+            if (roundDetails == null)
+            {
+                return NotFound();
+            }
+
+            // Create the view model
+            var viewModel = new SelectTeamsViewModel
+            {
+                TournamentRoundId = id,
+                RoundName = round.Round?.Name ?? $"Round {round.RoundNumber}",
+                TeamSelectionStrategy = round.QualifyingTeamSelectionStrategy,
+                NumberOfQualifyingTeams = round.QualifyingTeamsCount,
+                Teams = new List<SelectTeamsViewModel.TeamSelectionItem>()
+            };
+ //var teams = await _tournamentRoundService.SelectTeamsForRoundAsync(id, userName);
+ var qualifyingTeamIds = await _tournamentRoundService.SelectQualifyingTeamIdsForRoundAsync(id);
+
+            // Populate team selection items from ranked teams
+            int rank = 1;
+            foreach (var team in roundDetails.Teams.OrderBy(t => t.Rank))
+            {
+                var item = new SelectTeamsViewModel.TeamSelectionItem
+                {
+                    TeamId = team.TeamId,
+                    TeamName = team.TeamName,
+                    Rank = team.Rank > 0 ? team.Rank : rank,
+                    GroupName = team.GroupName,
+                    SetsWon = team.SetsFor,
+                    SetsLost = team.SetsAgainst,
+                    Points = team.Points,
+                    PointDifference = team.SetsDifference,
+                    IsSelected = false
+                };
+
+                // Auto-select teams based on strategy and count
+                if (viewModel.TeamSelectionStrategy != TeamSelectionStrategy.Manual)
+                {
+                    // Select top N teams based on the qualifying teams count
+                    if (rank <= viewModel.NumberOfQualifyingTeams)
+                    {
+                        item.IsSelected = true;
+                    }
+                }
+
+                viewModel.Teams.Add(item);
+                rank++;
+            }
+
+            return View(viewModel);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error selecting teams for round {RoundId}", id);
-            TempData["ErrorMessage"] = $"Error selecting teams: {ex.Message}";
+            _logger.LogError(ex, "Error loading select teams form for round {RoundId}", id);
+            TempData["ErrorMessage"] = "Error loading team selection form.";
             return RedirectToAction(nameof(Details), new { id });
+        }
+    }
+
+    // POST: Admin/TournamentRounds/SelectTeams
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SelectTeams(SelectTeamsViewModel model)
+    {
+        try
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var round = await _tournamentRoundService.GetTournamentRoundByIdAsync(model.TournamentRoundId);
+            if (round == null)
+            {
+                return NotFound();
+            }
+
+            // Get selected team IDs
+            var selectedTeamIds = model.Teams
+                .Where(t => t.IsSelected)
+                .Select(t => t.TeamId)
+                .ToList();
+
+            if (!selectedTeamIds.Any())
+            {
+                ModelState.AddModelError("", "You must select at least one team.");
+                return View(model);
+            }
+
+            var userName = User.Identity?.Name ?? "admin";
+
+            // Update the round with selected teams
+            await _tournamentRoundService.AddTeamsToRoundAsync(
+                model.TournamentRoundId,
+                selectedTeamIds,
+                userName);
+
+            TempData["SuccessMessage"] = $"Successfully selected {selectedTeamIds.Count} teams for the round.";
+            
+            // Redirect to round details
+            return RedirectToAction(nameof(Details), new { id = model.TournamentRoundId });
+          //return RedirectToAction(nameof(GenerateMatches), new { id });
+      }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error selecting teams for round {RoundId}", model.TournamentRoundId);
+            ModelState.AddModelError("", $"Error selecting teams: {ex.Message}");
+            return View(model);
         }
     }
 
