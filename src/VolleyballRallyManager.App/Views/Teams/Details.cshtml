@@ -59,7 +59,7 @@
                         <i class="bi bi-people-fill me-2"></i>@Model.Team.Team.Name
                     </h1>
                     <p class="text-muted mb-0">
-                        <span class="badge bg-custom me-2">@Model.Team.Division.Name</span>
+                        <span class="badge text-bg-custom me-2">@Model.Team.Division.Name</span>
                         @if (!string.IsNullOrEmpty(Model.Team.GroupName))
                         {
                             <span class="badge bg-secondary">Group @Model.Team.GroupName</span>
@@ -186,7 +186,7 @@
     </div>
     <!-- Match Results Section -->
     <div class="card border-0 shadow-sm mb-4">
-        <div class="card-header bg-custom text-white">
+        <div class="card-header text-bg-custom">
             <i class="bi bi-calendar-event me-2"></i>Match Results (@matches.Count)
         </div>
         <div class="card-body p-0">
@@ -338,7 +338,7 @@
                                         <strong>@(isHomeTeam ? "vs" : "@")</strong> @opponent
                                     </p>
                                     <small class="text-muted d-block mb-1">
-                                        <i class="bi bi-calendar"></i> @match.ScheduledTime.ToString("MMM dd, h:mm tt")
+                                        <i class="bi bi-calendar"></i> @match.ScheduledTime.ToString(scheduledTimeFormat)
                                     </small>
                                     <small class="text-muted d-block mb-2">
                                         <i class="bi bi-geo-alt"></i> @(match.CourtLocation ?? "TBD")
@@ -363,59 +363,3 @@
         </a>
     </div>
 </div>
-
-@section Styles {
-    <style>
-        .text-custom {
-            color: #2d5016;
-        }
-
-        .bg-custom {
-            background-color: #2d5016 !important;
-        }
-
-        .btn-custom {
-            background-color: #2d5016;
-            border-color: #2d5016;
-            color: #ffd700;
-        }
-
-        .btn-custom:hover {
-            background-color: #1f3810;
-            border-color: #1f3810;
-            color: #ffd700;
-        }
-
-        .btn-outline-custom {
-            color: #2d5016;
-            border-color: #2d5016;
-        }
-
-        .btn-outline-custom:hover {
-            background-color: #2d5016;
-            border-color: #2d5016;
-            color: #ffd700;
-        }
-
-        .stat-card {
-            transition: transform 0.2s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .border-primary {
-            border-color: #0d6efd !important;
-        }
-
-        .table td,
-        .table th {
-            vertical-align: middle;
-        }
-
-        .table-hover tbody tr:hover {
-            background-color: rgba(45, 80, 22, 0.05);
-        }
-    </style>
-}

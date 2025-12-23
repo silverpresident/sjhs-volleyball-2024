@@ -17,10 +17,10 @@
                                     <i class="bi bi-trophy-fill me-2" style="color: #ffd700;"></i>
                                     @Model.ActiveTournament.Name
                                 </h3>
-                                @if (!string.IsNullOrEmpty(Model.ActiveTournament.Description))
-                                {
-                                    <p class="mb-0 text-white-50">@Model.ActiveTournament.Description</p>
-                                }
+                                <a class="btn btn-outline-primary" asp-controller="Tournament">
+                                    <i class="bi bi-info-circle"></i>
+                                    View Tournament Details
+                                </a> 
                             </div>
                             <div class="col-md-4 text-md-end">
                                 <div class="d-flex flex-column align-items-md-end">
