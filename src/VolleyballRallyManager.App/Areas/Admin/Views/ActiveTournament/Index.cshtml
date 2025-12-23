@@ -103,34 +103,6 @@
                 </div>
                 <div class="card-body">
                     <partial name="_TeamsPartial" model="Model.TeamsByDivision" />
-<hr/>
-                    @if (Model.Teams != null && Model.Teams.Any())
-                    {
-                        var teamsByDivision = Model.Teams.GroupBy(t => t.Division.Name);
-                        foreach (var divisionGroup in teamsByDivision)
-                        {
-                            <div class="card mb-2">
-                                <div class="card-header">
-                                    @divisionGroup.Key
-                                </div>
-                                <ul class="list-group list-group-flush">
-                                    @foreach (var team in divisionGroup.OrderBy(t => t.GroupName).ThenBy(t => t.Team.Name))
-                                    {
-                                        <li class="list-group-item">
-                                            <span class="badge bg-secondary">@team.GroupName</span>
-                                            @team.Team.Name
-                                            <small>(@team.Team.School)</small>
-                                            <span class="badge badge-primary badge-pill" title="seed">@team.SeedNumber</span>
-                                        </li>
-                                    }
-                                </ul>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <p>No teams are currently participating in this tournament.</p>
-                    }
                 </div>
             </div>
         </div>

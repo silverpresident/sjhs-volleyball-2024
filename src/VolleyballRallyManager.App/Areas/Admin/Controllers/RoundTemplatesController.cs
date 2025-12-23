@@ -8,12 +8,12 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize]
-    public class RoundsController : Controller
+    public class RoundTemplatesController : Controller
     {
         private readonly IRoundService _roundService;
-        private readonly ILogger<RoundsController> _logger;
+        private readonly ILogger<RoundTemplatesController> _logger;
 
-        public RoundsController(IRoundService roundService, ILogger<RoundsController> logger)
+        public RoundTemplatesController(IRoundService roundService, ILogger<RoundTemplatesController> logger)
         {
             _roundService = roundService;
             _logger = logger;

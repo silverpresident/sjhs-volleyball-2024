@@ -1,20 +1,5 @@
 /* Rounds Index Page Styles */
-
-.rounds-header {
-    background: linear-gradient(135deg, #2c5f2d 0%, #97bc62 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 8px;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.rounds-header h1 {
-    margin: 0;
-    font-size: 2rem;
-    font-weight: 700;
-}
-
+ 
 .stats-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -211,12 +196,5 @@
     .stats-container {
         grid-template-columns: 1fr;
     }
-    
-    .rounds-header {
-        padding: 1.5rem;
-    }
-    
-    .rounds-header h1 {
-        font-size: 1.5rem;
-    }
+     
 }

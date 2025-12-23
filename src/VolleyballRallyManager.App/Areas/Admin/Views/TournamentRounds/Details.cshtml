@@ -9,7 +9,10 @@
 
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1><i class="bi bi-trophy"></i> @Model.CurrentRound.Round?.Name</h1>
+        <h1><i class="bi bi-trophy"></i> @Model.CurrentRound.Round?.Name
+        -
+        @Html.DisplayFor(modelItem => Model.CurrentRound.Division, "Division") 
+        </h1>
         <div>
             @if (!Model.CurrentRound.IsFinished)
             {
@@ -48,24 +51,20 @@
     <div class="row mb-4">
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Round Information</h5>
+                <div class="card-header d-flex justify-content-between  bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Round Information
+                    
+                            @if (Model.CurrentRound.IsPlayoff)
+                            {
+                                <span class="badge bg-info">playoff</span>
+                            }
+                            </h5>
+                            <span class="badge">@Model.CurrentRound.RoundNumber</span>
                 </div>
                 <div class="card-body">
                     <dl class="row mb-0">
                         <dt class="col-sm-5">Tournament:</dt>
                         <dd class="col-sm-7">@Model.CurrentRound.Tournament?.Name</dd>
-
-                        <dt class="col-sm-5">Division:</dt>
-                        <dd class="col-sm-7">@Model.CurrentRound.Division?.Name</dd>
-
-                        <dt class="col-sm-5">Round Number:</dt>
-                        <dd class="col-sm-7">@Model.CurrentRound.RoundNumber
-                            @if (Model.CurrentRound.IsPlayoff)
-                            {
-                                <span class="badge bg-info">playoff</span>
-                            }
-                        </dd>
 
                         <dt class="col-sm-5">Qualifying for this round:</dt>
                         <dd class="col-sm-7"><span class="badge bg-info">@Model.CurrentRound.AdvancingTeamSelectionStrategy</span></dd>

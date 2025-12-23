@@ -30,3 +30,5 @@ PUBLIC
 
 review how "round anmes" are displayed and how they can be edited 
 review "round names" in match controllers
+
+divison badge should have a color

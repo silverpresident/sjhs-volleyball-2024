@@ -570,12 +570,12 @@ GO
 IF NOT EXISTS (SELECT * FROM dbo.RoundTemplates)
 BEGIN
     INSERT INTO dbo.RoundTemplates (Id, Name, Sequence, RecommendedQualifyingTeamsCount, RecommendedMatchGenerationStrategy, RecommendedTeamSelectionStrategy, IsPlayoff, CreatedBy, UpdatedBy) VALUES
-    (NEWID(), 'Preliminary Round', 1, 0, 'RoundRobin', 'TopByPoints', 0, 'system', 'system'),
+    (NEWID(), 'Preliminary Round', 1, 0, 'RoundRobin', 'TopFromGroupAndNextBest', 0, 'system', 'system'),
     (NEWID(), 'Seeded Round', 2, 16, 'GroupStageKnockout', 'TopByPoints', 0, 'system', 'system'),
-    (NEWID(), 'Quarter Finals', 4, 8, 'SeededBracket', 'WinnersOnly', 1, 'system', 'system'),
-    (NEWID(), 'Semi-finals', 5, 4, 'SeededBracket', 'WinnersOnly', 1, 'system', 'system'),
+    (NEWID(), 'Quarter Finals', 4, 8, 'SeededBracket', 'TopFromGroupAndNextBest', 0, 'system', 'system'),
+    (NEWID(), 'Semi-finals', 5, 4, 'SeededBracket', 'WinnersOnly', 0, 'system', 'system'),
     (NEWID(), 'Third Place Playoff', 6, 2, 'SeededBracket', 'WinnersOnly', 1, 'system', 'system'),
-    (NEWID(), 'Finals', 7, 2, 'SeededBracket', 'WinnersOnly', 1, 'system', 'system');
+    (NEWID(), 'Finals', 7, 2, 'SeededBracket', 'WinnersOnly', 0, 'system', 'system');
     
     PRINT 'Initial RoundTemplates data inserted successfully.';
 END
