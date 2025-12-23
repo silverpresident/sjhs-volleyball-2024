@@ -133,5 +133,6 @@ namespace VolleyballRallyManager.Lib.Services
         /// </summary>
         /// <returns>The start time of the next match.</returns>
         Task<DateTime> GetNextMatchStartTimeAsync();
+        Task<TournamentRound> GetTournamentRoundAsync(Guid tournamentRoundId);
     }
 }

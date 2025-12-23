@@ -24,16 +24,16 @@ namespace VolleyballRallyManager.App.Controllers
         public async Task<IActionResult> Index(Guid? divisionId, string? groupName, Guid? roundId, Guid? teamId)
         {
             string divisionSubtitle = "";
-            if (roundId.HasValue){
-                
+            if (roundId.HasValue)
+            {
+
                 var tournamentRound = await _activeTournamentService.GetTournamentRoundAsync(roundId.Value);
-                //_context.TournamentRounds.FirstOrDefaultAsync(tr => tr.Id == RoundId);
-                    if (tournamentRound != null)
-                    {
-                        divisionId = tournamentRound.DivisionId;
-                        roundId = tournamentRound.RoundTemplateId;
+                if (tournamentRound != null)
+                {
+                    divisionId = tournamentRound.DivisionId;
+                    roundId = tournamentRound.RoundTemplateId;
                     //TODO divisionSubtitle += $" - {tournamentRound.Name}";
-                    }
+                }
             }
             if (divisionId.HasValue)
             {

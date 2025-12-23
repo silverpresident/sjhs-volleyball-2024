@@ -399,5 +399,18 @@ namespace VolleyballRallyManager.Lib.Services
 
             return DateTime.Now.AddMinutes(30);
         }
+
+        public async Task<TournamentRound> GetTournamentRoundAsync(Guid id)
+        {
+            var tr = await _context.TournamentRounds.FirstOrDefaultAsync(tr => tr.Id == id);
+            var activeTournament = await GetActiveTournamentAsync();
+            if (tr == null || activeTournament == null || tr.TournamentId != activeTournament.Id)
+            {
+                //throw new Exception("Tournament Round not found in active tournament.");
+                return null;
+            }
+            return tr;
+
+        }
     }
 }
