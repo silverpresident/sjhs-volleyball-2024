@@ -52,7 +52,9 @@
                     <div class="row mb-4">
                         <div class="col-md-5 text-center">
                             <div class="team-box p-3 border rounded">
-                                <div class="team-color mb-2" style="width: 30px; height: 30px; border-radius: 50%; background-color: @match.HomeTeam?.Color; margin: 0 auto;"></div>
+                                <div class="team-color mb-2"
+                                    style="width: 30px; height: 30px; border-radius: 50%; background-color: @match.HomeTeam?.Color; margin: 0 auto;">
+                                </div>
                                 <h5>@match.HomeTeam?.Name</h5>
                                 <small class="text-muted">@match.HomeTeam?.School</small>
                                 <h2 class="mt-3">@match.HomeTeamScore</h2>
@@ -64,7 +66,9 @@
                         </div>
                         <div class="col-md-5 text-center">
                             <div class="team-box p-3 border rounded">
-                                <div class="team-color mb-2" style="width: 30px; height: 30px; border-radius: 50%; background-color: @match.AwayTeam?.Color; margin: 0 auto;"></div>
+                                <div class="team-color mb-2"
+                                    style="width: 30px; height: 30px; border-radius: 50%; background-color: @match.AwayTeam?.Color; margin: 0 auto;">
+                                </div>
                                 <h5>@match.AwayTeam?.Name</h5>
                                 <small class="text-muted">@match.AwayTeam?.School</small>
                                 <h2 class="mt-3">@match.AwayTeamScore</h2>
@@ -98,6 +102,14 @@
 
             @if (Model.Sets.Any())
             {
+        int HomeTotal = 0;
+        int AwayTotal = 0;
+        @foreach (var set in Model.Sets)
+        {
+            HomeTotal += set.HomeTeamScore;
+            AwayTotal += set.AwayTeamScore;
+        }
+
                 <div class="card mb-4">
                     <div class="card-header bg-success text-white">
                         <h5 class="mb-0">Set History</h5>
@@ -107,8 +119,18 @@
                             <thead>
                                 <tr>
                                     <th>Set</th>
-                                    <th>@match.HomeTeam?.Name</th>
-                                    <th>@match.AwayTeam?.Name</th>
+                                    <th>@match.HomeTeam?.Name
+
+                                        <span
+                                            class="badge @(HomeTotal > AwayTotal ? "bg-success" : "bg-secondary text-dark") fs-6">
+                                            @HomeTotal
+                                        </span>
+                                    </th>
+                                    <th>@match.AwayTeam?.Name<span
+                                            class="badge @(AwayTotal > HomeTotal ? "bg-success" : "bg-secondary text-dark") fs-6">
+                                            @AwayTotal
+                                        </span>
+                                    </th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
@@ -118,8 +140,10 @@
                                 {
                                     <tr>
                                         <td><strong>Set @set.SetNumber</strong></td>
-                                        <td class="@(set.HomeTeamScore > set.AwayTeamScore ? "fw-bold text-success" : "")">@set.HomeTeamScore</td>
-                                        <td class="@(set.AwayTeamScore > set.HomeTeamScore ? "fw-bold text-success" : "")">@set.AwayTeamScore</td>
+                                        <td class="@(set.HomeTeamScore > set.AwayTeamScore ? "fw-bold text-success" : "")">
+                                            @set.HomeTeamScore</td>
+                                        <td class="@(set.AwayTeamScore > set.HomeTeamScore ? "fw-bold text-success" : "")">
+                                            @set.AwayTeamScore</td>
                                         <td>
                                             @if (set.IsLocked)
                                             {
@@ -137,7 +161,8 @@
                                             }
                                         </td>
                                         <td>
-                                            <a asp-action="EditSet" asp-route-id="@match.Id" asp-route-setNumber="@set.SetNumber" class="btn btn-sm btn-warning">
+                                            <a asp-action="EditSet" asp-route-id="@match.Id"
+                                                asp-route-setNumber="@set.SetNumber" class="btn btn-sm btn-warning">
                                                 <i class="bi bi-pencil"></i> Edit
                                             </a>
                                         </td>

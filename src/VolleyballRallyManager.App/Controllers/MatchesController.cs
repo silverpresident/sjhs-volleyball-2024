@@ -24,6 +24,17 @@ namespace VolleyballRallyManager.App.Controllers
         public async Task<IActionResult> Index(Guid? divisionId, string? groupName, Guid? roundId, Guid? teamId)
         {
             string divisionSubtitle = "";
+            if (roundId.HasValue){
+                
+                var tournamentRound = await _activeTournamentService.GetTournamentRoundAsync(roundId.Value);
+                //_context.TournamentRounds.FirstOrDefaultAsync(tr => tr.Id == RoundId);
+                    if (tournamentRound != null)
+                    {
+                        divisionId = tournamentRound.DivisionId;
+                        roundId = tournamentRound.RoundTemplateId;
+                    //TODO divisionSubtitle += $" - {tournamentRound.Name}";
+                    }
+            }
             if (divisionId.HasValue)
             {
                 var division = await _activeTournamentService.GetDivisionAsync(divisionId.Value);
@@ -36,14 +47,14 @@ namespace VolleyballRallyManager.App.Controllers
             {
                 divisionSubtitle += $" - Group {groupName}";
             }
-            if (roundId.HasValue)
+            /*if (roundId.HasValue)
             {
                 var round = await _roundService.GetRoundByIdAsync(roundId.Value);
                 if (round != null)
                 {
                     divisionSubtitle += $" - Round {round.Name}";
                 }
-            }
+            }*/
             if (teamId.HasValue)
             {
                 var team = await _activeTournamentService.GetTeamAsync(teamId.Value);
@@ -56,7 +67,8 @@ namespace VolleyballRallyManager.App.Controllers
             ViewBag.Subtitle = divisionSubtitle;
             var matches = await _activeTournamentService.GetMatchesAsync(divisionId, roundId, groupName, teamId);
             ViewBag.Divisions = await _activeTournamentService.GetTournamentDivisionsAsync();
-
+            var activeTournament = await _activeTournamentService.GetActiveTournamentAsync();
+            ViewBag.IsMultiDay = activeTournament?.IsMultiDay;
             return View(matches.ToList());
         }
 

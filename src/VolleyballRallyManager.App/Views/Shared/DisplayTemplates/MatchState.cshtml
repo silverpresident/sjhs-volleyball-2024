@@ -2,6 +2,7 @@
 @using VolleyballRallyManager.Lib.Common;
 
 @{
+    string stateIcon = "bi-hourglass";
     string matchState = "Scheduled";
     string stateBadgeClass = "bg-secondary";
 
@@ -9,11 +10,13 @@
     {
         matchState = "Disputed";
         stateBadgeClass = "bg-danger";
+        stateIcon ="bi-exclamation-triangle-fill";
     }
     else if (Model == MatchState.Finished)
     {
-        matchState = "Finished";
+        matchState = "Complete";
         stateBadgeClass = "bg-success";
+        stateIcon ="bi-check-circle";
     }
     else if (Model == MatchState.InProgress)
     {
@@ -26,4 +29,4 @@
         stateBadgeClass = "bg-info";
     } *@
 }
-<span class="badge @stateBadgeClass small match-state-badge">@matchState</span>
+<span class="badge @stateBadgeClass small match-state-badge"><i class="bi @stateIcon"></i> @matchState</span>

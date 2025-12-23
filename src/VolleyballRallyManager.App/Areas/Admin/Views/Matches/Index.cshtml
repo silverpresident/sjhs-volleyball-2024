@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Matches";
+    string scheduledTimeFormat = ViewBag?.IsMultiDay == true ? "MMM dd, HH:mm" : "HH:mm";
 }
 
 <div class="container">

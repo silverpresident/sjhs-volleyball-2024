@@ -18,6 +18,7 @@ namespace VolleyballRallyManager.Lib.Models
 
         [Display(Name = "Registration URL")]
         public string? RegistrationUrl { get; set; }
+        public virtual bool IsMultiDay { get => false; }// TODO make this into a real property= false;
 
         public ICollection<TournamentDivision> TournamentDivisions { get; set; } = new List<TournamentDivision>();
         public ICollection<TournamentTeamDivision> TournamentTeamDivisions { get; set; } = new List<TournamentTeamDivision>();

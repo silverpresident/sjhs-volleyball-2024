@@ -19,5 +19,7 @@ public class TournamentRoundDetailsViewModel: ITournamentRoundButtonState
     public bool ShowCreatePlayoffRound { get; set; }
     public int CompletedMatches { get => Matches.Count(m => m.IsFinished); set => throw new NotImplementedException(); }
     public int TotalMatches { get => Matches.Count(); set => throw new NotImplementedException(); }
+    public Tournament? Tournament { get; set; } = null!;
+    public Division? Division { get; set; } = null!;
 }
 

@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = $"Round Details - {Model.CurrentRound.Round?.Name}";
+    string scheduledTimeFormat = Model.Tournament.IsMultiDay ? "MMM dd, HH:mm" : "HH:mm";
+
 }
 
 
@@ -19,6 +21,11 @@
                class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i> Back to Rounds
             </a>
+             @if (Model.PreviousRound != null){
+            <a asp-action="Details" asp-route-id="@Model.PreviousRound.Id" class="btn btn-secondary">
+                <i class="bi bi-arrow-up"></i> Previous Round
+            </a>
+        }
         </div>
     </div>
 
@@ -343,7 +350,9 @@
 
                                     @if (Model.ShowTeamGroup == true)
                                     {
-                                        <td>@team.GroupName</td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => team.GroupName, "Group")
+                                        </td>
                                     }
                                     <td>@team.MatchesPlayed</td>
                                     <td>@team.Wins-@team.Draws-@team.Losses</td>
@@ -399,8 +408,13 @@
                         <tbody>
                             @foreach (var match in Model.Matches.OrderBy(m => m.MatchNumber))
                             {
+                               //TODO this should be total points
+                                ScorePairRecord score = new ScorePairRecord { HomeTeamScore = match.HomeTeamScore, AwayTeamScore = match.AwayTeamScore };
                                 <tr class="@(match.IsFinished ? "" : "table-warning")">
-                                    <td><strong>#@match.MatchNumber</strong></td>
+                                    <td>
+                                        <strong>#@match.MatchNumber</strong>
+                                        @Html.DisplayFor(modelItem => match.GroupName, "Group")
+                                        </td>
                                     <td>@match.HomeTeam?.Name</td>
                                     <td>
                                         @if (match.IsFinished)
@@ -414,16 +428,21 @@
                                     </td>
                                     <td>@match.AwayTeam?.Name</td>
                                     <td>@match.CourtLocation</td>
-                                    <td>@match.ScheduledTime.ToString("MMM dd, HH:mm")</td>
+                                    <td>@match.ScheduledTime.ToString(scheduledTimeFormat)</td>
                                     <td>
-                                        @if (match.IsFinished)
+                                        @* @if (match.IsFinished)
                                         {
                                             <span class="badge bg-success"><i class="bi bi-check-circle"></i> Complete</span>
                                         }
                                         else
                                         {
                                             <span class="badge bg-warning text-dark"><i class="bi bi-hourglass"></i> Pending</span>
+                                        } *@
+                                        @if(match.IsDisputed == true){
+                                            <span class="badge bg-danger" title="This match has been disputed"><i class="bi bi-exclamation-triangle"></i></span>
                                         }
+                                        @Html.DisplayFor(modelItem => match.MatchState, "MatchState")
+                                        @Html.DisplayFor(modelItem => score, "ScorePairRecord")
                                     </td>
                                     <td>
                                         <a asp-area="Admin" asp-controller="Matches" asp-action="Details" asp-route-id="@match.Id"

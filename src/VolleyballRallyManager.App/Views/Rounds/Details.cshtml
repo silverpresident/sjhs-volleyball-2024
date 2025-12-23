@@ -1,15 +1,65 @@
 @model VolleyballRallyManager.Lib.Models.TournamentRoundDetailsViewModel
 
 @{
-    ViewData["Title"] = $"Round Details - {Model.CurrentRound.Round?.Name}";
+    ViewData["Title"] = $"Round Details - {Model.CurrentRound.Round?.Name} [{Model.Tournament?.Name}]";
+
+    string scheduledTimeFormat = Model.Tournament.IsMultiDay ? "MMM dd, HH:mm" : "HH:mm";
 }
 
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1><i class="bi bi-trophy"></i> @Model.CurrentRound.Round?.Name</h1>
+        <h1><i class="bi bi-trophy"></i>
+        @Model.Division?.Name
+        -
+        @Model.CurrentRound.Round?.Name
+        </h1>
+        <div class="btn-group">
         <a asp-action="Index" class="btn btn-secondary">
             <i class="bi bi-arrow-left"></i> Back to Rounds
         </a>
+        @if (Model.PreviousRound != null){
+            <a asp-action="Details" asp-route-id="@Model.PreviousRound.Id" class="btn btn-secondary">
+                <i class="bi bi-arrow-up"></i> Previous Round
+            </a>
+        }
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-white" style="background-color: #2e7d32;">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Round Information</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Tournament:</dt>
+                        <dd class="col-sm-7">@Model.Tournament?.Name</dd>
+
+                        <dt class="col-sm-5">Division:</dt>
+                        <dd class="col-sm-7">@Model.CurrentRound.Division?.Name</dd>
+
+                        <dt class="col-sm-5">Round Number:</dt>
+                        <dd class="col-sm-7">@Model.CurrentRound.RoundNumber
+                            @if (Model.CurrentRound.IsPlayoff)
+                            {
+                                <span class="badge bg-info">Playoff</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-5">Match Strategy:</dt>
+                        <dd class="col-sm-7"><span class="badge bg-warning text-dark">@Model.CurrentRound.MatchGenerationStrategy</span></dd>
+
+                        <dt class="col-sm-5">Teams Advancing:</dt>
+                        <dd class="col-sm-7">
+                            @Model.CurrentRound.AdvancingTeamsCount
+                            <span class="badge bg-info">@Model.CurrentRound.AdvancingTeamSelectionStrategy</span>
+                        </dd>
+
+                        <dt class="col-sm-5">Status:</dt>
+                        <dd class="col-sm-7">
+
+        }
+        </div>
     </div>
 
     <div class="row mb-4">
@@ -21,7 +71,7 @@
                 <div class="card-body">
                     <dl class="row mb-0">
                         <dt class="col-sm-5">Tournament:</dt>
-                        <dd class="col-sm-7">@Model.CurrentRound.Tournament?.Name</dd>
+                        <dd class="col-sm-7">@Model.Tournament?.Name</dd>
 
                         <dt class="col-sm-5">Division:</dt>
                         <dd class="col-sm-7">@Model.CurrentRound.Division?.Name</dd>
@@ -165,7 +215,9 @@
 
                                     @if (Model.ShowTeamGroup == true)
                                     {
-                                        <td>@team.GroupName</td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => team.GroupName, "Group")
+                                        </td>
                                     }
                                     <td>@team.MatchesPlayed</td>
                                     <td>@team.Wins-@team.Draws-@team.Losses</td>
@@ -216,8 +268,13 @@
                         <tbody>
                             @foreach (var match in Model.Matches.OrderBy(m => m.MatchNumber))
                             {
+                                //TODO this should be total points
+                                ScorePairRecord score = new ScorePairRecord { HomeTeamScore = match.HomeTeamScore, AwayTeamScore = match.AwayTeamScore };
                                 <tr class="@(match.IsFinished ? "" : "table-warning")">
-                                    <td><strong>#@match.MatchNumber</strong></td>
+                                    <td>
+                                        <strong>#@match.MatchNumber</strong>
+                                        @Html.DisplayFor(modelItem => match.GroupName, "Group")
+                                    </td>
                                     <td>
                                         @if (match.HomeTeam != null)
                                         {
@@ -245,16 +302,23 @@
                                         }
                                     </td>
                                     <td>@match.CourtLocation</td>
-                                    <td>@match.ScheduledTime.ToString("MMM dd, HH:mm")</td>
+                                    <td>@match.ScheduledTime.ToString(scheduledTimeFormat)</td>
                                     <td>
-                                        @if (match.IsFinished)
+                                        @* @if (match.IsFinished)
                                         {
                                             <span class="badge bg-success"><i class="bi bi-check-circle"></i> Complete</span>
                                         }
                                         else
                                         {
                                             <span class="badge bg-warning text-dark"><i class="bi bi-hourglass"></i> Pending</span>
+                                        } *@
+                                        @if(match.IsDisputed == true){
+                                            <span class="badge bg-danger" title="This match has been disputed"><i class="bi bi-exclamation-triangle"></i></span>
                                         }
+                                        @Html.DisplayFor(modelItem => match.MatchState, "MatchState")
+                                        @Html.DisplayFor(modelItem => score, "ScorePairRecord")
+                                        
+                                        
                                     </td>
                                     <td>
                                         <a asp-controller="Matches" asp-action="Details" asp-route-id="@match.Id"

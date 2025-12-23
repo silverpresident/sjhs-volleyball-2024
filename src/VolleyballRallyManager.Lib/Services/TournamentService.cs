@@ -697,9 +697,11 @@ namespace VolleyballRallyManager.Lib.Services
 
             var hasMatches = matches.Any();
             var allMatchesComplete = matches.Any() && (matches.Count(m => m.IsFinished) == matches.Count());
-
+            var tournament = await GetTournamentByIdAsync(tournamentRound.TournamentId);
             var viewModel = new TournamentRoundDetailsViewModel
             {
+                Tournament = tournament,
+                Division = await _context.Divisions.FindAsync(tournamentRound.DivisionId),
                 CurrentRound = tournamentRound,
                 Teams = teamViewModels,
                 Matches = matches,

@@ -55,9 +55,15 @@
                         Match #@Model.MatchNumber
                     </h2>
                     <h3 class="text-custom mb-0">
-                        <strong>@Model.HomeTeam?.Name</strong> 
+                        <strong>@Model.HomeTeam?.Name</strong>
+                        @if(Model.HomeTeam != null){
+                            <a asp-controller="Teams" asp-action="Details" asp-route-id="@Model.HomeTeam.Id"><i class="bi bi-link-45deg text-custom"></i></a>
+                        }
                         <span class="mx-3 text-muted">vs</span> 
                         <strong>@Model.AwayTeam?.Name</strong>
+                        @if(Model.AwayTeam != null){
+                            <a asp-controller="Teams" asp-action="Details" asp-route-id="@Model.AwayTeam.Id"><i class="bi bi-link-45deg text-custom"></i></a>
+                        }
                     </h3>
                 </div>
                 <div class="col-md-4 text-md-end">
@@ -79,6 +85,14 @@
                 </div>
                 <div class="card-body">
                     <dl class="row mb-0">
+                        
+                        <dt class="col-sm-5">Round:</dt>
+                        <dd class="col-sm-7">@Model.Round?.Name 
+                        @if(Model.TournamentRoundId != null){
+                            <a asp-controller="Rounds" asp-action="Details" asp-route-id="@Model.TournamentRoundId"><i class="bi bi-link-45deg text-custom"></i></a>
+                        }
+                        </dd>
+                        
                         <dt class="col-sm-5">Division:</dt>
                         <dd class="col-sm-7">@Model.Division?.Name</dd>
                         
@@ -87,21 +101,13 @@
                             <dt class="col-sm-5">Group:</dt>
                             <dd class="col-sm-7">@Model.GroupName</dd>
                         }
-                        
-                        <dt class="col-sm-5">Round:</dt>
-                        <dd class="col-sm-7">@Model.Round?.Name</dd>
-                        
+
                         <dt class="col-sm-5">Court:</dt>
                         <dd class="col-sm-7">@(Model.CourtLocation ?? "Not assigned")</dd>
                         
                         <dt class="col-sm-5">Scheduled:</dt>
                         <dd class="col-sm-7">@Model.ScheduledTime.ToString("MMM dd, yyyy - h:mm tt")</dd>
                         
-                        @if (Model.ActualStartTime.HasValue)
-                        {
-                            <dt class="col-sm-5">Started:</dt>
-                            <dd class="col-sm-7">@Model.ActualStartTime.Value.ToString("h:mm tt")</dd>
-                        }
                     </dl>
                 </div>
             </div>
@@ -120,6 +126,11 @@
                         <dt class="col-sm-5">Scorer:</dt>
                         <dd class="col-sm-7">@(Model.ScorerName ?? "Not assigned")</dd>
                         
+                        @if (Model.ActualStartTime.HasValue)
+                        {
+                            <dt class="col-sm-5">Started:</dt>
+                            <dd class="col-sm-7">@Model.ActualStartTime.Value.ToString("h:mm tt")</dd>
+                        }
                         <dt class="col-sm-5">Current Set:</dt>
                         <dd class="col-sm-7">
                             @if (Model.CurrentSetNumber > 0 && !Model.IsFinished)
@@ -128,7 +139,7 @@
                             }
                             else if (Model.IsFinished)
                             {
-                                <span class="badge bg-success">Complete</span>
+                                <span class="badge bg-success">All Complete</span>
                             }
                             else
                             {
@@ -144,6 +155,14 @@
     <!-- Match Sets Section -->
     @if (matchSets.Any())
     {
+        int HomeTotal = 0;
+        int AwayTotal = 0;
+        @foreach (var set in matchSets)
+        {
+            HomeTotal += set.HomeTeamScore;
+            AwayTotal += set.AwayTeamScore;
+        }
+
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-custom text-white">
                 <i class="bi bi-list-ol me-2"></i>Set Details
@@ -154,8 +173,19 @@
                         <thead class="table-light">
                             <tr>
                                 <th class="text-center">Set</th>
-                                <th>@Model.HomeTeam?.Name</th>
-                                <th>@Model.AwayTeam?.Name</th>
+                                <th>@Model.HomeTeam?.Name
+
+                                        <span class="badge @(HomeTotal > AwayTotal ? "bg-success" : "bg-secondary text-dark") fs-6">
+                                            @HomeTotal
+                                        </span>
+
+                                </th>
+                                <th>
+                                    @Model.AwayTeam?.Name
+                                        <span class="badge @(AwayTotal > HomeTotal ? "bg-success" : "bg-secondary text-dark") fs-6">
+                                            @AwayTotal
+                                        </span>
+                                        </th>
                                 <th class="text-center">Status</th>
                             </tr>
                         </thead>
@@ -165,12 +195,12 @@
                                 <tr class="@(set.SetNumber == Model.CurrentSetNumber && !set.IsFinished ? "table-primary" : "")">
                                     <td class="text-center fw-bold">Set @set.SetNumber</td>
                                     <td>
-                                        <span class="badge @(set.HomeTeamScore > set.AwayTeamScore && set.IsFinished ? "bg-success" : "bg-light text-dark") fs-6">
+                                        <span class="badge @(set.HomeTeamScore > set.AwayTeamScore && set.IsFinished ? "bg-success" : "bg-secondary text-dark") fs-6">
                                             @set.HomeTeamScore
                                         </span>
                                     </td>
                                     <td>
-                                        <span class="badge @(set.AwayTeamScore > set.HomeTeamScore && set.IsFinished ? "bg-success" : "bg-light text-dark") fs-6">
+                                        <span class="badge @(set.AwayTeamScore > set.HomeTeamScore && set.IsFinished ? "bg-success" : "bg-secondary text-dark") fs-6">
                                             @set.AwayTeamScore
                                         </span>
                                     </td>

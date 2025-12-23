@@ -52,6 +52,9 @@ namespace VolleyballRallyManager.App.Areas.Admin.Controllers
                 var matchesEnumerable = await _activeTournamentService.GetMatchesAsync();
                 matches = matchesEnumerable.ToList();
             }
+            
+            ViewBag.IsMultiDay = activeTournament?.IsMultiDay;
+            
             return View(matches);
         }
 

@@ -28,9 +28,10 @@
     }
     else
     {
+        <div class="row">
         @foreach (var divisionGroup in Model.DivisionGroups)
         {
-            <div class="mb-5">
+            <div class="col mb-5">
                 <h2 class="mb-3">
                     <span class="badge" style="background-color: #2e7d32; color: #ffd700;">
                         @divisionGroup.DivisionName
@@ -42,7 +43,7 @@
                     {
                         <div class="col-md-6 col-lg-4 mb-4">
                             <div class="card h-100 shadow-sm">
-                                <div class="card-header @(round.IsFinished ? "bg-success" : round.IsLocked ? "bg-warning" : "bg-primary") text-white">
+                                <div class="card-header @(round.IsFinished ? "bg-success" : round.IsLocked ? "bg-warning" : "bg-primary") text-white d-flex justify-content-between">
                                     <h5 class="mb-0">
                                         <i class="bi bi-circle-fill"></i> @round.RoundName
                                         @if (round.IsPlayoff)
@@ -50,12 +51,10 @@
                                             <span class="badge bg-info">Playoff</span>
                                         }
                                     </h5>
+                                    <span class="badge bg-dark">@round.RoundNumber</span>
                                 </div>
                                 <div class="card-body">
                                     <dl class="row mb-0">
-                                        <dt class="col-sm-6">Round Number:</dt>
-                                        <dd class="col-sm-6">@round.RoundNumber</dd>
-
                                         <dt class="col-sm-6">Strategy:</dt>
                                         <dd class="col-sm-6">
                                             <span class="badge bg-secondary">@round.MatchGenerationStrategy</span>
@@ -128,5 +127,6 @@
                 </div>
             </div>
         }
+        </div>
     }
 </div>
