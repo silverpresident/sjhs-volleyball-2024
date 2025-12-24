@@ -17,7 +17,7 @@
         <div>
             @if (!Model.CurrentRound.IsFinished)
             {
-                <a asp-action="Edit" asp-route-id="@Model.CurrentRound.Id" class="btn btn-primary">
+                <a asp-action="Edit" asp-route-id="@Model.CurrentRound.Id" class="btn btn-custom">
                     <i class="bi bi-pencil"></i> Edit Round
                 </a>
             }
@@ -168,7 +168,7 @@
                 <!-- Edit Button -->
                 @if (!Model.CurrentRound.IsFinished)
                 {
-                    <a asp-action="Edit" asp-route-id="@Model.CurrentRound.Id" class="btn btn-primary">
+                    <a asp-action="Edit" asp-route-id="@Model.CurrentRound.Id" class="btn btn-custom">
                         <i class="bi bi-pencil"></i> Edit Round
                     </a>
                 }
@@ -182,7 +182,7 @@
                 <!-- Select Teams Button -->
                 @if (Model.CanSelectTeams)
                 {
-                    <a asp-action="SelectTeams" asp-route-id="@Model.CurrentRound.Id" class="btn btn-primary">
+                    <a asp-action="SelectTeams" asp-route-id="@Model.CurrentRound.Id" class="btn btn-custom">
                         <i class="bi bi-people"></i> Select Teams
                     </a>
                 }
@@ -208,7 +208,7 @@
                     </button>
                 }
                 <!-- View Matches Button -->
-                <a asp-controller="Matches" asp-action="Index" asp-route-RoundId="@Model.CurrentRound.Id" class="btn btn-primary">
+                <a asp-controller="Matches" asp-action="Index" asp-route-RoundId="@Model.CurrentRound.Id" class="btn btn-custom">
                     <i class="bi bi-calendar-plus"></i> View Matches
                 </a>
 
@@ -373,7 +373,7 @@
                 <h5 class="mb-0"><i class="bi bi-calendar3"></i> Matches (@Model.Matches.Count)</h5>
 
                 <!-- View Matches Button -->
-                <a asp-controller="Matches" asp-action="Index" asp-route-RoundId="@Model.CurrentRound.Id" class="btn btn-primary">
+                <a asp-controller="Matches" asp-action="Index" asp-route-RoundId="@Model.CurrentRound.Id" class="btn btn-custom">
                     <i class="bi bi-calendar-plus"></i> View Matches
                 </a>
             </div>

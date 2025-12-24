@@ -108,7 +108,7 @@ body {
 
 /* Priority colors */
 .bg-info { background-color: #17a2b8 !important; }
-.bg-warning { background-color: #ffc107 !important; }
+.bg-warning { background-color: #ffd700  !important; }
 .bg-danger { background-color: #dc3545 !important; }
 .bg-primary { background-color: #007bff !important; }
 .bg-secondary { background-color: #6c757d !important; }
@@ -243,10 +243,6 @@ body {
 }
 .btn-custom {
     background-color: var(--st-jago-green);
-    color: #ffd700;
-}
-.btn-custom {
-    background-color: #2d5016;
     border-color: #2d5016;
     color: #ffd700;
 }
@@ -265,5 +261,11 @@ body {
 .btn-outline-custom:hover {
     background-color: #2d5016;
     border-color: #2d5016;
+    color: #ffd700;
+}
+
+/* Green & Gold theme badge colors */
+.badge.bg-success {
+    background-color: #2d5016 !important;
     color: #ffd700;
 }

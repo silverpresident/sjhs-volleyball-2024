@@ -154,7 +154,7 @@
                                     {
                                         <form asp-action="SelectTeams" asp-route-id="@round.TournamentRoundId" method="post" class="d-inline">
                                             @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-primary w-100"
+                                            <button type="submit" class="btn btn-custom w-100"
                                                     onclick="return confirm('Select teams for this round?');">
                                                 <i class="bi bi-people"></i> Select Teams
                                             </button>

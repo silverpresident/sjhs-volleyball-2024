@@ -18,6 +18,19 @@ User display name to be fixed and to be editable
 periodically reank teams once round is inprogress
 fix how groups are assigned in each round as well as in ifsrt round.
 A way to override the group assignments in each round
+review the css file, exp colours.
+TournamentRounds/Details/ should update match results display in relation to SignalR event
+Review the third place playoff creation page.
+TODO playoff round nubmer should be same as the round it is sourced from
+
+
+ON Admin/Matches/Details
+- add option to add set
+- add link to the round details page
+- add link to team details
+- check what happens when finalize match is clicked, it does not update from SETs one data
+- manual editing of set score should generate a MatchUPdate
+
 
 PUBLIC
 - match list to show court, time, points scored

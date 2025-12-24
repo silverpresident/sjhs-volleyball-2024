@@ -55,17 +55,7 @@
 .badge i {
     margin-right: 0.25rem;
 }
-
-/* Green & Gold theme badge colors */
-.badge.bg-success {
-    background-color: #2d5016 !important;
-    color: #ffd700;
-}
-
-.badge.bg-warning {
-    background-color: #ffd700 !important;
-    color: #2d5016;
-}
+ 
 
 /* Update content styling */
 .update-content {
@@ -83,25 +73,7 @@
     font-size: 1rem;
 }
 
-/* Filter buttons */
-.btn-outline-primary.active {
-    background-color: #2d5016;
-    border-color: #2d5016;
-    color: #ffd700;
-}
-
-.btn-outline-primary:hover {
-    background-color: #2d5016;
-    border-color: #2d5016;
-    color: #ffd700;
-}
-
-.btn-outline-success:hover {
-    background-color: #2d5016;
-    border-color: #2d5016;
-    color: #ffd700;
-}
-
+/* Filter buttons */ 
 /* Search input styling */
 #searchInput {
     border-radius: 0.25rem;
@@ -121,23 +93,6 @@
     border-left: none;
 }
 
-/* Navigation buttons */
-.btn-secondary {
-    background-color: #6c757d;
-    border-color: #6c757d;
-}
-
-.btn-primary {
-    background-color: #2d5016;
-    border-color: #2d5016;
-    color: #ffd700;
-}
-
-.btn-primary:hover {
-    background-color: #1f3910;
-    border-color: #1f3910;
-    color: #ffd700;
-}
 
 /* Empty state styling */
 .text-center i.display-1 {

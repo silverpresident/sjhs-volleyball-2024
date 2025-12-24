@@ -20,8 +20,18 @@
                 <div class="card-body">
                     <div class="row g-2">
                         <div class="col-md-6">
-                            <a class="btn btn-primary w-100" asp-area="Admin" asp-controller="ActiveTournament" asp-action="Index">
+                            <a class="btn btn-custom w-100" asp-area="Admin" asp-controller="ActiveTournament" asp-action="Index">
                                 <i class="bi bi-award-fill"></i> Tournament Dashboard
+                            </a> 
+                        </div>
+                        <div class="col-md-6">
+                            <a class="btn btn-primary w-100" asp-area="Admin" asp-controller="TournamentRounds" asp-action="Index">
+                                <i class="bi bi-bookshelf"></i> Tournament Rounds
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a class="btn btn-primary w-100" asp-area="Admin" asp-controller="Matches" asp-action="Index">
+                                <i class="bi bi-diagram-3"></i> Tournament Matches
                             </a>
                         </div>
                         <div class="col-md-6">
@@ -30,12 +40,12 @@
                             </a>
                         </div>
                         <div class="col-md-6">
-                            <a asp-area="Admin" asp-controller="Bulletin" asp-action="Create" class="btn btn-primary w-100">
+                            <a class="btn btn-primary w-100" asp-area="Admin" asp-controller="Bulletin" asp-action="Create">
                                 <i class="bi bi-card-list"></i> New Bulletin
                             </a>
                         </div>
                         <div class="col-md-6">
-                            <a asp-area="Admin" asp-controller="Announcements" asp-action="Create" class="btn btn-primary w-100">
+                            <a asp-action="Create" class="btn btn-primary w-100" asp-area="Admin" asp-controller="Announcements">
                                 <i class="bi bi-megaphone"></i> New Announcement
                             </a>
                         </div>
@@ -46,12 +56,12 @@
                             </a>
                         </div>-->
                         <div class="col-md-6">
-                            <a asp-area="Admin" asp-controller="Teams" asp-action="Create" class="btn btn-primary w-100">
+                            <a class="btn btn-primary w-100" asp-area="Admin" asp-controller="Teams" asp-action="Create">
                                 <i class="bi bi-plus-circle"></i> Add Team
                             </a>
                         </div>
                         <div class="col-md-6">
-                            <a asp-area="Admin" asp-controller="Tournament" asp-action="Details" class="btn btn-primary w-100">
+                            <a class="btn btn-primary w-100" asp-area="Admin" asp-controller="Tournament" asp-action="Details">
                                 <i class="bi bi-gear"></i> Tournament Settings
                             </a>
                         </div>
