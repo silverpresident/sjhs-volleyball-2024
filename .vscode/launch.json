@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "buildAndWatch",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/VolleyballRallyManager.App/bin/Debug/net8.0/VolleyballRallyManager.App.dll",
+            "program": "${workspaceFolder}/src/VolleyballRallyManager.App/bin/Debug/net10.0/VolleyballRallyManager.App.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/VolleyballRallyManager.App",
             "stopAtEntry": false,  
