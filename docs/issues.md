@@ -23,6 +23,9 @@ TournamentRounds/Details/ should update match results display in relation to Sig
 Review the third place playoff creation page.
 TODO playoff round nubmer should be same as the round it is sourced from
 
+on ActiveTournament page show a staus indicator for each round to say if it is finalized, 
+fix the create match button
+
 
 ON Admin/Matches/Details
 - add option to add set
@@ -30,6 +33,10 @@ ON Admin/Matches/Details
 - add link to team details
 - check what happens when finalize match is clicked, it does not update from SETs one data
 - manual editing of set score should generate a MatchUPdate
+
+ON ToutnamentRounds/Index
+- remove all button except details
+- show all division is one list
 
 
 PUBLIC

@@ -49,61 +49,61 @@
     </div>
 
     <!-- Teams and Detailed Information -->
-        <div class="col-md-5">
-            <!-- Tournament Management Card -->
-            <div class="card mb-3">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0"><i class="bi bi-gear-fill"></i> Tournament Management</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-2">
-                        <div class="col-md-6">
-                            <a class="btn btn-outline-primary w-100" asp-action="SelectDivisions">
-                                <i class="bi bi-collection"></i> Set Divisions
-                            </a>
-                        </div>
-                        <div class="col-md-6">
-                            <a class="btn btn-outline-success w-100" asp-controller="TournamentTeams" asp-action="BulkAssign">
-                                <i class="bi bi-list-check"></i> Select Teams
-                            </a>
-                        </div>
-                        <div class="col-md-6">
-                            <a class="btn btn-outline-warning w-100" asp-controller="TournamentTeams" asp-action="AutoSeed">
-                                <i class="bi bi-shuffle"></i> Seed Teams
-                            </a>
-                        </div>
-                        <div class="col-md-6">
-                            <a class="btn btn-outline-dark w-100" asp-controller="TournamentRounds" asp-action="Index">
-                                <i class="bi bi-trophy"></i> Tournament Rounds
-                            </a>
-                        </div>
-                        <div class="col-md-6">
-                            <a class="btn btn-outline-secondary w-100" asp-controller="Matches" asp-action="Index">
-                                <i class="bi bi-calendar-event"></i> View Matches
-                            </a>
-                        </div>
-                        <div class="col-md-6">
-                            <a class="btn btn-outline-success w-100" asp-controller="TournamentTeams" asp-action="Index">
-                                <i class="bi bi-play-circle"></i> View Teams
-                            </a>
-                        </div>
+    <div class="col-md-5">
+        <!-- Tournament Management Card -->
+        <div class="card mb-3">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-gear-fill"></i> Tournament Management</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <a class="btn btn-outline-primary w-100" asp-action="SelectDivisions">
+                            <i class="bi bi-collection"></i> Set Divisions
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a class="btn btn-outline-success w-100" asp-controller="TournamentTeams" asp-action="BulkAssign">
+                            <i class="bi bi-list-check"></i> Select Teams
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a class="btn btn-outline-warning w-100" asp-controller="TournamentTeams" asp-action="AutoSeed">
+                            <i class="bi bi-shuffle"></i> Seed Teams
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a class="btn btn-outline-dark w-100" asp-controller="TournamentRounds" asp-action="Index">
+                            <i class="bi bi-trophy"></i> Tournament Rounds
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a class="btn btn-outline-secondary w-100" asp-controller="Matches" asp-action="Index">
+                            <i class="bi bi-calendar-event"></i> View Matches
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a class="btn btn-outline-success w-100" asp-controller="TournamentTeams" asp-action="Index">
+                            <i class="bi bi-play-circle"></i> View Teams
+                        </a>
                     </div>
                 </div>
             </div>
-            
-            <!-- Teams Card -->
-            <div class="card">
+        </div>
+
+        <!-- Teams Card -->
+        <div class="card">
             <div class="card-header bg-primary d-flex justify-content-between">
-                    <h2>
+                <h2>
                     Teams
                 </h2>
-                    <span class="btn-group" role="group" aria-label="Divisions">
-                        <a class="btn btn-custom" asp-controller="TournamentTeams">Tournament Teams</a>
-                    </span>
-                </div>
-                <div class="card-body">
-                    <partial name="_TeamsPartial" model="Model.TeamsByDivision" />
-                </div>
+                <span class="btn-group" role="group" aria-label="Divisions">
+                    <a class="btn btn-custom" asp-controller="TournamentTeams">Tournament Teams</a>
+                </span>
+            </div>
+            <div class="card-body">
+                <partial name="_TeamsPartial" model="Model.TeamsByDivision" />
             </div>
         </div>
     </div>
+</div>

@@ -76,7 +76,7 @@ public class Match : BaseEntity
     public virtual MatchState MatchState
     {
         get
-        {
+        {  
             if (IsDisputed)
             {
                 return MatchState.Disputed;
@@ -85,7 +85,7 @@ public class Match : BaseEntity
             {
                 return MatchState.Finished;
             }
-            if (ActualStartTime.HasValue)
+            if (ActualStartTime.HasValue || (CurrentSetNumber > 0))
             {
                 return MatchState.InProgress;
             }

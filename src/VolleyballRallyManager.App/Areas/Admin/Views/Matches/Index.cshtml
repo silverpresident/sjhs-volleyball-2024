@@ -11,12 +11,14 @@
     <div class="row mb-3">
         <div class="col">
             <a asp-action="Create" class="btn btn-secondary"><i class="bi bi-plus-circle"></i> Create New Match</a>
-            <a asp-controller="ActiveTournament" asp-action="Index" class="btn btn-custom"><i class="bi bi-award"></i>
-                Tournament Dashboard</a>
+            <a asp-controller="ActiveTournament" asp-action="Index" class="btn btn-custom">
+                <i class="bi bi-award"></i>
+                Tournament Dashboard
+            </a>
             @if (ViewBag.TournamentRoundId != null)
             {
                 <a asp-controller="TournamentRounds" asp-action="Index" asp-route-RoundId="@ViewBag.TournamentRoundId"
-                    class="btn btn-custom"><i class="bi bi-diagram-2"></i> Round</a>
+                   class="btn btn-custom"><i class="bi bi-diagram-2"></i> Round</a>
             }
         </div>
         <div class="col-auto">
@@ -56,15 +58,15 @@
                         <td>
                             <div class="btn-group" role="group">
                                 <a asp-action="Assign" asp-route-id="@item.Id" class="btn btn-sm btn-outline-success"
-                                    title="Assign"><i class="bi bi-calendar-check"></i></a>
+                                   title="Assign"><i class="bi bi-calendar-check"></i></a>
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info"
-                                    title="Details"><i class="bi bi-info-circle"></i></a>
+                                   title="Details"><i class="bi bi-info-circle"></i></a>
                                 <a asp-action="Finalize" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary"
-                                    title="Finalize"><i class="bi bi-check-circle"></i></a>
+                                   title="Finalize"><i class="bi bi-check-circle"></i></a>
                                 <a asp-action="Scorer" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning"
-                                    title="Scorer"><i class="bi bi-calculator"></i></a>
+                                   title="Scorer"><i class="bi bi-calculator"></i></a>
                                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary"
-                                    title="Edit"><i class="bi bi-pencil"></i></a>
+                                   title="Edit"><i class="bi bi-pencil"></i></a>
                             </div>
                         </td>
                         <td>
@@ -72,10 +74,10 @@
                         </td>
                         <td>
                             <small>
-                                @Html.DisplayFor(modelItem => item.Division.Name)
+                                @Html.DisplayFor(modelItem => item.Division, "Division")
                             </small>
                             @Html.DisplayFor(modelItem => item.Round!.Name)
-
+                            @Html.DisplayFor(modelItem => item.GroupName, "Group")
                         </td>
                         <td>
                             @item.ScheduledTime.ToString("dd/MM HH:mm")
@@ -110,10 +112,10 @@
                             }
                         </td>
                         <td>
-                                <a class="btn btn-outline-primary btn-sm" asp-controller="TournamentTeams" asp-action="Details"
-                                    asp-route-Id="@item.HomeTeamId" title="Go to team details">
-                                    <i class="bi bi-info"></i>
-                                </a>
+                            <a class="btn btn-outline-primary btn-sm" asp-controller="TournamentTeams" asp-action="Details"
+                               asp-route-Id="@item.HomeTeamId" title="Go to team details">
+                                <i class="bi bi-info"></i>
+                            </a>
                             @Html.DisplayFor(modelItem => item.HomeTeam, "Team")
                         </td>
                         <td>
@@ -131,35 +133,18 @@
                             }
                         </td>
                         <td>
-                                <a class="btn btn-outline-primary btn-sm" asp-controller="TournamentTeams" asp-action="Details"
-                                    asp-route-Id="@item.AwayTeamId" title="Go to team details">
-                                    <i class="bi bi-info"></i>
-                                </a>
+                            <a class="btn btn-outline-primary btn-sm" asp-controller="TournamentTeams" asp-action="Details"
+                               asp-route-Id="@item.AwayTeamId" title="Go to team details">
+                                <i class="bi bi-info"></i>
+                            </a>
                             @Html.DisplayFor(modelItem => item.AwayTeam, "Team")
                         </td>
                         <td>
-                            @if (item.IsDisputed)
-                            {
-                                <span class="badge bg-danger">Disputed</span>
-                            }
-                            else if (item.IsFinished)
-                            {
-                                <span class="badge bg-success">Finished</span>
-                            }
-                            else if (item.ActualStartTime.HasValue || (item.CurrentSetNumber > 0))
-                            {
-                                <span class="badge bg-primary">In Progress</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary">Scheduled</span>
-                            }
+                            @Html.DisplayFor(modelItem => item.MatchState, "MatchState")
                             @if (item.IsLocked)
                             {
                                 <span class="badge bg-warning">Locked</span>
                             }
-                            ??
-                                @Html.DisplayFor(modelItem => item.MatchState, "MatchState")
                         </td>
                     </tr>
                 }
