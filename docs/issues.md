@@ -16,6 +16,8 @@ Unable to re-draw teams.
 This update "Match ended. Final score: 0-1 sets" should also include the points
 User display name to be fixed and to be editable
 periodically reank teams once round is inprogress
+fix how groups are assigned in each round as well as in ifsrt round.
+A way to override the group assignments in each round
 
 PUBLIC
 - match list to show court, time, points scored

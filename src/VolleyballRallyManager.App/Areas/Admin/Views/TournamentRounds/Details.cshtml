@@ -9,9 +9,10 @@
 
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1><i class="bi bi-trophy"></i> @Model.CurrentRound.Round?.Name
-        -
-        @Html.DisplayFor(modelItem => Model.CurrentRound.Division, "Division") 
+        <h1>
+            <i class="bi bi-trophy"></i> @Model.CurrentRound.Round?.Name
+            -
+            @Html.DisplayFor(modelItem => Model.CurrentRound.Division, "Division")
         </h1>
         <div>
             @if (!Model.CurrentRound.IsFinished)
@@ -24,11 +25,18 @@
                class="btn btn-secondary">
                 <i class="bi bi-arrow-left"></i> Back to Rounds
             </a>
-             @if (Model.PreviousRound != null){
-            <a asp-action="Details" asp-route-id="@Model.PreviousRound.Id" class="btn btn-secondary">
-                <i class="bi bi-arrow-up"></i> Previous Round
-            </a>
-        }
+            @if (Model.PreviousRound != null)
+            {
+                <a asp-action="Details" asp-route-id="@Model.PreviousRound.Id" class="btn btn-secondary">
+                    <i class="bi bi-arrow-up"></i> Previous Round
+                </a>
+            }
+            @if (Model.CurrentRound.NextTournamentRoundId != null)
+            {
+                <a asp-action="Details" asp-route-id="@Model.CurrentRound.NextTournamentRoundId" class="btn btn-secondary">
+                    <i class="bi bi-arrow-down"></i> Next Round
+                </a>
+            }
         </div>
     </div>
 
@@ -51,15 +59,15 @@
     <div class="row mb-4">
         <div class="col-md-6">
             <div class="card">
-                <div class="card-header d-flex justify-content-between  bg-primary text-white">
-                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Round Information
-                    
-                            @if (Model.CurrentRound.IsPlayoff)
-                            {
-                                <span class="badge bg-info">playoff</span>
-                            }
-                            </h5>
-                            <span class="badge">@Model.CurrentRound.RoundNumber</span>
+                <div class="card-header d-flex justify-content-between text-bg-primary">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle"></i> Round Information
+                        @if (Model.CurrentRound.IsPlayoff)
+                        {
+                            <span class="badge bg-info">playoff</span>
+                        }
+                    </h5>
+                    <span class="badge text-bg-warning">@Model.CurrentRound.RoundNumber</span>
                 </div>
                 <div class="card-body">
                     <dl class="row mb-0">
@@ -174,12 +182,9 @@
                 <!-- Select Teams Button -->
                 @if (Model.CanSelectTeams)
                 {
-                    <form asp-action="SelectTeams" asp-route-id="@Model.CurrentRound.Id" method="post" class="d-inline">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-primary" onclick="return confirm('Select teams for this round?');">
-                            <i class="bi bi-people"></i> Select Teams
-                        </button>
-                    </form>
+                    <a asp-action="SelectTeams" asp-route-id="@Model.CurrentRound.Id" class="btn btn-primary">
+                        <i class="bi bi-people"></i> Select Teams
+                    </a>
                 }
                 else
                 {
@@ -207,23 +212,6 @@
                     <i class="bi bi-calendar-plus"></i> View Matches
                 </a>
 
-                <!-- Rank Teams Button -->
-                @if (!Model.CurrentRound.IsLocked && Model.Matches.Any())
-                {
-                    <form asp-action="RankTeams" asp-route-id="@Model.CurrentRound.Id" method="post" class="d-inline">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-info"
-                                onclick="return confirm('Update team rankings based on current match results?');">
-                            <i class="bi bi-sort-numeric-down"></i> Rank Teams
-                        </button>
-                    </form>
-                }
-                else
-                {
-                    <button type="button" class="btn btn-secondary" disabled title="@(Model.CurrentRound.IsFinished ? "Round is finalized" : "No matches available")">
-                        <i class="bi bi-sort-numeric-down"></i> Rank Teams
-                    </button>
-                }
 
                 <!-- Finalize Round Button -->
                 @if (Model.CanFinalize)
@@ -244,7 +232,7 @@
                 }
                 @if (Model.CurrentRound.IsLocked)
                 {
-                    <form asp-action="UnfinalizeRound" asp-route-id="@Model.CurrentRound.Id" method="post" class="d-inline">
+                    <form asp-action="UnfinalizeRound" asp-route-id="@Model.CurrentRound.Id" method="post">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-warning"
                                 onclick="return confirm('Unlock this round? This will unlock the round and re-calculate rankings.');">
@@ -265,7 +253,7 @@
                         <i class="bi bi-plus-circle"></i> Create Next Round
                     </button>
                 }
-
+@* 
                 <!-- Generate Next Round Button (Full Configuration) -->
                 @if (Model.CanGenerateNextRound)
                 {
@@ -278,7 +266,7 @@
                     <button type="button" class="btn btn-secondary" disabled title="Round must be finalized first">
                         <i class="bi bi-gear"></i> Generate Next Round
                     </button>
-                }
+                } *@
 
                 <!-- Create Playoff Round Button -->
                 @if (Model.ShowCreatePlayoffRound)
@@ -381,7 +369,7 @@
     @if (Model.Matches.Any())
     {
         <div class="card">
-            <div class="card-header bg-primary text-white d-flex justify-content-between">
+            <div class="card-header text-bg-primary d-flex justify-content-between">
                 <h5 class="mb-0"><i class="bi bi-calendar3"></i> Matches (@Model.Matches.Count)</h5>
 
                 <!-- View Matches Button -->
@@ -407,13 +395,13 @@
                         <tbody>
                             @foreach (var match in Model.Matches.OrderBy(m => m.MatchNumber))
                             {
-                               //TODO this should be total points
+                                //TODO this should be total points
                                 ScorePairRecord score = new ScorePairRecord { HomeTeamScore = match.HomeTeamScore, AwayTeamScore = match.AwayTeamScore };
                                 <tr class="@(match.IsFinished ? "" : "table-warning")">
                                     <td>
                                         <strong>#@match.MatchNumber</strong>
                                         @Html.DisplayFor(modelItem => match.GroupName, "Group")
-                                        </td>
+                                    </td>
                                     <td>@match.HomeTeam?.Name</td>
                                     <td>
                                         @if (match.IsFinished)
@@ -437,7 +425,8 @@
                                         {
                                             <span class="badge bg-warning text-dark"><i class="bi bi-hourglass"></i> Pending</span>
                                         } *@
-                                        @if(match.IsDisputed == true){
+                                        @if (match.IsDisputed == true)
+                                        {
                                             <span class="badge bg-danger" title="This match has been disputed"><i class="bi bi-exclamation-triangle"></i></span>
                                         }
                                         @Html.DisplayFor(modelItem => match.MatchState, "MatchState")

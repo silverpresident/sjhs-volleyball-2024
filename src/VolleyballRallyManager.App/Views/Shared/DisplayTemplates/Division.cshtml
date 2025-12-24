@@ -4,6 +4,6 @@
  
 @{
     //TODO Fix thi sby embedding a colour into the Model itself, use use the group service for now
-    string bgcolor = groupService.GetColor(Model.);
+    string bgcolor = groupService.GetColor(Model.Name);
 }
 <span class="badge rounded-1 text-black division-badge" style="background-color: @bgcolor">@Model.Name</span>

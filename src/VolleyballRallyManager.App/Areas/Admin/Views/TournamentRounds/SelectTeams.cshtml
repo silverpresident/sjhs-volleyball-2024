@@ -17,21 +17,23 @@
         <!-- LEFT COLUMN: Main Form -->
         <div class="col-lg-9">
             <div class="card">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header text-bg-primary">
                     <h5 class="mb-0"><i class="bi bi-trophy"></i> @Model.RoundName - Team Selection</h5>
                 </div>
                 <div class="card-body">
                     <!-- Display Round Info -->
                     <div class="alert alert-info">
                         <dl class="row mb-0">
-                            <dt class="col-sm-4">Round:</dt>
+                            <dt class="col-sm-4">Qualifying From Round:</dt>
+                            <dd class="col-sm-8"><strong>@Model.QualifyingFromRoundName</strong></dd>
+                            <dt class="col-sm-4">Advancing to Round:</dt>
                             <dd class="col-sm-8"><strong>@Model.RoundName</strong></dd>
-                            
+
                             <dt class="col-sm-4">Selection Strategy:</dt>
                             <dd class="col-sm-8">
                                 <span class="badge bg-secondary">@Model.TeamSelectionStrategy</span>
                             </dd>
-                            
+
                             <dt class="col-sm-4">Number of Qualifying Teams:</dt>
                             <dd class="col-sm-8"><strong>@Model.NumberOfQualifyingTeams</strong> team(s)</dd>
                         </dl>
@@ -57,7 +59,7 @@
                         {
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover">
-                                    <thead class="table-dark">
+                                    <thead class="table-primary">
                                         <tr>
                                             <th>Select</th>
                                             <th>Rank</th>
@@ -74,7 +76,7 @@
                                         {
                                             var team = Model.Teams[i];
                                             var rowClass = team.IsSelected ? "table-success" : "";
-                                            
+
                                             <tr class="@rowClass">
                                                 <td>
                                                     <div class="form-check">
@@ -82,18 +84,26 @@
                                                         <input type="hidden" asp-for="Teams[i].TeamName" />
                                                         <input type="hidden" asp-for="Teams[i].Rank" />
                                                         <input type="hidden" asp-for="Teams[i].GroupName" />
-                                                        <input type="hidden" asp-for="Teams[i].SetsWon" />
-                                                        <input type="hidden" asp-for="Teams[i].SetsLost" />
+                                                        <input type="hidden" asp-for="Teams[i].MatchesWon" />
+                                                        <input type="hidden" asp-for="Teams[i].MatchesLost" />
                                                         <input type="hidden" asp-for="Teams[i].Points" />
                                                         <input type="hidden" asp-for="Teams[i].PointDifference" />
-                                                        
+                                                        <input type="hidden" asp-for="Teams[i].IsQualified" />
+
                                                         @if (!isManualSelection)
                                                         {
-                                                            <input class="form-check-input"
+                                                            @* <input class="form-check-input"
                                                                    type="checkbox"
                                                                    asp-for="Teams[i].IsSelected"
                                                                    id="team_@i"
+                                                                   disabled /> *@
+                                                            <input class="form-check-input"
+                                                                   type="checkbox"
+                                                                   checked="@team.IsSelected"
+                                                                   id="team_@i"
                                                                    disabled />
+                                                            <input type="hidden" asp-for="Teams[i].IsSelected"
+                                                                   id="team_h_@i" />
                                                         }
                                                         else
                                                         {
@@ -105,10 +115,16 @@
                                                     </div>
                                                 </td>
                                                 <td><span class="badge bg-secondary">@team.Rank</span></td>
-                                                <td><strong>@team.TeamName</strong></td>
+                                                <td>
+                                                    <strong>@team.TeamName</strong>
+                                                    @if (team.IsQualified)
+                                                    {
+                                                        <span class="badge bg-warning">Qualified</span>
+                                                    }
+                                                </td>
                                                 <td>@team.GroupName</td>
-                                                <td>@team.SetsWon</td>
-                                                <td>@team.SetsLost</td>
+                                                <td>@team.MatchesWon</td>
+                                                <td>@team.MatchesLost</td>
                                                 <td><strong>@team.Points</strong></td>
                                                 <td>
                                                     <span class="@(team.PointDifference > 0 ? "text-success" : team.PointDifference < 0 ? "text-danger" : "")">
@@ -132,7 +148,7 @@
                             <a asp-action="Details" asp-route-id="@Model.TournamentRoundId" class="btn btn-secondary">
                                 <i class="bi bi-x-circle"></i> Cancel
                             </a>
-                            @if (!isManualSelection)
+                            @*  @if (!isManualSelection)
                             {
                                 <button type="submit" class="btn btn-primary btn-lg" disabled>
                                     <i class="bi bi-check-circle"></i> Confirm Team Selection
@@ -143,7 +159,11 @@
                                 <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="bi bi-check-circle"></i> Confirm Team Selection
                                 </button>
-                            }
+                            } *@
+
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Confirm Team Selection
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -163,11 +183,11 @@
                         <li><strong>Winners Only:</strong> Only match winners are selected.</li>
                         <li><strong>Manual:</strong> You can manually select which teams to include.</li>
                     </ul>
-                    
+
                     <p class="small mt-3">
                         <i class="bi bi-lightbulb"></i> <strong>Tip:</strong> Teams with higher ranks and point differences are typically better performers in the round.
                     </p>
-                    
+
                     @if (!isManualSelection)
                     {
                         <div class="alert alert-warning small mt-3">
@@ -190,7 +210,7 @@
                 <div class="card-body small">
                     <p><strong>What happens after selection?</strong></p>
                     <p>The selected teams will be added to the next round of the tournament. You'll be able to generate matches for them in the next step.</p>
-                    
+
                     <p class="mb-0"><strong>Can I change the selection later?</strong></p>
                     <p class="mb-0">Once confirmed, you would need to edit the round settings to change the team selection.</p>
                 </div>
@@ -200,5 +220,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

@@ -15,7 +15,7 @@ public class TournamentRoundService : ITournamentRoundService
     private readonly ILogger<TournamentRoundService> _logger;
 
     public TournamentRoundService(
-        ApplicationDbContext context, 
+        ApplicationDbContext context,
         IRanksService ranksService,
         ILogger<TournamentRoundService> logger)
     {
@@ -45,7 +45,7 @@ public class TournamentRoundService : ITournamentRoundService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting tournament rounds for tournament {TournamentId}, division {DivisionId}", 
+            _logger.LogError(ex, "Error getting tournament rounds for tournament {TournamentId}, division {DivisionId}",
                 tournamentId, divisionId);
             throw;
         }
@@ -89,7 +89,7 @@ public class TournamentRoundService : ITournamentRoundService
         }
         try
         {
-            _logger.LogInformation("Creating first round for tournament {TournamentId}, division {DivisionId}", 
+            _logger.LogInformation("Creating first round for tournament {TournamentId}, division {DivisionId}",
                 tournamentId, divisionId);
 
             var tournamentRound = new TournamentRound
@@ -158,7 +158,7 @@ public class TournamentRoundService : ITournamentRoundService
     {
         try
         {
-            _logger.LogInformation("Creating next round for tournament {TournamentId}, division {DivisionId}", 
+            _logger.LogInformation("Creating next round for tournament {TournamentId}, division {DivisionId}",
                 tournamentId, divisionId);
 
             var previousRound = await GetTournamentRoundByIdAsync(previousTournamentRoundId);
@@ -206,7 +206,7 @@ public class TournamentRoundService : ITournamentRoundService
             // Save group configuration 
             tournamentRound.TeamsPerGroup = tournamentRound.GroupingStrategy == GroupGenerationStrategy.TeamsPerGroup ? groupingSize : null;
             tournamentRound.GroupsInRound = tournamentRound.GroupingStrategy == GroupGenerationStrategy.GroupsInRound ? groupingSize : null;
-  
+
             if (tournamentRound.AdvancingTeamSelectionStrategy == TeamSelectionStrategy.WinnersOnly)
             {
                 if (tournamentRound.AdvancingTeamsCount > 1)
@@ -269,7 +269,7 @@ public class TournamentRoundService : ITournamentRoundService
 
             // Get all teams for this round
             var roundTeams = await GetRoundTeamsAsync(tournamentRoundId);
-            
+
             //Set up first found teams
 
             // Get all teams from the division for initial seeding
@@ -282,7 +282,8 @@ public class TournamentRoundService : ITournamentRoundService
             // Create TournamentRoundTeam entries with initial seeding
             foreach (var divisionTeam in divisionTeams)
             {
-                if (roundTeams.Any(rt => rt.TeamId == divisionTeam.TeamId)){
+                if (roundTeams.Any(rt => rt.TeamId == divisionTeam.TeamId))
+                {
                     continue;
                 }
                 var roundTeam = new TournamentRoundTeam
@@ -330,7 +331,7 @@ public class TournamentRoundService : ITournamentRoundService
 
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Successfully assigned {TeamCount} teams to groups for round {TournamentRoundId}", 
+            _logger.LogInformation("Successfully assigned {TeamCount} teams to groups for round {TournamentRoundId}",
                 roundTeams.Count, tournamentRoundId);
 
             return roundTeams;
@@ -352,10 +353,10 @@ public class TournamentRoundService : ITournamentRoundService
 
         // Order teams by seed number for consistent assignment
         var orderedTeams = roundTeams.OrderBy(t => t.SeedNumber).ToList();
-        
+
         // Calculate number of groups needed
         int groupCount = (int)Math.Ceiling((double)orderedTeams.Count / teamsPerGroup);
-        
+
         // Distribute teams round-robin style: top seeds distributed across groups first
         for (int teamIndex = 0; teamIndex < orderedTeams.Count; teamIndex++)
         {
@@ -363,7 +364,7 @@ public class TournamentRoundService : ITournamentRoundService
             // Team 0 -> Group 0, Team 1 -> Group 1, ..., Team groupCount -> Group 0, etc.
             int groupIndex = teamIndex % groupCount;
             string groupName = $"{(char)('A' + groupIndex)}";
-            
+
             orderedTeams[teamIndex].GroupName = groupName;
             orderedTeams[teamIndex].UpdatedBy = userName;
             orderedTeams[teamIndex].UpdatedAt = DateTime.Now;
@@ -384,7 +385,7 @@ public class TournamentRoundService : ITournamentRoundService
 
         // Order teams by seed number for consistent assignment
         var orderedTeams = roundTeams.OrderBy(t => t.SeedNumber).ToList();
-        
+
         // Distribute teams round-robin style: top seeds distributed across groups first
         // Example with 12 teams and 3 groups:
         // Group A: Seeds 1, 4, 7, 10
@@ -396,7 +397,7 @@ public class TournamentRoundService : ITournamentRoundService
             // Team 0 -> Group 0, Team 1 -> Group 1, ..., Team groupCount -> Group 0, etc.
             int groupIndex = teamIndex % groupCount;
             string groupName = $"{(char)('A' + groupIndex)}";
-            
+
             orderedTeams[teamIndex].GroupName = groupName;
             orderedTeams[teamIndex].UpdatedBy = userName;
             orderedTeams[teamIndex].UpdatedAt = DateTime.Now;
@@ -418,7 +419,8 @@ public class TournamentRoundService : ITournamentRoundService
                 throw new InvalidOperationException($"Tournament round {tournamentRoundId} not found");
             }
 
-            if (tournamentRound.RoundNumber == 1){
+            if (tournamentRound.RoundNumber == 1)
+            {
                 return await AssignFirstRoundTeamsAsync(tournamentRound.Id, userName);
             }
 
@@ -520,7 +522,7 @@ public class TournamentRoundService : ITournamentRoundService
 
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Selected {TeamCount} teams for round {TournamentRoundId}", 
+            _logger.LogInformation("Selected {TeamCount} teams for round {TournamentRoundId}",
                 qualifyingTeams.Count, tournamentRoundId);
 
             return await GetRoundTeamsAsync(tournamentRoundId);
@@ -542,7 +544,7 @@ public class TournamentRoundService : ITournamentRoundService
     {
         try
         {
-            _logger.LogInformation("Generating matches for round {TournamentRoundId} with {NumberOfCourts} courts starting at court {StartingCourtNumber}", 
+            _logger.LogInformation("Generating matches for round {TournamentRoundId} with {NumberOfCourts} courts starting at court {StartingCourtNumber}",
                 tournamentRoundId, numberOfCourts, startingCourtNumber);
 
             var tournamentRound = await GetTournamentRoundByIdAsync(tournamentRoundId);
@@ -567,12 +569,12 @@ public class TournamentRoundService : ITournamentRoundService
             switch (tournamentRound.MatchGenerationStrategy)
             {
                 case MatchGenerationStrategy.RoundRobin:
-                    matches = GenerateRoundRobinMatches(tournamentRound, roundTeams, ref matchNumber, startTime, 
+                    matches = GenerateRoundRobinMatches(tournamentRound, roundTeams, ref matchNumber, startTime,
                         startingCourtNumber, numberOfCourts, matchTimeInterval, userName);
                     break;
 
                 case MatchGenerationStrategy.SeededBracket:
-                    matches = GenerateSeededBracketMatches(tournamentRound, roundTeams, ref matchNumber, startTime, 
+                    matches = GenerateSeededBracketMatches(tournamentRound, roundTeams, ref matchNumber, startTime,
                         startingCourtNumber, numberOfCourts, matchTimeInterval, userName);
                     break;
 
@@ -586,7 +588,7 @@ public class TournamentRoundService : ITournamentRoundService
             _context.Matches.AddRange(matches);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Generated {MatchCount} matches for round {TournamentRoundId}", 
+            _logger.LogInformation("Generated {MatchCount} matches for round {TournamentRoundId}",
                 matches.Count, tournamentRoundId);
 
             return matches;
@@ -661,14 +663,14 @@ public class TournamentRoundService : ITournamentRoundService
                     };
 
                     matches.Add(match);
-                    
+
                     // Advance time for this court
                     courtSchedule[assignedCourt] = courtSchedule[assignedCourt].AddMinutes(matchTimeInterval);
                 }
             }
         }
 
-        _logger.LogInformation("Generated {MatchCount} round-robin matches across {CourtCount} courts", 
+        _logger.LogInformation("Generated {MatchCount} round-robin matches across {CourtCount} courts",
             matches.Count, numberOfCourts);
 
         return matches;
@@ -721,13 +723,13 @@ public class TournamentRoundService : ITournamentRoundService
             };
 
             matches.Add(match);
-            
+
             // Advance time for this court
             courtSchedule[assignedCourt] = courtSchedule[assignedCourt].AddMinutes(matchTimeInterval);
             courtIndex++;
         }
 
-        _logger.LogInformation("Generated {MatchCount} seeded bracket matches across {CourtCount} courts", 
+        _logger.LogInformation("Generated {MatchCount} seeded bracket matches across {CourtCount} courts",
             matches.Count, numberOfCourts);
 
         return matches;
@@ -786,7 +788,7 @@ public class TournamentRoundService : ITournamentRoundService
             {
                 throw new InvalidOperationException($"Tournament round {tournamentRoundId} not found");
             }
-  
+
             // Mark round as finished and locked
             tournamentRound.IsFinished = false;
             tournamentRound.IsLocked = false;
@@ -843,7 +845,7 @@ public class TournamentRoundService : ITournamentRoundService
     public async Task<bool> HasMatchesGeneratedAsync(Guid tournamentRoundId)
     {
         try
-        { 
+        {
             return await _context.Matches
                 .Where(m => m.TournamentRoundId == tournamentRoundId)
                 .AnyAsync();
@@ -957,7 +959,7 @@ public class TournamentRoundService : ITournamentRoundService
             _logger.LogInformation("Deleted {Count} tournament rounds", tournamentRounds.Count);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Successfully deleted {Count} rounds for tournament {TournamentId}", 
+            _logger.LogInformation("Successfully deleted {Count} rounds for tournament {TournamentId}",
                 tournamentRounds.Count, tournamentId);
 
             return tournamentRounds.Count;
@@ -991,7 +993,7 @@ public class TournamentRoundService : ITournamentRoundService
 
             // Identify teams that have already advanced to the next round
             var advancingTeamIds = new HashSet<Guid>();
-            
+
             if (previousRound.NextTournamentRoundId.HasValue)
             {
                 // Get teams that advanced to the next round
@@ -999,7 +1001,7 @@ public class TournamentRoundService : ITournamentRoundService
                     .Where(trt => trt.TournamentRoundId == previousRound.NextTournamentRoundId.Value)
                     .Select(trt => trt.TeamId)
                     .ToListAsync();
-                
+
                 advancingTeamIds = nextRoundTeams.ToHashSet();
             }
             else
@@ -1119,31 +1121,187 @@ public class TournamentRoundService : ITournamentRoundService
             seedNumber += 1;
 
             foreach (var teamId in selectedTeamIds)
-        {
-            var roundTeam = new TournamentRoundTeam
             {
-                TournamentId = tournamentRound.TournamentId,
-                DivisionId = tournamentRound.DivisionId,
-                RoundTemplateId = tournamentRound.RoundTemplateId,
-                TeamId = teamId,
-                TournamentRoundId = tournamentRound.Id,
-                SeedNumber = seedNumber++,
-                GroupName = string.Empty,
-                CreatedBy = userName,
-                UpdatedBy = userName,
-                CreatedAt = DateTime.Now
-            };
+                var roundTeam = new TournamentRoundTeam
+                {
+                    TournamentId = tournamentRound.TournamentId,
+                    DivisionId = tournamentRound.DivisionId,
+                    RoundTemplateId = tournamentRound.RoundTemplateId,
+                    TeamId = teamId,
+                    TournamentRoundId = tournamentRound.Id,
+                    SeedNumber = seedNumber++,
+                    GroupName = string.Empty,
+                    CreatedBy = userName,
+                    UpdatedBy = userName,
+                    CreatedAt = DateTime.Now
+                };
 
-            _context.TournamentRoundTeams.Add(roundTeam);
-        }
+                _context.TournamentRoundTeams.Add(roundTeam);
+            }
 
-        await _context.SaveChangesAsync();
-
-
+            await _context.SaveChangesAsync();
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting matches for round {TournamentRoundId}", tournamentRoundId);
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<Guid>> SelectQualifyingTeamIdsForRoundAsync(Guid tournamentRoundId)
+    {
+        try
+        {
+            _logger.LogInformation("Selecting teams for round {TournamentRoundId}", tournamentRoundId);
+
+            var tournamentRound = await GetTournamentRoundByIdAsync(tournamentRoundId);
+            if (tournamentRound == null)
+            {
+                throw new InvalidOperationException($"Tournament round {tournamentRoundId} not found");
+            }
+
+            if (tournamentRound.RoundNumber == 1)
+            {
+                // Get all teams from the division for initial seeding
+                var prelimTeamIds = await _context.TournamentTeamDivisions
+                    .Where(ttd => ttd.TournamentId == tournamentRound.TournamentId && ttd.DivisionId == tournamentRound.DivisionId)
+                    .Select(t => t.TeamId)
+                    .ToListAsync();
+                return prelimTeamIds;
+            }
+
+            if (!tournamentRound.PreviousTournamentRoundId.HasValue)
+            {
+                throw new InvalidOperationException("Cannot select teams for first round - teams are auto-assigned");
+            }
+
+            var previousRound = await GetTournamentRoundByIdAsync(tournamentRound.PreviousTournamentRoundId.Value);
+            if (previousRound == null || !previousRound.IsFinished)
+            {
+                throw new InvalidOperationException("Previous round must be finished before selecting teams");
+            }
+
+            // Get previous round teams with rankings
+            var previousRoundTeams = await _ranksService.GetStandingsAsync(previousRound.Id);
+
+            List<TournamentRoundTeam> qualifyingTeams = new List<TournamentRoundTeam>();
+
+            // Apply selection logic based on method
+            switch (tournamentRound.QualifyingTeamSelectionStrategy)
+            {
+                case TeamSelectionStrategy.WinnersOnly:
+                    // Select teams who won at least one match, ordered by rank
+                    qualifyingTeams = previousRoundTeams
+                        .Where(t => t.Wins > 0)
+                        .Take(tournamentRound.QualifyingTeamsCount)
+                        .ToList();
+                    break;
+
+                case TeamSelectionStrategy.SeedTopHalf:
+                    int halfCount = previousRoundTeams.Count / 2;
+                    int teamsToSelect = Math.Min(halfCount, tournamentRound.QualifyingTeamsCount);
+                    qualifyingTeams = previousRoundTeams
+                        .Take(teamsToSelect)
+                        .ToList();
+                    break;
+
+                case TeamSelectionStrategy.TopByPoints:
+                    qualifyingTeams = previousRoundTeams
+                        .Take(tournamentRound.QualifyingTeamsCount)
+                        .ToList();
+                    break;
+
+                case TeamSelectionStrategy.TopFromGroupAndNextBest:
+                    // Get top team from each group
+                    var groupWinners = previousRoundTeams
+                        .GroupBy(t => t.GroupName)
+                        .Select(g => g.OrderBy(t => t.Rank).First())
+                        .ToList();
+
+                    // Get next best teams overall
+                    var remainingTeams = previousRoundTeams
+                        .Except(groupWinners)
+                        .Take(tournamentRound.QualifyingTeamsCount - groupWinners.Count)
+                        .ToList();
+
+                    qualifyingTeams = groupWinners.Concat(remainingTeams).ToList();
+                    break;
+
+                case TeamSelectionStrategy.Manual:
+                    break;
+                default:
+                    throw new InvalidOperationException($"Unknown team selection method: {tournamentRound.AdvancingTeamSelectionStrategy}");
+            }
+            var teamIds = qualifyingTeams.Select(t => t.TeamId).ToList();
+
+            _logger.LogInformation("Selected {TeamCount} teams for round {TournamentRoundId}",
+                qualifyingTeams.Count, tournamentRoundId);
+
+            return teamIds;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error selecting teams for round {TournamentRoundId}", tournamentRoundId);
+            throw;
+        }
+    }
+
+    public async Task SetTeamsInRoundAsync(Guid tournamentRoundId, List<Guid> selectedTeamIds, string userName)
+    {
+        try
+        {
+            _logger.LogInformation("Setting teams for round {TournamentRoundId}", tournamentRoundId);
+            var tournamentRound = await GetTournamentRoundByIdAsync(tournamentRoundId);
+            if (tournamentRound == null)
+            {
+                throw new InvalidOperationException($"Tournament round {tournamentRoundId} not found");
+            }
+            // Remove existing teams for the round
+            var existingTeams = _context.TournamentRoundTeams
+                .Where(trt => trt.TournamentRoundId == tournamentRound.Id)
+                .ToList();
+            _context.TournamentRoundTeams.RemoveRange(existingTeams);
+            _context.SaveChanges();
+            // Create TournamentRoundTeam entries for selected teams
+            int seedNumber = 1;
+            foreach (var teamId in selectedTeamIds)
+            {
+                var roundTeam = new TournamentRoundTeam
+                {
+                    TournamentId = tournamentRound.TournamentId,
+                    DivisionId = tournamentRound.DivisionId,
+                    RoundTemplateId = tournamentRound.RoundTemplateId,
+                    TeamId = teamId,
+                    TournamentRoundId = tournamentRound.Id,
+                    SeedNumber = seedNumber++,
+                    GroupName = string.Empty,
+                    CreatedBy = userName,
+                    UpdatedBy = userName,
+                    CreatedAt = DateTime.Now
+                };
+                _context.TournamentRoundTeams.Add(roundTeam);
+            }
+            _context.SaveChanges();
+            _logger.LogInformation("Set {TeamCount} teams for round {TournamentRoundId}",
+                selectedTeamIds.Count, tournamentRoundId);
+
+            if (tournamentRound.PreviousTournamentRoundId != null)
+            {
+                var previousRound = await GetTournamentRoundByIdAsync(tournamentRound.PreviousTournamentRoundId.Value);
+                // Lock the previous round
+                if (previousRound != null && previousRound.IsLocked == false)
+                {
+                    previousRound.IsLocked = true;
+                    previousRound.UpdatedBy = userName;
+                    previousRound.UpdatedAt = DateTime.Now;
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error selecting teams for round {TournamentRoundId}", tournamentRoundId);
             throw;
         }
     }

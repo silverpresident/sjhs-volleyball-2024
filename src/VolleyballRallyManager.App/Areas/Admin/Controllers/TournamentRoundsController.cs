@@ -447,12 +447,12 @@ public class TournamentRoundsController : Controller
                 DivisionName = division?.Name ?? "Unknown",
                 PreviousRoundName = currentRound.Round?.Name ?? $"Round {currentRound.RoundNumber}",
                 
-                // QUALIFYING: Teams coming into this NEW round (based on current round's advancing settings)
+                // QUALIFYING: Teams coming into this NEW tournamentRound (based on current tournamentRound's advancing settings)
                 QualifyingTeamsCount = currentRound.AdvancingTeamsCount,
                 QualifyingTeamSelectionStrategy = currentRound.AdvancingTeamSelectionStrategy,
                 SourceMatchStrategy = currentRound.MatchGenerationStrategy,
                 
-                // ADVANCING: Default settings for teams advancing from the NEW round
+                // ADVANCING: Default settings for teams advancing from the NEW tournamentRound
                 AdvancingTeamsCount = Math.Max(2, currentRound.AdvancingTeamsCount / 2), // Default to half, minimum 2
                 AdvancingTeamSelectionStrategy = currentRound.AdvancingTeamSelectionStrategy, // Same as current
                 MatchGenerationStrategy = MatchGenerationStrategy.SeededBracket,
@@ -611,8 +611,8 @@ public class TournamentRoundsController : Controller
             var userName = User.Identity?.Name ?? "admin";
             
             // Get the selected RoundTemplate template to retrieve recommendations
-            var selectedRound = await _context.RoundTemplates.FindAsync(model.RoundId);
-            if (selectedRound == null)
+            var selectedRoundTemplate = await _context.RoundTemplates.FindAsync(model.RoundId);
+            if (selectedRoundTemplate == null)
             {
                 ModelState.AddModelError("", "Selected round template not found.");
                 var rounds = await _context.RoundTemplates
@@ -623,7 +623,7 @@ public class TournamentRoundsController : Controller
                 return View(model);
             }
             
-            // Get previous round to calculate defaults
+            // Get previous tournamentRound to calculate defaults
             var previousRound = await _tournamentRoundService.GetTournamentRoundByIdAsync(model.PreviousTournamentRoundId);
             if (previousRound == null)
             {
@@ -635,10 +635,11 @@ public class TournamentRoundsController : Controller
                 ViewData["Rounds"] = new SelectList(rounds, "Id", "Name");
                 return View(model);
             }
+            var qualifyingTeamsSelection = previousRound.AdvancingTeamSelectionStrategy;
 
-            // Calculate defaults from RoundTemplate template and previous round
-            int qualifyingTeamsCount = selectedRound.RecommendedQualifyingTeamsCount > 0
-                ? selectedRound.RecommendedQualifyingTeamsCount
+            // Calculate defaults from RoundTemplate template and previous tournamentRound
+            int qualifyingTeamsCount = selectedRoundTemplate.RecommendedQualifyingTeamsCount > 0
+                ? selectedRoundTemplate.RecommendedQualifyingTeamsCount
                 : previousRound.AdvancingTeamsCount;
                 
             int advancingTeamsCount = Math.Max(2, qualifyingTeamsCount / 2);
@@ -647,29 +648,29 @@ public class TournamentRoundsController : Controller
             GroupGenerationStrategy groupStrategy = GroupGenerationStrategy.NoGroup;
             int groupValue = 2;
             
-            if (selectedRound.RecommendedMatchGenerationStrategy == MatchGenerationStrategy.GroupStageKnockout)
+            if (selectedRoundTemplate.RecommendedMatchGenerationStrategy == MatchGenerationStrategy.GroupStageKnockout)
             {
                 groupStrategy = GroupGenerationStrategy.GroupsInRound;
                 groupValue = Math.Max(2, qualifyingTeamsCount / 4);
             }
 
-            // Create the tournament round using the service
+            // Create the tournament tournamentRound using the service
             var tournamentRound = await _tournamentRoundService.CreateNextRoundAsync(
                 model.TournamentId,
                 model.DivisionId,
                 model.RoundId,
                 model.PreviousTournamentRoundId,
                 qualifyingTeamsCount,
-                selectedRound.RecommendedTeamSelectionStrategy,
+                qualifyingTeamsSelection,
                 advancingTeamsCount,
-                selectedRound.RecommendedTeamSelectionStrategy,
-                selectedRound.RecommendedMatchGenerationStrategy,
+                selectedRoundTemplate.RecommendedTeamSelectionStrategy,
+                selectedRoundTemplate.RecommendedMatchGenerationStrategy,
                 groupStrategy,
                 groupValue,
-                selectedRound.IsPlayoff,
+                selectedRoundTemplate.IsPlayoff,
                 userName);
 
-            TempData["SuccessMessage"] = $"Round '{selectedRound.Name}' created successfully with recommended defaults. You can customize settings below.";
+            TempData["SuccessMessage"] = $"Round '{selectedRoundTemplate.Name}' created successfully with recommended defaults. You can customize settings below.";
             
             // Redirect to Edit page for further customization
             return RedirectToAction(nameof(Edit), new { id = tournamentRound.Id });
@@ -693,15 +694,8 @@ public class TournamentRoundsController : Controller
     {
         try
         {
-            var round = await _tournamentRoundService.GetTournamentRoundByIdAsync(id);
-            if (round == null)
-            {
-                return NotFound();
-            }
-
-            // Get round details with ranked teams
-            var roundDetails = await _tournamentService.GetTournamentRoundDetailsAsync(id);
-            if (roundDetails == null)
+            var tournamentRound = await _tournamentRoundService.GetTournamentRoundByIdAsync(id);
+            if (tournamentRound == null)
             {
                 return NotFound();
             }
@@ -710,43 +704,98 @@ public class TournamentRoundsController : Controller
             var viewModel = new SelectTeamsViewModel
             {
                 TournamentRoundId = id,
-                RoundName = round.Round?.Name ?? $"Round {round.RoundNumber}",
-                TeamSelectionStrategy = round.QualifyingTeamSelectionStrategy,
-                NumberOfQualifyingTeams = round.QualifyingTeamsCount,
+                RoundName = tournamentRound.Round?.Name ?? $"Round {tournamentRound.RoundNumber}",
+                QualifyingFromRoundName = "",
+                TeamSelectionStrategy = tournamentRound.QualifyingTeamSelectionStrategy,
+                NumberOfQualifyingTeams = tournamentRound.QualifyingTeamsCount,
                 Teams = new List<SelectTeamsViewModel.TeamSelectionItem>()
             };
- //var teams = await _tournamentRoundService.SelectTeamsForRoundAsync(id, userName);
- var qualifyingTeamIds = await _tournamentRoundService.SelectQualifyingTeamIdsForRoundAsync(id);
+            var teamsInRound = await _tournamentRoundService.GetRoundTeamsAsync(id);
+            int rank = 1;
+
+            if (tournamentRound.RoundNumber == 1)
+            {
+                // Get all teams from the division for initial seeding
+                var divisionTeams = await _context.TournamentTeamDivisions
+                    .Include(ttd => ttd.Team)
+                    .Where(ttd => ttd.TournamentId == tournamentRound.TournamentId && ttd.DivisionId == tournamentRound.DivisionId)
+                    .OrderBy(ttd => ttd.SeedNumber)
+                    .ToListAsync();
+                foreach (var team in divisionTeams )
+                {
+                    var item = new SelectTeamsViewModel.TeamSelectionItem
+                    {
+                        TeamId = team.TeamId,
+                        TeamName = team.Team.Name,
+                        Rank = team.SeedNumber > 0 ? team.SeedNumber : rank,
+                        GroupName = team.GroupName,
+                        MatchesWon = 0,
+                        MatchesLost = 0,
+                        Points = 0,
+                        PointDifference = 0
+                    };
+
+                    viewModel.Teams.Add(item);
+                    rank++;
+                }
+
+            } else
+            {
+                // Get teams from previous round for qualifying 
+                if (tournamentRound.PreviousTournamentRoundId != null)
+                {
+                    var previousRound = await _tournamentRoundService.GetTournamentRoundByIdAsync(tournamentRound.PreviousTournamentRoundId.Value);
+                    if (previousRound != null)
+                    {
+                        viewModel.QualifyingFromRoundName = previousRound.Round?.Name ?? $"Round {previousRound.RoundNumber}";
+                        var roundDetails = await _tournamentService.GetTournamentRoundDetailsAsync(previousRound.Id);
+                        if (roundDetails == null)
+                        {
+                            return NotFound();
+                        }
+                        // Populate team selection items from ranked teams
+                        foreach (var team in roundDetails.Teams.OrderBy(t => t.Rank))
+                        {
+                            var item = new SelectTeamsViewModel.TeamSelectionItem
+                            {
+                                TeamId = team.TeamId,
+                                TeamName = team.TeamName,
+                                Rank = team.Rank > 0 ? team.Rank : rank,
+                                GroupName = team.GroupName,
+                                MatchesWon = team.Wins,
+                                MatchesLost = team.Losses,
+                                Points = team.Points,
+                                PointDifference = team.ScoreDifference, 
+                            };
+                            viewModel.Teams.Add(item);
+                            rank++;
+                        }
+                    }
+                }
+            }
+
+
+                // Get tournamentRound details with ranked teams
+                
+             
+            var teamsInRoundIds = teamsInRound.Select(t => t.TeamId).ToList();
+            var qualifyingTeamIds = await _tournamentRoundService.SelectQualifyingTeamIdsForRoundAsync(id);
 
             // Populate team selection items from ranked teams
-            int rank = 1;
-            foreach (var team in roundDetails.Teams.OrderBy(t => t.Rank))
+            foreach (var team in viewModel.Teams)
             {
-                var item = new SelectTeamsViewModel.TeamSelectionItem
-                {
-                    TeamId = team.TeamId,
-                    TeamName = team.TeamName,
-                    Rank = team.Rank > 0 ? team.Rank : rank,
-                    GroupName = team.GroupName,
-                    SetsWon = team.SetsFor,
-                    SetsLost = team.SetsAgainst,
-                    Points = team.Points,
-                    PointDifference = team.SetsDifference,
-                    IsSelected = false
-                };
-
+                team.IsQualified = qualifyingTeamIds.Contains(team.TeamId);
+                team.IsSelected = teamsInRoundIds.Contains(team.TeamId);
                 // Auto-select teams based on strategy and count
                 if (viewModel.TeamSelectionStrategy != TeamSelectionStrategy.Manual)
                 {
                     // Select top N teams based on the qualifying teams count
-                    if (rank <= viewModel.NumberOfQualifyingTeams)
+                    if (qualifyingTeamIds.Contains(team.TeamId))
                     {
-                        item.IsSelected = true;
+                        team.IsSelected = true;
                     }
                 }
 
-                viewModel.Teams.Add(item);
-                rank++;
             }
 
             return View(viewModel);
@@ -791,15 +840,16 @@ public class TournamentRoundsController : Controller
 
             var userName = User.Identity?.Name ?? "admin";
 
-            // Update the round with selected teams
-            await _tournamentRoundService.AddTeamsToRoundAsync(
+
+            // Update the tournamentRound with selected teams
+            await _tournamentRoundService.SetTeamsInRoundAsync(
                 model.TournamentRoundId,
                 selectedTeamIds,
                 userName);
 
             TempData["SuccessMessage"] = $"Successfully selected {selectedTeamIds.Count} teams for the round.";
             
-            // Redirect to round details
+            // Redirect to tournamentRound details
             return RedirectToAction(nameof(Details), new { id = model.TournamentRoundId });
           //return RedirectToAction(nameof(GenerateMatches), new { id });
       }
@@ -822,7 +872,7 @@ public class TournamentRoundsController : Controller
                 return NotFound();
             }
             
-            // Auto-assign teams for round 1 if not yet assigned
+            // Auto-assign teams for tournamentRound 1 if not yet assigned
             List<TournamentRoundTeam> teams;
             if (round.RoundNumber == 1)
             {
@@ -1027,7 +1077,7 @@ public class TournamentRoundsController : Controller
                 CandidateTeams = candidateTeams.ToList(),
                 SelectedTeamIds = candidateTeams.Select(t => t.TeamId).ToList(),
                 
-                // Default settings for the playoff round
+                // Default settings for the playoff tournamentRound
                 AdvancingTeamsCount = Math.Max(2, defaultTeamCount / 2),
                 AdvancingTeamSelectionStrategy = TeamSelectionStrategy.TopByPoints,
                 MatchStrategy = MatchGenerationStrategy.SeededBracket,
@@ -1078,7 +1128,7 @@ public class TournamentRoundsController : Controller
                 return RedirectToAction(nameof(Index));
             }
 
-            // Create the playoff tournament round
+            // Create the playoff tournament tournamentRound
             var playoffRound = await _tournamentRoundService.CreateNextRoundAsync(
                 model.TournamentId,
                 model.DivisionId,

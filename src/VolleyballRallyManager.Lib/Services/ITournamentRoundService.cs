@@ -180,4 +180,11 @@ public interface ITournamentRoundService
     /// <param name="tournamentRoundId">The tournament round ID.</param>
     /// <returns>none</returns>
     Task AddTeamsToRoundAsync(Guid tournamentRoundId, List<Guid> selectedTeamIds, string userName);
+    /// <summary>
+    /// Set teams to a tournament round.
+    /// </summary>
+    /// <param name="tournamentRoundId">The tournament round ID.</param>
+    /// <returns>none</returns>
+    Task SetTeamsInRoundAsync(Guid tournamentRoundId, List<Guid> selectedTeamIds, string userName);
+    Task<IEnumerable<Guid>> SelectQualifyingTeamIdsForRoundAsync(Guid tournamentRoundId);
 }
