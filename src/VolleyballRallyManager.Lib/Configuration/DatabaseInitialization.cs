@@ -96,7 +96,7 @@ namespace VolleyballRallyManager.Lib.Configuration
             var config = serviceProvider.GetRequiredService<IConfiguration>();
             var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
         
-            var defaultUsers = config.GetValue<DefaultUser[]>("DefaultUsers");
+            var defaultUsers = config.GetSection("VolleyBallRallyManager:DefaultUsers").Get<DefaultUser[]>();
             foreach (var defaultUser in defaultUsers)
             {
                 if (string.IsNullOrEmpty(defaultUser.Email))
