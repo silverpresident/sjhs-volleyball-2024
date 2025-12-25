@@ -112,14 +112,13 @@ namespace VolleyballRallyManager.Lib.Extensions
                         }
 
                         // Get role configuration
-                        var adminEmail = configuration["VolleyBallRallyManager:AdminEmail"];
                         var adminEmails = configuration.GetSection("VolleyBallRallyManager:DefaultAdminEmails").Get<string[]>();
                         var judgeEmails = configuration.GetSection("VolleyBallRallyManager:DefaultJudgeEmails").Get<string[]>();
                         var scorekeeperEmails = configuration.GetSection("VolleyBallRallyManager:DefaultScorekeeperEmails").Get<string[]>();
 
                         // Assign roles to database (not just claims)
                         // These will be loaded into claims by CustomUserClaimsPrincipalFactory
-                        if (email == adminEmail || adminEmails?.Contains(email) == true)
+                        if (adminEmails?.Contains(email, StringComparer.InvariantCultureIgnoreCase) == true)
                         {
                             if (!await userManager.IsInRoleAsync(user, "Administrator"))
                             {
@@ -130,7 +129,7 @@ namespace VolleyballRallyManager.Lib.Extensions
                                 }
                             }
                         }
-                        else if (judgeEmails?.Contains(email) == true)
+                        else if (judgeEmails?.Contains(email, StringComparer.InvariantCultureIgnoreCase) == true)
                         {
                             if (!await userManager.IsInRoleAsync(user, "Judge"))
                             {
@@ -141,7 +140,7 @@ namespace VolleyballRallyManager.Lib.Extensions
                                 }
                             }
                         }
-                        else if (scorekeeperEmails?.Contains(email) == true)
+                        else if (scorekeeperEmails?.Contains(email, StringComparer.InvariantCultureIgnoreCase) == true)
                         {
                             if (!await userManager.IsInRoleAsync(user, "Scorekeeper"))
                             {

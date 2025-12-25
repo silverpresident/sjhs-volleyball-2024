@@ -378,12 +378,11 @@ namespace VolleyballRallyManager.App.Controllers
         {
             try
             {
-                var adminEmail = _configuration["VolleyBallRallyManager:AdminEmail"];
                 var adminEmails = _configuration.GetSection("VolleyBallRallyManager:DefaultAdminEmails").Get<string[]>();
                 var judgeEmails = _configuration.GetSection("VolleyBallRallyManager:DefaultJudgeEmails").Get<string[]>();
                 var scorekeeperEmails = _configuration.GetSection("VolleyBallRallyManager:DefaultScorekeeperEmails").Get<string[]>();
 
-                if (email == adminEmail || adminEmails?.Contains(email) == true)
+                if (adminEmails?.Contains(email, StringComparer.InvariantCultureIgnoreCase) == true)
                 {
                     if (!await _userManager.IsInRoleAsync(user, "Administrator"))
                     {
@@ -391,7 +390,7 @@ namespace VolleyballRallyManager.App.Controllers
                         _logger.LogInformation("Assigned Administrator role to user {Email}", email);
                     }
                 }
-                else if (judgeEmails?.Contains(email) == true)
+                else if (judgeEmails?.Contains(email, StringComparer.InvariantCultureIgnoreCase) == true)
                 {
                     if (!await _userManager.IsInRoleAsync(user, "Judge"))
                     {
@@ -399,7 +398,7 @@ namespace VolleyballRallyManager.App.Controllers
                         _logger.LogInformation("Assigned Judge role to user {Email}", email);
                     }
                 }
-                else if (scorekeeperEmails?.Contains(email) == true)
+                else if (scorekeeperEmails?.Contains(email, StringComparer.InvariantCultureIgnoreCase) == true)
                 {
                     if (!await _userManager.IsInRoleAsync(user, "Scorekeeper"))
                     {

@@ -17,16 +17,24 @@ namespace VolleyballRallyManager.Lib.Configuration
             var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
             // Ensure database is created
+            try
+            {
             await dbContext.Database.EnsureCreatedAsync();
 
             // Apply migrations
             await dbContext.Database.MigrateAsync();
-
+ }
+            catch (Exception ex)
+            {
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
+                logger.LogError(ex, "An error occurred while seeding the database.");
+            }
             // Seed initial data if needed
             try
             {
-                // Seed default admin user
-                await SeedAdminUserAsync(scope.ServiceProvider);
+                // Seed default roles and users
+                await SeedDefaultRolesAsync(scope.ServiceProvider);
+                await SeedDefaultUsersAsync(scope.ServiceProvider);
             }
             catch (Exception ex)
             {
@@ -69,88 +77,78 @@ namespace VolleyballRallyManager.Lib.Configuration
 
         }
 
-        private static async Task SeedAdminUserAsync(IServiceProvider serviceProvider)
+        private static async Task SeedDefaultRolesAsync(IServiceProvider serviceProvider)
         {
-            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-            string defaultPassword = configuration["VolleyBallRallyManager:DefaultPassword"];
-            string adminEmail = configuration["VolleyBallRallyManager:AdminEmail"];
-            var adminEmails = configuration.GetSection("VolleyBallRallyManager:DefaultAdminEmails").Get<string[]>();
-            var judgeEmails = configuration.GetSection("VolleyBallRallyManager:DefaultJudgeEmails").Get<string[]>();
-            var scorekeeperEmails = configuration.GetSection("VolleyBallRallyManager:DefaultScorekeeperEmails").Get<string[]>();
 
-            string[] roles = { "Administrator", "Judge", "Scorekeeper", "Announcer", "Referee" };
-            string AdminRole = "Administrator";
-            foreach (string role in roles)
+            // Create default roles if they don't exist
+            string[] roles =  { "Administrator", "Judge", "Scorekeeper", "Announcer", "Referee" };
+            foreach (var role in roles)
             {
-                // Ensure the Admin role exists
                 if (!await roleManager.RoleExistsAsync(role))
                 {
                     await roleManager.CreateAsync(new IdentityRole(role));
                 }
             }
-            if (string.IsNullOrEmpty(adminEmail))
-            {
-                adminEmail = "admin@example.com";
-            }
-            if (string.IsNullOrEmpty(defaultPassword))
-            {
-                defaultPassword = "vbr-admin123";
-            }
-
-            // Create default admin user if it doesn't exist
-            var adminUserDefault = new IdentityUser { UserName = adminEmail, Email = adminEmail };
-            await MakeDefaultUserAsync(userManager, roleManager, adminUserDefault, AdminRole, defaultPassword);
-            foreach (var user in adminEmails)
-            {
-                var adminUser = new IdentityUser { UserName = user, Email = user };
-                await MakeDefaultUserAsync(userManager, roleManager, adminUser, AdminRole, defaultPassword);
-            }
-            foreach (var user in judgeEmails)
-            {
-                var judgeUser = new IdentityUser { UserName = user, Email = user };
-                await MakeDefaultUserAsync(userManager, roleManager, judgeUser, "Judge", defaultPassword);
-            }
-            foreach (var user in scorekeeperEmails)
-            {
-                var scorekeeperUser = new IdentityUser { UserName = user, Email = user };
-                await MakeDefaultUserAsync(userManager, roleManager, scorekeeperUser, "Scorekeeper", defaultPassword);
-            }
         }
-
-        private static async Task MakeDefaultUserAsync(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IdentityUser adminUserDefault, string role, string defaultPassword)
+        private static async Task SeedDefaultUsersAsync(IServiceProvider serviceProvider)
         {
-            var adminUser = await userManager.FindByNameAsync(adminUserDefault.UserName);
-            if (adminUser == null)
+            var config = serviceProvider.GetRequiredService<IConfiguration>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+        
+            var defaultUsers = config.GetValue<DefaultUser[]>("DefaultUsers");
+            foreach (var defaultUser in defaultUsers)
             {
-                adminUser = new IdentityUser
+                if (string.IsNullOrEmpty(defaultUser.Email))
                 {
-                    EmailConfirmed = true,
-                    UserName = adminUserDefault.UserName,
-                    Email = adminUserDefault.Email
-                };
-                await userManager.CreateAsync(adminUser, defaultPassword);
-            }
-            else
-            {
-                await userManager.SetEmailAsync(adminUser, adminUserDefault.Email);
-                // Remove existing password if any, then add the default password
-                var hasPassword = await userManager.HasPasswordAsync(adminUser);
-                if (hasPassword == false)
-                {
-                    await userManager.AddPasswordAsync(adminUser, defaultPassword);
+                    continue;
                 }
-            }
-            if (adminUser != null)
-            {
-                // Assign the Admin role to the user
-                if (!await userManager.IsInRoleAsync(adminUser, role))
+                // Create default user if it doesn't exist
+                var user = await userManager.FindByEmailAsync(defaultUser.Email);
+                if (user != null)
                 {
-                    await userManager.AddToRoleAsync(adminUser, role);
+                    if (defaultUser.Role == "Administrator")
+                    {
+                        if (!await userManager.IsInRoleAsync(user, defaultUser.Role))
+                        {
+                            await userManager.AddToRoleAsync(user, defaultUser.Role);
+                        }
+                    }
+                    
+                    if (defaultUser.ResetPassword && !string.IsNullOrEmpty(defaultUser.Password)){
+                        var hasPassword = await userManager.HasPasswordAsync(user);
+                        if (hasPassword == false)
+                        {
+                            await userManager.AddPasswordAsync(user, defaultUser.Password);
+                        } else {
+                            await userManager.RemovePasswordAsync(user);
+                            await userManager.AddPasswordAsync(user, defaultUser.Password);
+                        }
+                    }
+                    continue;
                 }
-            }
+                if (string.IsNullOrEmpty(defaultUser.Password))
+                {
+                    defaultUser.Password = "sdm-admin2025";
+                }
+                if (string.IsNullOrEmpty(defaultUser.UserName))
+                {
+                    var i = defaultUser.Email.IndexOf("@");
+                    defaultUser.UserName = defaultUser.Email.Substring(0, i);
+                }
 
+                var basicUser = new IdentityUser { UserName = defaultUser.UserName, Email = defaultUser.Email, EmailConfirmed = true };
+                var result = await userManager.CreateAsync(basicUser, defaultUser.Password);
+                if (result.Succeeded == false)
+                {
+                    continue;
+                }
+                if (string.IsNullOrEmpty(defaultUser.Role))
+                {
+                    defaultUser.Role = "Viewer";
+                }
+                await userManager.AddToRoleAsync(basicUser, defaultUser.Role);
+            }
         }
 
         private static async Task<List<Division>> SeedDivisionsAsync(ApplicationDbContext dbContext)
@@ -462,5 +460,14 @@ namespace VolleyballRallyManager.Lib.Configuration
             }
             await dbContext.SaveChangesAsync();
         }
+    }
+    
+    internal class DefaultUser
+    {
+        public string? Email { get; internal set; }
+        public string? UserName { get; internal set; }
+        public string? Password { get; internal set; }
+        public string? Role { get; internal set; }
+        public bool ResetPassword { get; internal set; } = false;
     }
 }
