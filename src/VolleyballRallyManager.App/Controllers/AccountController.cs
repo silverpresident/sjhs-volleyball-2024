@@ -76,9 +76,23 @@ namespace VolleyballRallyManager.App.Controllers
 
             try
             {
+                var userName = model.Email;
+                if (userName.Contains('@'))
+                {
+                    var user = await _userManager.FindByEmailAsync(model.Email);
+                    if (user == null)
+                    {
+                        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                        return View(model);
+                    }
+                    else
+                    {
+                        userName = user.UserName;
+                    }
+                }
                 // Attempt to sign in with the provided credentials
                 var result = await _signInManager.PasswordSignInAsync(
-                    model.Email,
+                    userName,
                     model.Password,
                     model.RememberMe,
                     lockoutOnFailure: true);
